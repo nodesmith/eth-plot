@@ -27,16 +27,17 @@ contract HomePage {
     function HomePage() public{
         admin = msg.sender;
         feeInThousandsOfPercent = 1000; // Initial fee is 1%
-        Span memory initialSpan = Span(0, 0, 2**10, 2**10);
         
-        ownership.push(ZoneOwnership({
-            owner: admin,
-            span: encodeSpan(initialSpan),
-            buyoutInGwei: 0
-        }));
+        // Initialize the contract to divide the 1024 x 1024 into 4 ownership chunks
+        uint16 quarter = 0x0200;
+        uint56 buyout = 42;
+        ownership.push(ZoneOwnership(admin, encodeSpan(Span(0, 0, quarter, quarter)), buyout));
+        ownership.push(ZoneOwnership(admin, encodeSpan(Span(quarter, 0, quarter, quarter)), buyout));
+        ownership.push(ZoneOwnership(admin, encodeSpan(Span(0, quarter, quarter, quarter)), buyout));
+        ownership.push(ZoneOwnership(admin, encodeSpan(Span(quarter, quarter, quarter, quarter)), buyout));
     }
     
-    function doRectanglesOverlap(Span memory a, Span memory b) private constant returns (bool) {
+    function doRectanglesOverlap(Span memory a, Span memory b) private pure returns (bool) {
         // if (RectA.Left < RectB.Right && RectA.Right > RectB.Left &&
         // RectA.Top > RectB.Bottom && RectA.Bottom < RectB.Top ) 
         return 
@@ -46,7 +47,7 @@ contract HomePage {
             a.y + a.h < b.y;
     }
     
-    function computeOverlap(Span memory targetZone, Span memory ownedZone) private constant returns (uint40[] memory) {
+    function computeOverlap(Span memory targetZone, Span memory ownedZone) private pure returns (uint40[] memory) {
         uint40[] memory brokenPieces = new uint40[](5);
         
         // The covered section is what actually has been accounted for by this particular ownedZone.
@@ -205,11 +206,6 @@ contract HomePage {
         
         uint totalCost = determineCost(Span(x, y, w, h));
         require (msg.value > totalCost);
-        
-        // Create a span which will define the area we are trying to write over
-        // Span memory targetZone = Span(x, y, w, h);
-        
-        
         
         uint40 encodedSpan = encodeSpan(Span(x, y, w, h));
         ZoneOwnership memory newZone = ZoneOwnership(msg.sender, encodedSpan, buyout);
