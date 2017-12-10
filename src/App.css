@@ -3,10 +3,12 @@
 }
 
 .App-header {
-  background-color: #222;
+  background-color: white;
   height: 60px;
   padding: 2px;
-  color: white;
+  margin-bottom: 20px;
+  color: #3b3a36;
+  border-bottom: 1px solid #E6EAEA;
 }
 
 .App-title {
@@ -15,4 +17,16 @@
 
 .App-intro {
   font-size: large;
+}
+
+.grid-container{
+  cursor: pointer;
+  margin: auto;
+  width: 80%;
+  width:1000px; /* or whatever width you want. */
+  max-width:1000px; /* or whatever width you want. */
+  display: inline-block;
+}
+.grid-container > div{
+  float: left;
 }
