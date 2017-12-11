@@ -15,9 +15,17 @@ contract EthGrid {
         uint8 h;
         uint56 buyoutInGwei;
     }
+
+    enum MimeType {
+      PNG,
+      SVG,
+      JPG,
+      GIF,
+      WEBP
+    }
     
     struct ZoneData {
-        string mimeType;
+        MimeType mimeType;
         bytes data;
         string url;
     }
@@ -26,21 +34,30 @@ contract EthGrid {
     address admin;
     ZoneOwnership[] public ownership;
     ZoneData[] public data;
+    mapping(address => uint256) public balances;
+
+    uint8 constant GRID_WIDTH = 250;
+    uint8 constant GRID_HEIGHT = 250;
+    uint56 constant INITIAL_BUYOUT_IN_GWEI = 1000;
+    uint56 constant INITIAL_FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Initial fee is 1%
+    // TODO - can't do const structs yet Rect constant EMPTY = Rect(0,0,0,0);
+
+    // This is the maximum area of a single purchase block. This needs to be limited for the
+    // algorithm which figures out payment to function
+    uint16 constant MAXIMUM_PURCHASE_AREA = 1000;
+    
     
     function EthGrid() public payable {
         admin = msg.sender;
-        feeInThousandsOfPercent = 1000; // Initial fee is 1%
+        feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         
-        // Initialize the contract
-        uint56 buyout = 42;
-        ownership.push(ZoneOwnership(admin, 0, 0, 255, 255, buyout));
-        
-        data.push(ZoneData("img/png", "", "http://ethgrid.com"));
+        // Initialize the contract with a single block with the admin owns
+        ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, INITIAL_BUYOUT_IN_GWEI));
+        data.push(ZoneData(MimeType.PNG, "", "http://ethgrid.com"));
+        balances[admin] = 0;
     }
     
     function doRectanglesOverlap(Rect memory a, Rect memory b) private pure returns (bool) {
-        // if (RectA.Left < RectB.Right && RectA.Right > RectB.Left &&
-        // RectA.Top > RectB.Bottom && RectA.Bottom < RectB.Top ) 
         return 
             a.x < b.x + b.w &&
             a.x + a.w > b.x &&
@@ -48,11 +65,8 @@ contract EthGrid {
             a.y + a.h > b.y;
     }
     
-    event OverlapComputed(Rect target, Rect ownedZone);
-
-    function computeOverlap(Rect memory targetZone, Rect memory ownedZone) private  returns (Rect[] memory) {
+    function computeOverlap(Rect memory targetZone, Rect memory ownedZone) private pure returns (Rect[] memory) {
         Rect[] memory brokenPieces = new Rect[](5);
-        Rect memory empty = Rect(0,0,0,0);
         
         // The covered section is what actually has been accounted for by this particular ownedZone.
         // Initialize it to be the entire targetZone, and subtract and we leave chunks around
@@ -67,7 +81,7 @@ contract EthGrid {
             coveredSection.w = coveredSection.w - leftRemainingSpan.w;
             coveredSection.x = ownedZone.x;
         } else {
-            brokenPieces[0] = empty;
+            brokenPieces[0] = Rect(0,0,0,0);
         }
         
         // Check the chunk to the right of things
@@ -83,7 +97,7 @@ contract EthGrid {
             // Reduce the width
             coveredSection.w = coveredSection.w - rightRemainingSpan.w;
         } else {
-            brokenPieces[1] = empty;
+            brokenPieces[1] = Rect(0,0,0,0);
         }
         
         // Check the top next
@@ -104,7 +118,7 @@ contract EthGrid {
             coveredSection.h = coveredSection.h - topRemainingSpan.h;
             coveredSection.y = ownedZone.y;
         } else {
-            brokenPieces[2] = empty;
+            brokenPieces[2] = Rect(0,0,0,0);
         }
         
         // Check the bottom finally
@@ -130,58 +144,58 @@ contract EthGrid {
             // Reduce the height
             coveredSection.h = coveredSection.h - bottomRemainingSpan.h;
         } else {
-            brokenPieces[3].w != 0;
+            brokenPieces[3] = Rect(0,0,0,0);
         }
         
+        // Return the actual overlapping part of the grid
         brokenPieces[4] = coveredSection;
-
-        OverlapComputed(targetZone, ownedZone);
-
         return brokenPieces;
     }
     
-    event CheckingArea(Rect zoneArea);
-    event OwnershipLength(uint length);
-    function determineCost(Rect memory targetZone) private  returns (uint) {
-        // Loop through and figure out how much and who we will owe. Initially everything is missing
-        // uint40[] memory missingPayments = new uint40[](targetZone.w * targetZone.h);
+    function determineCost(Rect memory targetZone, bool makePayment) private returns (uint) {
+        // Loop through and figure out how much and who we will owe. Initially everything is missing so we assign
+        // target zone to missing payments so we can divide that up
         Rect[] memory missingPayments = new Rect[](targetZone.w * targetZone.h);
         missingPayments[0] = targetZone;
         
         // TODO - Update endIndex to be modded by missingPayments length and make the loop
         // check for != endIndex
         uint16 endIndex = 1;
-        
         uint totalCost = 0;
 
-        OwnershipLength(ownership.length);
-        
         // i is gonna wrap around, so make the loop check be i < ownership.length
         for (uint i = ownership.length - 1; i < ownership.length; i--) {
-            Rect memory zoneArea = Rect(ownership[i].x, ownership[i].y, ownership[i].w, ownership[i].h);
-            CheckingArea(zoneArea);
-            uint j = 0;
             
             // Keep track if we've tracked everything. If we loop through every missed
             // and there isn't anything there, we're done
             bool targetCovered = true; 
+            uint j = 0;
+            Rect memory zoneArea = Rect(ownership[i].x, ownership[i].y, ownership[i].w, ownership[i].h);
             
             // Go through all of the remaining sections which still need payment
             while (j != endIndex) {
                 if (missingPayments[j].w == 0) {
-                    j++;
-                    continue;
+                  // If the payment has a width of 0, that means it's empty so we can just continue
+                  j++;
+                  continue;
                 } else {
-                    // We still have some stuff to cover
+                    // We still have some stuff to account for so we can't short circuit
                     targetCovered = false;
                 }
                 
-                
+                // Check if these two rectagles overlap at all and compute that they will require
                 if (doRectanglesOverlap(missingPayments[j], zoneArea)) {
                     // If these two overlap, we need to split the current missingPayment section
                     // into multiple sections (or into nothing)
                     Rect[] memory overlapCalc = computeOverlap(missingPayments[j], zoneArea);
-                    totalCost += overlapCalc[4].w * overlapCalc[4].h * ownership[i].buyoutInGwei;
+                    uint256 overlappingAreaCost = overlapCalc[4].w * overlapCalc[4].h * ownership[i].buyoutInGwei;
+                    totalCost += overlappingAreaCost;
+
+                    if (makePayment) {
+                      // If we are being asked to actually make the payment, change the balances here
+                      // TODO - Use safe add
+                      balances[ownership[i].owner] += overlappingAreaCost;
+                    }
                     
                     // Clear out the current item from the missing payments list
                     missingPayments[j] = Rect(0,0,0,0);
@@ -225,27 +239,43 @@ contract EthGrid {
         require(h < (2**10) - y);
         
         Rect memory area = Rect(x, y, w, h);
-        uint totalCost = determineCost(area);
+        uint totalCost = determineCost(area, false);
         AreaCost(x, y, w, h, totalCost);
         
         ZoneOwnership memory newZone = ZoneOwnership(msg.sender, x, y, w, h, buyout);
         ownership.push(newZone);
     }
     
-    function addData(uint8 x, uint8 y, uint8 w, uint8 h, uint56 buyout, string mimeType, bytes imgData, string url) public payable {
+    function addData(uint8 x, uint8 y, uint8 w, uint8 h, uint56 buyout, MimeType mimeType, bytes imgData, string url) public payable {
         // Validate all the inputs
-        require(x < 2**10);
-        require(y < 2**10);
-        require(w < (2**10) - x);
-        require(h < (2**10) - y);
+        require(x < GRID_WIDTH && x >= 0);
+        require(y < GRID_HEIGHT && y >= 0);
+        require(w > 0 && w < GRID_WIDTH - x);
+        require(h > 0 && h < GRID_HEIGHT - y);
+        require(w * h < MAXIMUM_PURCHASE_AREA);
         
         Rect memory area = Rect(x, y, w, h);
-        uint totalCost = determineCost(area);
+        uint256 totalCost = determineCost(area, true); // Cost is in gwei
+        uint256 fee = (feeInThousandsOfPercent / 100000) * totalCost;
+
+        // Need to factor in the fees here as well
+        totalCost += fee;
+
+        totalCost = totalCost * 10**9;
+
+        // Finally, switch this over to wei instead of gwei
         require (msg.value > totalCost);
+
+        // Next, actually capture the value from the msg, refund everything else
+
+        // TODO - SafeMath
+        balances[admin] += fee;
         
+        // Add the new ownership to the array
         ZoneOwnership memory newZone = ZoneOwnership(msg.sender, x, y, w, h, buyout);
         ownership.push(newZone);
         
+        // Take in the input data for the actual grid!
         ZoneData memory newData = ZoneData(mimeType, imgData, url);
         data.push(newData);
     }
