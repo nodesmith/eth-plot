@@ -45,8 +45,8 @@ contract EthGrid {
         return 
             a.x < b.x + b.w &&
             a.x + a.w > b.x &&
-            a.y > b.y + b.h &&
-            a.y + a.h < b.y;
+            a.y < b.y + b.h &&
+            a.y + a.h > b.y;
     }
     
     function computeOverlap(Rect memory targetZone, Rect memory ownedZone) private pure returns (Rect[] memory) {
