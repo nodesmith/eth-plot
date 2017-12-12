@@ -230,20 +230,29 @@ contract EthGrid {
     }
     
     event AreaCost(uint16 x, uint16 y, uint16 w, uint16 h, uint totalCost);
+
     
-    function buyArea(uint8 x, uint8 y, uint8 w, uint8 h, uint56 buyout) public {
-        require(x < 2**10);
-        require(y < 2**10);
-        
-        require(w < (2**10) - x);
-        require(h < (2**10) - y);
+    function changeZonePrice(uint256 zoneIndex, uint56 newPriceInGwei) public {
+      require(zoneIndex > 0);
+      require(zoneIndex < ownership.length);
+      require(msg.sender == ownership[zoneIndex].owner);
+
+      // Update the price for this section of ownership
+      ownership[zoneIndex].buyoutInGwei = newPriceInGwei;
+    }
+    
+    function determineAreaCost(uint8 x, uint8 y, uint8 w, uint8 h) public returns (uint) {
+        // Validate all the inputs
+        require(x < GRID_WIDTH && x >= 0);
+        require(y < GRID_HEIGHT && y >= 0);
+        require(w > 0 && w < GRID_WIDTH - x);
+        require(h > 0 && h < GRID_HEIGHT - y);
+        require(w * h < MAXIMUM_PURCHASE_AREA);
         
         Rect memory area = Rect(x, y, w, h);
         uint totalCost = determineCost(area, false);
-        AreaCost(x, y, w, h, totalCost);
-        
-        ZoneOwnership memory newZone = ZoneOwnership(msg.sender, x, y, w, h, buyout);
-        ownership.push(newZone);
+
+        return totalCost;
     }
     
     function addData(uint8 x, uint8 y, uint8 w, uint8 h, uint56 buyout, MimeType mimeType, bytes imgData, string url) public payable {
@@ -256,6 +265,7 @@ contract EthGrid {
         
         Rect memory area = Rect(x, y, w, h);
         uint256 totalCost = determineCost(area, true); // Cost is in gwei
+        AreaCost(x, y, w, h, totalCost);
         uint256 fee = (feeInThousandsOfPercent / 100000) * totalCost;
 
         // Need to factor in the fees here as well
