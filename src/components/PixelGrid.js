@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 var grid = require('pixel-grid')
 
-export class PixelGridContainer extends Component {
+// Not currently in use by mighti still be needed depending on 
+// our editing UI.  Leaving here for now.
+export class PixelGrid extends Component {
   componentDidMount() {
     grid = grid(this.props.data, {
       root: document.getElementById("gridRoot"),

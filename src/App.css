@@ -18,15 +18,3 @@
 .App-intro {
   font-size: large;
 }
-
-.grid-container{
-  cursor: pointer;
-  margin: auto;
-  width: 80%;
-  width:1000px; /* or whatever width you want. */
-  max-width:1000px; /* or whatever width you want. */
-  display: inline-block;
-}
-.grid-container > div{
-  float: left;
-}

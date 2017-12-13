@@ -1,21 +1,22 @@
 import React, { Component } from 'react';
-import $ from "jquery";
+// import $ from "jquery";
 
 import './App.css';
-import { PixelGridContainer } from './components/PixelGridContainer';
-import { generateGrid, getOffset} from './helpers/grid-helpers'
+import { generatePlots, /*getOffset*/ } from './helpers/grid-helpers'
 
-const pixelSize = 40;
-const gridSize = 10;
+// import { PixelGrid } from './components/PixelGrid';
+import { PlotGrid } from './components/PlotGrid';
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      pixels: generateGrid(gridSize)
+      plots: generatePlots()
     }
   }
-  updatePixel(i) {
+  updatePlot(i) {
+    console.log(i);
+    /*
     const canvas = document.getElementsByTagName("canvas")[0];
     const x = i.pageX - canvas.offsetLeft;
     const y = i.pageY - canvas.offsetTop;
@@ -23,7 +24,7 @@ class App extends Component {
     const pixelToUpdate = getOffset(x, y, gridSize, pixelSize); 
     let newPixels = this.state.pixels;
     newPixels[pixelToUpdate] = "#000000";
-    this.setState({pixels: newPixels})
+    this.setState({pixels: newPixels})*/
   }
   render() {
     return (
@@ -31,8 +32,7 @@ class App extends Component {
         <header className="App-header">
           <h1 className="App-title">eth grid</h1>
         </header>
-        <div id="gridRoot" />
-        <PixelGridContainer data={this.state.pixels} size={pixelSize} clickHandler={this.updatePixel.bind(this)}/>
+        <PlotGrid plots={this.state.plots} clickHandler={this.updatePlot.bind(this)}/>
       </div>
     );
   }
