@@ -1,4 +1,8 @@
 pragma solidity ^0.4.18;
+
+/// @title EthGrid
+/// @atuhor nova-network
+
 contract EthGrid {
     struct Rect {
         uint8 x;
@@ -6,14 +10,28 @@ contract EthGrid {
         uint8 w;
         uint8 h;
     }
-    
-    struct ZoneOwnership {
-        address owner;
+
+    struct Zone {
+        uint128 zone_id;
         uint8 x;
         uint8 y;
         uint8 w;
         uint8 h;
-        uint56 buyoutInGwei;
+    }
+
+    struct Auction {
+        // ID of zone that is up for auction
+        uint128 zone_id;
+
+        uint128 startingPriceInGwei;
+        uint128 endingPriceInGwei;
+
+        // Duration (in seconds) of auction
+        uint64 duration;
+
+        // Time when auction started
+        // 0 if this auction has finished
+        uint64 startedAt;
     }
 
     enum MimeType {
@@ -32,10 +50,12 @@ contract EthGrid {
     
     uint feeInThousandsOfPercent;
     address admin;
-    ZoneOwnership[] public ownership;
+    Zone[] public zones;
     ZoneData[] public data;
+    Auction[] public auctions;
     mapping(address => uint256) public balances;
-
+    mapping(address => uint128[]) public zoneOwnership;  
+    
     uint8 constant GRID_WIDTH = 250;
     uint8 constant GRID_HEIGHT = 250;
     uint56 constant INITIAL_BUYOUT_IN_GWEI = 1000;
@@ -46,13 +66,12 @@ contract EthGrid {
     // algorithm which figures out payment to function
     uint16 constant MAXIMUM_PURCHASE_AREA = 1000;
     
-    
     function EthGrid() public payable {
         admin = msg.sender;
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         
         // Initialize the contract with a single block with the admin owns
-        ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, INITIAL_BUYOUT_IN_GWEI));
+        zones.push(Rect(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, INITIAL_BUYOUT_IN_GWEI));
         data.push(ZoneData(MimeType.PNG, "", "http://ethgrid.com"));
         balances[admin] = 0;
     }
@@ -152,6 +171,10 @@ contract EthGrid {
         return brokenPieces;
     }
     
+    function getCurrentZonePrice() private returns (uint) {
+        // TODO blah
+    }
+
     function determineCost(Rect memory targetZone, bool makePayment) private returns (uint) {
         // Loop through and figure out how much and who we will owe. Initially everything is missing so we assign
         // target zone to missing payments so we can divide that up
@@ -163,14 +186,14 @@ contract EthGrid {
         uint16 endIndex = 1;
         uint totalCost = 0;
 
-        // i is gonna wrap around, so make the loop check be i < ownership.length
-        for (uint i = ownership.length - 1; i < ownership.length; i--) {
+        // i is gonna wrap around, so make the loop check be i < zones.length
+        for (uint i = zones.length - 1; i < zones.length; i--) {
             
             // Keep track if we've tracked everything. If we loop through every missed
             // and there isn't anything there, we're done
             bool targetCovered = true; 
             uint j = 0;
-            Rect memory zoneArea = Rect(ownership[i].x, ownership[i].y, ownership[i].w, ownership[i].h);
+            Rect memory zoneArea = Rect(zones[i].x, zones[i].y, zones[i].w, zones[i].h);
             
             // Go through all of the remaining sections which still need payment
             while (j != endIndex) {
@@ -188,13 +211,13 @@ contract EthGrid {
                     // If these two overlap, we need to split the current missingPayment section
                     // into multiple sections (or into nothing)
                     Rect[] memory overlapCalc = computeOverlap(missingPayments[j], zoneArea);
-                    uint256 overlappingAreaCost = overlapCalc[4].w * overlapCalc[4].h * ownership[i].buyoutInGwei;
+                    uint256 overlappingAreaCost = overlapCalc[4].w * overlapCalc[4].h * getCurrentZonePrice();
                     totalCost += overlappingAreaCost;
 
                     if (makePayment) {
                       // If we are being asked to actually make the payment, change the balances here
                       // TODO - Use safe add
-                      balances[ownership[i].owner] += overlappingAreaCost;
+                      balances[zones[i].owner] += overlappingAreaCost;
                     }
                     
                     // Clear out the current item from the missing payments list
@@ -234,11 +257,11 @@ contract EthGrid {
     
     function changeZonePrice(uint256 zoneIndex, uint56 newPriceInGwei) public {
       require(zoneIndex > 0);
-      require(zoneIndex < ownership.length);
-      require(msg.sender == ownership[zoneIndex].owner);
+      require(zoneIndex < zones.length);
+      require(msg.sender == zones[zoneIndex].owner);
 
-      // Update the price for this section of ownership
-      ownership[zoneIndex].buyoutInGwei = newPriceInGwei;
+      // Update the price for this section of zones
+      // zones[zoneIndex].buyoutInGwei = newPriceInGwei;
     }
     
     function determineAreaCost(uint8 x, uint8 y, uint8 w, uint8 h) public returns (uint) {
@@ -281,10 +304,15 @@ contract EthGrid {
         // TODO - SafeMath
         balances[admin] += fee;
         
-        // Add the new ownership to the array
-        ZoneOwnership memory newZone = ZoneOwnership(msg.sender, x, y, w, h, buyout);
-        ownership.push(newZone);
-        
+        // version of SHA3, maps an input string into a random 256-bit hexidecimal number
+        // Generate new zoneID for this zone and assign to various data structures
+        uint128 newZoneId = uint128(keccak256(string(msg.sender + block.timestamp)));
+
+        // Add the new zones to the array
+        Zone memory newZone = Zone(newZoneId, x, y, w, h);
+        zones.push(newZone);
+        zoneOwnership[msg.sender].push(newZoneId);
+
         // Take in the input data for the actual grid!
         ZoneData memory newData = ZoneData(mimeType, imgData, url);
         data.push(newData);
