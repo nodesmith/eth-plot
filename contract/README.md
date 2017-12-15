@@ -7,3 +7,6 @@ In truffle command prompt, run:
 var contract; EthGrid.deployed().then(function(instance){ contract = instance;})
 
 This saves the contract to the variable contract for future use.  You can interact directly with that variable now.
+
+#Examples
+contract.determineAreaCost.call(10, 10, 42, 3).then((num) => num.toString())
