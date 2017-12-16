@@ -16,6 +16,7 @@ contract EthGrid2 {
         uint16 y;
         uint16 w;
         uint16 h;
+        uint256[] holes;
     }
 
     enum MimeType {
@@ -32,22 +33,16 @@ contract EthGrid2 {
         string url;
     }
 
-    struct Auction {
-        uint128 startingPriceInGwei;
-        uint128 endingPriceInGwei;
-        // Duration (in seconds) of auction
-        uint64 duration;
-        // Time when auction started
-        uint64 startedAt;
-    }
-
     //----------------------State---------------------//
     uint public feeInThousandsOfPercent;
     address public admin;
     ZoneOwnership[] public ownership;
     ZoneData[] public data;
     mapping(address => uint256) public balances;
-    mapping (uint256 => Auction) public tokenIdToAuction;
+    
+    // Maps zone ID to auction price. If price is 0, no auction is 
+    // available for that zone. Price is gwei per pixel.
+    mapping (uint256 => uint256) public tokenIdToAuction;
     
     //----------------------Constants---------------------//
     uint16 constant GRID_WIDTH = 250;
@@ -60,54 +55,45 @@ contract EthGrid2 {
     uint16 constant MAXIMUM_PURCHASE_AREA = 1000;
     
     //----------------------Events---------------------//
-    event AuctionCreated(uint256 tokenId, uint256 startingPrice, uint256 endingPrice, uint256 duration);
-    event AuctionSuccessful(uint256 tokenId, uint256 totalPrice, address winner);
-    event AuctionCancelled(uint256 tokenId);
+    event AuctionCreated(uint256 tokenId, uint256 priceInGweiPerPixel);
+    event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel);
+    event SaleSuccessful(uint256 newZoneId, uint256 totalPrice, address buyer);
 
     function EthGrid2() public payable {
         admin = msg.sender;
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         
         // Initialize the contract with a single block with the admin owns
-        ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT));
+        uint256[] memory holes;
+        ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
         data.push(ZoneData(MimeType.PNG, "", "http://ethgrid.com"));
-        createAuction(0, INITIAL_AUCTION_PRICE, INITIAL_AUCTION_PRICE, 999999999999999999);
+        createAuction(0, INITIAL_AUCTION_PRICE);
         balances[admin] = 0;
     }
 
     //----------------------Public Functions---------------------//
-    function createAuction(uint256 zoneIndex, uint256 startingPriceInGwei, uint256 endingPriceInGwei, uint256 duration) public {
+    function createAuction(uint256 zoneIndex, uint256 pricePerPixelInGwei) public {
       require(zoneIndex > 0);
       require(zoneIndex < ownership.length);
       require(msg.sender == ownership[zoneIndex].owner);
-      require(duration >= 5 minutes);
-      require(startingPriceInGwei > 0);
-      require(endingPriceInGwei > 0);
+      require(pricePerPixelInGwei > 0);
 
-      Auction memory auction = Auction(
-        uint128(startingPriceInGwei),
-        uint128(endingPriceInGwei),
-        uint64(duration),
-        uint64(now)
-      );
-
-      tokenIdToAuction[zoneIndex] = auction;
+      tokenIdToAuction[zoneIndex] = pricePerPixelInGwei;
 
       AuctionCreated(
         uint256(zoneIndex),
-        uint256(startingPriceInGwei),
-        uint256(endingPriceInGwei),
-        uint256(duration)
+        uint256(pricePerPixelInGwei)
       );
     }
 
-    function cancelAuction(uint256 zoneIndex) public {
+    // Can also be used to cancel an existing auction by sending 0 as new price.
+    function updateAuction(uint256 zoneIndex, uint256 newPriceInGweiPerPixel) public {
       require(zoneIndex > 0);
       require(zoneIndex < ownership.length);
       require(msg.sender == ownership[zoneIndex].owner);
 
-      delete tokenIdToAuction[zoneIndex];
-      AuctionCancelled(zoneIndex);
+      tokenIdToAuction[zoneIndex] = newPriceInGweiPerPixel;
+      AuctionUpdated(zoneIndex, newPriceInGweiPerPixel);
     }
 
     function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, MimeType mimeType, bytes imgData, string url) public payable returns (uint256) {
@@ -116,8 +102,15 @@ contract EthGrid2 {
       // TODO - Require the funds to make sense and pay everyone out
 
       // Add the new ownership to the array
-      ZoneOwnership memory newZone = ZoneOwnership(msg.sender, rectToPurchase.x, rectToPurchase.y, rectToPurchase.w, rectToPurchase.h);
+      uint256[] memory holes;
+      ZoneOwnership memory newZone = ZoneOwnership(msg.sender, rectToPurchase.x, rectToPurchase.y, rectToPurchase.w, rectToPurchase.h, holes);
       ownership.push(newZone);
+
+      // Now that purchase is completed, update zones that have new holes due to this purchase
+      uint256 i = 0;
+      for (i = 0; i < areaIndices.length; i++) {
+        ownership[i].holes.push(ownership.length - 1);
+      }
 
       // buyoutPrices[ownership.length - 1] = 4242;
       // TODO invalidate old auctions and create new ones for subplots
@@ -176,8 +169,8 @@ contract EthGrid2 {
           require(overlap.h == rects[areaIndicesIndex].h);
 
           // Finally, add the price of this rect to the totalPrice computation
-          // require(buyoutPrices[ownershipIndex] > 0); // Make sure we have a price set
-          totalPrice += _currentPrice(tokenIdToAuction[ownershipIndex]);
+          totalPrice += _getPriceOfAuctionedZone(rectToPurchase, areaIndicesIndex);
+
           areaIndicesIndex++;
         } else {
           // This is a zone which the caller has not said they were going to buy
@@ -244,20 +237,12 @@ contract EthGrid2 {
       return rectToPurchase;
     }
 
-    function _currentPrice(Auction storage _auction) private view returns (uint256) {
-      uint256 secondsPassed = now - _auction.startedAt;
+    // TODO
+    // Given a rect to purchase, and the ID of the zone that is part of the purchase,
+    // This returns the total price of the purchase that is attributed by that zone.  
+    function _getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZone) private view returns (uint256) {
+      // First, verify that the portion of the zone to be purchased is acutally available on auction
 
-      int256 totalPriceChange = int256(_auction.endingPriceInGwei - _auction.startingPriceInGwei);
-      int256 currentPriceChange = totalPriceChange * int256(secondsPassed) / int256(_auction.duration);
-
-      int256 currentPrice = int256(_auction.startingPriceInGwei) + currentPriceChange;   
-    }
-
-    function _auctionExistsForZone(uint256 zoneId) private view returns (bool) {
-      if (tokenIdToAuction[zoneId].startingPriceInGwei == 0) {
-        return false;
-      } else {
-        return (now < tokenIdToAuction[zoneId].startedAt + tokenIdToAuction[zoneId].duration);
-      }
+      // Then compute price
     }
 }
