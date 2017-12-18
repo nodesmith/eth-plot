@@ -240,9 +240,22 @@ contract EthGrid2 {
     // TODO
     // Given a rect to purchase, and the ID of the zone that is part of the purchase,
     // This returns the total price of the purchase that is attributed by that zone.  
-    function _getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZone) private view returns (uint256) {
-      // First, verify that the portion of the zone to be purchased is acutally available on auction
+    function _getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
+      // Check that this auction zone exists in the auction mapping with a price.
+      uint256 auctionPricePerPixel = tokenIdToAuction[auctionedZoneId];
+      require(auctionPricePerPixel > 0);
 
-      // Then compute price
+      // Loop through the holes of the auction zone to verify that the 
+      // requested area is actually available
+      uint256 i = 0;
+      for (i = 0; i < ownership[auctionedZoneId].holes.length; i++) {
+        Rect memory hole = Rect(ownership[i].x, ownership[i].y, ownership[i].w, ownership[i].h);
+        require(!doRectanglesOverlap(rectToPurchase, hole));
+      }
+
+      // Finally, find the number of pixels coming from this auctioned zone in order to compute price
+      uint16 overlappingPixels = 1; // TODO
+
+      return overlappingPixels * auctionPricePerPixel;
     }
 }
