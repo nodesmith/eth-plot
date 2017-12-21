@@ -112,9 +112,6 @@ contract EthGrid2 {
         ownership[i].holes.push(ownership.length - 1);
       }
 
-      // buyoutPrices[ownership.length - 1] = 4242;
-      // TODO invalidate old auctions and create new ones for subplots
-
       // Take in the input data for the actual grid!
       ZoneData memory newData = ZoneData(mimeType, imgData, url);
       data.push(newData);
