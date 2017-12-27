@@ -24,7 +24,8 @@ contract EthGrid2 {
       SVG,
       JPG,
       GIF,
-      WEBP
+      WEBP,
+      RGB
     }
     
     struct ZoneData {
@@ -64,16 +65,16 @@ contract EthGrid2 {
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         
         // Initialize the contract with a single block with the admin owns
-        uint256[] memory holes;
+        uint256[] memory holes; // TODO - do we need to initialize this or is it done for us?
         ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
-        data.push(ZoneData(MimeType.PNG, "", "http://ethgrid.com"));
+        data.push(ZoneData(MimeType.RGB, "fa3", "http://ethgrid.com"));
         createAuction(0, INITIAL_AUCTION_PRICE);
         balances[admin] = 0;
     }
 
     //----------------------Public Functions---------------------//
     function createAuction(uint256 zoneIndex, uint256 pricePerPixelInGwei) public {
-      require(zoneIndex > 0);
+      require(zoneIndex >= 0);
       require(zoneIndex < ownership.length);
       require(msg.sender == ownership[zoneIndex].owner);
       require(pricePerPixelInGwei > 0);
@@ -109,7 +110,7 @@ contract EthGrid2 {
       // Now that purchase is completed, update zones that have new holes due to this purchase
       uint256 i = 0;
       for (i = 0; i < areaIndices.length; i++) {
-        ownership[i].holes.push(ownership.length - 1);
+        ownership[areaIndices[i]].holes.push(ownership.length - 1);
       }
 
       // Take in the input data for the actual grid!
@@ -147,7 +148,7 @@ contract EthGrid2 {
       return result;
     }
 
-    function computePurchasePrice(Rect memory rectToPurchase, Rect[] memory rects, uint256[] memory areaIndices) private returns (uint256) {
+    function computePurchasePrice(Rect memory rectToPurchase, Rect[] memory rects, uint256[] memory areaIndices) private constant returns (uint256) {
       uint256 totalPrice = 0;
       uint256 areaIndicesIndex = 0;
 
@@ -158,15 +159,30 @@ contract EthGrid2 {
 
         if (ownershipIndex == areaIndices[areaIndicesIndex]) {
           // This is a zone the caller has declared they were going to buy
+          // We need to verify that the rectangle which was declared as what we're gonna buy is cimpleted contained within the overlap
           require(doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
           Rect memory overlap = computeRectOverlap(rectToPurchase, currentOwnershipRect);
-          require(overlap.x == rects[areaIndicesIndex].x);
-          require(overlap.y == rects[areaIndicesIndex].y);
-          require(overlap.w == rects[areaIndicesIndex].w);
-          require(overlap.h == rects[areaIndicesIndex].h);
+
+          // Verify that this overlap between these two is within the overlapped area of the rect to purhcase and this ownership zone
+          require(rects[areaIndicesIndex].x >= overlap.x);
+          require(rects[areaIndicesIndex].y >= overlap.y);
+          require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
+          require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
+
+          // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
+          for (uint256 holeIndex = 0; holeIndex < ownership[ownershipIndex].holes.length; holeIndex++) {
+            ZoneOwnership memory holeOwnership = ownership[ownership[ownershipIndex].holes[holeIndex]];
+            Rect memory holeRect = Rect(
+              holeOwnership.x,
+              holeOwnership.y,
+              holeOwnership.w,
+              holeOwnership.h);
+
+            require(!doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
+          }
 
           // Finally, add the price of this rect to the totalPrice computation
-          totalPrice += _getPriceOfAuctionedZone(rectToPurchase, areaIndicesIndex);
+          totalPrice += _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndicesIndex);
 
           areaIndicesIndex++;
         } else {
@@ -239,20 +255,10 @@ contract EthGrid2 {
     // This returns the total price of the purchase that is attributed by that zone.  
     function _getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
       // Check that this auction zone exists in the auction mapping with a price.
+      // TODO - Make sure this section is actually for sale
       uint256 auctionPricePerPixel = tokenIdToAuction[auctionedZoneId];
       require(auctionPricePerPixel > 0);
 
-      // Loop through the holes of the auction zone to verify that the 
-      // requested area is actually available
-      uint256 i = 0;
-      for (i = 0; i < ownership[auctionedZoneId].holes.length; i++) {
-        Rect memory hole = Rect(ownership[i].x, ownership[i].y, ownership[i].w, ownership[i].h);
-        require(!doRectanglesOverlap(rectToPurchase, hole));
-      }
-
-      // Finally, find the number of pixels coming from this auctioned zone in order to compute price
-      uint16 overlappingPixels = 1; // TODO
-
-      return overlappingPixels * auctionPricePerPixel;
+      return rectToPurchase.w * rectToPurchase.h * auctionPricePerPixel;
     }
 }
