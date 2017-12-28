@@ -1,5 +1,5 @@
-var EthGrid = artifacts.require("EthGrid");
+var EthGrid2 = artifacts.require("./EthGrid2.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(EthGrid);
+  deployer.deploy(EthGrid2);
 };
