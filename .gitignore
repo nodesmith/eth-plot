@@ -1,2 +1,7 @@
-/node_modules
+node_modules
+*.log
+.DS_Store
+lib
+coverage
+dist
 /contract/build

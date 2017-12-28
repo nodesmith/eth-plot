@@ -1,0 +1,43 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway:100,400);
+
+$main-bg-color: #ffffff;
+$accent-blue: #37bbe4;
+$accent-gray: #e1e0dd;
+$accent-black: #35342f;
+$accent-orange: #ec6b2d;
+$accent-red: #dd6464;
+
+.App {
+  text-align: center;
+}
+
+.App-header {
+  height: 60px;
+  width: 100%;
+  padding: 2px;
+  margin-bottom: 10px;
+  color: #3b3a36;
+}
+
+.App-tab-button {
+  font-size: 1.5em;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: $main-bg-color;
+  color: $accent-black;
+  display: flex;
+  justify-content: center;
+  font-family: 'Raleway', sans-serif;
+}
+
+.main-app-container {
+  padding-top: 2em;
+}
+
+.main-app-nav {
+  font-size: 2em;
+  text-align: center;
+}
