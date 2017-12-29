@@ -3,18 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-<<<<<<< HEAD
     "http-server": "^0.10.0",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "web3": "^0.19.0"
-=======
-    "jquery": "^3.2.1",
-    "pixel-grid": "^1.0.2",
-    "react": "^16.2.0",
     "react-bootstrap": "^0.31.5",
-    "react-dom": "^16.2.0"
->>>>>>> origin/master
+    "react-dom": "^16.2.0",
+    "web3": "^1.0.0-beta.27"
   },
   "devDependencies": {
     "react-scripts": "1.0.17"
