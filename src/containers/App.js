@@ -26,7 +26,9 @@ class App extends Component {
           <Navbar.Collapse>
             <Nav>
               <NavItem onClick={ () => { this.changeTab(0); } }>My Plots</NavItem>
-              <NavItem onClick={ () => { this.changeTab(1); } }>Cool Logo</NavItem>
+              <NavItem onClick={ () => { this.changeTab(1); } }>
+                <img src="../assets/logo.png" alt="ethGridLogo" height="21" width="21" />
+              </NavItem>
               <NavItem onClick={ () => { this.changeTab(2); } }>About</NavItem>
             </Nav>
           </Navbar.Collapse>
