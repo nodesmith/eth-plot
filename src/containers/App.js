@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import * as NavigationActions from '../actionCreators/NavigationActions';
+import { Nav, Navbar, NavItem } from 'react-bootstrap';
 
+import * as NavigationActions from '../actionCreators/NavigationActions';
 import GridContainer from './GridContainer';
 import PlotManagerContainer from './PlotManagerContainer';
 import About from '../components/About';
@@ -21,12 +22,15 @@ class App extends Component {
     console.log(this.props);
     return (
       <div className="main-app-container">
-        <div className="main-app-nav">
-          <button onClick={ () => { this.changeTab(0); } }>My Plots</button>
-          <button onClick={ () => { this.changeTab(1); } }>Cool Logo</button>
-          <button onClick={ () => { this.changeTab(2); } }>About</button>
-        </div>
-
+        <Navbar collapseOnSelect className="navbar-static-top">
+          <Navbar.Collapse>
+            <Nav>
+              <NavItem onClick={ () => { this.changeTab(0); } }>My Plots</NavItem>
+              <NavItem onClick={ () => { this.changeTab(1); } }>Cool Logo</NavItem>
+              <NavItem onClick={ () => { this.changeTab(2); } }>About</NavItem>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
         { this.props.navigation.tabIndex === 0 ? <PlotManagerContainer /> : null }
         { this.props.navigation.tabIndex === 1 ? <GridContainer /> : null }
         { this.props.navigation.tabIndex === 2 ? <About /> : null }
