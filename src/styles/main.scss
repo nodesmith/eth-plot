@@ -20,20 +20,27 @@ $main-bg-color: #ffffff;
 }
 
 /*----------- My Plots -----------*/
-.plotManagerSection {
+.plot-section {
   
 }
 
-.noPlotWarning {
+.plot-noPlotWarning {
   text-align: center;
 }
 
 /*----------- Grid -----------*/
-.gridSection {
+.grid-section {
   text-align: center;
 }
 
 /*----------- About -----------*/
-.aboutSection {
+.about-section span.glyphicon {
+  margin-right: 10px;
+}
 
+.about-section div.well {
+  background-image: none;
+  background-color: $main-bg-color;
+  border: none;
+  box-shadow: none;
 }

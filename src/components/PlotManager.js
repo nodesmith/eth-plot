@@ -4,7 +4,7 @@ import { Col, Grid, Row } from 'react-bootstrap';
 class PlotManager extends Component {
   render() {
     return (
-      <div className="plotManagerSection">
+      <div className="plot-section">
         <Grid>
           <Row className="show-grid">
             <Col xs={12} md={8}>
@@ -12,7 +12,7 @@ class PlotManager extends Component {
           </Row>
         </Grid>
 
-        <div className="noPlotWarning" >
+        <div className="plot-noPlotWarning" >
           { this.props.userPlots.length === 0 ? 
                   <div>
                   <p>You don't have any owned plots.</p>

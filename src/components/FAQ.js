@@ -9,9 +9,14 @@ class FAQ extends Component {
 
   render() {
     return (
-      <div className="faqContainer">
+      <div>
         <div role="button">
-          <h4 onClick={() => this.setState({ open: !this.state.open })}> { this.props.question } </h4>
+          <hr />
+          <h4 onClick={() => this.setState({ open: !this.state.open })}> 
+          { this.state.open 
+          ? <span className="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+          : <span className="glyphicon glyphicon-menu-right" aria-hidden="true"></span> }
+          { this.props.question } </h4>
         </div>
         <Collapse in={this.state.open}>
           <div>
@@ -20,7 +25,7 @@ class FAQ extends Component {
             </Well>
           </div>
         </Collapse>
-      </div>  
+      </div>
     );
   }
 }
