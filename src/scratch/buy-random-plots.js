@@ -35,9 +35,67 @@ function subtractRectangles(a, b) {
     return [a];
   }
 
-  // TODO
-
   const result = [];
+  let leftX = a.x;
+  let rightX = a.x2;
+
+  // Check the left side first
+  if (a.x < b.x) {
+    const leftOverlap = {
+      x: a.x,
+      x2: b.x,
+      y: a.y,
+      y2: a.y2,
+      h: a.h
+    };
+
+    leftOverlap.w = leftOverlap.x2 - leftOverlap.x;
+    leftX = leftOverlap.x2;
+    result.push(leftOverlap);
+  }
+
+  // Check the right side next
+  if (a.x2 > b.x2) {
+    const rightOverlap = {
+      x: b.x2,
+      x2: a.x2,
+      y: a.y,
+      y2: a.y2,
+      h: a.h
+    };
+
+    rightOverlap.w = rightOverlap.x2 - rightOverlap.x;
+    rightX = rightOverlap.x;
+    result.push(rightOverlap);
+  }
+
+  // Top side
+  if (a.y < b.y) {
+    const topOverlap = {
+      x: leftX,
+      x2: rightX,
+      w: rightX - leftX,
+      y: a.y,
+      y2: b.y
+    };
+
+    topOverlap.h = topOverlap.y2 - topOverlap.y;
+    result.push(topOverlap);
+  }
+
+  // Bottom side
+  if (a.y2 > b.y2) {
+    const bottomOverlap = {
+      x: leftX,
+      x2: rightX,
+      w: rightX - leftX,
+      y: b.y2,
+      y2: a.y2
+    };
+
+    bottomOverlap.h = bottomOverlap.y2 - bottomOverlap.y;
+    result.push(bottomOverlap);
+  }
 
   return result;
 }
@@ -123,7 +181,32 @@ function purchaseRandomArea() {
   // The final call will look something like this:
   // contract.methods.purchaseAreaWithData([4,4,4,4], [4,4,4,4], [0], 3, web3.utils.asciiToHex("f3a"), "http://samm.com").send({ gas: 1000000, gasPrice: '30000000000000', from: '0x627306090abab3a6e1400e9345bc60c78a8bef57'}).then(result => { console.log(result); debugger; })
 
-  return Promise.resolve();
+  function buildArrayFromRectangles(rects) { 
+    let result = [];
+    for(const rect of rects) {
+      result.push(rect.x);
+      result.push(rect.y);
+      result.push(rect.w);
+      result.push(rect.h);
+    }
+
+    return result;
+  }
+
+  const param1 = buildArrayFromRectangles([rectToPurchase]);
+  const param2 = buildArrayFromRectangles(purchasedChunks);
+  const param3 = purchasedChunkAreaIndices;
+  const param4 = 3;
+  const param5 = web3.utils.asciiToHex("f3a");
+  const param6 = 'http://samm.com';
+  const purchaseFunction = contract.methods.purchaseAreaWithData(param1, param2, param3, param4, param5, param6);
+  return purchaseFunction.estimateGas({ from: '0x627306090abab3a6e1400e9345bc60c78a8bef57' }).then((gasEstimate) => {
+    return purchaseFunction.send({
+      from: '0x627306090abab3a6e1400e9345bc60c78a8bef57',
+      gasPrice: '30000000000000',
+      gas: gasEstimate * 2
+    });
+  });
 }
 
 let buysRemaining = 1;
