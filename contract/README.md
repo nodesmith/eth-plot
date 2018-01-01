@@ -4,7 +4,10 @@ truffle compile
 truffle develop
 
 In truffle command prompt, run: 
-var contract; EthGrid.deployed().then(function(instance){ contract = instance;})
+migrate
+
+Then:
+var contract; EthGrid2.deployed().then(function(instance){ contract = instance;})
 
 This saves the contract to the variable contract for future use.  You can interact directly with that variable now.
 

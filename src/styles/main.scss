@@ -1,0 +1,39 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway:100,400);
+
+$main-bg-color: #ffffff;
+
+/*----------- Main App -----------*/
+.main-app-container {
+  background-color: $main-bg-color;
+  font-family: 'Raleway', sans-serif;
+}
+
+/*----------- Nav Bar -----------*/
+.navbar .navbar-nav {
+  display: inline-block;
+  float: none;
+  vertical-align: top;
+}
+
+.navbar .navbar-collapse {
+  text-align: center;
+}
+
+/*----------- My Plots -----------*/
+.plotManagerSection {
+  
+}
+
+.noPlotWarning {
+  text-align: center;
+}
+
+/*----------- Grid -----------*/
+.gridSection {
+  text-align: center;
+}
+
+/*----------- About -----------*/
+.aboutSection {
+
+}
