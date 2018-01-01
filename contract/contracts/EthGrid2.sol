@@ -87,6 +87,10 @@ contract EthGrid2 {
       );
     }
 
+    function ownershipLength() public constant returns (uint256) {
+      return ownership.length;
+    }
+
     // Can also be used to cancel an existing auction by sending 0 as new price.
     function updateAuction(uint256 zoneIndex, uint256 newPriceInGweiPerPixel) public {
       require(zoneIndex > 0);
