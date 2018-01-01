@@ -10,4 +10,13 @@ const repo = new PlotDataRepository(web3, abi, contractAddress);
 repo.initializeAsync().then(() => {
   console.log('Repository Initialized');
   console.log(repo.ownership);
+
+  const info = repo.computePlotPurchase({
+    x: 3,
+    y: 4,
+    x2: 22,
+    y2: 44,
+    w: 19,
+    h: 40
+  });
 });

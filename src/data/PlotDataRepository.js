@@ -61,6 +61,8 @@ class PlotDataRepository {
     let purchasedChunks = [];
     let purchasedChunkAreaIndices = [];
 
+    const ownership = this._ownership;
+
     // We'll need to walk the ownership array backwards and see who we need to buy chunks from
     let remainingChunksToPurchase = [rectToPurchase];
     let i = ownership.length - 1;
@@ -69,15 +71,15 @@ class PlotDataRepository {
 
       for (let j = 0; j < remainingChunksToPurchase.length; j++) {
         const chunkToPurchase = remainingChunksToPurchase[j];
-        if (doRectanglesOverlap(currentOwnership, chunkToPurchase)) {
+        if (PlotMath.doRectanglesOverlap(currentOwnership, chunkToPurchase)) {
           // Look at the overlap between the chunk we're trying to purchase, and the ownership plot we have
-          const chunkOverlap = computeRectOverlap(currentOwnership, chunkToPurchase);
+          const chunkOverlap = PlotMath.computeRectOverlap(currentOwnership, chunkToPurchase);
 
           let newHoles = [chunkOverlap];
           // Next, subtract out all of the holes which this ownerhip may have (TODO)
 
           // Add these new holes to the current ownership
-          currentOwnership.holes = currentOwnership.holes.concat(newHoles);
+          // currentOwnership.holes = currentOwnership.holes.concat(newHoles);
 
           // Add the new holes to the purchaseChunks and keep track of their index
           purchasedChunks = purchasedChunks.concat(newHoles);
@@ -88,13 +90,12 @@ class PlotDataRepository {
           j--; // subtract one from j so we don't miss anything
 
           for (const newHole of newHoles) {
-            const newChunksToPurchase = subtractRectangles(chunkToPurchase, newHole);
+            const newChunksToPurchase = PlotMath.subtractRectangles(chunkToPurchase, newHole);
             remainingChunksToPurchase = remainingChunksToPurchase.concat(newChunksToPurchase);
           }
         }
       }
       
-
       i--;
     }
 
@@ -106,10 +107,47 @@ class PlotDataRepository {
     // The final call will look something like this:
     // contract.methods.purchaseAreaWithData([4,4,4,4], [4,4,4,4], [0], 3, web3.utils.asciiToHex("f3a"), "http://samm.com").send({ gas: 1000000, gasPrice: '30000000000000', from: '0x627306090abab3a6e1400e9345bc60c78a8bef57'}).then(result => { console.log(result); debugger; })
 
+    return {
+      purchasedChunks: purchasedChunks,
+      purchasedChunkAreaIndices: purchasedChunkAreaIndices
+    };
   }
 
   purchasePlotAsync(rectToPurchase, imageData) {
 
+    // So we've computed what we need to to purchase this area
+    // The final call will look something like this:
+    // contract.methods.purchaseAreaWithData([4,4,4,4], [4,4,4,4], [0], 3, web3.utils.asciiToHex("f3a"), "http://samm.com").send({ gas: 1000000, gasPrice: '30000000000000', from: '0x627306090abab3a6e1400e9345bc60c78a8bef57'}).then(result => { console.log(result); debugger; })
+
+    const purchaseInfo = this.computePlotPurchase(rectToPurchase);
+    
+    // Converts a rect into the format that our contract is expecting
+    function buildArrayFromRectangles(rects) { 
+      let result = [];
+      for(const rect of rects) {
+        result.push(rect.x);
+        result.push(rect.y);
+        result.push(rect.w);
+        result.push(rect.h);
+      }
+
+      return result;
+    }
+
+    const param1 = buildArrayFromRectangles([rectToPurchase]);
+    const param2 = buildArrayFromRectangles(purchaseInfo.purchasedChunks);
+    const param3 =purchaseInfo.purchasedChunkAreaIndices;
+    const param4 = 3;
+    const param5 = this._web3.utils.asciiToHex("f3a");
+    const param6 = 'http://samm.com';
+    const purchaseFunction = this._contract.methods.purchaseAreaWithData(param1, param2, param3, param4, param5, param6);
+    return purchaseFunction.estimateGas({ from: '0x627306090abab3a6e1400e9345bc60c78a8bef57' }).then((gasEstimate) => {
+      return purchaseFunction.send({
+        from: '0x627306090abab3a6e1400e9345bc60c78a8bef57',
+        gasPrice: '30000000000000',
+        gas: gasEstimate * 2
+      });
+    });
   }
 }
 

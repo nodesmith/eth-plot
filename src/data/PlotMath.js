@@ -1,8 +1,8 @@
-function doRectanglesOverlap(a, b) {
+const doRectanglesOverlap = function(a, b) {
   return a.x < b.x2 && a.x2 > b.x && a.y < b.y2 && a.y2 > b.y;
 }
 
-function computeRectOverlap(a, b) {
+const computeRectOverlap = function(a, b) {
   let result = {
     x: 0,
     y: 0,
@@ -24,7 +24,7 @@ function computeRectOverlap(a, b) {
 }
 
 // subtracts b from a and returns from 0 - 4 remaining rectangles after doing it
-function subtractRectangles(a, b) {
+const subtractRectangles = function(a, b) {
   if (!doRectanglesOverlap(a, b)) {
     return [a];
   }
@@ -93,3 +93,7 @@ function subtractRectangles(a, b) {
 
   return result;
 }
+
+module.exports.doRectanglesOverlap = doRectanglesOverlap;
+module.exports.computeRectOverlap = computeRectOverlap;
+module.exports.subtractRectangles = subtractRectangles;
