@@ -87,11 +87,11 @@ contract EthGrid2 {
       );
     }
 
+
     function ownershipLength() public constant returns (uint256) {
       return ownership.length;
     }
-
-    // Can also be used to cancel an existing auction by sending 0 as new price.
+    // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
     function updateAuction(uint256 zoneIndex, uint256 newPriceInGweiPerPixel) public {
       require(zoneIndex > 0);
       require(zoneIndex < ownership.length);
@@ -163,7 +163,7 @@ contract EthGrid2 {
 
         if (ownershipIndex == areaIndices[areaIndicesIndex]) {
           // This is a zone the caller has declared they were going to buy
-          // We need to verify that the rectangle which was declared as what we're gonna buy is cimpleted contained within the overlap
+          // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
           require(doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
           Rect memory overlap = computeRectOverlap(rectToPurchase, currentOwnershipRect);
 
@@ -221,10 +221,8 @@ contract EthGrid2 {
       uint256 i = 0;
       uint j = 0;
       for (i = 0; i < areaIndices.length; i++) {
-        Rect memory rect = Rect(purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
-
         // Define the rectangle and add it to our collection of them
-        // rects[i] = new Rect(purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
+        Rect memory rect = Rect(purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
         rects[i] = rect;
 
         // Compute the area of this rect and add it to the total area
@@ -254,7 +252,6 @@ contract EthGrid2 {
       return rectToPurchase;
     }
 
-    // TODO
     // Given a rect to purchase, and the ID of the zone that is part of the purchase,
     // This returns the total price of the purchase that is attributed by that zone.  
     function _getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
