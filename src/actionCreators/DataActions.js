@@ -47,20 +47,54 @@ export function fetchPlotsFromWeb3(contractInfo) {
           return null;
         }
 
-        return contract.methods.ownership(currentIndex++).call().then(ownershipInfo => {
-          const ownership = {
-            owner: ownershipInfo.owner,
-            x: parseInt(ownershipInfo.x),
-            y: parseInt(ownershipInfo.y),
-            w: parseInt(ownershipInfo.w),
-            h: parseInt(ownershipInfo.h)
+        // Define three functions to get the info for this plot. One for ownership, one for data, and one for the auction
+        // Each of this will return a promise which resolves with the info we need
+        const loadOwnership = (index) => {
+          return contract.methods.ownership(index).call().then(ownershipInfo => {
+            const ownership = {
+              owner: ownershipInfo.owner,
+              x: parseInt(ownershipInfo.x),
+              y: parseInt(ownershipInfo.y),
+              w: parseInt(ownershipInfo.w),
+              h: parseInt(ownershipInfo.h)
+            };
+  
+            ownership.x2 = ownership.x + ownership.w;
+            ownership.y2 = ownership.y + ownership.h;
+  
+            return ownership;
+          });
+        };
+
+        const loadData = (index) => {
+          return contract.methods.data(index).call().then(dataInfo => {
+            const data = {
+              url: dataInfo.url
+            };
+
+            return data;
+          });
+        };
+
+        const loadAuction = (index) => {
+          return contract.methods.tokenIdToAuction(currentIndex).call().then(auctionInfo => {
+            const auction = {
+              price: auctionInfo
+            };
+
+            return auction;
+          });
+        };
+
+        return Promise.all([loadOwnership(currentIndex), loadData(currentIndex), loadAuction(currentIndex)]).then(results => {
+          const plot = {
+            ownership: results[0],
+            data: results[1],
+            auctionInfo: results[2],
           };
 
-          ownership.x2 = ownership.x + ownership.w;
-          ownership.y2 = ownership.y + ownership.h;
-
-          dispatch(addPlot(ownership));
-          return ownership;
+          dispatch(addPlot(plot));
+          currentIndex++;
         });
       };
 
@@ -68,7 +102,9 @@ export function fetchPlotsFromWeb3(contractInfo) {
       var pool = new PromisePool(ownershipLoadFn, 1);
       
       // Start the pool. 
-      return pool.start();
+      return pool.start().then(() => {
+        dispatch(doneLoadingPlots());
+      });
     });
   }
 }
