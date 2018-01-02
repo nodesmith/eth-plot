@@ -31,7 +31,7 @@ repo.initializeAsync().then(() => {
     return repo.purchasePlotAsync(rectToPurchase, {});
   };
 
-  let buysRemaining = 1;
+  let buysRemaining = 10;
   function doWork() {
     buysRemaining--;
     purchaseRandomArea().then(() => {

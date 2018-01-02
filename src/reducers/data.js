@@ -8,7 +8,11 @@ const web3Provider = 'http://localhost:9545';
 const initialState = {
   isFetchingPlots: false,
   numberOfPlots: 0,
-  plots: {},
+  plots: [],
+  gridInfo: {
+    height: 250,
+    width: 250
+  },
   contractInfo: {
     abi: abi,
     contractAddress: contractAddress,
@@ -19,13 +23,11 @@ const initialState = {
 export default function data(state = initialState, action) {
   switch (action.type) {
     case ActionTypes.ADD_PLOT:
-      const plotIndex = state.numberOfPlots;
       const newState = Object.assign({}, state, {
-        numberOfPlots: plotIndex + 1
+        numberOfPlots: state.numberOfPlots + 1
       });
 
-      // Assign this new plot at the index of number of plots
-      newState.plots[plotIndex] = action.newPlot;
+      newState.plots.push(action.newPlot);
       return newState;
     case ActionTypes.LOAD_PLOTS:
       return Object.assign({}, state, { isFetchingPlots: true} );

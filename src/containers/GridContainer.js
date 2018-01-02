@@ -4,7 +4,7 @@ import Grid from '../components/Grid';
 export default class GridContainer extends Component {
   render() {
     return (
-      <Grid />
+      <Grid {...this.props} />
     );
   }
 }

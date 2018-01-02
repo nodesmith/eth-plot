@@ -33,6 +33,23 @@ $main-bg-color: #ffffff;
   text-align: center;
 }
 
+.gridPlot {
+  position: absolute;
+}
+
+.gridPlot:hover {
+  outline-width: 3px;
+  outline-color: red;
+  outline-style: solid;
+}
+
+
+.grid {
+  outline-width: 3px;
+  outline-color: lightgray;
+  outline-style: solid;
+}
+
 /*----------- About -----------*/
 .aboutSection {
 
