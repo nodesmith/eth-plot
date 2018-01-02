@@ -103,10 +103,6 @@ class PlotDataRepository {
       throw 'AHHHHH, something went wrong';
     }
 
-    // So we've computed what we need to to purchase this area
-    // The final call will look something like this:
-    // contract.methods.purchaseAreaWithData([4,4,4,4], [4,4,4,4], [0], 3, web3.utils.asciiToHex("f3a"), "http://samm.com").send({ gas: 1000000, gasPrice: '30000000000000', from: '0x627306090abab3a6e1400e9345bc60c78a8bef57'}).then(result => { console.log(result); debugger; })
-
     return {
       purchasedChunks: purchasedChunks,
       purchasedChunkAreaIndices: purchasedChunkAreaIndices
@@ -146,6 +142,12 @@ class PlotDataRepository {
         from: '0x627306090abab3a6e1400e9345bc60c78a8bef57',
         gasPrice: '30000000000000',
         gas: gasEstimate * 2
+      }).then((transactionReceipt) => {
+        // We need to update the ownership and data arrays with the newly purchased plot
+        const ownershipInfo = Object.assign({}, rectToPurchase);
+        ownershipInfo.owner = '0x627306090abab3a6e1400e9345bc60c78a8bef57'; // TODO
+        this._ownership.push(ownershipInfo);
+        return transactionReceipt;
       });
     });
   }
