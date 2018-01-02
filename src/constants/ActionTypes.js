@@ -4,3 +4,6 @@ export const CHANGE_TAB = 'CHANGE_TAB';
 export const ADD_PLOT = 'ADD_PLOT';
 export const LOAD_PLOTS = 'LOAD_PLOTS';
 export const LOAD_PLOTS_DONE = 'LOAD_PLOTS_DONE';
+
+// Grid Actions
+export const HOVER_OVER_PLOT = 'HOVER_OVER_PLOT';

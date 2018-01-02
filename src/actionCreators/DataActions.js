@@ -29,6 +29,17 @@ function initializeContract(contractInfo) {
   return contract;
 }
 
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+
 // This is gonna be a thunk action!
 export function fetchPlotsFromWeb3(contractInfo) {
   return function (dispatch) {
@@ -91,6 +102,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
             ownership: results[0],
             data: results[1],
             auctionInfo: results[2],
+            color: getRandomColor()
           };
 
           dispatch(addPlot(plot));

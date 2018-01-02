@@ -1,15 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 
-function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
-
 export default class GridPlot extends Component {
+  mouseOver() {
+    this.props.hoverAction(this.props.index);
+  }
+
   render() {
     const rect = this.props.plot.ownership;
     const scale = this.props.scale;
@@ -18,13 +13,18 @@ export default class GridPlot extends Component {
       left: rect.x * scale,
       width: rect.w * scale,
       height: rect.h * scale,
-      backgroundColor: getRandomColor()
+      backgroundColor: this.props.plot.color
     };
 
+    if (this.props.isHovered) {
+      plotStyle.outlineColor = '#fff';
+      plotStyle.outlineWidth = '1px';
+      plotStyle.outlineStyle = 'solid';
+    }
+
     return (
-      <div key={this.props.index} style={plotStyle} className="gridPlot">
-        
-      </div>
+      <a href={this.props.plot.data.url} target='blank' key={this.props.index} style={plotStyle} className="gridPlot" onMouseOver={this.mouseOver.bind(this)}>
+      </a>
     );
   }
 }
@@ -32,5 +32,7 @@ export default class GridPlot extends Component {
 GridPlot.propTypes = {
   plot: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  scale: PropTypes.number.isRequired
+  scale: PropTypes.number.isRequired,
+  hoverAction: PropTypes.func.isRequired,
+  isHovered: PropTypes.bool.isRequired
 };

@@ -5,6 +5,7 @@ import { Nav, Navbar, NavItem } from 'react-bootstrap';
 
 import * as NavigationActions from '../actionCreators/NavigationActions';
 import * as DataActions from '../actionCreators/DataActions';
+import * as GridActions from '../actionCreators/GridActions';
 import GridContainer from './GridContainer';
 import PlotManagerContainer from './PlotManagerContainer';
 import About from '../components/About';
@@ -39,7 +40,7 @@ class App extends Component {
           </Navbar.Collapse>
         </Navbar>
         { this.props.navigation.tabIndex === 0 ? <PlotManagerContainer /> : null }
-        { this.props.navigation.tabIndex === 1 ? <GridContainer {...this.props.data} /> : null }
+        { this.props.navigation.tabIndex === 1 ? <GridContainer actions={this.props.actions} {...this.props.grid} {...this.props.data} /> : null }
         { this.props.navigation.tabIndex === 2 ? <About /> : null }
       </div>
     );
@@ -49,6 +50,7 @@ class App extends Component {
 App.propTypes = {
   navigation: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
+  grid: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 };
 
@@ -59,7 +61,8 @@ function mapStateToProps(state) {
   console.log(state);
   return {
     navigation: { tabIndex: state.navigation.tabIndex },
-    data: state.data
+    data: state.data,
+    grid: state.grid
   };
 }
 
@@ -73,7 +76,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, NavigationActions, DataActions), dispatch)
+    actions: bindActionCreators(Object.assign({}, NavigationActions, DataActions, GridActions), dispatch)
   };
 }
 
