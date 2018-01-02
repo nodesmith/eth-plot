@@ -2,15 +2,6 @@
   "name": "eth-grid",
   "version": "0.1.0",
   "private": true,
-<<<<<<< HEAD
-  "dependencies": {
-    "es6-promise-pool": "^2.5.0",
-    "http-server": "^0.10.0",
-    "react": "^16.2.0",
-    "react-bootstrap": "^0.31.5",
-    "react-dom": "^16.2.0",
-    "web3": "^1.0.0-beta.27"
-=======
   "license": "MIT",
   "scripts": {
     "prestart": "npm install",
@@ -20,7 +11,6 @@
     "dev": "NODE_ENV=development npm start",
     "start": "node devServer.js",
     "lint": "eslint src"
->>>>>>> master
   },
   "devDependencies": {
     "autoprefixer": "^6.3.1",
@@ -53,6 +43,7 @@
     "webpack-hot-middleware": "^2.6.0"
   },
   "dependencies": {
+    "es6-promise-pool": "^2.5.0",
     "jquery": "^3.2.1",
     "react": "^0.14.3",
     "react-bootstrap": "^0.31.5",
@@ -60,6 +51,6 @@
     "react-redux": "^4.1.1",
     "redux": "^3.7.2",
     "redux-thunk": "^1.0.3",
-    "web3": "^0.19.0"
+    "web3": "^1.0.0-beta.27"
   }
 }
