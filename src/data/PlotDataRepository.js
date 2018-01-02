@@ -134,10 +134,10 @@ class PlotDataRepository {
     const param2 = buildArrayFromRectangles(purchaseInfo.purchasedChunks);
     const param3 =purchaseInfo.purchasedChunkAreaIndices;
     const param4 = 3;
-    const param5 = this._web3.utils.asciiToHex("f3a");
+    const param5 = this._web3.utils.asciiToHex("abcdefghijk");
     const param6 = 'http://samm.com';
     const purchaseFunction = this._contract.methods.purchaseAreaWithData(param1, param2, param3, param4, param5, param6);
-    return purchaseFunction.estimateGas({ from: '0x627306090abab3a6e1400e9345bc60c78a8bef57' }).then((gasEstimate) => {
+    return purchaseFunction.estimateGas({ from: '0x627306090abab3a6e1400e9345bc60c78a8bef57', gas: '3000000' }).then((gasEstimate) => {
       return purchaseFunction.send({
         from: '0x627306090abab3a6e1400e9345bc60c78a8bef57',
         gasPrice: '30000000000000',
