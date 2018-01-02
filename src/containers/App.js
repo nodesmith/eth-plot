@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
 
 import * as NavigationActions from '../actionCreators/NavigationActions';
+import * as DataActions from '../actionCreators/DataActions';
 import GridContainer from './GridContainer';
 import PlotManagerContainer from './PlotManagerContainer';
 import About from '../components/About';
@@ -16,6 +17,10 @@ import About from '../components/About';
 class App extends Component {
   changeTab(tabIndex) {
     this.props.actions.changeTab(tabIndex);
+  }
+
+  componentDidMount() {
+    this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
   }
 
   render() {
@@ -43,6 +48,7 @@ class App extends Component {
 
 App.propTypes = {
   navigation: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 };
 
@@ -52,7 +58,8 @@ App.propTypes = {
 function mapStateToProps(state) {
   console.log(state);
   return {
-    navigation: { tabIndex: state.navigation.tabIndex }
+    navigation: { tabIndex: state.navigation.tabIndex },
+    data: state.data
   };
 }
 
@@ -66,7 +73,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(NavigationActions, dispatch)
+    actions: bindActionCreators(Object.assign({}, NavigationActions, DataActions), dispatch)
   };
 }
 
