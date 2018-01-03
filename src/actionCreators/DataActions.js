@@ -167,8 +167,6 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash)
   return function(dispatch) {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
-    debugger;
-
     const web3 = new Web3(contractInfo.web3Provider);
     const contract = initializeContract(contractInfo);
     
@@ -178,18 +176,20 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash)
     const param4 = web3.utils.asciiToHex(ipfsHash);
     const param5 = url;
     const purchaseFunction = contract.methods.purchaseAreaWithData(param1, param2, param3, param4, param5);
-    return purchaseFunction.estimateGas({ from: '0x627306090abab3a6e1400e9345bc60c78a8bef57', gas: '3000000' }).then((gasEstimate) => {
-      debugger;
-      return purchaseFunction.send({
-        from: '0x627306090abab3a6e1400e9345bc60c78a8bef57',
-        gasPrice: '30000000000000',
-        gas: gasEstimate * 2
-      }).then((transactionReceipt) => {
-        // We need to update the ownership and data arrays with the newly purchased plot
-        const ownershipInfo = Object.assign({}, rectToPurchase);
 
-        // TODO - Lots of stuff
-        return transactionReceipt;
+    return web3.eth.getCoinbase().then(coinbase => {
+      return purchaseFunction.estimateGas({from: coinbase, gas: '3000000' }).then((gasEstimate) => {
+        return purchaseFunction.send({
+          from: coinbase,
+          gasPrice: '30000000000000',
+          gas: gasEstimate * 2
+        }).then((transactionReceipt) => {
+          // We need to update the ownership and data arrays with the newly purchased plot
+          const ownershipInfo = Object.assign({}, rectToPurchase);
+
+          // TODO - Lots of stuff
+          return transactionReceipt;
+        });
       });
     });
   };
