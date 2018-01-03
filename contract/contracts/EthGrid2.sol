@@ -19,18 +19,8 @@ contract EthGrid2 {
         uint256[] holes;
     }
 
-    enum MimeType {
-      PNG,
-      SVG,
-      JPG,
-      GIF,
-      WEBP,
-      RGB
-    }
-    
     struct ZoneData {
-        MimeType mimeType;
-        bytes data;
+        bytes ipfsHash;
         string url;
     }
 
@@ -67,7 +57,7 @@ contract EthGrid2 {
         // Initialize the contract with a single block with the admin owns
         uint256[] memory holes; // TODO - do we need to initialize this or is it done for us?
         ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
-        data.push(ZoneData(MimeType.RGB, "fa3", "http://ethgrid.com"));
+        data.push(ZoneData("fa3", "http://ethgrid.com"));
         createAuction(0, INITIAL_AUCTION_PRICE);
         balances[admin] = 0;
     }
@@ -87,10 +77,25 @@ contract EthGrid2 {
       );
     }
 
+    function getPlot(uint256 zoneIndex) public constant returns (uint16, uint16, uint16, uint16, address, uint256, string, bytes) {
+      uint256 price = tokenIdToAuction[zoneIndex];
+      ZoneData memory zoneData = data[zoneIndex];
+
+      return (
+        ownership[zoneIndex].x,
+        ownership[zoneIndex].y,
+        ownership[zoneIndex].w,
+        ownership[zoneIndex].h,
+        ownership[zoneIndex].owner,
+        price,
+        zoneData.url,
+        zoneData.ipfsHash);
+    }
 
     function ownershipLength() public constant returns (uint256) {
       return ownership.length;
     }
+    
     // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
     function updateAuction(uint256 zoneIndex, uint256 newPriceInGweiPerPixel) public {
       require(zoneIndex > 0);
@@ -101,7 +106,7 @@ contract EthGrid2 {
       AuctionUpdated(zoneIndex, newPriceInGweiPerPixel);
     }
 
-    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, MimeType mimeType, bytes imgData, string url) public payable returns (uint256) {
+    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url) public payable returns (uint256) {
       Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
       
       // TODO - Require the funds to make sense and pay everyone out
@@ -118,7 +123,7 @@ contract EthGrid2 {
       }
 
       // Take in the input data for the actual grid!
-      ZoneData memory newData = ZoneData(mimeType, imgData, url);
+      ZoneData memory newData = ZoneData(ipfsHash, url);
       data.push(newData);
       
       return ownership.length - 1;

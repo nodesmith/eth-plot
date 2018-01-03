@@ -9,6 +9,7 @@ const PlotDataRepository = require('../data/PlotDataRepository');
 const repo = new PlotDataRepository(web3, abi, contractAddress);
 repo.initializeAsync().then(() => {
   console.log('Repository Initialized');
+  debugger;
 
   function purchaseRandomArea() {
     
