@@ -58,55 +58,31 @@ export function fetchPlotsFromWeb3(contractInfo) {
           return null;
         }
 
-        // Define three functions to get the info for this plot. One for ownership, one for data, and one for the auction
-        // Each of this will return a promise which resolves with the info we need
-        const loadOwnership = (index) => {
-          return contract.methods.ownership(index).call().then(ownershipInfo => {
-            const ownership = {
-              owner: ownershipInfo.owner,
-              x: parseInt(ownershipInfo.x),
-              y: parseInt(ownershipInfo.y),
-              w: parseInt(ownershipInfo.w),
-              h: parseInt(ownershipInfo.h)
-            };
-  
-            ownership.x2 = ownership.x + ownership.w;
-            ownership.y2 = ownership.y + ownership.h;
-  
-            return ownership;
-          });
-        };
-
-        const loadData = (index) => {
-          return contract.methods.data(index).call().then(dataInfo => {
-            const data = {
-              url: dataInfo.url
-            };
-
-            return data;
-          });
-        };
-
-        const loadAuction = (index) => {
-          return contract.methods.tokenIdToAuction(currentIndex).call().then(auctionInfo => {
-            const auction = {
-              price: auctionInfo
-            };
-
-            return auction;
-          });
-        };
-
-        return Promise.all([loadOwnership(currentIndex), loadData(currentIndex), loadAuction(currentIndex)]).then(results => {
+        // Call get plot which returns an array type object which we can get properties from
+        return contract.methods.getPlot(currentIndex).call().then(plotInfo => {
           const plot = {
-            ownership: results[0],
-            data: results[1],
-            auctionInfo: results[2],
+            rect: {
+              x: parseInt(plotInfo['0']),
+              y: parseInt(plotInfo['1']),
+              w: parseInt(plotInfo['2']),
+              h: parseInt(plotInfo['3'])
+            },
+            owner: plotInfo['4'],
+            buyoutPrice: parseInt(plotInfo['5']),
+            data: {
+              url: plotInfo['6'],
+              ipfsHash: plotInfo['7']
+            },
             color: getRandomColor()
           };
 
-          dispatch(addPlot(plot));
+          plot.rect.x2 = plot.rect.x + plot.rect.w;
+          plot.rect.y2 = plot.rect.y + plot.rect.h;
+
+          dispatch(addPlot(plot)); 
           currentIndex++;
+
+          return plot;
         });
       };
 

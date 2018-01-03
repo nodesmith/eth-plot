@@ -6,7 +6,7 @@ export default class GridPlot extends Component {
   }
 
   render() {
-    const rect = this.props.plot.ownership;
+    const rect = this.props.plot.rect;
     const scale = this.props.scale;
     const plotStyle = {
       top: rect.y * scale,
@@ -23,7 +23,11 @@ export default class GridPlot extends Component {
     }
 
     return (
-      <a href={this.props.plot.data.url} target='blank' key={this.props.index} style={plotStyle} className="gridPlot" onMouseOver={this.mouseOver.bind(this)}>
+      <a href={this.props.plot.data.url}
+        target='blank' key={this.props.index}
+        style={plotStyle}
+        className="gridPlot"
+        onMouseOver={this.mouseOver.bind(this)}>
       </a>
     );
   }
