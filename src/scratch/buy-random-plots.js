@@ -1,16 +1,24 @@
-const Web3 = require('web3');
-const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
+import * as DataActions from '../actionCreators/DataActions';
 
-const web3 = new Web3('http://localhost:9545');
-const contractAddress = '0x345ca3e014aaf5dca488057592ee47305d9b3e10';
+const configureStore = require('../store/configureStore.prod');
+console.log('Configuring store');
+const store = configureStore();
 
-const PlotDataRepository = require('../data/PlotDataRepository');
+// Subscribe to the changes here
+store.subscribe(() => {
+  const currentState = store.getState();
+  console.log(`Fetching plots = ${currentState.data.isFetchingPlots}`);
+  if (!currentState.data.isFetchingPlots) {
+    console.log('not fetching plots. Start buying plots');
+    buyRandomPlots();
+  }
+});
 
-const repo = new PlotDataRepository(web3, abi, contractAddress);
-repo.initializeAsync().then(() => {
-  console.log('Repository Initialized');
-  debugger;
+const currentState = store.getState();
+const loadDataThunk = DataActions.fetchPlotsFromWeb3(currentState.data.contractInfo);
+loadDataThunk(store.dispatch);
 
+const buyRandomPlots = () => {
   function purchaseRandomArea() {
     
     const x = Math.floor(Math.random() * 250);
@@ -29,7 +37,9 @@ repo.initializeAsync().then(() => {
 
     console.log(`Buying ${JSON.stringify(rectToPurchase)}`);
 
-    return repo.purchasePlotAsync(rectToPurchase, {});
+    // const purchaseInfo = DataActions.computePurchaseInfo(rectToPurchase, store.getState().data.plots);
+    const state = store.getState();
+    return DataActions.purchasePlot(state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123')(store.dispatch);
   };
 
   let buysRemaining = 10;
@@ -43,4 +53,4 @@ repo.initializeAsync().then(() => {
   };
 
   doWork();
-});
+};
