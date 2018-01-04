@@ -5,6 +5,12 @@ export default class PurchasePlot extends Component {
     this.props.hoverAction(this.props.index);
   }
 
+  plotClicked(e) {
+    e.stopPropagation();
+
+    // The plot has been clicked. We should go ahead and try to buy this plot
+  }
+
   render() {
     const rect = this.props.rect;
     const scale = this.props.scale;
@@ -13,7 +19,8 @@ export default class PurchasePlot extends Component {
       left: 0,
       width: rect.w * scale,
       height: rect.h * scale,
-      position: 'absolute'
+      position: 'absolute',
+      cursor: 'pointer'
     };
 
     const wrapperStyle = {
@@ -31,8 +38,8 @@ export default class PurchasePlot extends Component {
     const tooltipText = `${rect.w} x ${rect.h}`;
 
     return (
-      <div style={wrapperStyle}>
-        <div style={plotStyle} className="purchasePlot"></div>
+      <div style={wrapperStyle} >
+        <div style={plotStyle} className="purchasePlot" onClick={this.plotClicked.bind(this)} onMouseDown={(e) => e.stopPropagation()}></div>
         <div className='purchaseTooltip' style={tooltipStyle}>
           <span>{tooltipText}</span>
         </div>

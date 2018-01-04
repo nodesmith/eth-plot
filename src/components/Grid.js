@@ -62,6 +62,10 @@ export default class Grid extends Component {
           w: Math.abs(this.props.dragRectCurr.x - this.props.dragRectStart.x),
           h: Math.abs(this.props.dragRectCurr.y - this.props.dragRectStart.y)
         };
+
+        if (!this.props.isDraggingRect && purchasePlotRect.w === 0 && purchasePlotRect.h === 0) {
+          purchasePlotRect = null;
+        }
       }
 
       overlay = (
