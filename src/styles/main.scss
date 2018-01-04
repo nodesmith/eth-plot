@@ -44,4 +44,11 @@ $main-bg-color: #ffffff;
   background-color: $main-bg-color;
   border: none;
   box-shadow: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+.about-wellPadding {
+  /* Workaround to make opening animation not jumpy*/
+  padding: 20px;
 }

@@ -17,7 +17,7 @@ class PlotManager extends Component {
           this.props.web3Initialized ?
           this.props.userPlots.length === 0 ? 
                 <div className="plot-warning" >
-                <h4><i>You don't have any owned plots. V isit the grid to purchase a plot.</i></h4>
+                <h4><i>You don't have any owned plots. Visit the grid to purchase a plot.</i></h4>
                 </div>    
                 :
                 <PlotInfo />

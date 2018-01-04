@@ -21,7 +21,9 @@ class FAQ extends Component {
         <Collapse in={this.state.open}>
           <div>
             <Well>
-              { this.props.answer }
+              <div className="about-wellPadding">
+                { this.props.answer }
+              </div>
             </Well>
           </div>
         </Collapse>
