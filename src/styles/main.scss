@@ -43,6 +43,14 @@ $main-bg-color: #ffffff;
   outline-style: solid;
 }
 
+.purchasePlot {
+  background-color: white;
+  outline-color: red;
+  outline-width: 2px;
+  outline-style: dashed;
+  background-blend-mode: lighten;
+}
+
 /*----------- About -----------*/
 .aboutSection {
 

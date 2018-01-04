@@ -37,7 +37,6 @@ const buyRandomPlots = () => {
 
     console.log(`Buying ${JSON.stringify(rectToPurchase)}`);
 
-    // const purchaseInfo = DataActions.computePurchaseInfo(rectToPurchase, store.getState().data.plots);
     const state = store.getState();
     return DataActions.purchasePlot(state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123')(store.dispatch);
   };
