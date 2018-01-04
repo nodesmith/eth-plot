@@ -9,6 +9,14 @@ export default class PurchasePlot extends Component {
     const rect = this.props.rect;
     const scale = this.props.scale;
     const plotStyle = {
+      top: 0,
+      left: 0,
+      width: rect.w * scale,
+      height: rect.h * scale,
+      position: 'absolute'
+    };
+
+    const wrapperStyle = {
       top: rect.y * scale,
       left: rect.x * scale,
       width: rect.w * scale,
@@ -16,9 +24,18 @@ export default class PurchasePlot extends Component {
       position: 'absolute'
     };
 
+    const tooltipStyle = {
+      top: -40
+    }
+
+    const tooltipText = `${rect.w} x ${rect.h}`;
+
     return (
-      <div style={plotStyle}
-        className="purchasePlot">
+      <div style={wrapperStyle}>
+        <div style={plotStyle} className="purchasePlot"></div>
+        <div className='purchaseTooltip' style={tooltipStyle}>
+          <span>{tooltipText}</span>
+        </div>
       </div>
     );
   }

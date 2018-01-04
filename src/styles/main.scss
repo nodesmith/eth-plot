@@ -51,6 +51,20 @@ $main-bg-color: #ffffff;
   background-blend-mode: lighten;
 }
 
+.purchaseTooltip {
+  background-color: rgba($color: #000000, $alpha: 0.6);
+  border-radius: 5px;
+  display: inline;
+  color: white;
+  line-height: 35px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-left: 10px;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+
 /*----------- About -----------*/
 .aboutSection {
 
