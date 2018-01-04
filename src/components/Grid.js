@@ -13,15 +13,15 @@ export default class Grid extends Component {
   }
 
   overlayMouseDown(e) {
-    const x = e.pageX - e.currentTarget.getBoundingClientRect().x;
-    const y = e.pageY - e.currentTarget.getBoundingClientRect().y;
+    const x = e.clientX - e.currentTarget.getBoundingClientRect().x;
+    const y = e.clientY - e.currentTarget.getBoundingClientRect().y;
     this.props.actions.startDraggingRect(Math.round(x / scale), Math.round(y / scale));
     e.stopPropagation();
   }
 
   overlayMouseMove(e) {
-    const x = e.pageX - e.currentTarget.getBoundingClientRect().x;
-    const y = e.pageY - e.currentTarget.getBoundingClientRect().y;
+    const x = e.clientX - e.currentTarget.getBoundingClientRect().x;
+    const y = e.clientY - e.currentTarget.getBoundingClientRect().y;
     this.props.actions.resizeDraggingRect(Math.round(x / scale), Math.round(y / scale));
     e.stopPropagation();
   }
