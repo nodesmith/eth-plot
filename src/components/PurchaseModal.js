@@ -6,6 +6,15 @@ export default class PurchaseModal extends Component {
     this.props.closeDialog();
   }
 
+  buyIt() {
+    this.props.actions.purchasePlot(
+      this.props.contractInfo,
+      this.props.plots,
+      this.props.rectToPurchase,
+      'http://woo.com',
+      'abc123');
+  }
+
   render() {
     return (
       <Modal show={this.props.isVisible} onHide={this.close.bind(this)}>
@@ -14,6 +23,7 @@ export default class PurchaseModal extends Component {
           </Modal.Header>
           <Modal.Body>
             <h4>You wanna buy this?</h4>
+            <Button onClick={this.buyIt.bind(this)}>Yeah</Button>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.close.bind(this)}>Cancel</Button>

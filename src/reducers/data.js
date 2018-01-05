@@ -1,6 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
-
 import * as PlotMath from '../data/PlotMath';
+import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 
 // TODO - Clean this up a bit and get from some config file
 const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
@@ -20,7 +20,8 @@ const initialState = {
     abi: abi,
     contractAddress: contractAddress,
     web3Provider: web3Provider
-  }
+  },
+  purchaseInfo: null
 };
 
 export default function data(state = initialState, action) {
@@ -39,6 +40,9 @@ export default function data(state = initialState, action) {
       return Object.assign({}, state, { isFetchingPlots: true} );
     case ActionTypes.LOAD_PLOTS_DONE:
       return Object.assign({}, state, { isFetchingPlots: false} );
+    case ActionTypes.SHOW_PURCHASE_DIALOG:
+      const purchaseInfo = computePurchaseInfo(action.rectToPurchase, state.plots, state.holes);
+      return Object.assign({}, state, { purchaseInfo: purchaseInfo} );
     default:
       return state;
   }
@@ -75,8 +79,15 @@ function computeNewHoles(rectToAdd, currentHoles, plots) {
 
         // Append the leftovers
         remainingAreas = remainingAreas.concat(leftoverArea);
+
+        // Subtract 1 so we don't miss the next remainingArea
+        remainingAreaIndex--;
       }
     }
+  }
+
+  if (remainingAreas.length > 0 && plots.length > 0) {
+    throw new Error('Unexpected condition. All areas were not accounted for');
   }
 
   return result;

@@ -9,7 +9,7 @@ export default class GridContainer extends Component {
       <div>
         <Grid {...this.props} />
         <Button onClick={this.props.actions.enterBuyMode}>Purchase Region</Button>
-        <PurchaseModal isVisible={this.props.purchaseDialogVisible} rectToPurchase={this.props.rectToPurchase} closeDialog={this.props.actions.hidePurchaseDialog} />
+        <PurchaseModal {...this.props} isVisible={this.props.purchaseDialogVisible} rectToPurchase={this.props.rectToPurchase} closeDialog={this.props.actions.hidePurchaseDialog} />
       </div>
     );
   }

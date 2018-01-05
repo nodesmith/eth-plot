@@ -63,6 +63,9 @@ export default class Grid extends Component {
           h: Math.abs(this.props.dragRectCurr.y - this.props.dragRectStart.y)
         };
 
+        purchasePlotRect.x2 = purchasePlotRect.x + purchasePlotRect.w;
+        purchasePlotRect.y2 = purchasePlotRect.y + purchasePlotRect.h;
+
         if (!this.props.isDraggingRect && purchasePlotRect.w === 0 && purchasePlotRect.h === 0) {
           purchasePlotRect = null;
         }

@@ -1,5 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 const PlotMath = require('../data/PlotMath');
+import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 
 const Web3 = require('web3');
 const PromisePool = require('es6-promise-pool');
@@ -96,59 +97,6 @@ export function fetchPlotsFromWeb3(contractInfo) {
   }
 }
 
-// Computes what chunks are needed to be purchased for a particular region
-export function computePurchaseInfo(rectToPurchase, plots) {
-  let purchasedChunks = [];
-  let purchasedChunkAreaIndices = [];
-  let purchasePrice = 0;
-
-  // We'll need to walk the ownership array backwards and see who we need to buy chunks from
-  let remainingChunksToPurchase = [rectToPurchase];
-  let i = plots.length - 1;
-  while (remainingChunksToPurchase.length > 0 && i >= 0) {
-    const currentPlot = plots[i];
-
-    for (let j = 0; j < remainingChunksToPurchase.length; j++) {
-      const chunkToPurchase = remainingChunksToPurchase[j];
-      if (PlotMath.doRectanglesOverlap(currentPlot.rect, chunkToPurchase)) {
-        // Look at the overlap between the chunk we're trying to purchase, and the ownership plot we have
-        const chunkOverlap = PlotMath.computeRectOverlap(currentPlot.rect, chunkToPurchase);
-
-        let newHoles = [chunkOverlap];
-        // Next, subtract out all of the holes which this ownerhip may have (TODO)
-
-        // Add these new holes to the current ownership
-        // currentOwnership.holes = currentOwnership.holes.concat(newHoles);
-
-        // Add the new holes to the purchaseChunks and keep track of their index
-        purchasedChunks = purchasedChunks.concat(newHoles);
-        purchasedChunkAreaIndices = purchasedChunkAreaIndices.concat(new Array(newHoles.length).fill(i));
-
-        // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is remaining back to remainingChunksToPurchase
-        remainingChunksToPurchase.splice(j, 1);
-        j--; // subtract one from j so we don't miss anything
-
-        for (const newHole of newHoles) {
-          const newChunksToPurchase = PlotMath.subtractRectangles(chunkToPurchase, newHole);
-          remainingChunksToPurchase = remainingChunksToPurchase.concat(newChunksToPurchase);
-        }
-      }
-    }
-    
-    i--;
-  }
-
-  if (remainingChunksToPurchase.length > 0) {
-    throw 'AHHHHH, something went wrong';
-  }
-
-  return {
-    chunksToPurchase: purchasedChunks,
-    chunksToPurchaseAreaIndices: purchasedChunkAreaIndices,
-    purchasePrice: purchasePrice
-  };
-}
-
 // Converts a rect into the format that our contract is expecting
 function buildArrayFromRectangles(rects) { 
   let result = [];
@@ -176,6 +124,8 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash)
     const param4 = web3.utils.asciiToHex(ipfsHash);
     const param5 = url;
     const purchaseFunction = contract.methods.purchaseAreaWithData(param1, param2, param3, param4, param5);
+
+    debugger;
 
     return web3.eth.getCoinbase().then(coinbase => {
       return purchaseFunction.estimateGas({from: coinbase, gas: '3000000' }).then((gasEstimate) => {
