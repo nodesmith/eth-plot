@@ -7,8 +7,9 @@ export default class PurchasePlot extends Component {
 
   plotClicked(e) {
     e.stopPropagation();
-
+    
     // The plot has been clicked. We should go ahead and try to buy this plot
+    this.props.startPurchase(this.props.rect);
   }
 
   render() {
@@ -50,5 +51,6 @@ export default class PurchasePlot extends Component {
 
 PurchasePlot.propTypes = {
   rect: PropTypes.object.isRequired,
-  scale: PropTypes.number.isRequired
+  scale: PropTypes.number.isRequired,
+  startPurchase: PropTypes.func.isRequired
 };

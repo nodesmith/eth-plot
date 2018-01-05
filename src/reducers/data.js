@@ -1,5 +1,7 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
+import * as PlotMath from '../data/PlotMath';
+
 // TODO - Clean this up a bit and get from some config file
 const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
 const contractAddress = '0xeec918d74c746167564401103096d45bbd494b74';
@@ -9,6 +11,7 @@ const initialState = {
   isFetchingPlots: false,
   numberOfPlots: 0,
   plots: [],
+  holes: {},
   gridInfo: {
     height: 250,
     width: 250
@@ -23,8 +26,11 @@ const initialState = {
 export default function data(state = initialState, action) {
   switch (action.type) {
     case ActionTypes.ADD_PLOT:
+      const newHoles = computeNewHoles(action.newPlot.rect, state.holes, state.plots);
+
       const newState = Object.assign({}, state, {
-        numberOfPlots: state.numberOfPlots + 1
+        numberOfPlots: state.numberOfPlots + 1,
+        holes: newHoles
       });
 
       newState.plots.push(action.newPlot);
@@ -36,4 +42,42 @@ export default function data(state = initialState, action) {
     default:
       return state;
   }
+}
+
+function computeNewHoles(rectToAdd, currentHoles, plots) {
+  const result = Object.assign({}, currentHoles);
+  let remainingAreas = [rectToAdd];
+
+  // Iterate backward through all the plots to figure out which of them this new rect adds holes to
+  // Stop once we get to the end or there arent' any more areas we need to account for
+  for (let plotIndex = plots.length - 1; plotIndex >= 0 && remainingAreas.length > 0; plotIndex--) {
+    const currentPlot = plots[plotIndex];
+
+    // Go through all of our remainging areas and check what work we need to do
+    for (let remainingAreaIndex = 0; remainingAreaIndex < remainingAreas.length; remainingAreaIndex++) {
+      const currentRemainingArea = remainingAreas[remainingAreaIndex];
+      if (PlotMath.doRectanglesOverlap(currentPlot.rect, currentRemainingArea)) {
+        // These two rects overlap. This overlap will be divided into two parts:
+        // 1. The parts which are newly aquired and 2. the parts which already are covered by holes
+        // Interestingly, we actually should never have this happen since the holes should already be accounted for 
+        let overlap = PlotMath.computeRectOverlap(currentPlot.rect, currentRemainingArea);
+
+        // Next, add the overlap to the holes for this plotIndex
+        const holes = plotIndex in result ? result[plotIndex] : [];
+        holes.push(overlap);
+        result[plotIndex] = holes;
+
+        // Since we've now accounted for overlap from currentRemainingArea, remove currentRemaingingArea and append any remaining area to the end
+        const leftoverArea = PlotMath.subtractRectangles(currentRemainingArea, overlap);
+
+        // Do the delete
+        remainingAreas.splice(remainingAreaIndex, 1);
+
+        // Append the leftovers
+        remainingAreas = remainingAreas.concat(leftoverArea);
+      }
+    }
+  }
+
+  return result;
 }

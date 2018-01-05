@@ -40,7 +40,7 @@ class App extends Component {
           </Navbar.Collapse>
         </Navbar>
         { this.props.navigation.tabIndex === 0 ? <PlotManagerContainer /> : null }
-        { this.props.navigation.tabIndex === 1 ? <GridContainer actions={this.props.actions} {...this.props.grid} {...this.props.data} /> : null }
+        { this.props.navigation.tabIndex === 1 ? <GridContainer actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} /> : null }
         { this.props.navigation.tabIndex === 2 ? <About /> : null }
       </div>
     );
@@ -51,6 +51,7 @@ App.propTypes = {
   navigation: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   grid: PropTypes.object.isRequired,
+  purchase: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 };
 
@@ -62,7 +63,8 @@ function mapStateToProps(state) {
   return {
     navigation: { tabIndex: state.navigation.tabIndex },
     data: state.data,
-    grid: state.grid
+    grid: state.grid,
+    purchase: state.purchase
   };
 }
 

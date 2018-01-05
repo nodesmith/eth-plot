@@ -74,9 +74,11 @@ export default class Grid extends Component {
           onMouseMove={this.overlayMouseMove.bind(this)}
           onMouseUp={this.overlayMouseUp.bind(this)}>
           {
-            purchasePlotRect ? <PurchasePlot scale={scale} rect={purchasePlotRect} /> : null
+            purchasePlotRect ? <PurchasePlot
+              startPurchase={this.props.actions.showPurchaseDialog}
+              scale={scale}
+              rect={purchasePlotRect} /> : null
           }
-
         </div>);
     }
 

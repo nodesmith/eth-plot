@@ -34,3 +34,17 @@ export function resizeDraggingRect(x, y) {
     y: y
   }
 }
+
+export function showPurchaseDialog(rectToPurchase) {
+  return {
+    type: ActionTypes.SHOW_PURCHASE_DIALOG,
+    rectToPurchase
+  };
+}
+
+export function hidePurchaseDialog() {
+  return {
+    type: ActionTypes.HIDE_PURCHASE_DIALOG,
+  };
+}
+
