@@ -168,41 +168,35 @@ contract EthGrid2 {
         Rect memory currentOwnershipRect = Rect(
             ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
-        if (ownershipIndex == areaIndices[areaIndicesIndex]) {
-          // Keep looping through while we are declaring that we want this area
-          while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
-            // This is a zone the caller has declared they were going to buy
-            // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
-            require(doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
-            Rect memory overlap = computeRectOverlap(rectToPurchase, currentOwnershipRect);
+        // Keep looping through while we are declaring that we want this area
+        while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
+          // This is a zone the caller has declared they were going to buy
+          // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
+          require(doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
+          Rect memory overlap = computeRectOverlap(rectToPurchase, currentOwnershipRect);
 
-            // Verify that this overlap between these two is within the overlapped area of the rect to purhcase and this ownership zone
-            require(rects[areaIndicesIndex].x >= overlap.x);
-            require(rects[areaIndicesIndex].y >= overlap.y);
-            require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
-            require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
+          // Verify that this overlap between these two is within the overlapped area of the rect to purhcase and this ownership zone
+          require(rects[areaIndicesIndex].x >= overlap.x);
+          require(rects[areaIndicesIndex].y >= overlap.y);
+          require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
+          require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
 
-            // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
-            for (uint256 holeIndex = 0; holeIndex < ownership[ownershipIndex].holes.length; holeIndex++) {
-              ZoneOwnership memory holeOwnership = ownership[ownership[ownershipIndex].holes[holeIndex]];
-              Rect memory holeRect = Rect(
-                holeOwnership.x,
-                holeOwnership.y,
-                holeOwnership.w,
-                holeOwnership.h);
+          // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
+          for (uint256 holeIndex = 0; holeIndex < ownership[ownershipIndex].holes.length; holeIndex++) {
+            ZoneOwnership memory holeOwnership = ownership[ownership[ownershipIndex].holes[holeIndex]];
+            Rect memory holeRect = Rect(
+              holeOwnership.x,
+              holeOwnership.y,
+              holeOwnership.w,
+              holeOwnership.h);
 
-              require(!doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
-            }
-
-            // Finally, add the price of this rect to the totalPrice computation
-            totalPrice += _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
-
-            areaIndicesIndex++;
+            require(!doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
           }
-        } else {
-          // This is a zone which the caller has not said they were going to buy
-          // TODO - this could actually be completely accounted for via holes though. This check isn't good enough
-          // require(!doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
+
+          // Finally, add the price of this rect to the totalPrice computation
+          totalPrice += _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
+
+          areaIndicesIndex++;
         }
       }
 
