@@ -12,6 +12,14 @@ const doAnyOverlap = function(arrayOfRects) {
   return false;
 }
 
+const coalesceRects = function(arrayOfRects) {
+  if (doAnyOverlap(arrayOfRects)) {
+    throw 'Cannot coalesce overlapping rects'
+  }
+
+  // To join these together, 
+}
+
 const computeRectOverlap = function(a, b) {
   let result = {
     x: 0,

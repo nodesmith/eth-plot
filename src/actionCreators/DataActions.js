@@ -126,17 +126,17 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash)
     const param6 = 10;
     const purchaseFunction = contract.methods.purchaseAreaWithData(param1, param2, param3, param4, param5, param6);
 
-    console.log(`${JSON.stringify(param1)}, ${JSON.stringify(param2)}, ${JSON.stringify(param3)}, "${param4}", "${param5}, ${param6}"`)
+    console.log(`${JSON.stringify(param1)}, ${JSON.stringify(param2)}, ${JSON.stringify(param3)}, "${param4}", "${param5}", ${param6}`)
     debugger;
 
     return web3.eth.getCoinbase().then(coinbase => {
       // return purchaseFunction.estimateGas({from: coinbase, gas: '3000000' }).then((gasEstimate) => {
 
-        const gasEstimate = 200000;
+        const gasEstimate = 2000000;
         return purchaseFunction.send({
           from: coinbase,
           // gasPrice: '30000000000000',
-          gasPrice: '3000000000',
+          gasPrice: '30000000',
           gas: gasEstimate * 2
         }).then((transactionReceipt) => {
           // We need to update the ownership and data arrays with the newly purchased plot

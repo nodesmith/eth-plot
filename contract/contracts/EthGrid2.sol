@@ -163,44 +163,51 @@ contract EthGrid2 {
       uint256 totalPrice = 0;
       uint256 areaIndicesIndex = 0;
 
-      // Walk the ownership array backwards
-      for (uint256 ownershipIndex = ownership.length - 1; areaIndicesIndex < areaIndices.length && ownershipIndex >= 0 && ownershipIndex < ownership.length; ownershipIndex--) {
+      // Walk the ownership array backwards. Do funny checks for incrementing and decrementing indices becaues uints will wrap
+      for (uint256 ownershipIndex = ownership.length - 1; areaIndicesIndex < areaIndices.length && ownershipIndex < ownership.length; ownershipIndex--) {
         Rect memory currentOwnershipRect = Rect(
             ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
         if (ownershipIndex == areaIndices[areaIndicesIndex]) {
-          // This is a zone the caller has declared they were going to buy
-          // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
-          require(doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
-          Rect memory overlap = computeRectOverlap(rectToPurchase, currentOwnershipRect);
+          // Keep looping through while we are declaring that we want this area
+          while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
+            // This is a zone the caller has declared they were going to buy
+            // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
+            require(doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
+            Rect memory overlap = computeRectOverlap(rectToPurchase, currentOwnershipRect);
 
-          // Verify that this overlap between these two is within the overlapped area of the rect to purhcase and this ownership zone
-          require(rects[areaIndicesIndex].x >= overlap.x);
-          require(rects[areaIndicesIndex].y >= overlap.y);
-          require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
-          require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
+            // Verify that this overlap between these two is within the overlapped area of the rect to purhcase and this ownership zone
+            require(rects[areaIndicesIndex].x >= overlap.x);
+            require(rects[areaIndicesIndex].y >= overlap.y);
+            require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
+            require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
 
-          // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
-          for (uint256 holeIndex = 0; holeIndex < ownership[ownershipIndex].holes.length; holeIndex++) {
-            ZoneOwnership memory holeOwnership = ownership[ownership[ownershipIndex].holes[holeIndex]];
-            Rect memory holeRect = Rect(
-              holeOwnership.x,
-              holeOwnership.y,
-              holeOwnership.w,
-              holeOwnership.h);
+            // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
+            for (uint256 holeIndex = 0; holeIndex < ownership[ownershipIndex].holes.length; holeIndex++) {
+              ZoneOwnership memory holeOwnership = ownership[ownership[ownershipIndex].holes[holeIndex]];
+              Rect memory holeRect = Rect(
+                holeOwnership.x,
+                holeOwnership.y,
+                holeOwnership.w,
+                holeOwnership.h);
 
-            require(!doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
+              require(!doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
+            }
+
+            // Finally, add the price of this rect to the totalPrice computation
+            totalPrice += _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
+
+            areaIndicesIndex++;
           }
-
-          // Finally, add the price of this rect to the totalPrice computation
-          totalPrice += _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
-
-          areaIndicesIndex++;
         } else {
           // This is a zone which the caller has not said they were going to buy
-          require(!doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
+          // TODO - this could actually be completely accounted for via holes though. This check isn't good enough
+          // require(!doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
         }
       }
+
+      // This means we checked every area index
+      require(areaIndicesIndex == areaIndices.length);
 
       return totalPrice;
     }
@@ -226,7 +233,7 @@ contract EthGrid2 {
 
       uint256 totalArea = 0;
       uint256 i = 0;
-      uint j = 0;
+      uint256 j = 0;
       for (i = 0; i < areaIndices.length; i++) {
         // Define the rectangle and add it to our collection of them
         Rect memory rect = Rect(purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
