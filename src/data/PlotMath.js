@@ -2,6 +2,16 @@ const doRectanglesOverlap = function(a, b) {
   return a.x < b.x2 && a.x2 > b.x && a.y < b.y2 && a.y2 > b.y;
 }
 
+const doAnyOverlap = function(arrayOfRects) {
+  for(let i = 0; i < arrayOfRects.length - 1; i++) {
+    if (doRectanglesOverlap(arrayOfRects[i], arrayOfRects[i + 1])) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 const computeRectOverlap = function(a, b) {
   let result = {
     x: 0,
@@ -96,5 +106,6 @@ const subtractRectangles = function(a, b) {
 
 
 module.exports.doRectanglesOverlap = doRectanglesOverlap;
+module.exports.doAnyOverlap = doAnyOverlap;
 module.exports.computeRectOverlap = computeRectOverlap;
 module.exports.subtractRectangles = subtractRectangles;

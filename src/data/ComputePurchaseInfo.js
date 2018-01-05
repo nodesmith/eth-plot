@@ -18,25 +18,27 @@ function computePurchaseInfo(rectToPurchase, plots) {
         // Look at the overlap between the chunk we're trying to purchase, and the ownership plot we have
         const chunkOverlap = PlotMath.computeRectOverlap(currentPlot.rect, chunkToPurchase);
 
-        let newHoles = [chunkOverlap];
+        let newHole = chunkOverlap;
         // Next, subtract out all of the holes which this ownerhip may have (TODO)
 
-        // Add these new holes to the current ownership
-        // currentOwnership.holes = currentOwnership.holes.concat(newHoles);
-
         // Add the new holes to the purchaseChunks and keep track of their index
-        purchasedChunks = purchasedChunks.concat(newHoles);
-        purchasedChunkAreaIndices = purchasedChunkAreaIndices.concat(new Array(newHoles.length).fill(i));
+        purchasedChunks.push(newHole);
+        purchasedChunkAreaIndices.push(i);
 
         // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is remaining back to remainingChunksToPurchase
         remainingChunksToPurchase.splice(j, 1);
+
+        const newChunksToPurchase = PlotMath.subtractRectangles(chunkToPurchase, newHole);
+        remainingChunksToPurchase = remainingChunksToPurchase.concat(newChunksToPurchase);
+
         j--; // subtract one from j so we don't miss anything
 
-        for (const newHole of newHoles) {
-          const newChunksToPurchase = PlotMath.subtractRectangles(chunkToPurchase, newHole);
-          remainingChunksToPurchase = remainingChunksToPurchase.concat(newChunksToPurchase);
+        // Do a simple assertion that we never have overlapping remainingChunksToPurchase
+        if (PlotMath.doAnyOverlap(remainingChunksToPurchase)) {
+          throw 'Invalid remaining chunks to purchase';
         }
       }
+
     }
     
     i--;
