@@ -10,14 +10,11 @@ const testData = [
 let web3Provider;
 
 export default class PlotManagerContainer extends Component {
-  constructor() {
-    super();
-    web3Provider = new Web3.providers.HttpProvider('http://localhost:9545');
-  }
-
   render() {
     return (
-      <PlotManager userPlots={testData} />
+      <PlotManager userPlots={testData} web3Initialized={
+        (typeof web3 !== 'undefined')
+      } />
     );
   }
 }

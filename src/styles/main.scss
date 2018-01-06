@@ -20,16 +20,17 @@ $main-bg-color: #ffffff;
 }
 
 /*----------- My Plots -----------*/
-.plotManagerSection {
+.plot-section {
   
 }
 
-.noPlotWarning {
+.plot-warning {
   text-align: center;
+  margin-top: 100px;
 }
 
 /*----------- Grid -----------*/
-.gridSection {
+.grid-section {
   text-align: center;
 }
 
@@ -66,6 +67,20 @@ $main-bg-color: #ffffff;
 }
 
 /*----------- About -----------*/
-.aboutSection {
+.about-section span.glyphicon {
+  margin-right: 10px;
+}
 
+.about-section div.well {
+  background-image: none;
+  background-color: $main-bg-color;
+  border: none;
+  box-shadow: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+.about-wellPadding {
+  /* Workaround to make opening animation not jumpy*/
+  padding: 20px;
 }
