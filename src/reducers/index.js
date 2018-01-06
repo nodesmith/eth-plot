@@ -1,5 +1,8 @@
 import { combineReducers } from 'redux';
 import navigation from './navigation';
+import data from './data';
+import grid from './grid';
+import purchase from './purchase';
 
 /**
  * combineReducers is important to understand. As your app might grow in size
@@ -16,6 +19,9 @@ import navigation from './navigation';
  */
 const rootReducer = combineReducers({
   navigation,
+  data,
+  grid,
+  purchase
 });
 
 export default rootReducer;
