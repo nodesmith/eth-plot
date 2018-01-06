@@ -39,7 +39,7 @@ class App extends Component {
             </Nav>
           </Navbar.Collapse>
         </Navbar>
-        { this.props.navigation.tabIndex === 0 ? <PlotManagerContainer /> : null }
+        { this.props.navigation.tabIndex === 0 ? <PlotManagerContainer actions={this.props.actions} {...this.props.data} /> : null }
         { this.props.navigation.tabIndex === 1 ? <GridContainer actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} /> : null }
         { this.props.navigation.tabIndex === 2 ? <About /> : null }
       </div>
