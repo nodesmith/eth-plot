@@ -8,6 +8,7 @@
     "clean": "rimraf dist",
     "build:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js --progress --profile --colors",
     "build": "npm run clean && npm run build:webpack --progress --profile --colors",
+    "buy-random-plots": "babel-node --presets es2015 src/scratch/buy-random-plots.js",
     "dev": "NODE_ENV=development npm start",
     "start": "node devServer.js",
     "lint": "eslint src"
@@ -28,6 +29,7 @@
     "eslint-plugin-react": "^3.16.1",
     "eventsource-polyfill": "^0.9.6",
     "express": "^4.13.3",
+    "fs": "0.0.1-security",
     "html-webpack-plugin": "^2.24.1",
     "json-loader": "^0.5.7",
     "node-sass": "^3.4.2",
@@ -40,9 +42,13 @@
     "style-loader": "^0.13.0",
     "webpack": "^1.12.12",
     "webpack-dev-middleware": "^1.4.0",
-    "webpack-hot-middleware": "^2.6.0"
+    "webpack-hot-middleware": "^2.6.0",
+    "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
+    "babel-cli": "^6.0.0",
+    "babel-preset-es2015": "^6.0.0",
+    "es6-promise-pool": "^2.5.0",
     "jquery": "^3.2.1",
     "react": "^0.14.3",
     "react-bootstrap": "^0.31.5",
@@ -50,6 +56,6 @@
     "react-redux": "^4.1.1",
     "redux": "^3.7.2",
     "redux-thunk": "^1.0.3",
-    "web3": "^0.19.0"
+    "web3": "^1.0.0-beta.27"
   }
 }

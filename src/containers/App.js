@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
 
 import * as NavigationActions from '../actionCreators/NavigationActions';
+import * as DataActions from '../actionCreators/DataActions';
+import * as GridActions from '../actionCreators/GridActions';
 import GridContainer from './GridContainer';
 import PlotManagerContainer from './PlotManagerContainer';
 import About from '../components/About';
@@ -16,6 +18,10 @@ import About from '../components/About';
 class App extends Component {
   changeTab(tabIndex) {
     this.props.actions.changeTab(tabIndex);
+  }
+
+  componentDidMount() {
+    this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
   }
 
   render() {
@@ -34,7 +40,7 @@ class App extends Component {
           </Navbar.Collapse>
         </Navbar>
         { this.props.navigation.tabIndex === 0 ? <PlotManagerContainer /> : null }
-        { this.props.navigation.tabIndex === 1 ? <GridContainer /> : null }
+        { this.props.navigation.tabIndex === 1 ? <GridContainer actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} /> : null }
         { this.props.navigation.tabIndex === 2 ? <About /> : null }
       </div>
     );
@@ -43,6 +49,9 @@ class App extends Component {
 
 App.propTypes = {
   navigation: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
+  grid: PropTypes.object.isRequired,
+  purchase: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 };
 
@@ -52,7 +61,10 @@ App.propTypes = {
 function mapStateToProps(state) {
   console.log(state);
   return {
-    navigation: { tabIndex: state.navigation.tabIndex }
+    navigation: { tabIndex: state.navigation.tabIndex },
+    data: state.data,
+    grid: state.grid,
+    purchase: state.purchase
   };
 }
 
@@ -66,7 +78,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(NavigationActions, dispatch)
+    actions: bindActionCreators(Object.assign({}, NavigationActions, DataActions, GridActions), dispatch)
   };
 }
 

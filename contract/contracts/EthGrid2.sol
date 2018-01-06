@@ -19,18 +19,8 @@ contract EthGrid2 {
         uint256[] holes;
     }
 
-    enum MimeType {
-      PNG,
-      SVG,
-      JPG,
-      GIF,
-      WEBP,
-      RGB
-    }
-    
     struct ZoneData {
-        MimeType mimeType;
-        bytes data;
+        bytes ipfsHash;
         string url;
     }
 
@@ -67,7 +57,7 @@ contract EthGrid2 {
         // Initialize the contract with a single block with the admin owns
         uint256[] memory holes; // TODO - do we need to initialize this or is it done for us?
         ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
-        data.push(ZoneData(MimeType.RGB, "fa3", "http://ethgrid.com"));
+        data.push(ZoneData("fa3", "http://ethgrid.com"));
         createAuction(0, INITIAL_AUCTION_PRICE);
         balances[admin] = 0;
     }
@@ -87,6 +77,25 @@ contract EthGrid2 {
       );
     }
 
+    function getPlot(uint256 zoneIndex) public constant returns (uint16, uint16, uint16, uint16, address, uint256, string, bytes) {
+      uint256 price = tokenIdToAuction[zoneIndex];
+      ZoneData memory zoneData = data[zoneIndex];
+
+      return (
+        ownership[zoneIndex].x,
+        ownership[zoneIndex].y,
+        ownership[zoneIndex].w,
+        ownership[zoneIndex].h,
+        ownership[zoneIndex].owner,
+        price,
+        zoneData.url,
+        zoneData.ipfsHash);
+    }
+
+    function ownershipLength() public constant returns (uint256) {
+      return ownership.length;
+    }
+    
     // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
     function updateAuction(uint256 zoneIndex, uint256 newPriceInGweiPerPixel) public {
       require(zoneIndex > 0);
@@ -97,7 +106,7 @@ contract EthGrid2 {
       AuctionUpdated(zoneIndex, newPriceInGweiPerPixel);
     }
 
-    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, MimeType mimeType, bytes imgData, string url) public payable returns (uint256) {
+    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
       Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
       
       // TODO - Require the funds to make sense and pay everyone out
@@ -114,8 +123,10 @@ contract EthGrid2 {
       }
 
       // Take in the input data for the actual grid!
-      ZoneData memory newData = ZoneData(mimeType, imgData, url);
+      ZoneData memory newData = ZoneData(ipfsHash, url);
       data.push(newData);
+
+      updateAuction(ownership.length - 1, initialPurchasePrice);
       
       return ownership.length - 1;
     }
@@ -152,12 +163,13 @@ contract EthGrid2 {
       uint256 totalPrice = 0;
       uint256 areaIndicesIndex = 0;
 
-      // Walk the ownership array backwards
-      for (uint256 ownershipIndex = ownership.length - 1; areaIndicesIndex < areaIndices.length && ownershipIndex >= 0 && ownershipIndex < ownership.length; ownershipIndex--) {
+      // Walk the ownership array backwards. Do funny checks for incrementing and decrementing indices becaues uints will wrap
+      for (uint256 ownershipIndex = ownership.length - 1; areaIndicesIndex < areaIndices.length && ownershipIndex < ownership.length; ownershipIndex--) {
         Rect memory currentOwnershipRect = Rect(
             ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
-        if (ownershipIndex == areaIndices[areaIndicesIndex]) {
+        // Keep looping through while we are declaring that we want this area
+        while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
           // This is a zone the caller has declared they were going to buy
           // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
           require(doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
@@ -182,14 +194,14 @@ contract EthGrid2 {
           }
 
           // Finally, add the price of this rect to the totalPrice computation
-          totalPrice += _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndicesIndex);
+          totalPrice += _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
 
           areaIndicesIndex++;
-        } else {
-          // This is a zone which the caller has not said they were going to buy
-          require(!doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
         }
       }
+
+      // This means we checked every area index
+      require(areaIndicesIndex == areaIndices.length);
 
       return totalPrice;
     }
@@ -215,7 +227,7 @@ contract EthGrid2 {
 
       uint256 totalArea = 0;
       uint256 i = 0;
-      uint j = 0;
+      uint256 j = 0;
       for (i = 0; i < areaIndices.length; i++) {
         // Define the rectangle and add it to our collection of them
         Rect memory rect = Rect(purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
