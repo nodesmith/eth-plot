@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
 
-import * as NavigationActions from '../actionCreators/NavigationActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
 import GridContainer from './GridContainer';
@@ -69,7 +68,6 @@ class App extends Component {
 }
 
 App.propTypes = {
-  navigation: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   grid: PropTypes.object.isRequired,
   purchase: PropTypes.object.isRequired,
@@ -82,7 +80,6 @@ App.propTypes = {
 function mapStateToProps(state) {
   console.log(state);
   return {
-    navigation: { tabIndex: state.navigation.tabIndex },
     data: state.data,
     grid: state.grid,
     purchase: state.purchase
