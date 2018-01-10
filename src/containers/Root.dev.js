@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
+import { HashRouter } from 'react-router-dom'
+
 import App from './App';
 import DevTools from './DevTools';
 
@@ -17,7 +19,9 @@ module.exports = class Root extends Component {
        */
       <Provider store={store}>
         <div>
-          <App />
+          <HashRouter>
+            <App />
+          </HashRouter>
           {/* Being the dev version of our Root component, we include DevTools below */}
           <DevTools />
         </div>

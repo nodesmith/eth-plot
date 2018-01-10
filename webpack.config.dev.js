@@ -63,5 +63,7 @@ module.exports = {
         loader: 'json-loader'
       }
     ]
-  }
+  },
+  // For react-router from localhost
+  historyApiFallback: true
 };

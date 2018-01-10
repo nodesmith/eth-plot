@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
 
-import * as NavigationActions from '../actionCreators/NavigationActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
 import GridContainer from './GridContainer';
@@ -25,30 +25,49 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.props);
+    const linkStyle = {
+      display: 'inline-block',
+      padding: '20px 16px 0 16px',
+      textDecoration: 'none',
+      color: '#36495a',
+      textTransform: 'uppercase',
+      fontSize: 12,
+      fontWeight: 'bold',
+      transition: '.2s',
+      ':hover': {
+        color: '#0078d2'
+      }
+    };
+
     return (
       <div className="main-app-container">
         <Navbar collapseOnSelect className="navbar-static-top">
           <Navbar.Collapse>
             <Nav>
-              <NavItem onClick={ () => { this.changeTab(0); } }>My Plots</NavItem>
-              <NavItem onClick={ () => { this.changeTab(1); } }>
+              <NavLink style={linkStyle} to="/myplots" activeClassName="selected">My Plots</NavLink>
+              <NavLink to="/" activeClassName="selected">
                 <img src="../assets/logo.png" alt="ethGridLogo" height="21" width="21" />
-              </NavItem>
-              <NavItem onClick={ () => { this.changeTab(2); } }>About</NavItem>
+              </NavLink>
+              <NavLink style={linkStyle} to="/about" activeClassName="selected">About</NavLink>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
-        { this.props.navigation.tabIndex === 0 ? <PlotManagerContainer /> : null }
-        { this.props.navigation.tabIndex === 1 ? <GridContainer actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} /> : null }
-        { this.props.navigation.tabIndex === 2 ? <About /> : null }
+        <main>
+          <Switch>
+            
+            <Route exact path='/' render={(routeProps) => (
+              <GridContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
+            )}/>
+            <Route path='/myplots' component={PlotManagerContainer}/>
+            <Route path='/about' component={About}/>
+          </Switch>
+        </main>
       </div>
     );
   }
 }
 
 App.propTypes = {
-  navigation: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   grid: PropTypes.object.isRequired,
   purchase: PropTypes.object.isRequired,
@@ -61,7 +80,6 @@ App.propTypes = {
 function mapStateToProps(state) {
   console.log(state);
   return {
-    navigation: { tabIndex: state.navigation.tabIndex },
     data: state.data,
     grid: state.grid,
     purchase: state.purchase
@@ -88,9 +106,11 @@ function mapDispatchToProps(dispatch) {
  * that is passed into it, it actually returns a new connected componet class for use.
  *
  * More info: https://github.com/rackt/react-redux
+ * 
+ * The withRouter wrapper ensures routes are properly updated.  More info here: 
+ * https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/redux.md
  */
-
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps
-)(App);
+)(App));
