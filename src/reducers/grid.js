@@ -8,7 +8,7 @@ const initialState = {
   isDraggingRect: false,
   dragRectStart: null,
   dragRectCurr: null,
-  scale: 4
+  scale: 3
 }
 
 export default function grid(state = initialState, action) {
