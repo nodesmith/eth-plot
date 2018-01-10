@@ -35,7 +35,7 @@ export default class Grid extends Component {
     const scale = this.props.scale;
 
     const plots = this.props.plots.map((plot, index) => {
-      return (<GridPlot scale={scale} plot={plot} index={index} isHovered={this.props.hoveredIndex === index} hoverAction={this.props.actions.hoverOverPlot} />);
+      return (<GridPlot scale={scale} plot={plot} index={index} isHovered={this.props.hoveredIndex === index} hoverAction={this.props.actions.hoverOverPlot} key={index} />);
     });
 
     const marginLeft = `calc(calc(100vw - ${this.props.gridInfo.width * scale}px) / 2)`;
