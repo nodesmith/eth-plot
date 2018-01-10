@@ -25,30 +25,16 @@ class App extends Component {
   }
 
   render() {
-    const linkStyle = {
-      display: 'inline-block',
-      padding: '20px 16px 0 16px',
-      textDecoration: 'none',
-      color: '#36495a',
-      textTransform: 'uppercase',
-      fontSize: 12,
-      fontWeight: 'bold',
-      transition: '.2s',
-      ':hover': {
-        color: '#0078d2'
-      }
-    };
-
     return (
       <div className="main-app-container">
         <Navbar collapseOnSelect className="navbar-static-top">
           <Navbar.Collapse>
             <Nav>
-              <NavLink style={linkStyle} to="/myplots" activeClassName="selected">My Plots</NavLink>
+              <NavLink className="main-app-nav" to="/myplots" activeClassName="selected">My Plots</NavLink>
               <NavLink to="/" activeClassName="selected">
                 <img src="../assets/logo.png" alt="ethGridLogo" height="21" width="21" />
               </NavLink>
-              <NavLink style={linkStyle} to="/about" activeClassName="selected">About</NavLink>
+              <NavLink className="main-app-nav" to="/about" activeClassName="selected">About</NavLink>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -96,7 +82,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, NavigationActions, DataActions, GridActions), dispatch)
+    actions: bindActionCreators(Object.assign({}, DataActions, GridActions), dispatch)
   };
 }
 
