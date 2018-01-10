@@ -90,7 +90,7 @@ export default class Grid extends Component {
     };
 
     return (
-      <div className="gridSection" style={sectionStyle}>
+      <div className="grid-section" style={sectionStyle}>
         <div style={gridStyle} className="grid" onMouseOut={this.mouseOut.bind(this)}>
           {plots}
         </div>

@@ -21,15 +21,17 @@ const initialState = {
     contractAddress: contractAddress,
     web3Provider: web3Provider
   },
-  purchaseInfo: null
+  purchaseInfo: null,
 };
 
 export default function data(state = initialState, action) {
+  let newState = {};
+  
   switch (action.type) {
     case ActionTypes.ADD_PLOT:
       const newHoles = computeNewHoles(action.newPlot.rect, state.holes, state.plots);
 
-      const newState = Object.assign({}, state, {
+      newState = Object.assign({}, state, {
         numberOfPlots: state.numberOfPlots + 1,
         holes: newHoles
       });
@@ -40,6 +42,13 @@ export default function data(state = initialState, action) {
       return Object.assign({}, state, { isFetchingPlots: true} );
     case ActionTypes.LOAD_PLOTS_DONE:
       return Object.assign({}, state, { isFetchingPlots: false} );
+    case ActionTypes.LIST_PLOT:
+      // TODO
+      return state;
+    case ActionTypes.PLOT_LISTED:
+      newState = Object.assign({}, state);
+      newState.plots[action.zoneIndex].txHash = action.txHash;
+      return newState;
     case ActionTypes.SHOW_PURCHASE_DIALOG:
       const purchaseInfo = computePurchaseInfo(action.rectToPurchase, state.plots, state.holes);
       return Object.assign({}, state, { purchaseInfo: purchaseInfo} );

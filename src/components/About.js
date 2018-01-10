@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import { 
   Button,
   Col,
-  Collapse,
   Grid,
-  Row,
-  Well
+  Row
 } from 'react-bootstrap';
 
 import FAQ from './FAQ';
