@@ -25,11 +25,15 @@ export function doneLoadingPlots() {
 }
 
 function initializeContract(contractInfo) {
-  const web3 = new Web3(contractInfo.web3Provider);
+  const web3 = getWeb3(contractInfo);
   const contract = new web3.eth.Contract(contractInfo.abi, contractInfo.contractAddress);
   return contract;
 }
 
+function getWeb3(contractInfo) {
+  const web3 =  window.web3 ? new Web3(window.web3.currentProvider) : new Web3(contractInfo.web3Provider);
+  return web3;
+}
 
 function getRandomColor() {
   var letters = '0123456789ABCDEF';
@@ -115,7 +119,7 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash)
   return function(dispatch) {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
-    const web3 = new Web3(contractInfo.web3Provider);
+    const web3 = getWeb3(contractInfo);
     const contract = initializeContract(contractInfo);
     
     const param1 = buildArrayFromRectangles([rectToPurchase]);
