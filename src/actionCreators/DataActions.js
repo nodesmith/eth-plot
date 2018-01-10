@@ -18,6 +18,20 @@ export function loadPlots() {
   };
 }
 
+export function listPlot() {
+  return {
+    type: ActionTypes.LIST_PLOT
+  };
+}
+
+export function plotListed(txHash, zoneIndex) {
+  return {
+    type: ActionTypes.PLOT_LISTED,
+    txHash: txHash,
+    zoneIndex: zoneIndex  
+  };
+}
+
 export function doneLoadingPlots() {
   return {
     type: ActionTypes.LOAD_PLOTS_DONE
@@ -73,7 +87,8 @@ export function fetchPlotsFromWeb3(contractInfo) {
               url: plotInfo['6'],
               ipfsHash: plotInfo['7']
             },
-            color: getRandomColor()
+            color: getRandomColor(),
+            zoneIndex: currentIndex
           };
 
           plot.rect.x2 = plot.rect.x + plot.rect.w;
@@ -92,6 +107,30 @@ export function fetchPlotsFromWeb3(contractInfo) {
       // Start the pool. 
       return pool.start().then(() => {
         dispatch(doneLoadingPlots());
+      });
+    });
+  }
+}
+
+// thunk for updating price of plot
+export function updateAuction(contractInfo, zoneIndex, newPrice) {
+  return function(dispatch) {
+    const web3 = new Web3(contractInfo.web3Provider);
+    const contract = initializeContract(contractInfo);
+    
+    const param1 = zoneIndex;
+    const param2 = newPrice;
+    const auctionFunction = contract.methods.updateAuction(param1, param2);
+
+    return web3.eth.getCoinbase().then(coinbase => {
+      const gasEstimate = 2000000;
+      return auctionFunction.send({
+        from: coinbase,
+        gasPrice: '30000000',
+        gas: gasEstimate * 2
+      }).then((transactionReceipt) => {
+        dispatch(plotListed(transactionReceipt.transactionHash, zoneIndex));        
+        return transactionReceipt;
       });
     });
   }

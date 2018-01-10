@@ -29,6 +29,10 @@ $main-bg-color: #ffffff;
   margin-top: 100px;
 }
 
+.plot-info {
+  word-wrap: break-word;
+}
+
 /*----------- Grid -----------*/
 .grid-section {
   text-align: center;
@@ -71,7 +75,8 @@ $main-bg-color: #ffffff;
   margin-right: 10px;
 }
 
-.about-section div.well {
+/* ---------- General. -----------*/
+div.well {
   background-image: none;
   background-color: $main-bg-color;
   border: none;
@@ -80,7 +85,7 @@ $main-bg-color: #ffffff;
   padding: 0px;
 }
 
-.about-wellPadding {
+.wellPadding {
   /* Workaround to make opening animation not jumpy*/
   padding: 20px;
 }
