@@ -19,6 +19,11 @@ $main-bg-color: #ffffff;
   transition: .2s;
 }
 
+.main-app-navActive {
+  // Styling for when tab is active, nothing for now
+  text-decoration: none;
+}
+
 .main-app-nav:hover {
   color: #0f1418;
   text-decoration: none;

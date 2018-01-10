@@ -30,8 +30,8 @@ class App extends Component {
         <Navbar collapseOnSelect className="navbar-static-top">
           <Navbar.Collapse>
             <Nav>
-              <NavLink className="main-app-nav" to="/myplots" activeClassName="selected">My Plots</NavLink>
-              <NavLink to="/" activeClassName="selected">
+              <NavLink className="main-app-nav" to="/myplots" activeClassName="main-app-navActive">My Plots</NavLink>
+              <NavLink to="/" activeClassName="main-app-navActive">
                 <img src="../assets/logo.png" alt="ethGridLogo" height="21" width="21" />
               </NavLink>
               <NavLink className="main-app-nav" to="/about" activeClassName="selected">About</NavLink>
@@ -40,11 +40,12 @@ class App extends Component {
         </Navbar>
         <main>
           <Switch>
-            
             <Route exact path='/' render={(routeProps) => (
               <GridContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
-            <Route path='/myplots' component={PlotManagerContainer}/>
+            <Route path='/myplots' render={(routeProps) => (
+              <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} />
+            )}/>
             <Route path='/about' component={About}/>
           </Switch>
         </main>
