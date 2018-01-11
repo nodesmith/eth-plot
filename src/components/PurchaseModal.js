@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, Modal, Row, Col } from 'react-bootstrap';
+import { Button, Modal, PageHeader, Row, Col } from 'react-bootstrap';
 import RectImage from './RectImage';
 
 export default class PurchaseModal extends Component {
@@ -26,7 +26,7 @@ export default class PurchaseModal extends Component {
       height: '100%'
     };
 
-    const imageHeight = 200;
+    const imageHeight = 140;
 
     function getRandomColor() {
       var letters = '0123456789ABCDEF';
@@ -62,19 +62,26 @@ export default class PurchaseModal extends Component {
     const purchasingMessage = `${this.props.rectToPurchase.w * this.props.rectToPurchase.h} pixels from ${Object.keys(colors).length} plots`;
 
     return (
-      <Modal show={this.props.isVisible} onHide={this.close.bind(this)}>
+      <Modal bsSize='med' show={this.props.isVisible} onHide={this.close.bind(this)}>
           <Modal.Header closeButton>
-            <Modal.Title>Purchase Plot</Modal.Title>
+            <Modal.Title>Purchase for {this.props.purchaseInfo.purchasePrice} eth</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+                {/* <PageHeader><small>Summary</small></PageHeader> */}
             <Row>
-            <Col sm={6} style={imageStyle} >
+            <Col sm={4} style={imageStyle} >
               <RectImage baseRect={baseRect} subRects={subRects} height={imageHeight} width={imageHeight} />
               <div className='rectImageCaption'>
                 <span>{coordinatesMessage}</span>
               </div>
             </Col>
-            <Col sm={6} style={imageStyle} >
+            <Col sm={4} style={imageStyle} >
+              <RectImage baseRect={purchasePreviewBaseRect} subRects={purchasePreviewSubRects} height={purchasePreviewImageHeight} width={purchasePreviewImageWidth} />
+              <div className='rectImageCaption'>
+                <span>{purchasingMessage}</span>
+              </div>
+            </Col>
+            <Col sm={4} style={imageStyle} >
               <RectImage baseRect={purchasePreviewBaseRect} subRects={purchasePreviewSubRects} height={purchasePreviewImageHeight} width={purchasePreviewImageWidth} />
               <div className='rectImageCaption'>
                 <span>{purchasingMessage}</span>
@@ -83,8 +90,8 @@ export default class PurchaseModal extends Component {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.close.bind(this)}>Cancel</Button>
-            <Button bsStyle='primary' onClick={this.buyIt.bind(this)}>Next: Choose Image</Button>
+            {/* <Button onClick={this.close.bind(this)}>Cancel</Button> */}
+            <Button style={{width: '100%'}} bsStyle='primary' onClick={this.buyIt.bind(this)}>Next: Choose Image</Button>
           </Modal.Footer>
         </Modal>
     );

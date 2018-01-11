@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react';
 export default class RectImage extends Component {
 
   getRenderedRect(key, rect) {
-    return (<rect key={key} x={rect.x} y={rect.y} width={rect.w} height={rect.h} fill={rect.color}></rect>);
+    return (<rect key={key} x={rect.x} y={rect.y} width={rect.w} height={rect.h} stroke={rect.color} fill={rect.color}></rect>);
   }
 
   render() {
