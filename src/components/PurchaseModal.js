@@ -26,7 +26,7 @@ export default class PurchaseModal extends Component {
       height: '100%'
     };
 
-    const imageHeight = 60;
+    const imageHeight = 200;
 
     function getRandomColor() {
       var letters = '0123456789ABCDEF';
@@ -58,7 +58,8 @@ export default class PurchaseModal extends Component {
       purchasePreviewImageHeight = imageHeight * purchaseAspectRatio;
     }
 
-    const purchasingMessage = `Purchasing ${this.props.rectToPurchase.w * this.props.rectToPurchase.h} pixels from ${Object.keys(colors).length} plots`;
+    const coordinatesMessage = `x: ${this.props.rectToPurchase.x}, y: ${this.props.rectToPurchase.y}, w: ${this.props.rectToPurchase.w}, h: ${this.props.rectToPurchase.h}`;
+    const purchasingMessage = `${this.props.rectToPurchase.w * this.props.rectToPurchase.h} pixels from ${Object.keys(colors).length} plots`;
 
     return (
       <Modal show={this.props.isVisible} onHide={this.close.bind(this)}>
@@ -66,39 +67,24 @@ export default class PurchaseModal extends Component {
             <Modal.Title>Purchase Plot</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Row className='modalRow'>
-              <Col xs={2} style={imageStyle} >
-                <RectImage baseRect={baseRect} subRects={subRects} height={imageHeight} width={imageHeight} />
-              </Col>
-              <Col xs={2} style={imageStyle} >
-                <div>
-                  <span>x: {this.props.rectToPurchase.x}</span>
-                  <br />
-                  <span>w: {this.props.rectToPurchase.w}</span>
-                </div>
-              </Col>
-              <Col xs={2} style={imageStyle} >
-                <div>
-                  <span>y: {this.props.rectToPurchase.y}</span>
-                  <br />
-                  <span>h: {this.props.rectToPurchase.h}</span>
-                </div>
-              </Col>
-            </Row>
-            <Row className='modalRow'>
-              <Col xs={2} style={imageStyle} >
-                <RectImage baseRect={purchasePreviewBaseRect} subRects={purchasePreviewSubRects} height={purchasePreviewImageHeight} width={purchasePreviewImageWidth} />
-              </Col>
-              <Col xs={10} style={imageStyle} >
-                <div>
-                  <span>{purchasingMessage}</span>
-                </div>
-              </Col>
+            <Row>
+            <Col sm={6} style={imageStyle} >
+              <RectImage baseRect={baseRect} subRects={subRects} height={imageHeight} width={imageHeight} />
+              <div className='rectImageCaption'>
+                <span>{coordinatesMessage}</span>
+              </div>
+            </Col>
+            <Col sm={6} style={imageStyle} >
+              <RectImage baseRect={purchasePreviewBaseRect} subRects={purchasePreviewSubRects} height={purchasePreviewImageHeight} width={purchasePreviewImageWidth} />
+              <div className='rectImageCaption'>
+                <span>{purchasingMessage}</span>
+              </div>
+            </Col>
             </Row>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.close.bind(this)}>Cancel</Button>
-            <Button bsStyle='primary' onClick={this.buyIt.bind(this)}>Choose Image</Button>
+            <Button bsStyle='primary' onClick={this.buyIt.bind(this)}>Next: Choose Image</Button>
           </Modal.Footer>
         </Modal>
     );

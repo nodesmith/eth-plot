@@ -3,19 +3,7 @@ import React, { Component, PropTypes } from 'react';
 export default class RectImage extends Component {
 
   getRenderedRect(key, rect) {
-    const startX = this.props.baseRect.x;
-    const startY = this.props.baseRect.y;
-    const scale = this.props.height / this.props.baseRect.h;
-    const rectStyle = {
-      height: rect.h * scale,
-      width: rect.w * scale,
-      left: (rect.x - startX) * scale,
-      top: (rect.y - startY) * scale,
-      position: 'absolute',
-      backgroundColor: rect.color
-    };
-
-    return (<div key={key} style={rectStyle}></div>);
+    return (<rect key={key} x={rect.x} y={rect.y} width={rect.w} height={rect.h} fill={rect.color}></rect>);
   }
 
   render() {
@@ -23,10 +11,7 @@ export default class RectImage extends Component {
       throw new Error('baseRect and height / width are not same dimension');
     }
 
-    const rootStyle = {
-      height: this.props.height,
-      width: this.props.width,
-      position: 'relative',
+    const svgStyle = {
       marginLeft: 'auto',
       marginRight: 'auto'
     };
@@ -35,9 +20,13 @@ export default class RectImage extends Component {
     const layeredRects = this.props.subRects.map((subRect, index) => this.getRenderedRect(index, subRect));
     const allRects = baseRects.concat(layeredRects);
 
+    const viewBox = `${this.props.baseRect.x}, ${this.props.baseRect.y}, ${this.props.baseRect.w}, ${this.props.baseRect.h}`;
+
     return (
-    <div style={rootStyle}>
-      {allRects}
+    <div className='rectImage'>
+      <svg style={svgStyle} viewBox={viewBox} height={this.props.height} width={this.props.width}>
+        {allRects}
+      </svg>
     </div>);
   }
 }
