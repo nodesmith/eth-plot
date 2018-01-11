@@ -8,6 +8,27 @@ $main-bg-color: #ffffff;
   font-family: 'Raleway', sans-serif;
 }
 
+.main-app-nav {
+  display: inline-block;
+  padding: 20px 16px 0 16px;
+  color: #36495a;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: bold;
+  transition: .2s;
+}
+
+.main-app-navActive {
+  // Styling for when tab is active, nothing for now
+  text-decoration: none;
+}
+
+.main-app-nav:hover {
+  color: #0f1418;
+  text-decoration: none;
+}
+
 /*----------- Nav Bar -----------*/
 .navbar .navbar-nav {
   display: inline-block;
@@ -27,6 +48,10 @@ $main-bg-color: #ffffff;
 .plot-warning {
   text-align: center;
   margin-top: 100px;
+}
+
+.plot-info {
+  word-wrap: break-word;
 }
 
 /*----------- Grid -----------*/
@@ -71,7 +96,8 @@ $main-bg-color: #ffffff;
   margin-right: 10px;
 }
 
-.about-section div.well {
+/* ---------- General. -----------*/
+div.well {
   background-image: none;
   background-color: $main-bg-color;
   border: none;
@@ -80,7 +106,7 @@ $main-bg-color: #ffffff;
   padding: 0px;
 }
 
-.about-wellPadding {
+.wellPadding {
   /* Workaround to make opening animation not jumpy*/
   padding: 20px;
 }

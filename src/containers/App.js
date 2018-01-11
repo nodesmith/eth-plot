@@ -25,40 +25,27 @@ class App extends Component {
   }
 
   render() {
-    const linkStyle = {
-      display: 'inline-block',
-      padding: '20px 16px 0 16px',
-      textDecoration: 'none',
-      color: '#36495a',
-      textTransform: 'uppercase',
-      fontSize: 12,
-      fontWeight: 'bold',
-      transition: '.2s',
-      ':hover': {
-        color: '#0078d2'
-      }
-    };
-
     return (
       <div className="main-app-container">
         <Navbar collapseOnSelect className="navbar-static-top">
           <Navbar.Collapse>
             <Nav>
-              <NavLink style={linkStyle} to="/myplots" activeClassName="selected">My Plots</NavLink>
-              <NavLink to="/" activeClassName="selected">
+              <NavLink className="main-app-nav" to="/myplots" activeClassName="main-app-navActive">My Plots</NavLink>
+              <NavLink to="/" activeClassName="main-app-navActive">
                 <img src="../assets/logo.png" alt="ethGridLogo" height="21" width="21" />
               </NavLink>
-              <NavLink style={linkStyle} to="/about" activeClassName="selected">About</NavLink>
+              <NavLink className="main-app-nav" to="/about" activeClassName="selected">About</NavLink>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
         <main>
           <Switch>
-            
             <Route exact path='/' render={(routeProps) => (
               <GridContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
-            <Route path='/myplots' component={PlotManagerContainer}/>
+            <Route path='/myplots' render={(routeProps) => (
+              <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} />
+            )}/>
             <Route path='/about' component={About}/>
           </Switch>
         </main>
