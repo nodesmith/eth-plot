@@ -3,12 +3,14 @@ import React, { Component, PropTypes } from 'react';
 export default class RectImage extends Component {
 
   getRenderedRect(key, rect) {
+    const startX = this.props.baseRect.x;
+    const startY = this.props.baseRect.y;
     const scale = this.props.height / this.props.baseRect.h;
     const rectStyle = {
       height: rect.h * scale,
       width: rect.w * scale,
-      left: rect.x * scale,
-      top: rect.y * scale,
+      left: (rect.x - startX) * scale,
+      top: (rect.y - startY) * scale,
       position: 'absolute',
       backgroundColor: rect.color
     };
@@ -24,7 +26,9 @@ export default class RectImage extends Component {
     const rootStyle = {
       height: this.props.height,
       width: this.props.width,
-      position: 'relative'
+      position: 'relative',
+      marginLeft: 'auto',
+      marginRight: 'auto'
     };
 
     const baseRects = [this.getRenderedRect('base', this.props.baseRect)];
