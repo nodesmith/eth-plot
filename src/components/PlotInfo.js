@@ -3,38 +3,24 @@ import {
   Button, 
   Col,
   Collapse,
-  ControlLabel,
-  FormControl,
-  FormGroup,
   Input,
   Row,
   Well
 } from 'react-bootstrap';
 
+import Buyout from './Buyout';
+
 class PlotInfo extends Component {
   constructor(...args) {
-		super(...args);
-		this.state = {
-			newBuyoutPrice: 0
-		};
-  }
-
-  updatePrice() {
-    this.props.actions.updateAuction(
-      this.props.contractInfo,
-      this.props.info.zoneIndex,
-      this.state.newBuyoutPrice);    
-  }
-
-  priceInputChanged(e) {
-    this.setState({ newBuyoutPrice: e.target.value });
+    super(...args);
+    this.state = {};
   }
 
   render() {
     const previewStyle = {
       backgroundColor: this.props.info.color,
       width: `${this.props.info.rect.w}px`,
-      height: `${this.props.info.rect.w}px`,
+      height: `${this.props.info.rect.h}px`,
     };
 
     return (
@@ -50,32 +36,30 @@ class PlotInfo extends Component {
               : null
             }
 
-            <h4>Buyout price per pixel: {
+            <h4>Buyout price per pixel in gwei: {
               (this.props.info.buyoutPrice > 0) ? this.props.info.buyoutPrice : "Not For Sale" }
             </h4>
-         
-              <Button onClick={() => this.setState({ open: !this.state.open })}>Update Buyout</Button>
-              <Collapse in={this.state.open}>
-                <div>
-                  <Well>
-                    <div className="wellPadding">
-                      <FormGroup
-                        controlId="formBasicText"
-                      >
-                        <ControlLabel>New Buyout Price Per Pixel (in Gwei)</ControlLabel>
-                        <FormControl
-                          type="text"
-                          value={this.state.value}
-                          placeholder="Enter price (0 to cancel auction)"
-                          onChange={this.priceInputChanged.bind(this)}
-                        />
-                        <FormControl.Feedback />
-                        <Button onClick={() => this.updatePrice()}>Save</Button>
-                      </FormGroup>
-                    </div>
-                  </Well>
-                </div>
-              </Collapse>
+
+          
+            <h4>Unsold pixels in plot: {
+              // TODO Account for holes.
+              this.props.info.rect.w * this.props.info.rect.h
+            }</h4>
+
+            <Button onClick={() => this.setState({ open: !this.state.open })}>
+              <span className="glyphicon glyphicon-pencil"></span>
+            </Button>
+            <Collapse in={this.state.open}>
+              <Well>
+              <Buyout 
+                actions={this.props.actions} 
+                contractInfo={this.props.contractInfo}
+                currentBuyout={this.props.info.buyoutPrice} 
+                totalPixels={this.props.info.rect.w * this.props.info.rect.h}
+                zoneIndex={this.props.info.zoneIndex}
+              />
+              </Well>
+            </Collapse>
           </Col>
 
           <Col xs={6}>
