@@ -6,14 +6,12 @@ import {
   FormGroup
 } from 'react-bootstrap';
 
-import FAQ from './FAQ';
-
 export default class Buyout extends Component {
   constructor(...args) {
-		super(...args);
-		this.state = {
-			newBuyoutPrice: 0
-		};
+    super(...args);
+    this.state = {
+      newBuyoutPrice: 0
+    };
   }
 
   updatePrice() {
@@ -40,7 +38,7 @@ export default class Buyout extends Component {
     } else {
       return 'error';
     }
-	}
+  }
 
   render() {
     return (
