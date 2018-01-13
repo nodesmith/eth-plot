@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, Modal, PageHeader, Row, Col } from 'react-bootstrap';
+import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon } from 'react-bootstrap';
 import RectImage from './RectImage';
+import PlotPurchaseForm from './PlotPurchaseForm';
 
 export default class PurchaseModal extends Component {
   close() {
@@ -62,12 +63,13 @@ export default class PurchaseModal extends Component {
     const purchasingMessage = `${this.props.rectToPurchase.w * this.props.rectToPurchase.h} pixels from ${Object.keys(colors).length} plots`;
 
     return (
-      <Modal bsSize='med' show={this.props.isVisible} onHide={this.close.bind(this)}>
+      <Modal show={this.props.isVisible} onHide={this.close.bind(this)}>
           <Modal.Header closeButton>
             <Modal.Title>Purchase for {this.props.purchaseInfo.purchasePrice} eth</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-                {/* <PageHeader><small>Summary</small></PageHeader> */}
+            <PlotPurchaseForm rectToPurchase={this.props.rectToPurchase} />
+{/*             
             <Row>
             <Col sm={4} style={imageStyle} >
               <RectImage baseRect={baseRect} subRects={subRects} height={imageHeight} width={imageHeight} />
@@ -87,7 +89,7 @@ export default class PurchaseModal extends Component {
                 <span>{purchasingMessage}</span>
               </div>
             </Col>
-            </Row>
+            </Row> */}
           </Modal.Body>
           <Modal.Footer>
             {/* <Button onClick={this.close.bind(this)}>Cancel</Button> */}
