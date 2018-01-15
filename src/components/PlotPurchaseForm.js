@@ -8,10 +8,11 @@ export default class PlotPurchaseForm extends Component {
     this.state = {
       fileToUse: null,
       imageFileInfo: null,
-      fileValidation: {
-        state: null,
-        message: 'This is the file which will be in your plot'
-      }
+      fileValidation: this.validateImageFile(null, null),
+
+      website: '',
+      websiteValidation: this.validateWebsite(null),
+      buyoutValidation: this.validateBuyout(null)
     }
   }
 
@@ -103,7 +104,7 @@ export default class PlotPurchaseForm extends Component {
 
     return {
       state: 'success',
-      message: ``
+      message: 'The image looks great!'
     };
   }
 
@@ -129,6 +130,54 @@ export default class PlotPurchaseForm extends Component {
     });
   }
 
+  websiteChanged(event) {
+    const newValue = event.target.value;
+    const validation = this.validateWebsite(newValue);
+    this.setState({
+      website: newValue,
+      websiteValidation: validation
+    });
+  }
+
+  validateWebsite(website) {
+    if (!website || website.length == 0) {
+      return {
+        state: null,
+        message: 'The website where your plot links to'
+      };
+    }
+
+    if (website.length < 7) {
+      return {
+        state: 'error',
+        message: 'The website must be at least 7 characters'
+      };
+    }
+
+    if (website.indexOf('http://') !== 0 && website.indexOf('https://') !== 0) {
+      return {
+        state: 'error',
+        message: `The website must start with 'http://' or 'https://'`
+      };
+    }
+
+    if (website.length > 2048) {
+      return {
+        state: 'error',
+        message: `The website must be less than 2048 characters (${website.length} characters)`
+      };
+    }
+
+    return {
+      state: 'success',
+      message: `Users will go to ${website} when clicking your plot`
+    };
+  }
+
+  validateBuyout(buyout) {
+
+  }
+
   render() {
     const imageLabel = `Plot Image (${this.props.rectToPurchase.w} x ${this.props.rectToPurchase.h})`;
 
@@ -136,20 +185,22 @@ export default class PlotPurchaseForm extends Component {
       <div>
         <form>
           <FormGroup controlId='imageSelection' validationState={this.state.fileValidation.state}>
-            <ControlLabel>{imageLabel}<Glyphicon glyph='info-sign' /></ControlLabel>
+            <ControlLabel>{imageLabel}</ControlLabel>
             <InputGroup>
               <InputGroup.Button>
                 <Button onClick={this.browseForImage.bind(this)}>Browse...</Button>
               </InputGroup.Button>
               <FormControl type="text" value={this.state.fileToUse ? this.state.fileToUse.fileName: ''}/>
-              <FormControl.Feedback />
             </InputGroup>
+            <FormControl.Feedback />
             <HelpBlock>{this.state.fileValidation.message}</HelpBlock>
           </FormGroup>
 
-          <FormGroup controleId='websiteEntry'>
+          <FormGroup controleId='websiteEntry' validationState={this.state.websiteValidation.state}>
             <ControlLabel>Website</ControlLabel>
-            <FormControl type="text" />
+            <FormControl type="text" onChange={this.websiteChanged.bind(this)}/>
+            <FormControl.Feedback />
+            <HelpBlock>{this.state.websiteValidation.message}</HelpBlock>
           </FormGroup>
 
           <FormGroup controleId='buyoutPrice'>
