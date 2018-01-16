@@ -4,7 +4,7 @@ class FullPageStatus extends Component {
   render() {
     return (
       <div className="plot-warning" >
-      <h4><i>{this.props.message}.</i></h4>
+      <h4><i>{this.props.message}</i></h4>
       </div>  
     );
   }
