@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock } from 'react-bootstrap';
+import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
 import Decimal from 'decimal.js';
 
 
@@ -23,7 +23,8 @@ export default class PlotPurchaseForm extends Component {
       websiteValidation: this.validateWebsite(null),
 
       buyout: this.computeInitialBuyout(this.props.rectToPurchase),
-      buyoutValidation: this.validateBuyout(null)
+      buyoutValidation: this.validateBuyout(null),
+      buyoutEnabled: true
     }
   }
 
@@ -219,6 +220,13 @@ export default class PlotPurchaseForm extends Component {
     }
   }
 
+  allowBuyoutChanged(event) {
+    const newValue = event.target.checked;
+    this.setState({
+      buyoutEnabled: newValue
+    });
+  }
+
   render() {
     const imageLabel = `Plot Image (${this.props.rectToPurchase.w} x ${this.props.rectToPurchase.h})`;
     const buyoutMultiplier = this.state.buyout.units == 'eth' ? -18 : this.state.buyout.units == 'gwei' ? -9 : 0;
@@ -247,14 +255,17 @@ export default class PlotPurchaseForm extends Component {
           </FormGroup>
 
           <FormGroup controleId='buyoutPrice' validationState={this.state.buyoutValidation.state}>
-            <ControlLabel>Initial Buyout Price</ControlLabel>
+            <ControlLabel>Set Initial Buyout Price (Optional)</ControlLabel>
             <InputGroup>
-            <FormControl value={buyoutString} type="number" onChange={this.buyoutPriceChanged.bind(this)}/>
-            <DropdownButton componentClass={InputGroup.Button} id="input-wei" title={this.state.buyout.units} onSelect={this.buyoutUnitChanged.bind(this)} > 
-              <MenuItem eventKey="wei">wei</MenuItem>
-              <MenuItem eventKey="gwei">gwei</MenuItem>
-              <MenuItem eventKey="eth">eth</MenuItem>
-            </DropdownButton>
+              <InputGroup.Addon>
+                <input type="checkbox" aria-label="Allow Initial Buyout" checked={this.state.buyoutEnabled} onChange={this.allowBuyoutChanged.bind(this)}/>
+              </InputGroup.Addon>
+              <FormControl disabled={!this.state.buyoutEnabled} value={buyoutString} type="number" onChange={this.buyoutPriceChanged.bind(this)}/>
+              <DropdownButton disabled={!this.state.buyoutEnabled} componentClass={InputGroup.Button} id="input-wei" title={this.state.buyout.units} onSelect={this.buyoutUnitChanged.bind(this)} > 
+                <MenuItem eventKey="wei">wei</MenuItem>
+                <MenuItem eventKey="gwei">gwei</MenuItem>
+                <MenuItem eventKey="eth">eth</MenuItem>
+              </DropdownButton>
             </InputGroup>
             <HelpBlock>{this.state.buyoutValidation.message}</HelpBlock>
           </FormGroup>
