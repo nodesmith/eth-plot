@@ -1,5 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock } from 'react-bootstrap';
+import Decimal from 'decimal.js';
+
+
+const allowedFileTypes = [
+  'image/jpeg',
+  'image/jpeg',
+  'image/png',
+  'image/svg+xml'
+];
 
 export default class PlotPurchaseForm extends Component {
   constructor(...args) {
@@ -12,6 +21,8 @@ export default class PlotPurchaseForm extends Component {
 
       website: '',
       websiteValidation: this.validateWebsite(null),
+
+      buyout: this.computeInitialBuyout(this.props.rectToPurchase),
       buyoutValidation: this.validateBuyout(null)
     }
   }
@@ -63,12 +74,6 @@ export default class PlotPurchaseForm extends Component {
         message: 'This is the file which will be in your plot'
       };
     }
-
-    const allowedFileTypes = [
-      'image/jpeg',
-      'image/pjpeg',
-      'image/png'
-    ];
 
     if (allowedFileTypes.indexOf(file.fileType) < 0) {
       // Not allowed file
@@ -174,12 +179,50 @@ export default class PlotPurchaseForm extends Component {
     };
   }
 
-  validateBuyout(buyout) {
+  buyoutPriceChanged(event) {
+    const units = this.state.buyout.units;
+    const mulitplier = units == 'wei' ? 0 : units == 'gwei' ? 9 : 18;
+    const newPriceInWei = Decimal(event.target.value + `e${mulitplier}`);
+    this.setState({
+      buyout: {
+        units: units,
+        ammountInWei: newPriceInWei.toFixed()
+      }
+    });
+  }
 
+  buyoutUnitChanged(eventKey, event) {
+    const buyoutUnits = eventKey;
+
+    this.setState({
+      buyout: {
+        units: buyoutUnits,
+        ammountInWei: this.state.buyout.ammountInWei
+      }
+    });
+  }
+
+  computeInitialBuyout(rectToPurchase) {
+    // TODO
+    return {
+      units: 'wei',
+      ammountInWei: '492'
+    };
+  }
+
+  validateBuyout(buyout) {
+    if (!buyout) {
+      return {
+        state: null,
+        message: 'The price you will receive if your full plot is purchased'
+      }
+    }
   }
 
   render() {
     const imageLabel = `Plot Image (${this.props.rectToPurchase.w} x ${this.props.rectToPurchase.h})`;
+    const buyoutMultiplier = this.state.buyout.units == 'eth' ? -18 : this.state.buyout.units == 'gwei' ? -9 : 0;
+    const buyoutString = Decimal(this.state.buyout.ammountInWei + `e${buyoutMultiplier}`).toFixed();
 
     return (
       <div>
@@ -198,29 +241,31 @@ export default class PlotPurchaseForm extends Component {
 
           <FormGroup controleId='websiteEntry' validationState={this.state.websiteValidation.state}>
             <ControlLabel>Website</ControlLabel>
-            <FormControl type="text" onChange={this.websiteChanged.bind(this)}/>
+            <FormControl type="url" onChange={this.websiteChanged.bind(this)}/>
             <FormControl.Feedback />
             <HelpBlock>{this.state.websiteValidation.message}</HelpBlock>
           </FormGroup>
 
-          <FormGroup controleId='buyoutPrice'>
+          <FormGroup controleId='buyoutPrice' validationState={this.state.buyoutValidation.state}>
             <ControlLabel>Initial Buyout Price</ControlLabel>
             <InputGroup>
-            <FormControl type="text" />
-              <DropdownButton componentClass={InputGroup.Button} id="input-wei" title="wei" > 
-                <MenuItem key="wei">wei</MenuItem>
-                <MenuItem key="gwei">gwei</MenuItem>
-                <MenuItem key="eth">eth</MenuItem>
-              </DropdownButton>
+            <FormControl value={buyoutString} type="number" onChange={this.buyoutPriceChanged.bind(this)}/>
+            <DropdownButton componentClass={InputGroup.Button} id="input-wei" title={this.state.buyout.units} onSelect={this.buyoutUnitChanged.bind(this)} > 
+              <MenuItem eventKey="wei">wei</MenuItem>
+              <MenuItem eventKey="gwei">gwei</MenuItem>
+              <MenuItem eventKey="eth">eth</MenuItem>
+            </DropdownButton>
             </InputGroup>
+            <HelpBlock>{this.state.buyoutValidation.message}</HelpBlock>
           </FormGroup>
         </form>
-        <input onChange={this.onFileSelected.bind(this)} type='file' ref={(input) => { this.fileSelectInput = input; }} style={{display: 'none'}} />
-        <img ref={(input) => this.imagePreview = input } style={{display: 'none'}} />
+        <input accept={allowedFileTypes.join(',')} onChange={this.onFileSelected.bind(this)} type='file' ref={(input) => { this.fileSelectInput = input; }} className='hidden' />
+        <img ref={(input) => this.imagePreview = input } className='hidden'/>
       </div>);
   }
 }
 
 PlotPurchaseForm.propTypes = {
-  rectToPurchase: PropTypes.object.isRequired
+  rectToPurchase: PropTypes.object.isRequired,
+  purchasePrice: PropTypes.object.isRequired // Should be a serialized big number of wei
 }
