@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon } from 'react-bootstrap';
 import RectImage from './RectImage';
 import PlotPurchaseForm from './PlotPurchaseForm';
+import Decimal from 'decimal.js';
 
 export default class PurchaseModal extends Component {
   close() {
@@ -62,13 +63,14 @@ export default class PurchaseModal extends Component {
     const coordinatesMessage = `x: ${this.props.rectToPurchase.x}, y: ${this.props.rectToPurchase.y}, w: ${this.props.rectToPurchase.w}, h: ${this.props.rectToPurchase.h}`;
     const purchasingMessage = `${this.props.rectToPurchase.w * this.props.rectToPurchase.h} pixels from ${Object.keys(colors).length} plots`;
 
+    const purchasePriceDecimal = Decimal(this.props.purchaseInfo.purchasePrice).toFixed();
     return (
       <Modal show={this.props.isVisible} onHide={this.close.bind(this)}>
           <Modal.Header closeButton>
             <Modal.Title>Purchase for {this.props.purchaseInfo.purchasePrice} eth</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <PlotPurchaseForm rectToPurchase={this.props.rectToPurchase} />
+            <PlotPurchaseForm purchasePrice={purchasePriceDecimal} rectToPurchase={this.props.rectToPurchase} />
 {/*             
             <Row>
             <Col sm={4} style={imageStyle} >

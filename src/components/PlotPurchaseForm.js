@@ -23,7 +23,7 @@ export default class PlotPurchaseForm extends Component {
       websiteValidation: this.validateWebsite(null),
 
       buyout: this.computeInitialBuyout(this.props.rectToPurchase),
-      buyoutValidation: this.validateBuyout(null),
+      buyoutValidation: this.validateBuyout(null, true),
       buyoutEnabled: true
     }
   }
@@ -182,55 +182,107 @@ export default class PlotPurchaseForm extends Component {
 
   buyoutPriceChanged(event) {
     const units = this.state.buyout.units;
-    const mulitplier = units == 'wei' ? 0 : units == 'gwei' ? 9 : 18;
-    const newPriceInWei = Decimal(event.target.value + `e${mulitplier}`);
+    let newBuyout = {
+      units: units,
+      ammountInWei: ''
+    };
+
+    if (event.target.value.length > 0) {
+      const mulitplier = units == 'wei' ? 0 : units == 'gwei' ? 9 : 18;
+      const newPriceInWei = Decimal(event.target.value + `e${mulitplier}`);
+      newBuyout.ammountInWei = newPriceInWei.toFixed();
+    }
+
+    const buyoutValidation = this.validateBuyout(newBuyout, this.state.buyoutEnabled);
+
     this.setState({
-      buyout: {
-        units: units,
-        ammountInWei: newPriceInWei.toFixed()
-      }
+      buyout: newBuyout,
+      buyoutValidation: buyoutValidation
     });
   }
 
   buyoutUnitChanged(eventKey, event) {
     const buyoutUnits = eventKey;
 
+    const newBuyout = {
+      units: buyoutUnits,
+      ammountInWei: this.state.buyout.ammountInWei
+    };
+
+    const buyoutValidation = this.validateBuyout(newBuyout, this.state.buyoutEnabled);
+
     this.setState({
-      buyout: {
-        units: buyoutUnits,
-        ammountInWei: this.state.buyout.ammountInWei
-      }
+      buyout: newBuyout,
+      buyoutValidation: buyoutValidation
     });
   }
 
-  computeInitialBuyout(rectToPurchase) {
+  computeInitialBuyout() {
+    const purchasePrice = Decimal(this.props.purchasePrice);
+    const purchaseMultiplier = 3;
+    const newPurchasePriceInWei = purchasePrice.times(purchaseMultiplier);
+
     // TODO
     return {
       units: 'wei',
-      ammountInWei: '492'
+      ammountInWei: newPurchasePriceInWei.toFixed()
     };
   }
 
-  validateBuyout(buyout) {
-    if (!buyout) {
+  validateBuyout(buyout, buyoutEnabled) {
+    if (!buyout || buyout.ammountInWei.length === 0) {
       return {
         state: null,
         message: 'The price you will receive if your full plot is purchased'
       }
     }
+
+    if (!buyoutEnabled) {
+      return {
+        state: null,
+        message: 'Buyout disabled. Go to My Plots to set a buyout price'
+      };
+    }
+
+    const price = Decimal(buyout.ammountInWei);
+
+    if (price.lessThanOrEqualTo(0)) {
+      return {
+        state: 'error',
+        message: 'Buyout price must be more than 0'
+      };
+    }
+
+    const purchasePrice = Decimal(this.props.purchasePrice);
+    if (price.lessThan(purchasePrice)) {
+      return {
+        state: 'warning',
+        message: 'Your buyout price is less than your purchase price'
+      };
+    }
+
+    const area = this.props.rectToPurchase.w * this.props.rectToPurchase.h;
+    const buyoutPerUnit = price.div(area);
+    return {
+      state: 'success',
+      message: `You will receive ${buyoutPerUnit.toFixed()} wei per unit`
+    };
   }
 
   allowBuyoutChanged(event) {
     const newValue = event.target.checked;
+    const buyoutValidation = this.validateBuyout(this.state.buyout, newValue);
+
     this.setState({
-      buyoutEnabled: newValue
+      buyoutEnabled: newValue,
+      buyoutValidation: buyoutValidation
     });
   }
 
   render() {
     const imageLabel = `Plot Image (${this.props.rectToPurchase.w} x ${this.props.rectToPurchase.h})`;
     const buyoutMultiplier = this.state.buyout.units == 'eth' ? -18 : this.state.buyout.units == 'gwei' ? -9 : 0;
-    const buyoutString = Decimal(this.state.buyout.ammountInWei + `e${buyoutMultiplier}`).toFixed();
+    const buyoutString = this.state.buyout.ammountInWei.length > 0 ? Decimal(this.state.buyout.ammountInWei + `e${buyoutMultiplier}`).toFixed() : '';
 
     return (
       <div>
@@ -278,5 +330,5 @@ export default class PlotPurchaseForm extends Component {
 
 PlotPurchaseForm.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
-  purchasePrice: PropTypes.object.isRequired // Should be a serialized big number of wei
+  purchasePrice: PropTypes.string.isRequired // Should be a serialized Decimal.js of wei
 }
