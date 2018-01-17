@@ -28,11 +28,11 @@ export default class ChooseImageInputBox extends Component {
       this.setState({fileValidation: fileValidation});
     }
 
-    if (prevState.fileValidation.state != fileValidation.state) {
-      this.props.onChange({
-        valid: fileValidation.state === 'success' || fileValidation.state === 'warning'
-      });
-    }
+    // if (prevState.fileValidation.state != fileValidation.state) {
+    //   this.props.onChange({
+    //     valid: fileValidation.state === 'success' || fileValidation.state === 'warning'
+    //   });
+    // }
   }
 
   browseForImage() {
@@ -130,6 +130,7 @@ export default class ChooseImageInputBox extends Component {
         }.bind(this);
 
         this.imagePreview.src = fileReader.result;
+        this.props.onImageLoaded(fileReader.result);
       }.bind(this);
       
       fileReader.readAsDataURL(file);
@@ -159,5 +160,6 @@ export default class ChooseImageInputBox extends Component {
 
 ChooseImageInputBox.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired
+
+  // onChange: PropTypes.func.isRequired
 }
