@@ -1,5 +1,11 @@
 import Decimal from 'decimal.js';
 
+export function formatValue(decimal) {
+  const decimalPoints = decimal.decimalPlaces();
+  const numDecimals = Math.min(decimalPoints, 4);
+  return decimal.toFixed(numDecimals);
+}
+
 export function formatEthValue(ammountInWei) {
   if (ammountInWei.length === 0) {
     return {
@@ -12,17 +18,17 @@ export function formatEthValue(ammountInWei) {
 
   if (value.lessThan(Decimal('1.0e6'))) {
     return {
-      value: value.toFixed(),
+      value: formatValue(value),
       unit: 'wei'
     };
   } else if (value.lessThan(Decimal('1.0e15'))) {
     return {
-      value: value.div(Decimal('1.0e9')).toFixed(),
+      value: formatValue(value.div(Decimal('1.0e9'))),
       unit: 'gwei'
     };
   } else {
     return {
-      value: value.div(Decimal('1.0e18')).toFixed(),
+      value: formatValue(value.div(Decimal('1.0e18'))),
       unit: 'eth'
     };
   }

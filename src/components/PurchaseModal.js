@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, Pager, PageHeader, Row, Col, Glyphicon } from 'react-bootstrap';
-import RectImage from './RectImage';
+import { Button, Thumbnail, ControlLabel, DropdownButton, Image, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, Pager, PageHeader, Row, Col, Glyphicon } from 'react-bootstrap';
+import RectImage, {SVGRectImageBuilder} from './RectImage';
 import PlotPurchaseForm from './PlotPurchaseForm';
 import Decimal from 'decimal.js';
 
@@ -57,11 +57,22 @@ export default class PurchaseModal extends Component {
     });
   }
 
+  getLocationSvg() {
+    const imageHeight = 200;
+    const baseRect = { x: 0, y: 0, w: 250, h: 250, color: 'hsl(0, 0%, 90%)' };
+    const subRects = [Object.assign({}, this.props.rectToPurchase, { color: 'hsl(0, 0%, 40%)' })];
+
+    const builder = new SVGRectImageBuilder(imageHeight, imageHeight, baseRect, subRects);
+    return `data:image/svg+xml;base64,${btoa(builder.output())}`;
+  }
+
   getInputPage() {
+
     const initialBuyoutPrice = this.computeInitialBuyout();
+    const imageSvg = this.getLocationSvg();
     return (
-      <div>
-        <form>
+      <div className='modalDialog'>
+        <Col sm={8} >
           <ChooseImageInputBox rectToPurchase={this.props.rectToPurchase} onChange={this.inputChanged.bind(this, 'image')}/>
           <WebsiteInputBox onChange={this.inputChanged.bind(this, 'website')}/>
           <BuyoutPriceInputBox
@@ -70,7 +81,15 @@ export default class PurchaseModal extends Component {
             rectToPurchase={this.props.rectToPurchase}
             purchasePrice={this.props.purchaseInfo.purchasePrice.toString()} 
             onChange={this.inputChanged.bind(this, 'buyout')}/>
-        </form>
+        </Col>
+        <Col sm={4} style={{textAlign: 'center', height: '100%'}}>
+          <div>
+            <ControlLabel>Plot Location</ControlLabel>
+            <Thumbnail thumbnail src={imageSvg}>
+              <span>x:33 y:144</span>
+            </Thumbnail>
+          </div>
+        </Col>
       </div>);
   }
 
@@ -125,6 +144,8 @@ export default class PurchaseModal extends Component {
         </Pager.Item>
       </Pager> */}
       <Row>
+
+{/*         
         <Col sm={6} style={imageStyle} >
           <RectImage baseRect={baseRect} subRects={subRects} height={imageHeight} width={imageHeight} />
           <div className='rectImageCaption'>
@@ -136,7 +157,7 @@ export default class PurchaseModal extends Component {
           <div className='rectImageCaption'>
             <span>{purchasingMessage}</span>
           </div>
-        </Col>
+        </Col> */}
       </Row>
       </div>
     );
@@ -165,7 +186,9 @@ export default class PurchaseModal extends Component {
           <Modal.Title>{title}</Modal.Title> 
         </Modal.Header> 
         <Modal.Body> 
+          <Row>
           {content}
+          </Row>
         </Modal.Body> 
         <Modal.Footer> 
           <Button style={{width: '100%'}} bsStyle='primary' disabled={!buttonAction} onClick={buttonAction}>{buttonMessage}</Button> 

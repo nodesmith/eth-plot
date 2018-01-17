@@ -8,6 +8,7 @@ import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
 import GridContainer from './GridContainer';
 import PlotManagerContainer from './PlotManagerContainer';
+import PurchaseFlowContainer from './PurchaseFlowContainer';
 import About from '../components/About';
 
 /**
@@ -25,6 +26,28 @@ class App extends Component {
   }
 
   render() {
+    const purchase = ({match}) => {
+      const coordinates = match.params.coordinates.split(',').map(coordinate => parseInt(coordinate));
+      if (coordinates.length != 4) {
+        throw new Error(`Invalid coordiantes passed: ${match.params.coordinates}`);
+      }
+
+      for (const coordinate of coordinates) {
+        if (coordinate < 0 || coordinate > 250) {
+          throw new Error(`Invalid coordinate ${coordinate}`);
+        }
+      }
+
+      const rectToPurchase = {
+        x: coordinates[0],
+        y: coordinates[1],
+        w: coordinates[2],
+        h: coordinates[3] 
+      }
+
+      return (<PurchaseFlowContainer rectToPurchase={rectToPurchase}/>);
+    }
+
     return (
       <div className="main-app-container">
         <Navbar collapseOnSelect className="navbar-static-top">
@@ -47,6 +70,7 @@ class App extends Component {
               <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} />
             )}/>
             <Route path='/about' component={About}/>
+            <Route path='/buy/:coordinates' render={purchase} />
           </Switch>
         </main>
       </div>

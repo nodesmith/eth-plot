@@ -1,5 +1,31 @@
 import React, { Component, PropTypes } from 'react';
 
+export class SVGRectImageBuilder {
+  constructor(height, width, baseRect, subRects) {
+    this.height = height;
+    this.width = width;
+    this.baseRect = baseRect;
+    this.subRects = subRects;
+  }
+
+  getRect(key, rect) {
+    return `<rect x='${rect.x}' y='${rect.y}' width='${rect.w}' height='${rect.h}' stroke='${rect.color}' fill='${rect.color}'></rect>`;
+  }
+
+  output() {
+    const baseRects = [this.getRect('base', this.baseRect)];
+    const layeredRects = this.subRects.map((subRect, index) => this.getRect(index, subRect));
+    const allRects = baseRects.concat(layeredRects);
+
+    const viewBox = `${this.baseRect.x}, ${this.baseRect.y}, ${this.baseRect.w}, ${this.baseRect.h}`;
+    const result = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox='${viewBox}' height='${this.height}' width='${this.width}' >
+      ${allRects.join('\n')}
+    </svg>`;
+
+    return result;
+  }
+}
+
 export default class RectImage extends Component {
 
   getRenderedRect(key, rect) {
