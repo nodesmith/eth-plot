@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class FullPageStatus extends Component {
   render() {
@@ -11,7 +12,7 @@ class FullPageStatus extends Component {
 }
 
 FullPageStatus.propTypes = {
-  message: React.PropTypes.string.isRequired
+  message: PropTypes.string.isRequired
 };
 
 export default FullPageStatus;

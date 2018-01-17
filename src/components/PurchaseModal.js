@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Button, Thumbnail, ControlLabel, DropdownButton, Image, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, Pager, PageHeader, Row, Col, Glyphicon } from 'react-bootstrap';
 import RectImage, {SVGRectImageBuilder} from './RectImage';
 import PlotPurchaseForm from './PlotPurchaseForm';

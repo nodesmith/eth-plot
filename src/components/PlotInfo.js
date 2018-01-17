@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import { 
   Button, 
   Col,
@@ -93,12 +95,12 @@ class PlotInfo extends Component {
 }
 
 PlotInfo.propTypes = {
-  info: React.PropTypes.shape({
-    rect: React.PropTypes.object.isRequired,
-    data: React.PropTypes.object.isRequired,
-    zoneIndex: React.PropTypes.number.isRequired,
+  info: PropTypes.shape({
+    rect: PropTypes.object.isRequired,
+    data: PropTypes.object.isRequired,
+    zoneIndex: PropTypes.number.isRequired,
   }),
-  contractInfo: React.PropTypes.object.isRequired
+  contractInfo: PropTypes.object.isRequired
 };
 
 export default PlotInfo;

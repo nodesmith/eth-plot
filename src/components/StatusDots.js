@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class StatusDots extends Component {
 
@@ -35,7 +36,7 @@ export default class StatusDots extends Component {
       <div style={wrapperStyle} key={index} className='dotContainer'>
         <div style={dotSyle} />
         <div style={labelStyle}>
-          {label}
+          <h5>{label}</h5>
         </div>
       </div>
     )
@@ -74,7 +75,8 @@ export default class StatusDots extends Component {
     const wrapperStyle = {
       display: 'flex',
       justifyContent: 'space-between',
-      width: '100%'
+      width: '100%',
+      height: '55px'
     };
 
     return (

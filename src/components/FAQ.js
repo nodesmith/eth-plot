@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Collapse, Well } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 
 class FAQ extends Component { 
   constructor(...args) {
@@ -33,8 +34,8 @@ class FAQ extends Component {
 }
 
 FAQ.propTypes = {
-  question: React.PropTypes.string.isRequired,
-  answer: React.PropTypes.string.isRequired  
+  question: PropTypes.string.isRequired,
+  answer: PropTypes.string.isRequired  
 };
 
 export default FAQ;

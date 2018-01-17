@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import GridPlot from './GridPlot';
 import PurchasePlot from './PurchasePlot';
