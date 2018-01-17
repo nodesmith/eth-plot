@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon } from 'react-bootstrap';
+import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, Pager, PageHeader, Row, Col, Glyphicon } from 'react-bootstrap';
 import RectImage from './RectImage';
 import PlotPurchaseForm from './PlotPurchaseForm';
 import Decimal from 'decimal.js';
@@ -84,7 +84,7 @@ export default class PurchaseModal extends Component {
       height: '100%'
     };
 
-    const imageHeight = 140;
+    const imageHeight = 200;
 
     function getRandomColor() {
       var letters = '0123456789ABCDEF';
@@ -118,36 +118,43 @@ export default class PurchaseModal extends Component {
     const purchasingMessage = `${this.props.rectToPurchase.w * this.props.rectToPurchase.h} pixels from ${Object.keys(colors).length} plots`;
 
     return (
+      <div>
+        {/* <Pager>
+        <Pager.Item previous href="#">
+          &larr; Previous
+        </Pager.Item>
+      </Pager> */}
       <Row>
-        <Col sm={4} style={imageStyle} >
+        <Col sm={6} style={imageStyle} >
           <RectImage baseRect={baseRect} subRects={subRects} height={imageHeight} width={imageHeight} />
           <div className='rectImageCaption'>
             <span>{coordinatesMessage}</span>
           </div>
         </Col>
-        <Col sm={4} style={imageStyle} >
-          <RectImage baseRect={purchasePreviewBaseRect} subRects={purchasePreviewSubRects} height={purchasePreviewImageHeight} width={purchasePreviewImageWidth} />
-          <div className='rectImageCaption'>
-            <span>{purchasingMessage}</span>
-          </div>
-        </Col>
-        <Col sm={4} style={imageStyle} >
+        <Col sm={6} style={imageStyle} >
           <RectImage baseRect={purchasePreviewBaseRect} subRects={purchasePreviewSubRects} height={purchasePreviewImageHeight} width={purchasePreviewImageWidth} />
           <div className='rectImageCaption'>
             <span>{purchasingMessage}</span>
           </div>
         </Col>
       </Row>
+      </div>
     );
   }
 
   render() {
-    let content, buttonMessage, buttonAction;
+    let content, buttonMessage, buttonAction, title;
     if (this.state.page == 0) {
       content = this.getInputPage();
       buttonMessage = 'Proceed to Checkout';
+      title = `Purchase for ${this.props.purchaseInfo.purchasePrice} eth`;
       buttonAction = this.state.buyout.valid && this.state.website.valid && this.state.image.valid ? 
         () => this.setState({page: 1}) : undefined;
+    } else if (this.state.page == 1) {
+      content = this.getSummaryPage();
+      buttonMessage = 'Complete Purchase';
+      title = 'Summary';
+      buttonAction = () => this.buyIt();
     } else {
       content = null;
     }
@@ -155,7 +162,7 @@ export default class PurchaseModal extends Component {
     return (
       <Modal show={this.props.isVisible} onHide={this.close.bind(this)}> 
         <Modal.Header closeButton> 
-          <Modal.Title>Purchase for {this.props.purchaseInfo.purchasePrice} eth</Modal.Title> 
+          <Modal.Title>{title}</Modal.Title> 
         </Modal.Header> 
         <Modal.Body> 
           {content}
