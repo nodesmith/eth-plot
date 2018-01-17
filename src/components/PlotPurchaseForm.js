@@ -11,7 +11,16 @@ export default class PlotPurchaseForm extends Component {
     super(...args);
 
     this.state = {
-    }
+      image: {
+        valid: false
+      },
+      website: {
+        valid: false
+      },
+      buyout: {
+        valid: false
+      }
+    };
   }
 
   computeInitialBuyout() {
@@ -26,6 +35,12 @@ export default class PlotPurchaseForm extends Component {
     };
   }
 
+  buyoutChanged(buyoutState) {
+    this.setState({
+      buyout: buyoutState
+    });
+  }
+
   render() {
     const initialBuyoutPrice = this.computeInitialBuyout();
     return (
@@ -37,7 +52,8 @@ export default class PlotPurchaseForm extends Component {
             initialValue={initialBuyoutPrice}
             title='Set Initial Buyout Price (Optional)'
             rectToPurchase={this.props.rectToPurchase}
-            purchasePrice={this.props.purchasePrice} />
+            purchasePrice={this.props.purchasePrice} 
+            onBuyoutChanged={this.buyoutChanged.bind(this)}/>
         </form>
       </div>);
   }

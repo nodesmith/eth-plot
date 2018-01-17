@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
 import Decimal from 'decimal.js';
+import { formatEthValue } from '../../data/ValueFormatters';
 
 export default class BuyoutPriceInputBox extends Component {
   constructor(...args) {
@@ -10,6 +11,18 @@ export default class BuyoutPriceInputBox extends Component {
       buyout: this.props.initialValue,
       buyoutValidation: this.validateBuyout(this.props.initialValue, true),
       buyoutEnabled: true,
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.buyoutValidation.state != prevState.buyoutValidation.state) {
+      const buyoutState = {
+        ammountInWei: this.state.buyout.ammountInWei,
+        buyoutEnabled: this.state.buyoutEnabled,
+        valid: !this.state.buyoutEnabled || this.state.buyoutValidation.state === 'success' || this.state.buyoutValidation.state === 'warning'
+      };
+
+      this.props.onChange(buyoutState);
     }
   }
 
@@ -84,9 +97,10 @@ export default class BuyoutPriceInputBox extends Component {
 
     const area = this.props.rectToPurchase.w * this.props.rectToPurchase.h;
     const buyoutPerUnit = price.div(area);
+    const buyoutPrice = formatEthValue(buyoutPerUnit);
     return {
       state: 'success',
-      message: `You will receive ${buyoutPerUnit.toFixed()} wei per unit`
+      message: `You will receive ${buyoutPrice.value} ${buyoutPrice.unit} per unit`
     };
   }
 
@@ -128,5 +142,6 @@ BuyoutPriceInputBox.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
   purchasePrice: PropTypes.string.isRequired, // Should be a serialized Decimal.js of wei
   title: PropTypes.string.isRequired,
-  initialValue: PropTypes.object.isRequired
+  initialValue: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired
 }

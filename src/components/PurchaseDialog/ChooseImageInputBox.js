@@ -21,9 +21,16 @@ export default class ChooseImageInputBox extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    let fileValidation = this.state.fileValidation;
     if (prevState.fileToUse != this.state.fileToUse || prevState.imageFileInfo != this.state.imageFileInfo) {
-      const fileValidation = this.validateImageFile(this.state.fileToUse, this.state.imageFileInfo);
+      fileValidation = this.validateImageFile(this.state.fileToUse, this.state.imageFileInfo);
       this.setState({fileValidation: fileValidation});
+    }
+
+    if (prevState.fileValidation.state != fileValidation.state) {
+      this.props.onChange({
+        valid: fileValidation.state === 'success' || fileValidation.state === 'warning'
+      });
     }
   }
 
@@ -150,5 +157,6 @@ export default class ChooseImageInputBox extends Component {
 }
 
 ChooseImageInputBox.propTypes = {
-  rectToPurchase: PropTypes.object.isRequired
+  rectToPurchase: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired
 }

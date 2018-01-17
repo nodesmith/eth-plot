@@ -11,6 +11,14 @@ export default class WebsiteInputBox extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.websiteValidation.state != this.state.websiteValidation.state) {
+      this.props.onChange({
+        valid: this.state.websiteValidation.state === 'success' || this.state.websiteValidation.state === 'warning'
+      });
+    }
+  }
+
   websiteChanged(event) {
     const newValue = event.target.value;
     const validation = this.validateWebsite(newValue);
