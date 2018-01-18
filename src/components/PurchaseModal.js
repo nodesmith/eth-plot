@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Thumbnail, ControlLabel, DropdownButton, Image, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, Pager, PageHeader, Row, Col, Glyphicon } from 'react-bootstrap';
+import { Button, Thumbnail, ControlLabel, DropdownButton, Image, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, Pager, PageHeader, Row, Col, Glyphicon, Panel } from 'react-bootstrap';
 import RectImage, {SVGRectImageBuilder} from './RectImage';
 import PlotPurchaseForm from './PlotPurchaseForm';
 import Decimal from 'decimal.js';
@@ -71,7 +71,21 @@ export default class PurchaseModal extends Component {
   getInputPage() {
 
     const initialBuyoutPrice = this.computeInitialBuyout();
-    const imageSvg = this.getLocationSvg();
+    const imageSvg = './assets/YourImageHere.svg';
+
+    const rectToPurchase = this.props.rectToPurchase;
+
+    const imageHeight = 200;
+    const purchaseAspectRatio = rectToPurchase.h / rectToPurchase.w;
+    let purchasePreviewImageWidth = imageHeight;
+    let purchasePreviewImageHeight = imageHeight;
+    if (purchaseAspectRatio > 1) {
+      purchasePreviewImageWidth = imageHeight / purchaseAspectRatio;
+    } else {
+      purchasePreviewImageHeight = imageHeight * purchaseAspectRatio;
+    }
+
+
     return (
       <div className='modalDialog'>
         <Col sm={8} >
@@ -85,11 +99,17 @@ export default class PurchaseModal extends Component {
             onChange={this.inputChanged.bind(this, 'buyout')}/>
         </Col>
         <Col sm={4} style={{textAlign: 'center', height: '100%'}}>
-          <div>
-            <ControlLabel>Plot Location</ControlLabel>
-            <Thumbnail thumbnail src={imageSvg}>
-              <span>x:33 y:144</span>
-            </Thumbnail>
+          <div style={{ height: '100%'}}>
+            <Panel style={{ height: '100%'}}>
+              <Panel.Heading style={{height: '41px'}}>
+                Image Preview
+              </Panel.Heading>
+              <Panel.Body style={{display:'flex', height: 'calc(100% - 41px)', flexDirection: 'column', justifyContent: 'center'}}>
+              <img style={{ outlineWidth: '2px', outlineColor: 'hsl(0, 0%, 40%)', outlineStyle: 'dashed', objectFit: 'fill', margin: 'auto' }}
+                width={purchasePreviewImageWidth} height={purchasePreviewImageHeight} src={imageSvg} />
+              {/* <Image style={{outlineWidth: '2px', outlineColor: 'hsl(0, 0%, 40%)', outlineStyle: 'dashed'}} src={imageSvg} /> */}
+              </Panel.Body>
+            </Panel>
           </div>
         </Col>
       </div>);
@@ -190,14 +210,12 @@ export default class PurchaseModal extends Component {
     const previewImage = `data:image/svg+xml;base64,${btoa(builder.output())}`;
 
     return (
-      <Modal show={this.props.isVisible} onHide={this.close.bind(this)}> 
-        <Modal.Header closeButton> 
-          {/* <Modal.Title> */}
-            <div>
-              <img src={previewImage} style={{outlineColor: 'hsl(0, 0%, 40%)', outlineWidth: '1px', outlineStyle:'solid'}} />
-              <h2 style={{ margin: 0, marginLeft: '20px', lineHeight: '30px', display: 'inline'}}><span>Purchase Plot</span><span>{'   '}</span><small>52 eth</small></h2>
-            </div>
-          {/* </Modal.Title>  */}
+      <Modal bsSize='lg' show={this.props.isVisible} onHide={this.close.bind(this)}> 
+        <Modal.Header closeButton>
+          <div style={{display: 'flex'}}>
+            <img src={previewImage} style={{outlineColor: 'hsl(0, 0%, 40%)', outlineWidth: '1px', outlineStyle:'solid'}} />
+            <h2 style={{ margin: 0, marginLeft: '20px', lineHeight: '30px', display: 'inline'}}><span>Purchase Plot</span><span>{'   '}</span><small>52 eth</small></h2>
+          </div>
         </Modal.Header> 
         <Modal.Body> 
           <Row>
