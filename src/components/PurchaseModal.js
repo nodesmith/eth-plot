@@ -5,6 +5,7 @@ import RectImage, {SVGRectImageBuilder} from './RectImage';
 import PlotPurchaseForm from './PlotPurchaseForm';
 import Decimal from 'decimal.js';
 
+import { formatEthValue } from '../data/ValueFormatters';
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
 import WebsiteInputBox from './PurchaseDialog/WebsiteInputBox';
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
@@ -181,10 +182,22 @@ export default class PurchaseModal extends Component {
       content = null;
     }
 
+    const imageHeight = 30;
+    const baseRect = { x: 0, y: 0, w: 250, h: 250, color: 'hsl(0, 0%, 90%)' };
+    const subRects = [Object.assign({}, this.props.rectToPurchase, { color: 'hsl(0, 0%, 40%)' })];
+
+    const builder = new SVGRectImageBuilder(imageHeight, imageHeight, baseRect, subRects);
+    const previewImage = `data:image/svg+xml;base64,${btoa(builder.output())}`;
+
     return (
       <Modal show={this.props.isVisible} onHide={this.close.bind(this)}> 
         <Modal.Header closeButton> 
-          <Modal.Title>{title}</Modal.Title> 
+          {/* <Modal.Title> */}
+            <div>
+              <img src={previewImage} style={{outlineColor: 'hsl(0, 0%, 40%)', outlineWidth: '1px', outlineStyle:'solid'}} />
+              <h2 style={{ margin: 0, marginLeft: '20px', lineHeight: '30px', display: 'inline'}}><span>Purchase Plot</span><span>{'   '}</span><small>52 eth</small></h2>
+            </div>
+          {/* </Modal.Title>  */}
         </Modal.Header> 
         <Modal.Body> 
           <Row>

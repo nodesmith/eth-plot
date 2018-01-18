@@ -44,10 +44,13 @@ export default class StatusDots extends Component {
 
   createDivider(index) {
     const wrapperStyle = {
-      height: '8px',
-      marginTop: '8px',
+      height: '2px',
+      marginTop: '11px',
+      marginLeft: '9px',
+      marginRight: '9px',
       borderColor: 'black',
       borderWidth: '1px',
+      borderRadius: '1px',
       borderStyle: 'solid',
       borderLeft: 'none',
       borderRight: 'none',

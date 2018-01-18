@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Thumbnail, Col, Panel, Button, Grid, Jumbotron, Row, PageHeader, Image } from 'react-bootstrap';
+import { Thumbnail, Col, Panel, Pager, Button, Grid, Jumbotron, Row, PageHeader, Image } from 'react-bootstrap';
 import PurchaseModal from '../components/PurchaseModal';
 import { SVGRectImageBuilder } from '../components/RectImage';
 import StatusDots from '../components/StatusDots';
 
 import ChooseImageInputBox from '../components/PurchaseDialog/ChooseImageInputBox';
+import WebsiteInputBox from '../components/PurchaseDialog/WebsiteInputBox';
+import BuyoutPriceInputBox from '../components/PurchaseDialog/BuyoutPriceInputBox';
 
 export default class PurchaseFlowContainer extends Component {
   constructor(...args) {
@@ -45,34 +47,54 @@ export default class PurchaseFlowContainer extends Component {
 
 
 
+
     return (
       <Grid>
         <Row >
           <PageHeader style={{textAlign: 'center', width: '100%', marginTop: '0'}}>
             <span>Purchase Plot</span><small>{'        '}{price}{'        '}</small>
             <Image thumbnail src={previewImage} />
-            <br /><br />
-            <StatusDots items={['Image', 'Website', 'Buyout', 'Summary']} currentIndex={0} />
+            {/* <br /><br />
+            <StatusDots items={['Image', 'Website', 'Buyout', 'Summary']} currentIndex={0} /> */}
           </PageHeader>
         </Row>
         <Row>
-          <Panel>
-            <Panel.Body>
-              <Col sm={8}>
-                <h3>What Image Should Go In Your Plot?</h3>
-                <br />
-                <ChooseImageInputBox rectToPurchase={this.props.rectToPurchase} onImageLoaded={this.imageLoaded.bind(this)}/>
-              </Col>
-              <Col sm={4} style={{textAlign: 'center', height: '100%'}}>
-                <div>
-                  <h4>Image Preview</h4>
-                  <img style={{objectFit: 'fill'}} width={purchasePreviewImageWidth} height={purchasePreviewImageHeight} src={this.state.image} />
-                </div>
-              </Col>
+          {/* <Panel> */}
+            {/* <Panel.Body> */}
+              <Row>
+                <Col xs={8}>
+                  <h3>What Image Should Go In Your Plot?</h3>
+                  <br />
+                  <ChooseImageInputBox rectToPurchase={this.props.rectToPurchase} onImageLoaded={this.imageLoaded.bind(this)}/>
+                  <WebsiteInputBox onChange={() => {}}/>
+                  <BuyoutPriceInputBox
+                    initialValue={{
+                      units: 'wei',
+                      ammountInWei: '43223'
+                    }}
+                    title='Set Initial Buyout Price (Optional)'
+                    rectToPurchase={this.props.rectToPurchase}
+                    purchasePrice={'4498.33'} 
+                    onChange={() => {}}/>
+                </Col>
+                <Col xs={4} style={{textAlign: 'center', height: '100%'}}>
+                <Panel>
+              <Panel.Body >
+                    <img style={{objectFit: 'fill'}} width={purchasePreviewImageWidth} height={purchasePreviewImageHeight} src={this.state.image} />
+                    
 
-              <Button>Next: Choose Website</Button>
             </Panel.Body>
-          </Panel>
+            <Panel.Footer>
+              <h5>Image Preview</h5>
+            </Panel.Footer>
+            </Panel>
+                </Col>
+              </Row>
+            {/* </Panel.Body> */}
+            {/* <Panel.Footer> */}
+              <Button bsStyle='primary' style={{width: '100%'}}>Next: Choose Website</Button>
+            {/* </Panel.Footer> */}
+          {/* </Panel> */}
         </Row>
       </Grid>
     )
