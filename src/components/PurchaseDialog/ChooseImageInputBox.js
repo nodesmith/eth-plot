@@ -39,6 +39,14 @@ export default class ChooseImageInputBox extends Component {
     this.fileSelectInput.click();
   }
 
+  getImageFileData() {
+    if (this.state && this.state.imageFileInfo && this.state.imageFileInfo.fileData) {
+      return this.state.imageFileInfo.fileData;
+    }
+
+    return undefined;
+  }
+
   onFileSelected(event) {
     let newFileToUse = null;
 
@@ -62,6 +70,8 @@ export default class ChooseImageInputBox extends Component {
         this.setState({
           imageFileInfo: imageFileInfo
         });
+
+        this.props.onImageSelected(imageFileInfo.fileData);
       });
     }
 

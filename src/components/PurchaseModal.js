@@ -68,10 +68,17 @@ export default class PurchaseModal extends Component {
     return `data:image/svg+xml;base64,${btoa(builder.output())}`;
   }
 
+  onNewImageSelected(imageData) {
+    this.setState({imageData});
+  }
+
   getInputPage() {
 
     const initialBuyoutPrice = this.computeInitialBuyout();
-    const imageSvg = './assets/YourImageHere.svg';
+    let imageSvg = './assets/YourImageHere.svg';
+    if (this.state.imageData) {
+      imageSvg = this.state.imageData;
+    }
 
     const rectToPurchase = this.props.rectToPurchase;
 
@@ -88,8 +95,8 @@ export default class PurchaseModal extends Component {
 
     return (
       <div className='modalDialog'>
-        <Col sm={8} >
-          <ChooseImageInputBox rectToPurchase={this.props.rectToPurchase} onChange={this.inputChanged.bind(this, 'image')}/>
+        <Col xs={8} >
+          <ChooseImageInputBox onImageSelected={this.onNewImageSelected.bind(this)} rectToPurchase={this.props.rectToPurchase} onChange={this.inputChanged.bind(this, 'image')}/>
           <WebsiteInputBox onChange={this.inputChanged.bind(this, 'website')}/>
           <BuyoutPriceInputBox
             initialValue={initialBuyoutPrice}
@@ -98,7 +105,7 @@ export default class PurchaseModal extends Component {
             purchasePrice={this.props.purchaseInfo.purchasePrice.toString()} 
             onChange={this.inputChanged.bind(this, 'buyout')}/>
         </Col>
-        <Col sm={4} style={{textAlign: 'center', height: '100%'}}>
+        <Col xs={4} style={{textAlign: 'center', height: '100%'}}>
           <div style={{ height: '100%'}}>
             <Panel style={{ height: '100%'}}>
               <Panel.Heading style={{height: '41px'}}>
