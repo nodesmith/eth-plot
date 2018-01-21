@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Thumbnail, Col, Panel, Pager, Button, Grid, Jumbotron, Row, PageHeader, Image } from 'react-bootstrap';
 import PurchaseModal from '../components/PurchaseModal';
 import { SVGRectImageBuilder } from '../components/RectImage';
-import StatusDots from '../components/StatusDots';
 
 import ChooseImageInputBox from '../components/PurchaseDialog/ChooseImageInputBox';
 import WebsiteInputBox from '../components/PurchaseDialog/WebsiteInputBox';
@@ -52,8 +51,6 @@ export default class PurchaseFlowContainer extends Component {
           <PageHeader style={{textAlign: 'center', width: '100%', marginTop: '0'}}>
             <span>Purchase Plot</span><small>{'        '}{price}{'        '}</small>
             <Image thumbnail src={previewImage} />
-            {/* <br /><br />
-            <StatusDots items={['Image', 'Website', 'Buyout', 'Summary']} currentIndex={0} /> */}
           </PageHeader>
         </Row>
         <Row>
