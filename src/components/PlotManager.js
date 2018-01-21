@@ -38,7 +38,7 @@ class PlotManager extends Component {
                 : null
               }
 
-              { this.props.metamaskState === Enums.METAMASK_STATE.LOOCKED ?
+              { this.props.metamaskState === Enums.METAMASK_STATE.LOCKED ?
                 <div id="metamaskLogoContainer">
                   <FullPageStatus message="You must unlock MetaMask to proceed." />
                 </div>

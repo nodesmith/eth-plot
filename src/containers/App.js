@@ -12,6 +12,8 @@ import GridContainer from './GridContainer';
 import PlotManagerContainer from './PlotManagerContainer';
 import About from '../components/About';
 
+const Web3 = require('web3');
+
 /**
  * It is common practice to have a 'Root' container/component require our main App (this one).
  * Again, this is because it serves to wrap the rest of our application with the Provider
@@ -32,16 +34,19 @@ class App extends Component {
      * https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md
      */
     this.accountInterval = setInterval(function() {
-      if (typeof web3 !== 'undefined') {
-        if (web3.eth.accounts.length > 0) {
-          this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
-        } else {
-          this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
-        }
+      if (typeof window.web3 !== 'undefined') {
+        let newWeb3 = new Web3(window.web3.currentProvider);
+        newWeb3.eth.getAccounts().then(accounts => {
+          if (accounts.length > 0) {
+            this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
+          } else {
+            this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
+          };
+        });
       } else {
         this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       }
-    }.bind(this), 100);
+    }.bind(this), 1000);
   }
 
   componentWillUnmount() {
