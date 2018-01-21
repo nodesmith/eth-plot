@@ -1,5 +1,6 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 
 export default class WebsiteInputBox extends Component {
   constructor(...args) {
@@ -18,6 +19,13 @@ export default class WebsiteInputBox extends Component {
       website: newValue,
       websiteValidation: validation
     });
+
+    const websiteChangedMessage = {
+      valid: validation.state !== 'error',
+      value: newValue
+    };
+
+    this.props.onWebsiteChanged(websiteChangedMessage);
   }
 
   validateWebsite(website) {
@@ -50,7 +58,7 @@ export default class WebsiteInputBox extends Component {
 
   render() {
     return (
-      <FormGroup controleId='websiteEntry' validationState={this.state.websiteValidation.state}>
+      <FormGroup controlId='websiteEntry' validationState={this.state.websiteValidation.state}>
         <ControlLabel>Website</ControlLabel>
         <FormControl type="url" onChange={this.websiteChanged.bind(this)}/>
         <FormControl.Feedback />
@@ -61,5 +69,5 @@ export default class WebsiteInputBox extends Component {
 }
 
 WebsiteInputBox.propTypes = {
-  
+  onWebsiteChanged: PropTypes.func.isRequired
 }

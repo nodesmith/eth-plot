@@ -44,6 +44,13 @@ export default class BuyoutPriceInputBox extends Component {
       buyout: newBuyout,
       buyoutValidation: buyoutValidation
     });
+
+    const buyoutChangedMessage = {
+      value: newBuyout.ammountInWei,
+      valid: buyoutValidation.state !== 'error'
+    };
+
+    this.props.onBuyoutChanged(buyoutChangedMessage);
   }
 
   buyoutUnitChanged(eventKey, event) {
@@ -118,7 +125,7 @@ export default class BuyoutPriceInputBox extends Component {
     const buyoutString = this.state.buyout.ammountInWei.length > 0 ? Decimal(this.state.buyout.ammountInWei + `e${buyoutMultiplier}`).toFixed() : '';
 
     return (
-      <FormGroup controleId='buyoutPrice' validationState={this.state.buyoutValidation.state}>
+      <FormGroup controlId='buyoutPrice' validationState={this.state.buyoutValidation.state}>
         <ControlLabel>{this.props.title}</ControlLabel>
         <InputGroup>
           <InputGroup.Addon>
@@ -141,5 +148,6 @@ BuyoutPriceInputBox.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
   purchasePrice: PropTypes.string.isRequired, // Should be a serialized Decimal.js of wei
   title: PropTypes.string.isRequired,
-  initialValue: PropTypes.object.isRequired
+  initialValue: PropTypes.object.isRequired,
+  onBuyoutChanged: PropTypes.func.isRequired
 }

@@ -21,14 +21,6 @@ export default class ChooseImageInputBox extends Component {
     };
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let fileValidation = this.state.fileValidation;
-    if (prevState.fileToUse != this.state.fileToUse || prevState.imageFileInfo != this.state.imageFileInfo) {
-      fileValidation = this.validateImageFile(this.state.fileToUse, this.state.imageFileInfo);
-      this.setState({fileValidation: fileValidation});
-    }
-  }
-
   browseForImage() {
     this.fileSelectInput.click();
   }
@@ -53,15 +45,23 @@ export default class ChooseImageInputBox extends Component {
 
       // Read this file and get some info about it
       this.getImageFileInfoAsync(chosenFile).then(imageFileInfo => {
+        const fileValidation = this.validateImageFile(this.state.fileToUse, imageFileInfo);
         this.setState({
-          imageFileInfo: imageFileInfo
+          imageFileInfo: imageFileInfo,
+          fileValidation: fileValidation
         });
 
-        this.props.onImageSelected(imageFileInfo.fileData);
+        const imageChangedMessage = {
+          valid : fileValidation.state !== 'error',
+          value: imageFileInfo.fileData
+        };
+
+        this.props.onImageChanged(imageChangedMessage);
       });
     }
 
-    this.setState({fileToUse: newFileToUse});
+    const fileValidation = this.validateImageFile(this.state.fileToUse, this.state.imageFileInfo);
+    this.setState({fileToUse: newFileToUse, fileValidation: fileValidation});
   }
 
   validateImageFile(file, imageFileInfo) {
@@ -111,7 +111,7 @@ export default class ChooseImageInputBox extends Component {
   }
 
   getImageFileInfoAsync(file) {
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject) {
       const fileReader = new FileReader;
       fileReader.onload = function() {
         this.imagePreview.onload = function () {
@@ -130,7 +130,7 @@ export default class ChooseImageInputBox extends Component {
       }.bind(this);
       
       fileReader.readAsDataURL(file);
-    });
+    }.bind(this));
   }
 
   render() {
@@ -157,5 +157,5 @@ export default class ChooseImageInputBox extends Component {
 
 ChooseImageInputBox.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired
+  onImageChanged: PropTypes.func.isRequired
 }

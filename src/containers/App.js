@@ -43,7 +43,7 @@ class App extends Component {
       } else {
         this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       }
-    }.bind(this), 100);
+    }.bind(this), 100000000000);
   }
 
   componentWillUnmount() {
