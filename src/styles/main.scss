@@ -11,7 +11,7 @@ $main-bg-color: #ffffff;
 .main-app-nav {
   display: inline-block;
   padding: 20px 16px 0 16px;
-  color: #36495a;
+  color: #0f1418;
   text-decoration: none;
   text-transform: uppercase;
   font-size: 12px;
@@ -19,12 +19,12 @@ $main-bg-color: #ffffff;
   transition: .2s;
 }
 
-.main-app-navActive {
-  // Styling for when tab is active, nothing for now
+.main-app-nav:hover {
+  color: #36495a;
   text-decoration: none;
 }
 
-.main-app-nav:hover {
+.main-app-nav:focus {
   color: #0f1418;
   text-decoration: none;
 }
@@ -52,6 +52,15 @@ $main-bg-color: #ffffff;
 
 .plot-info {
   word-wrap: break-word;
+}
+
+#metamaskLogoContainer {
+  text-align: center;
+}
+
+#metamaskLogo {
+  width: 60%;
+  height: 60%;
 }
 
 /*----------- Grid -----------*/

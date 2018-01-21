@@ -5,8 +5,10 @@ import { connect } from 'react-redux';
 import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
 
+import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
+import * as Enums from '../constants/Enums';
 import GridContainer from './GridContainer';
 import PlotManagerContainer from './PlotManagerContainer';
 import PurchaseFlowContainer from './PurchaseFlowContainer';
@@ -18,12 +20,34 @@ import About from '../components/About';
  * component to make the Redux store available to the rest of the app.
  */
 class App extends Component {
-  changeTab(tabIndex) {
-    this.props.actions.changeTab(tabIndex);
-  }
-
   componentDidMount() {
     this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
+
+    /**
+     * The following timer is the MetaMask recommended way of checking for 
+     * changes to MetaMask.  There are three possible states:
+     *  1) A user doesn't have MetaMask installed.
+     *  2) A user's MetaMask account is locked, they need to under a password to unlock.
+     *  3) A user's account is open and ready for use.
+     * 
+     * More info available here: 
+     * https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md
+     */
+    this.accountInterval = setInterval(function() {
+      if (typeof web3 !== 'undefined') {
+        if (web3.eth.accounts.length > 0) {
+          this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
+        } else {
+          this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
+        }
+      } else {
+        this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
+      }
+    }.bind(this), 100);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   render() {
@@ -68,7 +92,7 @@ class App extends Component {
               <GridContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
-              <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} />
+              <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} {...this.props.account} />
             )}/>
             <Route path='/about' component={About}/>
             <Route path='/buy/:coordinates' render={purchase} />
@@ -80,6 +104,7 @@ class App extends Component {
 }
 
 App.propTypes = {
+  account: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   grid: PropTypes.object.isRequired,
   purchase: PropTypes.object.isRequired,
@@ -92,6 +117,7 @@ App.propTypes = {
 function mapStateToProps(state) {
   console.log(state);
   return {
+    account: state.account,
     data: state.data,
     grid: state.grid,
     purchase: state.purchase
@@ -108,7 +134,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, DataActions, GridActions), dispatch)
+    actions: bindActionCreators(Object.assign({}, AccountActions, DataActions, GridActions), dispatch)
   };
 }
 

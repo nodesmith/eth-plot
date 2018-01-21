@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import account from './account';
 import data from './data';
 import grid from './grid';
 import purchase from './purchase';
@@ -17,6 +18,7 @@ import purchase from './purchase';
  * More info: http://rackt.org/redux/docs/api/combineReducers.html
  */
 const rootReducer = combineReducers({
+  account,
   data,
   grid,
   purchase

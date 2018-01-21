@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
 
+import * as Enums from '../constants/Enums';
+
 class PlotManager extends Component {
   render() {
     const plotInfos = this.props.userPlots.map((plot, index) => {
@@ -17,7 +19,7 @@ class PlotManager extends Component {
           <Row className="show-grid">
             <Col xs={2} />
             <Col xs={8}>
-              {this.props.web3Initialized ?
+              { this.props.metamaskState === Enums.METAMASK_STATE.OPEN ?
                 this.props.userPlots.length === 0 ? 
                   <FullPageStatus message="You don't have any owned plots. Visit the grid to purchase a plot." />
                   :
@@ -26,8 +28,22 @@ class PlotManager extends Component {
                     {plotInfos}
                     <hr />
                   </div>
-                :              
-              <FullPageStatus message="Please connect to EthGrid with Metamask or similar wallet" />
+                : null
+              }        
+
+              { this.props.metamaskState === Enums.METAMASK_STATE.UNINSTALLED ?
+                <div id="metamaskLogoContainer">
+                  <FullPageStatus message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
+                  <a href={"https://metamask.io"} target="_blank"><img id="metamaskLogo" src={"../assets/metamasklogo.png"} /></a>
+                </div>
+                : null
+              }
+
+              { this.props.metamaskState === Enums.METAMASK_STATE.LOOCKED ?
+                <div id="metamaskLogoContainer">
+                  <FullPageStatus message="You must unlock MetaMask to proceed." />
+                </div>
+                : null
               }
             </Col>
             <Col xs={2} />
@@ -43,7 +59,8 @@ class PlotManager extends Component {
 
 PlotManager.propTypes = {
   userPlots: PropTypes.array.isRequired,
-  web3Initialized: PropTypes.bool.isRequired
+  web3Initialized: PropTypes.bool.isRequired,
+  metamaskState: React.PropTypes.number.isRequired
 };
 
 export default PlotManager;
