@@ -23,7 +23,7 @@ module.exports = class Root extends Component {
             <App />
           </HashRouter>
           {/* Being the dev version of our Root component, we include DevTools below */}
-          <DevTools />
+          {/* <DevTools /> */}
         </div>
       </Provider>
     );

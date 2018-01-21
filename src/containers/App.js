@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
@@ -10,6 +11,7 @@ import * as GridActions from '../actionCreators/GridActions';
 import * as Enums from '../constants/Enums';
 import GridContainer from './GridContainer';
 import PlotManagerContainer from './PlotManagerContainer';
+import PurchaseFlowContainer from './PurchaseFlowContainer';
 import About from '../components/About';
 
 const Web3 = require('web3');

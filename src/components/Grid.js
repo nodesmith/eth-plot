@@ -1,10 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import GridPlot from './GridPlot';
 import PurchasePlot from './PurchasePlot';
-
-const scale = 3; // TODO - do something based off the viewport width
-
+import ZoomControl from '../components/ZoomControl';
 
 export default class Grid extends Component {
   mouseOut() {
@@ -13,6 +12,7 @@ export default class Grid extends Component {
   }
 
   overlayMouseDown(e) {
+    const scale = this.props.scale;
     const x = e.clientX - e.currentTarget.getBoundingClientRect().x;
     const y = e.clientY - e.currentTarget.getBoundingClientRect().y;
     this.props.actions.startDraggingRect(Math.round(x / scale), Math.round(y / scale));
@@ -20,6 +20,7 @@ export default class Grid extends Component {
   }
 
   overlayMouseMove(e) {
+    const scale = this.props.scale;
     const x = e.clientX - e.currentTarget.getBoundingClientRect().x;
     const y = e.clientY - e.currentTarget.getBoundingClientRect().y;
     this.props.actions.resizeDraggingRect(Math.round(x / scale), Math.round(y / scale));
@@ -32,6 +33,8 @@ export default class Grid extends Component {
   }
 
   render() {
+    const scale = this.props.scale;
+
     const plots = this.props.plots.map((plot, index) => {
       return (<GridPlot scale={scale} plot={plot} index={index} isHovered={this.props.hoveredIndex === index} hoverAction={this.props.actions.hoverOverPlot} key={index} />);
     });
@@ -43,6 +46,10 @@ export default class Grid extends Component {
       marginLeft: marginLeft,
       position: 'absolute'
     };
+
+    const zoomControlStyle = {
+
+    }
 
     let overlay = null;
     if (this.props.inBuyMode) {
@@ -95,6 +102,7 @@ export default class Grid extends Component {
           {plots}
         </div>
         {overlay}
+        <ZoomControl scale={scale} changeZoom={this.props.actions.changeZoom}/>
       </div>
     );
   }

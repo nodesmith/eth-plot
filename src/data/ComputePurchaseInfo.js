@@ -4,7 +4,7 @@ import * as PlotMath from './PlotMath';
 function computePurchaseInfo(rectToPurchase, plots) {
   let purchasedChunks = [];
   let purchasedChunkAreaIndices = [];
-  let purchasePrice = 0;
+  let purchasePrice = 42; // TODO - Make this Decimal.js zero
 
   // We'll need to walk the ownership array backwards and see who we need to buy chunks from
   let remainingChunksToPurchase = [rectToPurchase];

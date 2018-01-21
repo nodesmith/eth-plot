@@ -48,3 +48,9 @@ export function hidePurchaseDialog() {
   };
 }
 
+export function changeZoom(direction) {
+  return {
+    type: ActionTypes.CHANGE_ZOOM,
+    direction
+  };
+}

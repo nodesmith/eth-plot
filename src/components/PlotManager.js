@@ -1,5 +1,6 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { Col, Grid, Row } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 
 import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
@@ -57,8 +58,9 @@ class PlotManager extends Component {
 }
 
 PlotManager.propTypes = {
-  userPlots: React.PropTypes.array.isRequired,
-  metamaskState: React.PropTypes.number.isRequired
+  userPlots: PropTypes.array.isRequired,
+  web3Initialized: PropTypes.bool.isRequired,
+  metamaskState: PropTypes.number.isRequired
 };
 
 export default PlotManager;

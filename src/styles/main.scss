@@ -119,3 +119,46 @@ div.well {
   /* Workaround to make opening animation not jumpy*/
   padding: 20px;
 }
+
+.modalRow {
+  height: 80px;
+}
+
+.modalLine {
+  height: 40px;
+  line-height: 40px;
+}
+
+.rectImage {
+  margin-left: auto;
+  margin-right: auto;
+  height: 210px;
+  width: 210px;
+  outline-color: lightgray;
+  outline-style: solid;
+  outline-width: 1px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rectImageCaption {
+  padding: 10px;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}

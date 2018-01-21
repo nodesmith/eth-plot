@@ -1,11 +1,14 @@
 import * as ActionTypes from '../constants/ActionTypes';
+const MAX_SCALE = 10;
+const MIN_SCALE = 1;
 
 const initialState = {
   hoveredIndex: -1,
   inBuyMode: false,
   isDraggingRect: false,
   dragRectStart: null,
-  dragRectCurr: null
+  dragRectCurr: null,
+  scale: 3
 }
 
 export default function grid(state = initialState, action) {
@@ -43,6 +46,17 @@ export default function grid(state = initialState, action) {
   }
   case ActionTypes.STOP_DRAGGING_RECT:
     return Object.assign({}, state, {isDraggingRect: false});
+  case ActionTypes.CHANGE_ZOOM:
+  {
+    let newScale = state.scale;
+    if (action.direction > 0) {
+      newScale = Math.min(state.scale + 1, MAX_SCALE);
+    } else {
+      newScale = Math.max(state.scale - 1, MIN_SCALE);
+    }
+
+    return Object.assign({}, state, {scale: newScale});
+  }
   default:
     return state;
   }
