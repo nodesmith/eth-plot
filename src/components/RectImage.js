@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+// Helper class for building up an SVG string for rectangles layered on top of one another.
+// Use this instead of the component below if you need just the svg itself
 export class SVGRectImageBuilder {
   constructor(height, width, baseRect, subRects) {
     this.height = height;
