@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import Web3 from 'web3';
 
 import PlotManager from '../components/PlotManager';
-
-let web3Provider;
 
 export default class PlotManagerContainer extends Component {
   render() {
@@ -17,9 +14,12 @@ export default class PlotManagerContainer extends Component {
     });
 
     return (
-      <PlotManager userPlots={userPlots} web3Initialized={
-        (typeof web3 !== 'undefined')
-      } actions={this.props.actions} contractInfo={this.props.contractInfo}/>
+      <PlotManager 
+        userPlots={userPlots} 
+        metamaskState={this.props.metamaskSate}
+        actions={this.props.actions}
+        contractInfo={this.props.contractInfo}
+      />
     );
   }
 }
