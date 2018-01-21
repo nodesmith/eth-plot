@@ -8,7 +8,11 @@ const initialState = {
 export default function account(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.UPDATE_METAMASK_STATE:
-    return Object.assign({}, state, { metamaskSate: action.newState });
+    if (action.newState != state.metamaskSate) {
+      return Object.assign({}, state, { metamaskSate: action.newState });
+    } else {
+      return state;
+    }
   default:
     return state;
   }
