@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Thumbnail, ControlLabel, DropdownButton, Image, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, Pager, PageHeader, Row, Col, Glyphicon, Panel } from 'react-bootstrap';
 import RectImage, {SVGRectImageBuilder} from './RectImage';
-import PlotPurchaseForm from './PlotPurchaseForm';
 import Decimal from 'decimal.js';
 
 import { formatEthValue } from '../data/ValueFormatters';
@@ -96,7 +95,11 @@ export default class PurchaseModal extends Component {
     return (
       <div className='modalDialog'>
         <Col xs={8} >
-          <ChooseImageInputBox onImageSelected={this.onNewImageSelected.bind(this)} rectToPurchase={this.props.rectToPurchase} onChange={this.inputChanged.bind(this, 'image')}/>
+          <ChooseImageInputBox 
+            onImageSelected={this.onNewImageSelected.bind(this)}
+            rectToPurchase={this.props.rectToPurchase}
+            onChange={this.inputChanged.bind(this, 'image')}/>
+
           <WebsiteInputBox onChange={this.inputChanged.bind(this, 'website')}/>
           <BuyoutPriceInputBox
             initialValue={initialBuyoutPrice}

@@ -9,6 +9,7 @@ import ChooseImageInputBox from '../components/PurchaseDialog/ChooseImageInputBo
 import WebsiteInputBox from '../components/PurchaseDialog/WebsiteInputBox';
 import BuyoutPriceInputBox from '../components/PurchaseDialog/BuyoutPriceInputBox';
 
+// This isn't used yet! It was just an attempt to see if a full page purchase experience was good
 export default class PurchaseFlowContainer extends Component {
   constructor(...args) {
     super(...args)
@@ -45,9 +46,6 @@ export default class PurchaseFlowContainer extends Component {
       purchasePreviewImageHeight = maxWidth * purchaseAspectRatio;
     }
 
-
-
-
     return (
       <Grid>
         <Row >
@@ -82,7 +80,6 @@ export default class PurchaseFlowContainer extends Component {
               <Panel.Body >
                     <img style={{objectFit: 'fill'}} width={purchasePreviewImageWidth} height={purchasePreviewImageHeight} src={this.state.image} />
                     
-
             </Panel.Body>
             <Panel.Footer>
               <h5>Image Preview</h5>

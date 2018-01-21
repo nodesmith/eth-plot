@@ -27,24 +27,10 @@ export default class ChooseImageInputBox extends Component {
       fileValidation = this.validateImageFile(this.state.fileToUse, this.state.imageFileInfo);
       this.setState({fileValidation: fileValidation});
     }
-
-    // if (prevState.fileValidation.state != fileValidation.state) {
-    //   this.props.onChange({
-    //     valid: fileValidation.state === 'success' || fileValidation.state === 'warning'
-    //   });
-    // }
   }
 
   browseForImage() {
     this.fileSelectInput.click();
-  }
-
-  getImageFileData() {
-    if (this.state && this.state.imageFileInfo && this.state.imageFileInfo.fileData) {
-      return this.state.imageFileInfo.fileData;
-    }
-
-    return undefined;
   }
 
   onFileSelected(event) {
@@ -161,6 +147,7 @@ export default class ChooseImageInputBox extends Component {
         </InputGroup>
         <FormControl.Feedback />
         <HelpBlock>{this.state.fileValidation.message}</HelpBlock>
+        {/*Add a couple of hidden fields for the input and to gather info about the image */}
         <input accept={allowedFileTypes.join(',')} onChange={this.onFileSelected.bind(this)} type='file' ref={(input) => { this.fileSelectInput = input; }} className='hidden' />
         <img ref={(input) => this.imagePreview = input } className='hidden'/>
       </FormGroup>
@@ -170,6 +157,5 @@ export default class ChooseImageInputBox extends Component {
 
 ChooseImageInputBox.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
-
-  // onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired
 }

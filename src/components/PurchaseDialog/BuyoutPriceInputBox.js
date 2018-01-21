@@ -22,8 +22,6 @@ export default class BuyoutPriceInputBox extends Component {
         buyoutEnabled: this.state.buyoutEnabled,
         valid: !this.state.buyoutEnabled || this.state.buyoutValidation.state === 'success' || this.state.buyoutValidation.state === 'warning'
       };
-
-      this.props.onChange(buyoutState);
     }
   }
 
@@ -143,6 +141,5 @@ BuyoutPriceInputBox.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
   purchasePrice: PropTypes.string.isRequired, // Should be a serialized Decimal.js of wei
   title: PropTypes.string.isRequired,
-  initialValue: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired
+  initialValue: PropTypes.object.isRequired
 }
