@@ -45,7 +45,6 @@ function initializeContract(contractInfo) {
 }
 
 function getWeb3(contractInfo) {
-  debugger;
   const web3 =  window.web3 ? new Web3(window.web3.currentProvider) : new Web3(contractInfo.web3Provider);
   return web3;
 }

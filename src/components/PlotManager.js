@@ -60,7 +60,7 @@ class PlotManager extends Component {
 PlotManager.propTypes = {
   userPlots: PropTypes.array.isRequired,
   web3Initialized: PropTypes.bool.isRequired,
-  metamaskState: React.PropTypes.number.isRequired
+  metamaskState: PropTypes.number.isRequired
 };
 
 export default PlotManager;
