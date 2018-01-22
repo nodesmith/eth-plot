@@ -1,20 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-// import { 
-//   Button, 
-//   Col,
-//   Collapse,
-//   ControlLabel,
-//   FormControl,
-//   FormGroup,
-//   Input,
-//   Row,
-//   Well
-// } from 'react-bootstrap';
-
-
-
 import { withStyles } from 'material-ui/styles';
 import ExpansionPanel, {
   ExpansionPanelSummary,

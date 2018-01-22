@@ -19,6 +19,7 @@ import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
 import * as Enums from '../constants/Enums';
 import GridContainer from './GridContainer';
+import MainContainer from './MainContainer';
 import PlotManagerContainer from './PlotManagerContainer';
 import PurchaseFlowContainer from './PurchaseFlowContainer';
 import About from '../components/About';
@@ -57,7 +58,7 @@ class App extends Component {
       } else {
         this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       }
-    }.bind(this), 1000);
+    }.bind(this), 1000000);
   }
 
   componentWillUnmount() {
@@ -92,7 +93,8 @@ class App extends Component {
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
-              <GridContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
+              <MainContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
+              // <GridContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
               <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} {...this.props.account} />
@@ -117,7 +119,7 @@ App.propTypes = {
  * Global redux state.
  */
 function mapStateToProps(state) {
-  console.log(state);
+  // console.log(state);
   return {
     account: state.account,
     data: state.data,
