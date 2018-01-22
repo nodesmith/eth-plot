@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Col, Grid, Row } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 import FullPageStatus from './FullPageStatus';
@@ -7,52 +6,75 @@ import PlotInfo from './PlotInfo';
 
 import * as Enums from '../constants/Enums';
 
+
+import { withStyles } from 'material-ui/styles';
+import ExpansionPanel, {
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+} from 'material-ui/ExpansionPanel';
+import Typography from 'material-ui/Typography';
+import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import Grid from 'material-ui/Grid';
+import Paper from 'material-ui/Paper';
+
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+    marginTop: 30,
+  }
+});
+
+
 class PlotManager extends Component {
-  render() {
-    const plotInfos = this.props.userPlots.map((plot, index) => {
-      return (<PlotInfo info={plot} key={index} actions={this.props.actions} contractInfo={this.props.contractInfo} />);
-    });
-    
-    return (
-      <div className="plot-section">
-        <Grid>
-          <Row className="show-grid">
-            <Col xs={2} />
-            <Col xs={8}>
-              { this.props.metamaskState === Enums.METAMASK_STATE.OPEN ?
-                this.props.userPlots.length === 0 ? 
-                  <FullPageStatus message="You don't have any owned plots. Visit the grid to purchase a plot." />
-                  :
-                  <div>
-                    <h4>My Content</h4>
-                    {plotInfos}
-                    <hr />
-                  </div>
-                : null
-              }        
-
-              { this.props.metamaskState === Enums.METAMASK_STATE.UNINSTALLED ?
-                <div id="metamaskLogoContainer">
-                  <FullPageStatus message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
-                  <a href={"https://metamask.io"} target="_blank"><img id="metamaskLogo" src={"../assets/metamasklogo.png"} /></a>
-                </div>
-                : null
-              }
-
-              { this.props.metamaskState === Enums.METAMASK_STATE.LOCKED ?
-                <div id="metamaskLogoContainer">
-                  <FullPageStatus message="You must unlock MetaMask to proceed." />
-                </div>
-                : null
-              }
-            </Col>
-            <Col xs={2} />
-          </Row>
-        </Grid>
-        {
-
-        }
+  getFullPageStatus() {
+    if (this.props.metamaskState === Enums.METAMASK_STATE.OPEN) {
+      return (<FullPageStatus message="You don't have any owned plots. Visit the grid to purchase a plot." />);
+    } else if (this.props.metamaskState === Enums.METAMASK_STATE.UNINSTALLED) {
+      return (
+      <div id="metamaskLogoContainer">
+        <FullPageStatus message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
+        <a href={"https://metamask.io"} target="_blank"><img id="metamaskLogo" src={"../assets/metamasklogo.png"} /></a>
       </div>
+      );
+    } else if (this.props.metamaskState === Enums.METAMASK_STATE.LOCKED) {
+      return (
+      <div id="metamaskLogoContainer">
+        <FullPageStatus message="You must unlock MetaMask to proceed." />
+      </div>
+      );
+    }
+  }
+
+  getUserPlots() {
+    const plotInfos = this.props.userPlots.map((plot, index) => {
+      return (
+      <Grid item xs={12}>
+        <Paper>
+          <PlotInfo info={plot} key={index} actions={this.props.actions} contractInfo={this.props.contractInfo} />
+        </Paper>
+      </Grid>);
+    });
+
+    return [(<Grid item xs={8}>
+      <Typography type='title'>My Content</Typography>
+    </Grid>)].concat(plotInfos);
+  }
+
+  render() {
+
+    let content = this.props.metamaskState !== Enums.METAMASK_STATE.OPEN || this.props.userPlots.length === 0 ? 
+      this.getFullPageStatus() :
+      this.getUserPlots();
+
+    return (
+      <Grid container className={this.props.classes.root} justify="center" >
+        <Grid item xs={9} >
+          <Grid container spacing={24} >
+            {content}
+          </Grid>
+        </Grid>
+      </Grid>
     );
   }
 }
@@ -63,4 +85,4 @@ PlotManager.propTypes = {
   metamaskState: PropTypes.number.isRequired
 };
 
-export default PlotManager;
+export default withStyles(styles)(PlotManager);

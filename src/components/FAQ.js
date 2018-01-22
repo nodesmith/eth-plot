@@ -19,7 +19,7 @@ class FAQ extends Component {
     return (
     <ExpansionPanel key={this.props.question}>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>{ this.props.question }</Typography>
+        <Typography type='subheading'>{ this.props.question }</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
         <Typography>
