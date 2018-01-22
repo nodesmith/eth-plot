@@ -57,7 +57,7 @@ class App extends Component {
       } else {
         this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       }
-    }.bind(this), 1000);
+    }.bind(this), 1000000);
   }
 
   componentWillUnmount() {
@@ -89,7 +89,6 @@ class App extends Component {
             </Nav>
           </Navbar.Collapse>
         </Navbar> */}
-        <Grid container>
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
@@ -101,7 +100,6 @@ class App extends Component {
             <Route path='/about' component={About}/>
           </Switch>
         </main>
-        </Grid>
       </div>
     );
   }
