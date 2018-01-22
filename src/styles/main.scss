@@ -1,12 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Raleway:100,400);
 
-$main-bg-color: #ffffff;
-
-/*----------- Main App -----------*/
-.main-app-container {
-  background-color: $main-bg-color;
-  font-family: 'Raleway', sans-serif;
-}
 
 .main-app-nav {
   display: inline-block;
@@ -108,7 +101,6 @@ $main-bg-color: #ffffff;
 /* ---------- General. -----------*/
 div.well {
   background-image: none;
-  background-color: $main-bg-color;
   border: none;
   box-shadow: none;
   margin: 0px;

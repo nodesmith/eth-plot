@@ -3,7 +3,16 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
-import { Nav, Navbar, NavItem } from 'react-bootstrap';
+
+import { withStyles } from 'material-ui/styles';
+import AppBar from 'material-ui/AppBar';
+import Button from 'material-ui/Button';
+import Grid from 'material-ui/Grid';
+import Reboot from 'material-ui/Reboot';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+
+// import { Nav, Navbar, NavItem } from 'react-bootstrap';
 
 import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
@@ -58,6 +67,17 @@ class App extends Component {
   render() {
     return (
       <div className="main-app-container">
+        <Reboot />
+        <AppBar position="static" color="primary">
+          <Toolbar>
+            <Typography type="title" color="inherit">
+              Eth Grid
+            </Typography>
+            <Button component={NavLink} to="/myplots" color="inherit">My Plots</Button>
+            <Button component={NavLink} to="/about" color="inherit">About</Button>
+          </Toolbar>
+        </AppBar>
+{/*         
         <Navbar collapseOnSelect className="navbar-static-top">
           <Navbar.Collapse>
             <Nav>
@@ -68,7 +88,8 @@ class App extends Component {
               <NavLink className="main-app-nav" to="/about" activeClassName="selected">About</NavLink>
             </Nav>
           </Navbar.Collapse>
-        </Navbar>
+        </Navbar> */}
+        <Grid container>
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
@@ -80,6 +101,7 @@ class App extends Component {
             <Route path='/about' component={About}/>
           </Switch>
         </main>
+        </Grid>
       </div>
     );
   }
