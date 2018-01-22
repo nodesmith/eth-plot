@@ -7,6 +7,9 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
+import Stepper, { Step, StepLabel, StepContent } from 'material-ui/Stepper';
+
+import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
 
 const styles = theme => ({
   root: {
@@ -25,6 +28,35 @@ class PurchaseFlowCard extends Component {
   constructor(...args) {
     super(...args);
 
+    this.state = {
+      activeStep: 0
+    };
+  }
+
+  onImageChanged(newImage) {
+    this.setState({
+      activeStep: 1
+    })
+  }
+
+  getStepperContent() {
+    const activeStep = this.state.activeStep;
+    return (
+      <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+        <Step key={0}>
+          <StepLabel>Choose An Image</StepLabel>
+          <StepContent>
+            <ChooseImageInputBox onImageChanged={this.onImageChanged.bind(this)} />
+          </StepContent>
+        </Step>
+        <Step key={1}>
+          <StepLabel>Resize and Position</StepLabel>
+          <StepContent>
+            Do some stuff
+          </StepContent>
+        </Step>
+      </Stepper>
+    )
   }
 
   render() {
@@ -41,21 +73,9 @@ class PurchaseFlowCard extends Component {
             subheader="A plot is forever"
         />
         <CardContent>
-          <Typography type="headline" component="h2">
-            Purchase Plot
-          </Typography>
-          <Typography component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
-          </Typography>
+          {this.getStepperContent()}
         </CardContent>
         <CardActions>
-          <Button dense color="primary">
-            Share
-          </Button>
-          <Button dense color="primary">
-            Learn More
-          </Button>
         </CardActions>
       </Card>
     </div>);

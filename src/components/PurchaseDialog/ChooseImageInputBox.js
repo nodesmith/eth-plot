@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
+// import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
 import Decimal from 'decimal.js';
+
+import { withStyles } from 'material-ui/styles';
+import Button from 'material-ui/Button';
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+import Visibility from 'material-ui-icons/Visibility';
+import VisibilityOff from 'material-ui-icons/VisibilityOff';
 
 const allowedFileTypes = [
   'image/jpeg',
@@ -10,7 +17,20 @@ const allowedFileTypes = [
   'image/svg+xml'
 ];
 
-export default class ChooseImageInputBox extends Component {
+const styles = theme => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+  },
+  withoutLabel: {
+    marginTop: theme.spacing.unit * 3,
+  },
+});
+
+class ChooseImageInputBox extends Component {
   constructor(...args) {
     super(...args);
 
@@ -90,13 +110,14 @@ export default class ChooseImageInputBox extends Component {
 
     if (imageFileInfo) {
       const aspectRatio = imageFileInfo.w / imageFileInfo.h;
-      const targetRatio = this.props.rectToPurchase.w / this.props.rectToPurchase.h;
-      if (Math.abs(aspectRatio - targetRatio) > 0.01) {
-        return {
-          state: 'warning',
-          message: `Selected image does not match the aspect ratio of the target`
-        };
-      }
+
+      // const targetRatio = this.props.rectToPurchase.w / this.props.rectToPurchase.h;
+      // if (Math.abs(aspectRatio - targetRatio) > 0.01) {
+      //   return {
+      //     state: 'warning',
+      //     message: `Selected image does not match the aspect ratio of the target`
+      //   };
+      // }
     } else {
       return {
         state: 'warning',
@@ -134,28 +155,22 @@ export default class ChooseImageInputBox extends Component {
   }
 
   render() {
-    const imageLabel = `Plot Image (${this.props.rectToPurchase.w} x ${this.props.rectToPurchase.h})`;
+    // const imageLabel = `Plot Image (${this.props.rectToPurchase.w} x ${this.props.rectToPurchase.h})`;
+    const imageLabel = 'Choose an image';
+    const { classes } = this.props;
 
     return (
-      <FormGroup controlId='imageSelection' validationState={this.state.fileValidation.state}>
-        <ControlLabel>{imageLabel}</ControlLabel>
-        <InputGroup>
-          <InputGroup.Button>
-            <Button onClick={this.browseForImage.bind(this)}>Browse...</Button>
-          </InputGroup.Button>
-          <FormControl type="text" disabled value={this.state.fileToUse ? this.state.fileToUse.fileName: ''}/>
-        </InputGroup>
-        <FormControl.Feedback />
-        <HelpBlock>{this.state.fileValidation.message}</HelpBlock>
-        {/*Add a couple of hidden fields for the input and to gather info about the image */}
+      <FormControl className={classes.formControl}>
+        <Button raised onClick={this.browseForImage.bind(this)}>Browse...</Button>
         <input accept={allowedFileTypes.join(',')} onChange={this.onFileSelected.bind(this)} type='file' ref={(input) => { this.fileSelectInput = input; }} className='hidden' />
         <img ref={(input) => this.imagePreview = input } className='hidden'/>
-      </FormGroup>
+      </FormControl>
     );
   }
 }
 
 ChooseImageInputBox.propTypes = {
-  rectToPurchase: PropTypes.object.isRequired,
   onImageChanged: PropTypes.func.isRequired
 }
+
+export default withStyles(styles)(ChooseImageInputBox);

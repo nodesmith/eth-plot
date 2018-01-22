@@ -35,7 +35,7 @@ const styles = theme => ({
   },
   drawer: {
     marginTop: '64px',
-    width: 350
+    width: 400
   }
 });
 
