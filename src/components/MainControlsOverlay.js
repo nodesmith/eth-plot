@@ -61,7 +61,7 @@ class MainControlsOverlay extends Component {
 
   render() {
     const { classes } = this.props;
-    const sideList = (<PurchaseFlowCard />);
+    const sideList = (<PurchaseFlowCard onClose={() => this.toggleDrawer(false)}/>);
     return (
       <div className={classes.root}>
         <div className={classes.zoom}>

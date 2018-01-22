@@ -1,7 +1,27 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-export default class ZoomControl extends Component {
+import { withStyles } from 'material-ui/styles';
+import ButtonBase from 'material-ui/ButtonBase';
+import Typography from 'material-ui/Typography';
+import Divider from 'material-ui/Divider/Divider';
+
+import Icon from 'material-ui/Icon';
+
+const size = 30;
+const styles = theme => ({
+  root: {
+    width: size
+  },
+  button: {
+    height: size,
+    width: size,
+    backgroundColor: theme.palette.grey[200]
+  }
+});
+
+
+class ZoomControl extends Component {
 
   zoomIn() {
     this.props.changeZoom(+1);
@@ -12,31 +32,18 @@ export default class ZoomControl extends Component {
   }
 
   render() {
-    const size = 25;
-    const style = {
-      height: size,
-      width: size,
-      cursor: 'pointer',
-      backgroundColor: 'lightgray'
-    };
-
-    const iconStyle = {
-      width: size,
-      height: size,
-    };
-
+    const { classes } = this.props;
     return (
-    <div>
-      <div onClick={this.zoomIn.bind(this)} style={style}>
-        <img style={iconStyle} src='./assets/ic_add_black_24px.svg' />
-      </div>
-      <div style={{height: 10}}>
-        {this.props.scale}
-      </div>
-      <div onClick={this.zoomOut.bind(this)} style={style}>
-        <img style={iconStyle} src='./assets/ic_remove_black_24px.svg' />
-      </div>
-    </div>);
+
+      <div className={classes.root}>
+        <ButtonBase focusRipple key='plus' className={classes.button} onClick={this.zoomIn.bind(this)}>
+          <Icon>add</Icon>
+        </ButtonBase>
+        <Divider />
+        <ButtonBase focusRipple key='minus' className={classes.button} onClick={this.zoomOut.bind(this)}>
+          <Icon>remove</Icon>
+        </ButtonBase>
+      </div>);
   }
 }
 
@@ -44,3 +51,5 @@ ZoomControl.propTypes = {
   scale: PropTypes.number.isRequired,
   changeZoom: PropTypes.func.isRequired
 }
+
+export default withStyles(styles)(ZoomControl);

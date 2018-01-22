@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PurchaseModal from '../components/PurchaseModal';
+import PropTypes from 'prop-types';
 
 import { withStyles } from 'material-ui/styles';
 import Card, { CardActions, CardContent, CardHeader, CardMedia } from 'material-ui/Card';
@@ -65,7 +66,7 @@ class PurchaseFlowCard extends Component {
       <Card className={classes.card}>
         <CardHeader
             action={
-              <IconButton>
+              <IconButton onClick={this.props.onClose}>
                 <CloseIcon />
               </IconButton>
             }
@@ -80,6 +81,10 @@ class PurchaseFlowCard extends Component {
       </Card>
     </div>);
   }
+}
+
+PurchaseFlowCard.propTypes = {
+  onClose: PropTypes.func.isRequired
 }
 
 export default withStyles(styles)(PurchaseFlowCard);
