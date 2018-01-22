@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PurchaseModal from '../components/PurchaseModal';
+import PropTypes from 'prop-types';
 
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
@@ -20,22 +21,26 @@ const styles = theme => ({
     height: '100%',
     position: 'absolute',
     left: 0,
-    top: 0
+    top: 0,
+    pointerEvents: 'none'
   },
   zoom: {
     left: padding,
     bottom: padding,
     position: 'absolute',
-    display: 'inline'
+    display: 'inline',
+    pointerEvents: 'all'
   },
   purchase: {
     right: padding,
     bottom: padding,
-    position: 'absolute'
+    position: 'absolute',
+    pointerEvents: 'all'
   },
   drawer: {
     marginTop: '64px',
-    width: 400
+    width: 400,
+    pointerEvents: 'all'
   }
 });
 
@@ -47,10 +52,6 @@ class MainControlsOverlay extends Component {
     this.state = {
       drawerOpen: false
     };
-  }
-
-  changeZoom() {
-
   }
 
   toggleDrawer(isOpen) {
@@ -65,7 +66,7 @@ class MainControlsOverlay extends Component {
     return (
       <div className={classes.root}>
         <div className={classes.zoom}>
-          <ZoomControl scale={3} changeZoom={this.changeZoom.bind(this)}/>
+          <ZoomControl scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
         </div>
         {this.state.drawerOpen ? null : 
           <Button fab color="secondary" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer(true)}>
@@ -84,6 +85,11 @@ class MainControlsOverlay extends Component {
       </div>
     );
   }
+}
+
+MainControlsOverlay.propTypes = {
+  zoomLevel: PropTypes.number.isRequired,
+  changeZoom: PropTypes.func.isRequired
 }
 
 export default withStyles(styles)(MainControlsOverlay);

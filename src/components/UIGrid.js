@@ -2,10 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import GridPlot from './GridPlot';
-import PurchasePlot from './PurchasePlot';
-import ZoomControl from '../components/ZoomControl';
 
-export default class Grid extends Component {
+import { withStyles } from 'material-ui/styles';
+
+const styles = theme => ({
+  root: {
+    padding: 24,
+    width: '100%',
+    height: '100%',
+    overflow: 'scroll'
+  }
+});
+
+
+class UIGrid extends Component {
   mouseOut() {
     // Reset the hover once the mouse leaves this area
     this.props.actions.hoverOverPlot(-1);
@@ -47,10 +57,6 @@ export default class Grid extends Component {
       position: 'absolute'
     };
 
-    const zoomControlStyle = {
-
-    }
-
     let overlay = null;
     if (this.props.inBuyMode) {
       const overlayStyle = {
@@ -83,32 +89,29 @@ export default class Grid extends Component {
           onMouseDown={this.overlayMouseDown.bind(this)}
           onMouseMove={this.overlayMouseMove.bind(this)}
           onMouseUp={this.overlayMouseUp.bind(this)}>
-          {
+          {/* {
             purchasePlotRect ? <PurchasePlot
               startPurchase={this.props.actions.showPurchaseDialog}
               scale={scale}
               rect={purchasePlotRect} /> : null
-          }
+          } */}
         </div>);
     }
 
-    const sectionStyle = {
-      position: 'relative'
-    };
-
     return (
-      <div className="grid-section" style={sectionStyle}>
+      <div className={this.props.classes.root}>
         <div style={gridStyle} className="grid" onMouseOut={this.mouseOut.bind(this)}>
           {plots}
         </div>
         {overlay}
-        <ZoomControl scale={scale} changeZoom={this.props.actions.changeZoom}/>
       </div>
     );
   }
 }
 
-Grid.propTypes = {
+UIGrid.propTypes = {
   plots: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired
 };
+
+export default withStyles(styles)(UIGrid);
