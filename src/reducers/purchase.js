@@ -7,6 +7,17 @@ const initialState = {
   imageToPurchase: null
 };
 
+function determineInitialRect(imageFileInfo) {
+  return {
+    x: 100,
+    y: 100,
+    w: 30,
+    h: 30,
+    x2: 130,
+    y2: 130
+  };
+}
+
 export default function purchase(state = initialState, action) {
   switch (action.type) {
     case ActionTypes.SHOW_PURCHASE_DIALOG:
@@ -24,7 +35,8 @@ export default function purchase(state = initialState, action) {
       });
     case ActionTypes.PURCHASE_IMAGE_SELECTED:
       return Object.assign({}, state, {
-        imageToPurchase: action.imageFileInfo
+        imageToPurchase: action.imageFileInfo,
+        rectToPurchase: determineInitialRect(action.imageFileInfo)
       })
     default:
       return state;

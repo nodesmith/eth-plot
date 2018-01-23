@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import GridPlot from './GridPlot';
+import PurchasePlot from './PurchasePlot';
 
 import { withStyles } from 'material-ui/styles';
 
@@ -19,27 +20,6 @@ class UIGrid extends Component {
   mouseOut() {
     // Reset the hover once the mouse leaves this area
     this.props.actions.hoverOverPlot(-1);
-  }
-
-  overlayMouseDown(e) {
-    const scale = this.props.scale;
-    const x = e.clientX - e.currentTarget.getBoundingClientRect().x;
-    const y = e.clientY - e.currentTarget.getBoundingClientRect().y;
-    this.props.actions.startDraggingRect(Math.round(x / scale), Math.round(y / scale));
-    e.stopPropagation();
-  }
-
-  overlayMouseMove(e) {
-    const scale = this.props.scale;
-    const x = e.clientX - e.currentTarget.getBoundingClientRect().x;
-    const y = e.clientY - e.currentTarget.getBoundingClientRect().y;
-    this.props.actions.resizeDraggingRect(Math.round(x / scale), Math.round(y / scale));
-    e.stopPropagation();
-  }
-
-  overlayMouseUp(e) {
-    this.props.actions.stopDraggingRect();
-    e.stopPropagation();
   }
 
   render() {
@@ -85,11 +65,12 @@ class UIGrid extends Component {
       }
 
       overlay = (
-        <div className="gridOverlay" style={overlayStyle}
-          onMouseDown={this.overlayMouseDown.bind(this)}
-          onMouseMove={this.overlayMouseMove.bind(this)}
-          onMouseUp={this.overlayMouseUp.bind(this)}>
-            <img src={this.props.imageToPurchase.fileData} />
+        <div className="gridOverlay" style={overlayStyle}>
+            <PurchasePlot 
+            rect={this.props.rectToPurchase}
+            scale={scale} 
+            //  src={this.props.imageToPurchase.fileData}
+             />
           {/* {
             purchasePlotRect ? <PurchasePlot
               startPurchase={this.props.actions.showPurchaseDialog}

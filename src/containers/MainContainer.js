@@ -25,7 +25,10 @@ class MainContainer extends Component {
   render() {
     return (
       <div className={this.props.classes.root}>
-        <UIGrid {...this.props} inPurchaseMode={this.props.purchase.purchaseFlowOpen} imageToPurchase={this.props.purchase.imageToPurchase} />
+        <UIGrid {...this.props}
+          inPurchaseMode={this.props.purchase.purchaseFlowOpen}
+          imageToPurchase={this.props.purchase.imageToPurchase}
+          rectToPurchase={this.props.purchase.rectToPurchase}/>
         <MainControlsOverlay
           purchase={this.props.purchase}
           zoomLevel={this.props.scale}
