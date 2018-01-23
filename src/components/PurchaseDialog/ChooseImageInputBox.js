@@ -71,12 +71,7 @@ class ChooseImageInputBox extends Component {
           fileValidation: fileValidation
         });
 
-        const imageChangedMessage = {
-          valid : fileValidation.state !== 'error',
-          value: imageFileInfo.fileData
-        };
-
-        this.props.onImageChanged(imageChangedMessage);
+        this.props.onImageChanged(imageFileInfo);
       });
     }
 
@@ -147,7 +142,6 @@ class ChooseImageInputBox extends Component {
         }.bind(this);
 
         this.imagePreview.src = fileReader.result;
-        this.props.onImageLoaded(fileReader.result);
       }.bind(this);
       
       fileReader.readAsDataURL(file);

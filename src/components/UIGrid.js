@@ -58,7 +58,7 @@ class UIGrid extends Component {
     };
 
     let overlay = null;
-    if (this.props.inBuyMode) {
+    if (this.props.inPurchaseMode && this.props.imageToPurchase) {
       const overlayStyle = {
         width: this.props.gridInfo.width * scale,
         height: this.props.gridInfo.height * scale,
@@ -89,6 +89,7 @@ class UIGrid extends Component {
           onMouseDown={this.overlayMouseDown.bind(this)}
           onMouseMove={this.overlayMouseMove.bind(this)}
           onMouseUp={this.overlayMouseUp.bind(this)}>
+            <img src={this.props.imageToPurchase.fileData} />
           {/* {
             purchasePlotRect ? <PurchasePlot
               startPurchase={this.props.actions.showPurchaseDialog}
@@ -111,7 +112,9 @@ class UIGrid extends Component {
 
 UIGrid.propTypes = {
   plots: PropTypes.array.isRequired,
-  actions: PropTypes.object.isRequired
+  actions: PropTypes.object.isRequired,
+  inPurchaseMode: PropTypes.bool.isRequired,
+  imageToPurchase: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(UIGrid);

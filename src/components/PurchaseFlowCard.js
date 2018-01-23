@@ -8,7 +8,7 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
-import Stepper, { Step, StepLabel, StepContent } from 'material-ui/Stepper';
+import Stepper, { Step, StepButton, StepLabel, StepContent } from 'material-ui/Stepper';
 
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
 
@@ -30,14 +30,27 @@ class PurchaseFlowCard extends Component {
     super(...args);
 
     this.state = {
-      activeStep: 0
+      activeStep: 0,
+      completed: {}
     };
   }
 
-  onImageChanged(newImage) {
+  onImageChanged(imageFileInfo) {
+    this.props.onImageSelected(imageFileInfo);
+
+    const { completed } = this.state;
+    completed[0] = true;
+
     this.setState({
-      activeStep: 1
+      activeStep: 1,
+      completed
     })
+  }
+
+  handleStep(index) {
+    this.setState({
+      activeStep: index
+    });
   }
 
   getStepperContent() {
@@ -45,15 +58,21 @@ class PurchaseFlowCard extends Component {
     return (
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
         <Step key={0}>
-          <StepLabel>Choose An Image</StepLabel>
+          <StepButton onClick={() => this.handleStep(0)} completed={this.state.completed[0]} >
+            Choose An Image
+          </StepButton>
           <StepContent>
             <ChooseImageInputBox onImageChanged={this.onImageChanged.bind(this)} />
           </StepContent>
         </Step>
         <Step key={1}>
-          <StepLabel>Resize and Position</StepLabel>
+          <StepButton onClick={() => this.handleStep(1)} completed={this.state.completed[1]} >
+            Resize and Position
+          </StepButton>
           <StepContent>
-            Do some stuff
+            <Typography type='body1'>
+              Resize and position your image. The purchase price will update as you move
+            </Typography>
           </StepContent>
         </Step>
       </Stepper>
@@ -84,7 +103,8 @@ class PurchaseFlowCard extends Component {
 }
 
 PurchaseFlowCard.propTypes = {
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  onImageSelected: PropTypes.func.isRequired
 }
 
 export default withStyles(styles)(PurchaseFlowCard);

@@ -2,7 +2,9 @@ import * as ActionTypes from '../constants/ActionTypes';
 
 const initialState = {
   purchaseDialogVisible: false,
-  rectToPurchase: {}
+  rectToPurchase: {},
+  purchaseFlowOpen: false,
+  imageToPurchase: null
 };
 
 export default function purchase(state = initialState, action) {
@@ -16,6 +18,14 @@ export default function purchase(state = initialState, action) {
       return Object.assign({}, state, {
         purchaseDialogVisible: false
       });
+    case ActionTypes.TOGGLE_PURCHASE_FLOW:
+      return Object.assign({}, state, {
+        purchaseFlowOpen: !state.purchaseFlowOpen
+      });
+    case ActionTypes.PURCHASE_IMAGE_SELECTED:
+      return Object.assign({}, state, {
+        imageToPurchase: action.imageFileInfo
+      })
     default:
       return state;
   }

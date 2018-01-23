@@ -48,28 +48,22 @@ const styles = theme => ({
 class MainControlsOverlay extends Component {
   constructor(...args) {
     super(...args);
-
-    this.state = {
-      drawerOpen: false
-    };
   }
 
-  toggleDrawer(isOpen) {
-    this.setState({
-      drawerOpen: isOpen
-    });
+  toggleDrawer() {
+    this.props.togglePurchaseFlow();
   }
 
   render() {
     const { classes } = this.props;
-    const sideList = (<PurchaseFlowCard onClose={() => this.toggleDrawer(false)}/>);
+    const sideList = (<PurchaseFlowCard onImageSelected={this.props.onImageSelected} onClose={() => this.toggleDrawer()}/>);
     return (
       <div className={classes.root}>
         <div className={classes.zoom}>
           <ZoomControl scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
         </div>
-        {this.state.drawerOpen ? null : 
-          <Button fab color="secondary" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer(true)}>
+        {this.props.purchase.purchaseFlowOpen ? null : 
+          <Button fab color="secondary" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />
           </Button>
         }
@@ -78,8 +72,8 @@ class MainControlsOverlay extends Component {
           }} 
           anchor="right"
           type="persistent"
-          open={this.state.drawerOpen}
-          onClose={() => this.toggleDrawer(false)}>
+          open={this.props.purchase.purchaseFlowOpen}
+          onClose={() => this.toggleDrawer()}>
           {sideList}
         </Drawer>
       </div>

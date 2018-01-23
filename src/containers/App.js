@@ -17,6 +17,7 @@ import Typography from 'material-ui/Typography';
 import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
+import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import * as Enums from '../constants/Enums';
 import GridContainer from './GridContainer';
 import MainContainer from './MainContainer';
@@ -71,30 +72,19 @@ class App extends Component {
         <Reboot />
         <AppBar position="static" color="primary">
           <Toolbar>
-            <Typography type="title" color="inherit">
-              Eth Grid
-            </Typography>
+            <Button component={NavLink} to="/" color="inherit">
+              <Typography type="title" color="inherit">
+                Eth Grid
+              </Typography>
+            </Button>
             <Button component={NavLink} to="/myplots" color="inherit">My Plots</Button>
             <Button component={NavLink} to="/about" color="inherit">About</Button>
           </Toolbar>
         </AppBar>
-{/*         
-        <Navbar collapseOnSelect className="navbar-static-top">
-          <Navbar.Collapse>
-            <Nav>
-              <NavLink className="main-app-nav" to="/myplots" activeClassName="main-app-navActive">My Plots</NavLink>
-              <NavLink to="/" activeClassName="main-app-navActive">
-                <img src="../assets/logo.png" alt="ethGridLogo" height="21" width="21" />
-              </NavLink>
-              <NavLink className="main-app-nav" to="/about" activeClassName="selected">About</NavLink>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar> */}
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
-              <MainContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
-              // <GridContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
+              <MainContainer {...routeProps} actions={this.props.actions} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
               <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} {...this.props.account} />
@@ -138,7 +128,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, AccountActions, DataActions, GridActions), dispatch)
+    actions: bindActionCreators(Object.assign({}, AccountActions, DataActions, GridActions, PurchaseActions), dispatch)
   };
 }
 
