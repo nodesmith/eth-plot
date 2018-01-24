@@ -16,7 +16,8 @@ const styles = theme => ({
     height: 'calc(100vh - 64px)',
     [theme.breakpoints.down('xs')]: {
       height: 'calc(100vh - 54px)',
-    }
+    },
+    userDrag: 'none'
   }
 });
 
@@ -27,6 +28,7 @@ class MainContainer extends Component {
       <div className={this.props.classes.root}>
         <UIGrid {...this.props}
           inPurchaseMode={this.props.purchase.purchaseFlowOpen}
+          currentTransform={this.props.purchase.currentTransform}
           imageToPurchase={this.props.purchase.imageToPurchase}
           rectToPurchase={this.props.purchase.rectToPurchase}/>
         <MainControlsOverlay

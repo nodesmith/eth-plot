@@ -1,33 +1,60 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { MovementActions } from '../constants/Enums';
 
 export default class PurchasePlot extends Component {
-  mouseOver() {
-    this.props.hoverAction(this.props.index);
+  constructor(...args) {
+    super(...args);
+
+    this.state = {
+      currentAction: MovementActions.NONE
+    }
   }
 
-  plotClicked(e) {
-    e.stopPropagation();
-    
-    // The plot has been clicked. We should go ahead and try to buy this plot
-    this.props.startPurchase(this.props.rect);
-  }
+  overlayMouseDown(movement, e) {
+    const scale = this.props.scale;
+    const x = (e.clientX - this.rootElement.parentElement.getBoundingClientRect().x) / scale;
+    const y = (e.clientY - this.rootElement.parentElement.getBoundingClientRect().y) / scale;
+    this.setState({
+      actionStart: {x, y},
+      currentAction: movement
+    });
 
-
-  overlayMouseDown(e) {
-    // const scale = this.props.scale;
-    // const x = e.clientX - e.currentTarget.getBoundingClientRect().x;
-    // const y = e.clientY - e.currentTarget.getBoundingClientRect().y;
-    // this.props.actions.startDraggingRect(Math.round(x / scale), Math.round(y / scale));
     // e.stopPropagation();
+
+    this.props.startAction(x, y, movement);
   }
 
-  overlayMouseMove(e) {
+  overlayMouseMove(movement, e) {
+
     // const scale = this.props.scale;
-    // const x = e.clientX - e.currentTarget.getBoundingClientRect().x;
-    // const y = e.clientY - e.currentTarget.getBoundingClientRect().y;
-    // this.props.actions.resizeDraggingRect(Math.round(x / scale), Math.round(y / scale));
-    // e.stopPropagation();
+    // const x = (e.clientX - this.rootElement.parentElement.getBoundingClientRect().x) / scale;
+    // const y = (e.clientY - this.rootElement.parentElement.getBoundingClientRect().y) / scale;
+
+    // const deltaX = x - this.state.actionStart.x;
+    // const deltaY = y - this.state.actionStart.y;
+
+    // let rect = Object.assign({}, this.props.rect);
+    // switch(movement) {
+    //   case MovementActions.DRAG:
+    //     rect.x += deltaX;
+    //     rect.y += deltaX;
+    //     rect.x2 += deltaX;
+    //     rect.y2 += deltaY;
+    //     break;
+    //   case MovementActions.TOP:
+    //     rect.y += deltaY;
+    //     break;
+      
+    // }
+
+    // rect.w = rect.x2 - rect.x;
+    // rect.h = rect.y2 - rect.y;
+
+    // // console.log(rect);
+
+    // // this.props.actions.resizeDraggingRect(Math.round(x / scale), Math.round(y / scale));
+    // // e.stopPropagation();
   }
 
   overlayMouseUp(e) {
@@ -44,7 +71,7 @@ export default class PurchasePlot extends Component {
       width: rect.w * scale,
       height: rect.h * scale,
       position: 'absolute',
-      cursor: 'grab'
+      cursor: 'move'
     };
 
     const wrapperStyle = {
@@ -52,7 +79,9 @@ export default class PurchasePlot extends Component {
       left: rect.x * scale,
       width: rect.w * scale,
       height: rect.h * scale,
-      position: 'absolute'
+      position: 'absolute',
+      pointerEvents: 'auto',
+      userDrag: 'none'
     };
 
     const tooltipStyle = {
@@ -110,24 +139,34 @@ export default class PurchasePlot extends Component {
       cursor: 'nesw-resize'
     });
 
+    const controlItems = [
+      { movement: MovementActions.DRAG, style: plotStyle, className: 'purchasePlot' },
+      { movement: MovementActions.TOP, style: topStyle, className: 'handle' },
+      { movement: MovementActions.LEFT, style: leftStyle, className: 'handle' },
+      { movement: MovementActions.BOTTOM, style: bottomStyle, className: 'handle' },
+      { movement: MovementActions.RIGHT, style: rightStyle, className: 'handle' },
+      { movement: MovementActions.UPPER_LEFT, style: upperLeftStyle, className: 'handle' },
+      { movement: MovementActions.LOWER_LEFT, style: lowerLeftStyle, className: 'handle' },
+      { movement: MovementActions.LOWER_RIGHT, style: lowerRightStyle, className: 'handle' },
+      { movement: MovementActions.UPPER_RIGHT, style: upperRightStyle, className: 'handle' },
+    ];
+
+    const controls = controlItems.map((item) => {
+      return (<div
+        key={item.movement}
+        style={item.style} 
+        className={item.className}
+        onMouseDown={this.overlayMouseDown.bind(this, item.movement)}
+        onMouseMove={this.overlayMouseMove.bind(this, item.movement)}
+        onMouseUp={this.overlayMouseUp.bind(this, item.movement)}
+      ></div>);
+    })
+
     const tooltipText = `${rect.w} x ${rect.h}`;
 
     return (
-      <div style={wrapperStyle} >
-        <div style={plotStyle} 
-          className="purchasePlot"
-          onMouseDown={this.overlayMouseDown.bind(this)}
-          onMouseMove={this.overlayMouseMove.bind(this)}
-          onMouseUp={this.overlayMouseUp.bind(this)}>
-        </div>
-        <div style={leftStyle} />
-        <div style={rightStyle} />
-        <div style={topStyle} />
-        <div style={bottomStyle} />
-        <div style={upperLeftStyle} />
-        <div style={upperRightStyle} />
-        <div style={lowerRightStyle} />
-        <div style={lowerLeftStyle} />
+      <div draggable={false} ref={(ref => this.rootElement = ref)} style={wrapperStyle} >
+        {controls}
         <div className='purchaseTooltip' style={tooltipStyle}>
           <span>{tooltipText}</span>
         </div>
@@ -138,5 +177,6 @@ export default class PurchasePlot extends Component {
 
 PurchasePlot.propTypes = {
   rect: PropTypes.object.isRequired,
-  scale: PropTypes.number.isRequired
+  scale: PropTypes.number.isRequired,
+  startAction: PropTypes.func.isRequired
 };
