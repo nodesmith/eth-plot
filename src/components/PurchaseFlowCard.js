@@ -23,7 +23,7 @@ const styles = theme => ({
     height: '100%'
   },
   media: {
-    height: 200,
+    height: 150,
   },
   button: {
     marginRight: theme.spacing.unit,
@@ -123,13 +123,27 @@ class PurchaseFlowCard extends Component {
         </Step>
         <Step key={2}>
           <StepButton onClick={() => this.handleStep(2)} completed={this.state.completed[2]} >
-            Add Data
+            Choose Website
           </StepButton>
           <StepContent>
             <Typography type='body1'>
               Add an optional website and initial buyout price
             </Typography>
             <WebsiteInputBox onWebsiteChanged={this.onWebsiteChanged.bind(this)} />
+            { this.getButtons(
+              { onClick: () => this.handleStep(1), text: 'Back' },
+              { onClick: () => this.handleStep(3), text: 'Next' }
+            ) }
+          </StepContent>
+        </Step>
+        <Step key={3}>
+          <StepButton onClick={() => this.handleStep(3)} completed={this.state.completed[3]} >
+            Initial Buyout Price (Optional)
+          </StepButton>
+          <StepContent>
+            <Typography type='body1'>
+              Set an optional initial buyout price
+            </Typography>
             <BuyoutPriceInputBox
               rectToPurchase={{x: 0, y: 0, w: 10, h:10}}
               purchasePrice={'422287'}
@@ -137,8 +151,22 @@ class PurchaseFlowCard extends Component {
               initialValue={{units: 'wei', ammountInWei: 500}}
               />
             { this.getButtons(
-              { onClick: () => this.handleStep(1), text: 'Back' },
-              { onClick: () => this.handleStep(2), text: 'Next' }
+              { onClick: () => this.handleStep(2), text: 'Back' },
+              { onClick: () => this.handleStep(4), text: 'Next' }
+            ) }
+          </StepContent>
+        </Step>
+        <Step key={4}>
+          <StepButton onClick={() => this.handleStep(3)} completed={this.state.completed[3]} >
+            Review and Purchase
+          </StepButton>
+          <StepContent>
+            <Typography type='body1'>
+              Make sure everything looks good
+            </Typography>
+            { this.getButtons(
+              { onClick: () => this.handleStep(3), text: 'Back' },
+              { onClick: () => this.handleStep(), text: 'Make Purchase' }
             ) }
           </StepContent>
         </Step>
