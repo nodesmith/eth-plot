@@ -1,10 +1,35 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
+// import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
 import Decimal from 'decimal.js';
 import { formatEthValue } from '../../data/ValueFormatters';
 
-export default class BuyoutPriceInputBox extends Component {
+
+import { withStyles } from 'material-ui/styles';
+import IconButton from 'material-ui/IconButton';
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+
+import Button from 'material-ui/Button';
+import Menu, { MenuItem } from 'material-ui/Menu';
+import Select from 'material-ui/Select';
+
+import TextField from 'material-ui/TextField';
+
+const styles = theme => ({
+  wrapper: {
+    margin: theme.spacing.unit
+  },
+  numberInput: {
+    width: '65%',
+    marginRight: theme.spacing.unit,
+  },
+  unitSelect: {
+    width: `30%`
+  }
+});
+
+class BuyoutPriceInputBox extends Component {
   constructor(...args) {
     super(...args);
 
@@ -124,23 +149,90 @@ export default class BuyoutPriceInputBox extends Component {
     const buyoutMultiplier = this.state.buyout.units == 'eth' ? -18 : this.state.buyout.units == 'gwei' ? -9 : 0;
     const buyoutString = this.state.buyout.ammountInWei.length > 0 ? Decimal(this.state.buyout.ammountInWei + `e${buyoutMultiplier}`).toFixed() : '';
 
-    return (
-      <FormGroup controlId='buyoutPrice' validationState={this.state.buyoutValidation.state}>
-        <ControlLabel>{this.props.title}</ControlLabel>
-        <InputGroup>
-          <InputGroup.Addon>
-            <input type="checkbox" aria-label="Allow Initial Buyout" checked={this.state.buyoutEnabled} onChange={this.allowBuyoutChanged.bind(this)}/>
-          </InputGroup.Addon>
-          <FormControl disabled={!this.state.buyoutEnabled} value={buyoutString} type="number" onChange={this.buyoutPriceChanged.bind(this)}/>
-          <DropdownButton disabled={!this.state.buyoutEnabled} componentClass={InputGroup.Button} id="input-wei" title={this.state.buyout.units} onSelect={this.buyoutUnitChanged.bind(this)} > 
-            <MenuItem eventKey="wei">wei</MenuItem>
-            <MenuItem eventKey="gwei">gwei</MenuItem>
-            <MenuItem eventKey="eth">eth</MenuItem>
-          </DropdownButton>
-        </InputGroup>
-        <HelpBlock>{this.state.buyoutValidation.message}</HelpBlock>
-      </FormGroup>
-    );
+    const { classes } = this.props;
+
+    // const currencySelect = (<Select
+    //   className={classes.unitSelect}
+    //   value={this.state.buyout.units}>
+    //   <MenuItem value="">
+    //     <em>None</em>
+    //   </MenuItem>
+    //   <MenuItem value={10}>Ten</MenuItem>
+    //   <MenuItem value={20}>Twenty</MenuItem>
+    //   <MenuItem value={30}>Thirty</MenuItem>
+    // </Select>);
+
+    const currencies = ['wei', 'gwei', 'eth']
+
+    return (<div className={classes.wrapper} >
+      <TextField
+        id="name"
+        label="Buyout Price"
+        defaultValue='42'
+        className={classes.numberInput}
+        margin="normal"
+      />
+      <TextField
+          id="select-unit"
+          select
+          className={classes.unitSelect}
+          value={this.state.buyout.units}
+          // onChange={this.handleChange('currency')}
+          // SelectProps={{
+          //   MenuProps: {
+          //     className: classes.menu,
+          //   },
+          // }}
+          margin="normal"
+        >
+          {currencies.map(option => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+      
+    </div>);
+
+
+    // const currency = (<div>
+    //   <Button>ETH</Button>
+    //   </div>);
+      
+    // return (
+    //   <FormControl fullWidth className={classes.formControl}>
+    //     <InputLabel htmlFor="amount">Buyout Price</InputLabel>
+    //     <div>
+    //     <Input
+    //       className={classes.numberInput}
+    //       id="adornment-amount"
+    //       value={buyoutString}
+    //       onChange={this.buyoutPriceChanged.bind(this)}
+    //       endAdornment={<InputAdornment position="start">{currency}</InputAdornment>}
+    //     />
+
+    //     {/* {currencySelect} */}
+    //     </div>
+    //   </FormControl>
+    // );
+
+    // return (
+    //   <FormGroup controlId='buyoutPrice' validationState={this.state.buyoutValidation.state}>
+    //     <ControlLabel>{this.props.title}</ControlLabel>
+    //     <InputGroup>
+    //       <InputGroup.Addon>
+    //         <input type="checkbox" aria-label="Allow Initial Buyout" checked={this.state.buyoutEnabled} onChange={this.allowBuyoutChanged.bind(this)}/>
+    //       </InputGroup.Addon>
+    //       <FormControl disabled={!this.state.buyoutEnabled} value={buyoutString} type="number" onChange={this.buyoutPriceChanged.bind(this)}/>
+    //       <DropdownButton disabled={!this.state.buyoutEnabled} componentClass={InputGroup.Button} id="input-wei" title={this.state.buyout.units} onSelect={this.buyoutUnitChanged.bind(this)} > 
+    //         <MenuItem eventKey="wei">wei</MenuItem>
+    //         <MenuItem eventKey="gwei">gwei</MenuItem>
+    //         <MenuItem eventKey="eth">eth</MenuItem>
+    //       </DropdownButton>
+    //     </InputGroup>
+    //     <HelpBlock>{this.state.buyoutValidation.message}</HelpBlock>
+    //   </FormGroup>
+    // );
   }
 }
 
@@ -151,3 +243,5 @@ BuyoutPriceInputBox.propTypes = {
   initialValue: PropTypes.object.isRequired,
   onBuyoutChanged: PropTypes.func.isRequired
 }
+
+export default withStyles(styles)(BuyoutPriceInputBox);

@@ -20,7 +20,7 @@ export default class PurchasePlot extends Component {
       currentAction: movement
     });
 
-    // e.stopPropagation();
+    e.stopPropagation();
 
     this.props.startAction(x, y, movement);
   }

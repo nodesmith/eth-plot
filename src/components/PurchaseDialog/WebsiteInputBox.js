@@ -2,7 +2,18 @@ import React, { Component } from 'react';
 import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
-export default class WebsiteInputBox extends Component {
+import TextField from 'material-ui/TextField';
+import { withStyles } from 'material-ui/styles';
+
+const styles = theme => ({
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    // width: `calc(100% - ${theme.spacing.unit})`,
+  }
+});
+
+class WebsiteInputBox extends Component {
   constructor(...args) {
     super(...args);
 
@@ -57,17 +68,33 @@ export default class WebsiteInputBox extends Component {
   }
 
   render() {
-    return (
-      <FormGroup controlId='websiteEntry' validationState={this.state.websiteValidation.state}>
-        <ControlLabel>Website</ControlLabel>
-        <FormControl type="url" onChange={this.websiteChanged.bind(this)}/>
-        <FormControl.Feedback />
-        <HelpBlock>{this.state.websiteValidation.message}</HelpBlock>
-      </FormGroup>
-    );
+    const { classes } = this.props;
+    const error = this.state.websiteValidation.state == 'error';
+    return (<TextField
+      error={error}
+      fullWidth
+      id="website"
+      label="Plot Website"
+      className={classes.textField}
+      helperText={this.state.websiteValidation.message}
+      onChange={this.websiteChanged.bind(this)}
+      margin="normal"
+    />);
+
+    // return (
+    //   <FormGroup controlId='websiteEntry' validationState={this.state.websiteValidation.state}>
+    //     <ControlLabel>Website</ControlLabel>
+    //     <FormControl type="url" onChange={this.websiteChanged.bind(this)}/>
+    //     <FormControl.Feedback />
+    //     <HelpBlock>{this.state.websiteValidation.message}</HelpBlock>
+    //   </FormGroup>
+    // );
   }
 }
 
 WebsiteInputBox.propTypes = {
   onWebsiteChanged: PropTypes.func.isRequired
 }
+
+
+export default withStyles(styles)(WebsiteInputBox);
