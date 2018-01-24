@@ -13,8 +13,8 @@ export default class PurchasePlot extends Component {
 
   overlayMouseDown(movement, e) {
     const scale = this.props.scale;
-    const x = (e.clientX - this.rootElement.parentElement.getBoundingClientRect().x) / scale;
-    const y = (e.clientY - this.rootElement.parentElement.getBoundingClientRect().y) / scale;
+    const x = (e.clientX - e.target.parentElement.parentElement.getBoundingClientRect().x) / scale;
+    const y = (e.clientY - e.target.parentElement.parentElement.getBoundingClientRect().y) / scale;
     this.setState({
       actionStart: {x, y},
       currentAction: movement
@@ -27,39 +27,9 @@ export default class PurchasePlot extends Component {
 
   overlayMouseMove(movement, e) {
 
-    // const scale = this.props.scale;
-    // const x = (e.clientX - this.rootElement.parentElement.getBoundingClientRect().x) / scale;
-    // const y = (e.clientY - this.rootElement.parentElement.getBoundingClientRect().y) / scale;
-
-    // const deltaX = x - this.state.actionStart.x;
-    // const deltaY = y - this.state.actionStart.y;
-
-    // let rect = Object.assign({}, this.props.rect);
-    // switch(movement) {
-    //   case MovementActions.DRAG:
-    //     rect.x += deltaX;
-    //     rect.y += deltaX;
-    //     rect.x2 += deltaX;
-    //     rect.y2 += deltaY;
-    //     break;
-    //   case MovementActions.TOP:
-    //     rect.y += deltaY;
-    //     break;
-      
-    // }
-
-    // rect.w = rect.x2 - rect.x;
-    // rect.h = rect.y2 - rect.y;
-
-    // // console.log(rect);
-
-    // // this.props.actions.resizeDraggingRect(Math.round(x / scale), Math.round(y / scale));
-    // // e.stopPropagation();
   }
 
   overlayMouseUp(e) {
-    // this.props.actions.stopDraggingRect();
-    // e.stopPropagation();
   }
 
   render() {
@@ -71,7 +41,10 @@ export default class PurchasePlot extends Component {
       width: rect.w * scale,
       height: rect.h * scale,
       position: 'absolute',
-      cursor: 'move'
+      cursor: 'move',
+      backgroundImage: `url(${this.props.src})`,
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: '100% 100%'
     };
 
     const wrapperStyle = {
@@ -165,7 +138,7 @@ export default class PurchasePlot extends Component {
     const tooltipText = `${rect.w} x ${rect.h}`;
 
     return (
-      <div draggable={false} ref={(ref => this.rootElement = ref)} style={wrapperStyle} >
+      <div draggable={false} style={wrapperStyle}>
         {controls}
         <div className='purchaseTooltip' style={tooltipStyle}>
           <span>{tooltipText}</span>
