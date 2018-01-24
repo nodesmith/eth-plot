@@ -6,18 +6,26 @@ const initialState = {
   initialRectToPurchase: {},
   initialRectToPurchaseDeltas: [],
   currentTransform: null,
-  purchaseFlowOpen: false,
-  imageToPurchase: null
+  purchaseFlowOpen: false
 };
 
 function determineInitialRect(imageFileInfo) {
+  const ratio = imageFileInfo.w / imageFileInfo.h;
+  const targetDimension = 30;
+  let w = 30, h = 30;
+  if (imageFileInfo.w > imageFileInfo.h) {
+    h = Math.round((30 / imageFileInfo.w) * imageFileInfo.h);
+  } else {
+    w = Math.round((30 / imageFileInfo.h) * imageFileInfo.w);
+  }
+  
   return {
     x: 100,
     y: 100,
-    w: 30,
-    h: 30,
-    x2: 130,
-    y2: 130
+    w: w,
+    h: h,
+    x2: 100 + w,
+    y2: 100 + h
   };
 }
 
@@ -62,9 +70,10 @@ export default function purchase(state = initialState, action) {
       });
     case ActionTypes.PURCHASE_IMAGE_SELECTED:
       return Object.assign({}, state, {
-        imageToPurchase: action.imageFileInfo,
         rectToPurchase: determineInitialRect(action.imageFileInfo),
-        initialRectToPurchase: determineInitialRect(action.imageFileInfo)
+        initialRectToPurchase: determineInitialRect(action.imageFileInfo),
+        initialRectToPurchaseDeltas: [],
+        currentTransform: null
       });
     case ActionTypes.START_TRANSFORM_RECT:
       let result = Object.assign({}, state, {

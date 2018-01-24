@@ -29,7 +29,7 @@ class MainContainer extends Component {
         <UIGrid {...this.props}
           inPurchaseMode={this.props.purchase.purchaseFlowOpen}
           currentTransform={this.props.purchase.currentTransform}
-          imageToPurchase={this.props.purchase.imageToPurchase}
+          imageToPurchase={this.props.imageFileInfo}
           rectToPurchase={this.props.purchase.rectToPurchase}/>
         <MainControlsOverlay
           purchase={this.props.purchase}
