@@ -26,7 +26,9 @@ class MainContainer extends Component {
     const purchaseActions = {
       onImageSelected: this.props.actions.purchaseImageSelected,
       goToStep: this.props.actions.goToPurchaseStep,
-      onStepComplete: this.props.actions.completePurchaseStep
+      onStepComplete: this.props.actions.completePurchaseStep,
+      onWebsiteChanged: this.props.actions.changePlotWebsite,
+      onBuyoutChanged: this.props.actions.changePlotBuyout
     }
     return (
       <div className={this.props.classes.root}>

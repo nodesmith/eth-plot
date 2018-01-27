@@ -54,8 +54,8 @@ class PurchaseFlowCard extends Component {
     this.props.onStepComplete(index, wasSkipped);
   }
 
-  onWebsiteChanged() {
-
+  onWebsiteChanged(websiteChangedMessage) {
+    this.props.onWebsiteChanged(websiteChangedMessage.value, websiteChangedMessage.validation);
   }
 
   getButtons(backButtonProps, nextButtonProps) {
@@ -77,18 +77,20 @@ class PurchaseFlowCard extends Component {
     let stepHeader, stepContent;
     const defaultBackButtonAction = this.goToStep.bind(this, index - 1);
     const defaultNextButtonAction = this.stepCompleted.bind(this, index, false);
+    let stepDisabled = !this.props.completedSteps[index];
 
     switch (index) {
       case 0:
       {
+        const buttonEnabled = this.props.imageName.length > 0;
         stepHeader = 'Pick and place an image';
         stepContent = (
           <div>
             <Typography type='body1'>
               Choose an image, then position and resize it in the grid. The purchase price will update as you move
             </Typography>
-            <ChooseImageInputBox onImageChanged={this.onImageChanged.bind(this)} />
-            { this.getButtons({text: 'Reset'}, {text: 'Next', onClick: defaultNextButtonAction}) }
+            <ChooseImageInputBox onImageChanged={this.onImageChanged.bind(this)} imageName={this.props.imageName}/>
+            { this.getButtons({text: 'Reset'}, {text: 'Next', onClick: defaultNextButtonAction, disabled: !buttonEnabled}) }
           </div>
         );
         break;
@@ -101,7 +103,7 @@ class PurchaseFlowCard extends Component {
             <Typography type='body1'>
               Add an optional website and initial buyout price
             </Typography>
-            <WebsiteInputBox onWebsiteChanged={this.onWebsiteChanged.bind(this)} />
+            <WebsiteInputBox onWebsiteChanged={this.onWebsiteChanged.bind(this)} website={this.props.website}/>
             { this.getButtons({text: 'Back', onClick: defaultBackButtonAction}, {text: 'Next', onClick: defaultNextButtonAction}) }
           </div>
         );
@@ -144,7 +146,7 @@ class PurchaseFlowCard extends Component {
 
     return (
       <Step key={index}>
-        <StepButton onClick={this.goToStep.bind(this, index)} completed={isCompleted}>
+        <StepButton onClick={this.goToStep.bind(this, index)} completed={isCompleted} disabled={stepDisabled}>
           {stepHeader}
         </StepButton>
         <StepContent>
@@ -190,9 +192,10 @@ class PurchaseFlowCard extends Component {
 PurchaseFlowCard.propTypes = {
   onClose: PropTypes.func.isRequired,
   onImageSelected: PropTypes.func.isRequired,
-
   onStepComplete: PropTypes.func.isRequired,
   goToStep: PropTypes.func.isRequired,
+  onWebsiteChanged: PropTypes.func.isRequired,
+  onBuyoutChanged: PropTypes.func.isRequired,
 
   purchasePriceInWei: PropTypes.string.isRequired,
   activeStep: PropTypes.number.isRequired,

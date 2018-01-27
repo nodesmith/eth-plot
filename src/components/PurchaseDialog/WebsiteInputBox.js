@@ -9,7 +9,6 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    // width: `calc(100% - ${theme.spacing.unit})`,
   }
 });
 
@@ -79,21 +78,14 @@ class WebsiteInputBox extends Component {
       helperText={this.state.websiteValidation.message}
       onChange={this.websiteChanged.bind(this)}
       margin="normal"
+      value={this.props.website}
     />);
-
-    // return (
-    //   <FormGroup controlId='websiteEntry' validationState={this.state.websiteValidation.state}>
-    //     <ControlLabel>Website</ControlLabel>
-    //     <FormControl type="url" onChange={this.websiteChanged.bind(this)}/>
-    //     <FormControl.Feedback />
-    //     <HelpBlock>{this.state.websiteValidation.message}</HelpBlock>
-    //   </FormGroup>
-    // );
   }
 }
 
 WebsiteInputBox.propTypes = {
-  onWebsiteChanged: PropTypes.func.isRequired
+  onWebsiteChanged: PropTypes.func.isRequired,
+  website: PropTypes.string.isRequired
 }
 
 

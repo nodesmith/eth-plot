@@ -9,6 +9,7 @@ import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
+import Typography from 'material-ui/Typography';
 
 const allowedFileTypes = [
   'image/jpeg',
@@ -105,14 +106,6 @@ class ChooseImageInputBox extends Component {
 
     if (imageFileInfo) {
       const aspectRatio = imageFileInfo.w / imageFileInfo.h;
-
-      // const targetRatio = this.props.rectToPurchase.w / this.props.rectToPurchase.h;
-      // if (Math.abs(aspectRatio - targetRatio) > 0.01) {
-      //   return {
-      //     state: 'warning',
-      //     message: `Selected image does not match the aspect ratio of the target`
-      //   };
-      // }
     } else {
       return {
         state: 'warning',
@@ -153,9 +146,20 @@ class ChooseImageInputBox extends Component {
     const imageLabel = 'Choose an image';
     const { classes } = this.props;
 
+    const currentFile = this.props.imageName;
+
+
+    const browseInputFn = () => (
+    <div>
+      <Button autoFocus dense color="primary" id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
+      {currentFile}
+    </div>);
+
     return (
-      <FormControl className={classes.formControl}>
-        <Button raised onClick={this.browseForImage.bind(this)}>Browse...</Button>
+      <FormControl fullWidth className={classes.formControl}>
+        <InputLabel htmlFor='browse-for-image'></InputLabel>
+        <Input margin='dense' fullWidth inputComponent={browseInputFn} />
+        <FormHelperText>{this.state.fileValidation.message}</FormHelperText>
         <input accept={allowedFileTypes.join(',')} onChange={this.onFileSelected.bind(this)} type='file' ref={(input) => { this.fileSelectInput = input; }} className='hidden' />
         <img ref={(input) => this.imagePreview = input } className='hidden'/>
       </FormControl>
@@ -164,7 +168,8 @@ class ChooseImageInputBox extends Component {
 }
 
 ChooseImageInputBox.propTypes = {
-  onImageChanged: PropTypes.func.isRequired
+  onImageChanged: PropTypes.func.isRequired,
+  imageName: PropTypes.string.isRequired
 }
 
 export default withStyles(styles)(ChooseImageInputBox);

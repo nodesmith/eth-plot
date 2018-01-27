@@ -49,3 +49,19 @@ export function goToPurchaseStep(index) {
     index
   };
 }
+
+export function changePlotWebsite(website, websiteValidation) {
+  return {
+    type: ActionTypes.CHANGE_PLOT_WEBSITE,
+    website,
+    websiteValidation
+  };
+}
+
+export function changePlotBuyout(buyoutInWei, buyoutValidation) {
+  return {
+    type: ActionTypes.CHANGE_PLOT_BUYOUT,
+    buyoutInWei,
+    buyoutValidation
+  };
+}

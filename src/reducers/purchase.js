@@ -80,7 +80,8 @@ export default function purchase(state = initialState, action) {
         rectToPurchase: determineInitialRect(action.imageFileInfo),
         initialRectToPurchase: determineInitialRect(action.imageFileInfo),
         initialRectToPurchaseDeltas: [],
-        currentTransform: null
+        currentTransform: null,
+        imageName: action.imageFileInfo.fileName
       });
     case ActionTypes.START_TRANSFORM_RECT:
       let result = Object.assign({}, state, {
@@ -124,6 +125,10 @@ export default function purchase(state = initialState, action) {
     case ActionTypes.GO_TO_PURCHASE_STEP:
       return Object.assign({}, state, {
         activeStep: action.index
+      });
+    case ActionTypes.CHANGE_PLOT_WEBSITE:
+      return Object.assign({}, state, {
+        website: action.website
       });
     default:
       return state;
