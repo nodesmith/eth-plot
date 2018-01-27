@@ -21,9 +21,13 @@ const styles = theme => ({
   }
 });
 
-
 class MainContainer extends Component {
   render() {
+    const purchaseActions = {
+      onImageSelected: this.props.actions.purchaseImageSelected,
+      goToStep: this.props.actions.goToPurchaseStep,
+      onStepComplete: this.props.actions.completePurchaseStep
+    }
     return (
       <div className={this.props.classes.root}>
         <UIGrid {...this.props}
@@ -34,7 +38,8 @@ class MainContainer extends Component {
         <MainControlsOverlay
           purchase={this.props.purchase}
           zoomLevel={this.props.scale}
-          onImageSelected={this.props.actions.purchaseImageSelected}
+          purchaseActions={purchaseActions}
+          // onImageSelected={this.props.actions.purchaseImageSelected}
           togglePurchaseFlow={this.props.actions.togglePurchaseFlow}
           changeZoom={this.props.actions.changeZoom} />
       </div>

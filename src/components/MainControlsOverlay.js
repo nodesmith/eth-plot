@@ -56,7 +56,7 @@ class MainControlsOverlay extends Component {
 
   render() {
     const { classes } = this.props;
-    const sideList = (<PurchaseFlowCard onImageSelected={this.props.onImageSelected} onClose={() => this.toggleDrawer()}/>);
+    const sideList = (<PurchaseFlowCard onClose={() => this.toggleDrawer()} {...this.props.purchaseActions} {...this.props.purchase}/>);
     return (
       <div className={classes.root}>
         <div className={classes.zoom}>
@@ -69,7 +69,7 @@ class MainControlsOverlay extends Component {
         }
         <Drawer classes={{
             paper: classes.drawer
-          }} 
+          }}
           anchor="right"
           type="persistent"
           open={this.props.purchase.purchaseFlowOpen}
@@ -83,7 +83,9 @@ class MainControlsOverlay extends Component {
 
 MainControlsOverlay.propTypes = {
   zoomLevel: PropTypes.number.isRequired,
-  changeZoom: PropTypes.func.isRequired
+  changeZoom: PropTypes.func.isRequired,
+  purchase: PropTypes.object.isRequired,
+  purchaseActions: PropTypes.object.isRequired
 }
 
 export default withStyles(styles)(MainControlsOverlay);

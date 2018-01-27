@@ -34,3 +34,18 @@ export function stopTransformRectToPurchase() {
     type: ActionTypes.STOP_TRANSFORM_RECT
   }
 }
+
+export function completePurchaseStep(index, wasSkipped) {
+  return {
+    type: ActionTypes.COMPLETE_PURCHASE_STEP,
+    index,
+    wasSkipped
+  };
+}
+
+export function goToPurchaseStep(index) {
+  return {
+    type: ActionTypes.GO_TO_PURCHASE_STEP,
+    index
+  };
+}

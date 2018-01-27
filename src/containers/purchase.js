@@ -114,6 +114,13 @@ export default function purchase(state = initialState, action) {
         rectToPurchase: rectToPurchase,
         initialRectToPurchaseDeltas: rectDeltas
       });
+    case ActionTypes.COMPLETE_PURCHASE_STEP:
+      const nextStep = action.index + 1;
+      completedSteps = Object.assign({}, state.completedSteps, { [action.index]: true} );
+      return Object.assign({}, state, {
+        completedSteps: completedSteps,
+        activeStep: nextStep
+      });
     default:
       return state;
   }

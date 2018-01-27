@@ -40,43 +40,18 @@ const styles = theme => ({
 class PurchaseFlowCard extends Component {
   constructor(...args) {
     super(...args);
-
-    this.state = {
-      activeStep: 0,
-      completed: {}
-    };
   }
 
   onImageChanged(imageFileInfo) {
     this.props.onImageSelected(imageFileInfo);
-
-    const { completed } = this.state;
-    completed[0] = true;
-
-    this.setState({
-      activeStep: 1,
-      completed
-    })
   }
 
-  onImagePositioned() {
-    const { completed } = this.state;
-    completed[1] = true;
-
-    this.setState({
-      activeStep: 2,
-      completed
-    })
+  goToStep(index) {
+    this.props.goToStep(index);
   }
 
-  handleStep(index) {
-    this.setState({
-      activeStep: index
-    });
-  }
-
-  getNextNeededStep() {
-
+  stepCompleted(index, wasSkipped) {
+    this.props.onStepComplete(index, wasSkipped);
   }
 
   onWebsiteChanged() {
@@ -100,8 +75,8 @@ class PurchaseFlowCard extends Component {
 
   getStepContents(index) {
     let stepHeader, stepContent;
-    const defaultBackButtonAction = this.handleStep.bind(this, index - 1);
-    const defaultNextButtonAction = this.handleStep.bind(this, index + 1);
+    const defaultBackButtonAction = this.goToStep.bind(this, index - 1);
+    const defaultNextButtonAction = this.stepCompleted.bind(this, index);
 
     switch (index) {
       case 0:
@@ -165,11 +140,11 @@ class PurchaseFlowCard extends Component {
       }
     }
 
-    const isCompleted = true;
+    const isCompleted = !!this.props.completedSteps[index];
 
     return (
       <Step key={index}>
-        <StepButton onClick={this.handleStep.bind(this, index)} completed={isCompleted}>
+        <StepButton onClick={this.goToStep.bind(this, index)} completed={isCompleted}>
           {stepHeader}
         </StepButton>
         <StepContent>
@@ -180,7 +155,7 @@ class PurchaseFlowCard extends Component {
   }
 
   getStepperContent() {
-    const activeStep = this.state.activeStep;
+    const { activeStep } = this.props;
     const steps = [0, 1, 2, 3].map(index => this.getStepContents(index));
     return (
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
@@ -214,7 +189,18 @@ class PurchaseFlowCard extends Component {
 
 PurchaseFlowCard.propTypes = {
   onClose: PropTypes.func.isRequired,
-  onImageSelected: PropTypes.func.isRequired
+  onImageSelected: PropTypes.func.isRequired,
+
+  onStepComplete: PropTypes.func.isRequired,
+  goToStep: PropTypes.func.isRequired,
+
+  purchasePriceInWei: PropTypes.string.isRequired,
+  activeStep: PropTypes.number.isRequired,
+  completedSteps: PropTypes.object.isRequired,
+  imageName: PropTypes.string.isRequired,
+  imageDimensions: PropTypes.object.isRequired,
+  website: PropTypes.string.isRequired,
+  buyoutPriceInWei: PropTypes.string.isRequired
 }
 
 export default withStyles(styles)(PurchaseFlowCard);
