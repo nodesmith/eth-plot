@@ -22,6 +22,9 @@ const styles = theme => ({
   card: {
     height: '100%'
   },
+  cardHeader: {
+    backgroundColor: theme.palette.secondary.main
+  },
   media: {
     height: 150,
   },
@@ -95,52 +98,45 @@ class PurchaseFlowCard extends Component {
     </div>)
   }
 
-  getStepperContent() {
-    const activeStep = this.state.activeStep;
-    return (
-      <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-        <Step key={0}>
-          <StepButton onClick={() => this.handleStep(0)} completed={this.state.completed[0]} >
-            Choose An Image
-          </StepButton>
-          <StepContent>
-            <ChooseImageInputBox onImageChanged={this.onImageChanged.bind(this)} />
-          </StepContent>
-        </Step>
-        <Step key={1}>
-          <StepButton onClick={() => this.handleStep(1)} completed={this.state.completed[1]} >
-            Resize and Position
-          </StepButton>
-          <StepContent>
+  getStepContents(index) {
+    let stepHeader, stepContent;
+    const defaultBackButtonAction = this.handleStep.bind(this, index - 1);
+    const defaultNextButtonAction = this.handleStep.bind(this, index + 1);
+
+    switch (index) {
+      case 0:
+      {
+        stepHeader = 'Pick and place an image';
+        stepContent = (
+          <div>
             <Typography type='body1'>
-              Resize and position your image. The purchase price will update as you move
+              Choose an image, then position and resize it in the grid. The purchase price will update as you move
             </Typography>
-            { this.getButtons(
-              { onClick: () => this.handleStep(0), text: 'Back' },
-              { onClick: () => this.onImagePositioned(), text: 'Next' }
-            ) }
-          </StepContent>
-        </Step>
-        <Step key={2}>
-          <StepButton onClick={() => this.handleStep(2)} completed={this.state.completed[2]} >
-            Choose Website
-          </StepButton>
-          <StepContent>
+            <ChooseImageInputBox onImageChanged={this.onImageChanged.bind(this)} />
+            { this.getButtons({text: 'Reset'}, {text: 'Next', onClick: defaultNextButtonAction}) }
+          </div>
+        );
+        break;
+      }
+      case 1:
+      {
+        stepHeader = 'Add a URL (optional)';
+        stepContent = (
+          <div>
             <Typography type='body1'>
               Add an optional website and initial buyout price
             </Typography>
             <WebsiteInputBox onWebsiteChanged={this.onWebsiteChanged.bind(this)} />
-            { this.getButtons(
-              { onClick: () => this.handleStep(1), text: 'Back' },
-              { onClick: () => this.handleStep(3), text: 'Next' }
-            ) }
-          </StepContent>
-        </Step>
-        <Step key={3}>
-          <StepButton onClick={() => this.handleStep(3)} completed={this.state.completed[3]} >
-            Initial Buyout Price (Optional)
-          </StepButton>
-          <StepContent>
+            { this.getButtons({text: 'Back', onClick: defaultBackButtonAction}, {text: 'Next', onClick: defaultNextButtonAction}) }
+          </div>
+        );
+        break;
+      }
+      case 2:
+      {
+        stepHeader = 'Set a buyout price (optional)';
+        stepContent = (
+          <div>
             <Typography type='body1'>
               Set an optional initial buyout price
             </Typography>
@@ -150,26 +146,45 @@ class PurchaseFlowCard extends Component {
               title={'Buyout Price'}
               initialValue={{units: 'wei', ammountInWei: 500}}
               />
-            { this.getButtons(
-              { onClick: () => this.handleStep(2), text: 'Back' },
-              { onClick: () => this.handleStep(4), text: 'Next' }
-            ) }
-          </StepContent>
-        </Step>
-        <Step key={4}>
-          <StepButton onClick={() => this.handleStep(3)} completed={this.state.completed[3]} >
-            Review and Purchase
-          </StepButton>
-          <StepContent>
+            { this.getButtons({text: 'Back', onClick: defaultBackButtonAction}, {text: 'Next', onClick: defaultNextButtonAction}) }
+          </div>
+        );
+        break;
+      }
+      case 3:
+      {
+        stepHeader = 'Review and purchase';
+        stepContent = (
+          <div>
             <Typography type='body1'>
               Make sure everything looks good
             </Typography>
-            { this.getButtons(
-              { onClick: () => this.handleStep(3), text: 'Back' },
-              { onClick: () => this.handleStep(), text: 'Make Purchase' }
-            ) }
-          </StepContent>
-        </Step>
+          </div>
+        );
+        break;
+      }
+    }
+
+    const isCompleted = true;
+
+    return (
+      <Step key={index}>
+        <StepButton onClick={this.handleStep.bind(this, index)} completed={isCompleted}>
+          {stepHeader}
+        </StepButton>
+        <StepContent>
+          {stepContent}
+        </StepContent>
+      </Step>
+    );
+  }
+
+  getStepperContent() {
+    const activeStep = this.state.activeStep;
+    const steps = [0, 1, 2, 3].map(index => this.getStepContents(index));
+    return (
+      <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+        {steps}
       </Stepper>
     )
   }
@@ -178,7 +193,7 @@ class PurchaseFlowCard extends Component {
     const { classes } = this.props;
     return (<div className={classes.root}>
       <Card className={classes.card}>
-        <CardHeader
+        <CardHeader className={classes.cardHeader}
             action={
               <IconButton onClick={this.props.onClose}>
                 <CloseIcon />
