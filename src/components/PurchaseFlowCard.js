@@ -76,7 +76,7 @@ class PurchaseFlowCard extends Component {
   getStepContents(index) {
     let stepHeader, stepContent;
     const defaultBackButtonAction = this.goToStep.bind(this, index - 1);
-    const defaultNextButtonAction = this.stepCompleted.bind(this, index);
+    const defaultNextButtonAction = this.stepCompleted.bind(this, index, false);
 
     switch (index) {
       case 0:

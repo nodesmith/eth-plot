@@ -39,7 +39,6 @@ class MainContainer extends Component {
           purchase={this.props.purchase}
           zoomLevel={this.props.scale}
           purchaseActions={purchaseActions}
-          // onImageSelected={this.props.actions.purchaseImageSelected}
           togglePurchaseFlow={this.props.actions.togglePurchaseFlow}
           changeZoom={this.props.actions.changeZoom} />
       </div>
