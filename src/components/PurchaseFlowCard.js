@@ -73,6 +73,13 @@ class PurchaseFlowCard extends Component {
     this.props.onBuyoutEnabledChanged(isEnabled);
   }
 
+  completePurchase() {
+    const { contractInfo, plots, rectToPurchase, imageData, website, buyoutPriceInWei, buyoutEnabled } = this.props;
+    const initialBuyout = buyoutEnabled ? buyoutPriceInWei : '';
+
+    this.props.purchasePlot(contractInfo, plots, rectToPurchase, imageData, website, initialBuyout);
+  }
+
   getButtons(backButtonProps, nextButtonProps) {
     const { classes } = this.props;
     return (
@@ -86,10 +93,6 @@ class PurchaseFlowCard extends Component {
         </Button>
       </div>
     </div>)
-  }
-
-  completePurchase() {
-    alert('You buying!');
   }
 
   getStepContents(index) {
@@ -236,6 +239,9 @@ PurchaseFlowCard.propTypes = {
   onBuyoutChanged: PropTypes.func.isRequired,
   onBuyoutEnabledChanged: PropTypes.func.isRequired,
 
+  purchasePlot: PropTypes.func.isRequired,
+
+  rectToPurchase: PropTypes.object.isRequired,
   purchasePriceInWei: PropTypes.string.isRequired,
   activeStep: PropTypes.number.isRequired,
   completedSteps: PropTypes.object.isRequired,
@@ -243,6 +249,9 @@ PurchaseFlowCard.propTypes = {
   imageDimensions: PropTypes.object.isRequired,
   website: PropTypes.string.isRequired,
   buyoutPriceInWei: PropTypes.string.isRequired,
+  buyoutEnabled: PropTypes.bool.isRequired,
+  
+  imageData: PropTypes.string.optional,
 
   contractInfo: PropTypes.object.isRequired,
   plots: PropTypes.object.isRequired,

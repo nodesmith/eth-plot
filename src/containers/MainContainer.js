@@ -29,7 +29,8 @@ class MainContainer extends Component {
       onStepComplete: this.props.actions.completePurchaseStep,
       onWebsiteChanged: this.props.actions.changePlotWebsite,
       onBuyoutChanged: this.props.actions.changePlotBuyout,
-      onBuyoutEnabledChanged: this.props.actions.changeBuyoutEnabled
+      onBuyoutEnabledChanged: this.props.actions.changeBuyoutEnabled,
+      purchasePlot: this.props.actions.purchasePlot
     }
     return (
       <div className={this.props.classes.root}>
@@ -42,6 +43,7 @@ class MainContainer extends Component {
           purchase={this.props.purchase}
           zoomLevel={this.props.scale}
           purchaseActions={purchaseActions}
+          imageData={this.props.imageFileInfo ? this.props.imageFileInfo.fileData : ''}
           contractInfo={this.props.contractInfo}
           plots={this.props.plots}
           togglePurchaseFlow={this.props.actions.togglePurchaseFlow}

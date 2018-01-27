@@ -62,6 +62,7 @@ class MainControlsOverlay extends Component {
         {...this.props.purchase}
         contractInfo={this.props.contractInfo}
         plots={this.props.plots}
+        imageData={this.props.imageData}
         />);
     return (
       <div className={classes.root}>

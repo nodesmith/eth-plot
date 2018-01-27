@@ -73,3 +73,18 @@ export function changeBuyoutEnabled(isEnabled) {
     isEnabled
   };
 }
+
+// Thunk action for purchasing a plot. This requires uploading the image, submitting it to the chain, and waiting for transformations
+export function purchasePlot(contractInfo, plots, rectToPurchase, imageData, website, initialBuyout) {
+  debugger;
+  return function (dispatch) {
+
+    dispatch(startPurchasePlot());
+  };
+}
+
+function startPurchasePlot() {
+  return {
+    type: ActionTypes.START_PURCHASING_PLOT
+  };
+}
