@@ -28,7 +28,8 @@ class MainContainer extends Component {
       goToStep: this.props.actions.goToPurchaseStep,
       onStepComplete: this.props.actions.completePurchaseStep,
       onWebsiteChanged: this.props.actions.changePlotWebsite,
-      onBuyoutChanged: this.props.actions.changePlotBuyout
+      onBuyoutChanged: this.props.actions.changePlotBuyout,
+      onBuyoutEnabledChanged: this.props.actions.changeBuyoutEnabled
     }
     return (
       <div className={this.props.classes.root}>

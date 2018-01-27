@@ -66,6 +66,10 @@ class PurchaseFlowCard extends Component {
     this.props.onBuyoutChanged(buyoutChangedMessage.value);
   }
 
+  onBuyoutEnabledChanged(isEnabled) {
+    this.props.onBuyoutEnabledChanged(isEnabled);
+  }
+
   getButtons(backButtonProps, nextButtonProps) {
     const { classes } = this.props;
     return (
@@ -132,9 +136,11 @@ class PurchaseFlowCard extends Component {
             </Typography>
             <BuyoutPriceInputBox
               onBuyoutChanged={this.onBuyoutChanged.bind(this)}
+              onBuyoutEnabledChanged={this.onBuyoutEnabledChanged.bind(this)}
               rectToPurchase={{x: 0, y: 0, w: 10, h:10}}
               purchasePrice={this.props.purchasePriceInWei}
               buyoutPriceInWei={this.props.buyoutPriceInWei}
+              buyoutEnabled={this.props.buyoutEnabled}
               title={'Buyout Price'}
               initialValue={{units: 'wei', ammountInWei: 500}}
               />
@@ -157,8 +163,8 @@ class PurchaseFlowCard extends Component {
           <div>
             {makeLine('Purchase Price', formatEthValueToString(this.props.purchasePriceInWei))}
             {makeLine('Image', this.props.imageName)}
-            {makeLine('Grid Location', `x: ${rect.x}, y: ${rect.y}`)}
-            {makeLine('Plot Dimensions', `${rect.w} x ${rect.h} (${rect.w * rect.h} units)`)}
+            {makeLine('Grid Location', `x: ${rect.x} y: ${rect.y}`)}
+            {makeLine('Plot Dimensions', `${rect.w}x${rect.h} (${rect.w * rect.h} units)`)}
             {makeLine('Website', this.props.website)}
             {makeLine('Buyout Price', this.props.buyoutPriceInWei)}
             { this.getButtons({text: 'Back', onClick: defaultBackButtonAction}, {text: 'Buy', onClick: this.completePurchase.bind(this)}) }
@@ -222,6 +228,7 @@ PurchaseFlowCard.propTypes = {
   goToStep: PropTypes.func.isRequired,
   onWebsiteChanged: PropTypes.func.isRequired,
   onBuyoutChanged: PropTypes.func.isRequired,
+  onBuyoutEnabledChanged: PropTypes.func.isRequired,
 
   purchasePriceInWei: PropTypes.string.isRequired,
   activeStep: PropTypes.number.isRequired,

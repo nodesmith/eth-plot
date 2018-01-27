@@ -13,7 +13,8 @@ const initialState = {
   imageName: '',
   imageDimensions: {w: -1, h:-1},
   website: '',
-  buyoutPriceInWei: '328742394234'
+  buyoutPriceInWei: '328742394234',
+  buyoutEnabled: true
 };
 
 function determineInitialRect(imageFileInfo) {
@@ -133,6 +134,10 @@ export default function purchase(state = initialState, action) {
     case ActionTypes.CHANGE_PLOT_BUYOUT:
       return Object.assign({}, state, {
         buyoutPriceInWei: action.buyoutPriceInWei
+      });
+    case ActionTypes.CHANGE_BUYOUT_ENABLED:
+      return Object.assign({}, state, {
+        buyoutEnabled: action.isEnabled
       });
     default:
       return state;

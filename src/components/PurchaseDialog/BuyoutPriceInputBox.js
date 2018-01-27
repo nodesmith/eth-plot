@@ -8,7 +8,8 @@ import { formatEthValue } from '../../data/ValueFormatters';
 import { withStyles } from 'material-ui/styles';
 import IconButton from 'material-ui/IconButton';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import { FormControl, FormHelperText } from 'material-ui/Form';
+import { FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import Switch from 'material-ui/Switch';
 
 import Button from 'material-ui/Button';
 import Menu, { MenuItem } from 'material-ui/Menu';
@@ -107,15 +108,9 @@ class BuyoutPriceInputBox extends Component {
     };
   }
 
-  // allowBuyoutChanged(event) {
-  //   const newValue = event.target.checked;
-  //   const buyoutValidation = this.validateBuyout(this.state.buyout, newValue);
-
-  //   this.setState({
-  //     buyoutEnabled: newValue,
-  //     buyoutValidation: buyoutValidation
-  //   });
-  // }
+  allowBuyoutChanged(event, checked) {
+    this.props.onBuyoutEnabledChanged(checked);
+  }
 
   showUnitsMenu(event) {
     this.setState({ anchorEl: event.currentTarget });
@@ -126,22 +121,28 @@ class BuyoutPriceInputBox extends Component {
   }
 
   render() {
-    const { buyoutPriceInWei, classes } = this.props;
+    const { buyoutPriceInWei, buyoutEnabled, classes } = this.props;
     const { anchorEl, buyoutUnits } = this.state;
 
     const buyoutMultiplier = buyoutUnits == 'eth' ? -18 : buyoutUnits == 'gwei' ? -9 : 0;
     const buyoutString = buyoutPriceInWei.length > 0 ? Decimal(buyoutPriceInWei + `e${buyoutMultiplier}`).toFixed() : '';
 
-    const buyoutEnabled = true;
     const validation = this.validateBuyout(buyoutPriceInWei, buyoutEnabled)
 
     const currencies = ['wei', 'gwei', 'eth'];
 
 
     return (<div className={classes.wrapper} >
+      <FormControlLabel
+          control={
+            <Switch checked={buyoutEnabled} onChange={this.allowBuyoutChanged.bind(this)} />
+          }
+          label="Enable Buyout"
+        />
       <TextField
         id="name"
         label="Buyout Price"
+        disabled={!buyoutEnabled}
         value={buyoutString}
         className={classes.numberInput}
         margin="normal"
@@ -151,7 +152,7 @@ class BuyoutPriceInputBox extends Component {
       <Chip
         className={classes.unitSelect}
         label={buyoutUnits}
-        onClick={this.showUnitsMenu.bind(this)}
+        onClick={buyoutEnabled ? this.showUnitsMenu.bind(this) : null}
         aria-owns={anchorEl ? 'units-menu' : null}
         aria-haspopup="true"
       />
@@ -177,7 +178,9 @@ BuyoutPriceInputBox.propTypes = {
   title: PropTypes.string.isRequired,
   initialValue: PropTypes.object.isRequired,
   buyoutPriceInWei: PropTypes.string.isRequired,
-  onBuyoutChanged: PropTypes.func.isRequired
+  buyoutEnabled: PropTypes.bool.isRequired,
+  onBuyoutChanged: PropTypes.func.isRequired,
+  onBuyoutEnabledChanged: PropTypes.func.isRequired
 }
 
 export default withStyles(styles)(BuyoutPriceInputBox);

@@ -64,3 +64,10 @@ export function changePlotBuyout(buyoutPriceInWei) {
     buyoutPriceInWei
   };
 }
+
+export function changeBuyoutEnabled(isEnabled) {
+  return {
+    type: ActionTypes.CHANGE_BUYOUT_ENABLED,
+    isEnabled
+  };
+}
