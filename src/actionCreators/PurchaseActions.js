@@ -7,17 +7,19 @@ export function togglePurchaseFlow() {
   };
 }
 
-export function purchaseImageSelected(imageFileInfo) {
+export function purchaseImageSelected(imageFileInfo, plots) {
   return {
     type: ActionTypes.PURCHASE_IMAGE_SELECTED,
-    imageFileInfo
+    imageFileInfo,
+    plots
   }
 }
 
-export function transformRectToPurchase(delta) {
+export function transformRectToPurchase(delta, plots) {
   return {
     type: ActionTypes.TRANSFORM_RECT_TO_PURCHASE,
-    delta
+    delta,
+    plots
   }
 }
 

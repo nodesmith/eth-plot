@@ -151,7 +151,7 @@ class ChooseImageInputBox extends Component {
 
     const browseInputFn = () => (
     <div>
-      <Button autoFocus dense color="primary" id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
+      <Button dense color="primary" id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
       {currentFile}
     </div>);
 

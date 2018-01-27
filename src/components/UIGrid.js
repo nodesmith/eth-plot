@@ -90,7 +90,7 @@ class UIGrid extends Component {
     bottom = Math.round(bottom);
     right = Math.round(right);
 
-    this.props.actions.transformRectToPurchase({top, left, bottom, right});
+    this.props.actions.transformRectToPurchase({top, left, bottom, right}, this.props.plots);
 
     // console.log(rect);
     e.stopPropagation(); 

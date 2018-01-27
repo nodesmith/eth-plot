@@ -1,10 +1,11 @@
 import * as PlotMath from './PlotMath';
+import { Decimal } from 'decimal.js';
 
 // Computes what chunks are needed to be purchased for a particular region
 function computePurchaseInfo(rectToPurchase, plots) {
   let purchasedChunks = [];
   let purchasedChunkAreaIndices = [];
-  let purchasePrice = 42; // TODO - Make this Decimal.js zero
+  let purchasePrice = Decimal(0);
 
   // We'll need to walk the ownership array backwards and see who we need to buy chunks from
   let remainingChunksToPurchase = [rectToPurchase];
@@ -24,6 +25,10 @@ function computePurchaseInfo(rectToPurchase, plots) {
         // Add the new holes to the purchaseChunks and keep track of their index
         purchasedChunks.push(newHole);
         purchasedChunkAreaIndices.push(i);
+
+        // Add up the price of these chunks we are purchasing
+        const plotBuyout = Decimal(currentPlot.buyoutPrice).mul(chunkOverlap.w * chunkOverlap.h);
+        purchasePrice = purchasePrice.add(plotBuyout);
 
         // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is remaining back to remainingChunksToPurchase
         remainingChunksToPurchase.splice(j, 1);
@@ -51,7 +56,7 @@ function computePurchaseInfo(rectToPurchase, plots) {
   return {
     chunksToPurchase: purchasedChunks,
     chunksToPurchaseAreaIndices: purchasedChunkAreaIndices,
-    purchasePrice: purchasePrice
+    purchasePrice: purchasePrice.toFixed()
   };
 }
 

@@ -50,7 +50,7 @@ class PurchaseFlowCard extends Component {
   }
 
   onImageChanged(imageFileInfo) {
-    this.props.onImageSelected(imageFileInfo);
+    this.props.onImageSelected(imageFileInfo, this.props.plots);
   }
 
   goToStep(index) {
@@ -203,7 +203,8 @@ class PurchaseFlowCard extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, purchasePriceInWei } = this.props;
+    const subheading = purchasePriceInWei ? formatEthValueToString(purchasePriceInWei) : 'Be Part of History';
     return (<div className={classes.root}>
       <Card className={classes.card}>
         <CardHeader className={classes.cardHeader}
@@ -214,7 +215,7 @@ class PurchaseFlowCard extends Component {
               </IconButton>
             }
             title="Purchase Plot"
-            subheader="A plot is forever"
+            subheader={subheading}
         />
         <CardContent>
           {this.getStepperContent()}
@@ -241,7 +242,10 @@ PurchaseFlowCard.propTypes = {
   imageName: PropTypes.string.isRequired,
   imageDimensions: PropTypes.object.isRequired,
   website: PropTypes.string.isRequired,
-  buyoutPriceInWei: PropTypes.string.isRequired
+  buyoutPriceInWei: PropTypes.string.isRequired,
+
+  contractInfo: PropTypes.object.isRequired,
+  plots: PropTypes.object.isRequired,
 }
 
 export default withStyles(styles)(PurchaseFlowCard);

@@ -42,6 +42,8 @@ class MainContainer extends Component {
           purchase={this.props.purchase}
           zoomLevel={this.props.scale}
           purchaseActions={purchaseActions}
+          contractInfo={this.props.contractInfo}
+          plots={this.props.plots}
           togglePurchaseFlow={this.props.actions.togglePurchaseFlow}
           changeZoom={this.props.actions.changeZoom} />
       </div>

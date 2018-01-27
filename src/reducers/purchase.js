@@ -1,21 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-
-const initialState = {
-  purchaseDialogVisible: false,
-  rectToPurchase: {},
-  initialRectToPurchase: {},
-  initialRectToPurchaseDeltas: [],
-  currentTransform: null,
-  purchaseFlowOpen: false,
-  purchasePriceInWei: '438782',
-  activeStep: 0,
-  completedSteps: {},
-  imageName: '',
-  imageDimensions: {w: -1, h:-1},
-  website: '',
-  buyoutPriceInWei: '328742394234',
-  buyoutEnabled: true
-};
+import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 
 function determineInitialRect(imageFileInfo) {
   const ratio = imageFileInfo.w / imageFileInfo.h;
@@ -61,6 +45,23 @@ function deltasEqual(a, b) {
     a.top == b.top );
 }
 
+const initialState = {
+  purchaseDialogVisible: false,
+  rectToPurchase: {},
+  initialRectToPurchase: {},
+  initialRectToPurchaseDeltas: [],
+  currentTransform: null,
+  purchaseFlowOpen: false,
+  purchasePriceInWei: '',
+  activeStep: 0,
+  completedSteps: {},
+  imageName: '',
+  imageDimensions: {w: -1, h:-1},
+  website: '',
+  buyoutPriceInWei: '328742394234',
+  buyoutEnabled: true,
+};
+
 export default function purchase(state = initialState, action) {
   switch (action.type) {
     case ActionTypes.SHOW_PURCHASE_DIALOG:
@@ -77,13 +78,18 @@ export default function purchase(state = initialState, action) {
         purchaseFlowOpen: !state.purchaseFlowOpen
       });
     case ActionTypes.PURCHASE_IMAGE_SELECTED:
+    {
+      const initialRect = determineInitialRect(action.imageFileInfo);
+      const purchaseInfo = computePurchaseInfo(initialRect, action.plots);
       return Object.assign({}, state, {
-        rectToPurchase: determineInitialRect(action.imageFileInfo),
-        initialRectToPurchase: determineInitialRect(action.imageFileInfo),
+        rectToPurchase: initialRect,
+        initialRectToPurchase: initialRect,
         initialRectToPurchaseDeltas: [],
         currentTransform: null,
-        imageName: action.imageFileInfo.fileName
+        imageName: action.imageFileInfo.fileName,
+        purchasePriceInWei: purchaseInfo.purchasePrice
       });
+    }
     case ActionTypes.START_TRANSFORM_RECT:
       let result = Object.assign({}, state, {
         currentTransform: {
@@ -98,6 +104,7 @@ export default function purchase(state = initialState, action) {
         currentTransform: null
       });
     case ActionTypes.TRANSFORM_RECT_TO_PURCHASE:
+    {
       const previousDeltaIndex = state.initialRectToPurchaseDeltas.length - 1;
       let previousDelta = state.initialRectToPurchaseDeltas[previousDeltaIndex];
       if (deltasEqual(action.delta, previousDelta)) {
@@ -112,10 +119,15 @@ export default function purchase(state = initialState, action) {
       // Apply all the deltas to get our new rect
       const rectToPurchase = rectDeltas.reduce((rect, delta) => addDelta(rect, delta), state.initialRectToPurchase);
 
+      // Recompute how much this will cost
+      const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
+
       return Object.assign({}, state, {
         rectToPurchase: rectToPurchase,
-        initialRectToPurchaseDeltas: rectDeltas
+        initialRectToPurchaseDeltas: rectDeltas,
+        purchasePriceInWei: purchaseInfo.purchasePrice
       });
+    }
     case ActionTypes.COMPLETE_PURCHASE_STEP:
       const nextStep = action.index + 1;
       const completedSteps = Object.assign({}, state.completedSteps, { [action.index]: true} );
