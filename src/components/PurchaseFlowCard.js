@@ -23,6 +23,9 @@ const styles = theme => ({
   card: {
     height: '100%'
   },
+  contrastColor: {
+    color: theme.palette.secondary.contrastText
+  },
   cardHeader: {
     backgroundColor: theme.palette.secondary.main
   },
@@ -159,6 +162,7 @@ class PurchaseFlowCard extends Component {
         );
         stepHeader = 'Review and purchase';
         const rect = this.props.rectToPurchase;
+        const buyoutPrice = this.props.buyoutEnabled ? formatEthValueToString(this.props.buyoutPriceInWei) : 'Not Enabled';
         stepContent = (
           <div>
             {makeLine('Purchase Price', formatEthValueToString(this.props.purchasePriceInWei))}
@@ -166,7 +170,7 @@ class PurchaseFlowCard extends Component {
             {makeLine('Grid Location', `x: ${rect.x} y: ${rect.y}`)}
             {makeLine('Plot Dimensions', `${rect.w}x${rect.h} (${rect.w * rect.h} units)`)}
             {makeLine('Website', this.props.website)}
-            {makeLine('Buyout Price', this.props.buyoutPriceInWei)}
+            {makeLine('Buyout Price', buyoutPrice)}
             { this.getButtons({text: 'Back', onClick: defaultBackButtonAction}, {text: 'Buy', onClick: this.completePurchase.bind(this)}) }
           </div>
         );
@@ -203,8 +207,9 @@ class PurchaseFlowCard extends Component {
     return (<div className={classes.root}>
       <Card className={classes.card}>
         <CardHeader className={classes.cardHeader}
+          classes={{title: classes.contrastColor, subheader: classes.contrastColor}}
             action={
-              <IconButton onClick={this.props.onClose}>
+              <IconButton color='primary' classes={{colorPrimary: classes.contrastColor}} onClick={this.props.onClose}>
                 <CloseIcon />
               </IconButton>
             }
