@@ -4,6 +4,7 @@ import data from './data';
 import grid from './grid';
 import purchase from './purchase';
 import image_to_purchase from './image_to_purchase';
+import purchaseDialog from './purchaseDialog';
 
 /**
  * combineReducers is important to understand. As your app might grow in size
@@ -23,7 +24,8 @@ const rootReducer = combineReducers({
   data,
   grid,
   purchase,
-  image_to_purchase
+  image_to_purchase,
+  purchaseDialog
 });
 
 export default rootReducer;

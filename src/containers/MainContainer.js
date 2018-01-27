@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PurchaseModal from '../components/PurchaseModal';
 import MainControlsOverlay from '../components/MainControlsOverlay';
+import PurchaseDialog from '../components/PurchaseDialog';
 
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
@@ -31,7 +32,8 @@ class MainContainer extends Component {
       onBuyoutChanged: this.props.actions.changePlotBuyout,
       onBuyoutEnabledChanged: this.props.actions.changeBuyoutEnabled,
       purchasePlot: this.props.actions.purchasePlot
-    }
+    };
+
     return (
       <div className={this.props.classes.root}>
         <UIGrid {...this.props}
@@ -48,6 +50,8 @@ class MainContainer extends Component {
           plots={this.props.plots}
           togglePurchaseFlow={this.props.actions.togglePurchaseFlow}
           changeZoom={this.props.actions.changeZoom} />
+        <PurchaseDialog
+          {...this.props.purchaseDialog} />
       </div>
     );
   }

@@ -84,7 +84,7 @@ class App extends Component {
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
-              <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
+              <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
               <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} {...this.props.account} />
@@ -115,7 +115,8 @@ function mapStateToProps(state) {
     data: state.data,
     grid: state.grid,
     purchase: state.purchase,
-    image_to_purchase: state.image_to_purchase
+    image_to_purchase: state.image_to_purchase,
+    purchaseDialog: state.purchaseDialog
   };
 }
 
