@@ -130,6 +130,10 @@ export default function purchase(state = initialState, action) {
       return Object.assign({}, state, {
         website: action.website
       });
+    case ActionTypes.CHANGE_PLOT_BUYOUT:
+      return Object.assign({}, state, {
+        buyoutPriceInWei: action.buyoutPriceInWei
+      });
     default:
       return state;
   }

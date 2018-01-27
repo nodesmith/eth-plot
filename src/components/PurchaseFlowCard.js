@@ -9,6 +9,7 @@ import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
 import Stepper, { Step, StepButton, StepLabel, StepContent } from 'material-ui/Stepper';
+import { formatEthValueToString } from '../data/ValueFormatters';
 
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
 import WebsiteInputBox from './PurchaseDialog/WebsiteInputBox';
@@ -35,6 +36,9 @@ const styles = theme => ({
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
   },
+  summaryLine: {
+    display: 'inline'
+  }
 });
 
 class PurchaseFlowCard extends Component {
@@ -58,6 +62,10 @@ class PurchaseFlowCard extends Component {
     this.props.onWebsiteChanged(websiteChangedMessage.value, websiteChangedMessage.validation);
   }
 
+  onBuyoutChanged(buyoutChangedMessage) {
+    this.props.onBuyoutChanged(buyoutChangedMessage.value);
+  }
+
   getButtons(backButtonProps, nextButtonProps) {
     const { classes } = this.props;
     return (
@@ -73,11 +81,16 @@ class PurchaseFlowCard extends Component {
     </div>)
   }
 
+  completePurchase() {
+    alert('You buying!');
+  }
+
   getStepContents(index) {
     let stepHeader, stepContent;
     const defaultBackButtonAction = this.goToStep.bind(this, index - 1);
     const defaultNextButtonAction = this.stepCompleted.bind(this, index, false);
-    let stepDisabled = !this.props.completedSteps[index];
+    let stepDisabled = !(index == 0 || this.props.completedSteps[index - 1]);
+    const { classes } = this.props;
 
     switch (index) {
       case 0:
@@ -118,8 +131,10 @@ class PurchaseFlowCard extends Component {
               Set an optional initial buyout price
             </Typography>
             <BuyoutPriceInputBox
+              onBuyoutChanged={this.onBuyoutChanged.bind(this)}
               rectToPurchase={{x: 0, y: 0, w: 10, h:10}}
-              purchasePrice={'422287'}
+              purchasePrice={this.props.purchasePriceInWei}
+              buyoutPriceInWei={this.props.buyoutPriceInWei}
               title={'Buyout Price'}
               initialValue={{units: 'wei', ammountInWei: 500}}
               />
@@ -130,12 +145,23 @@ class PurchaseFlowCard extends Component {
       }
       case 3:
       {
+        const makeLine = (label, value) => (
+          <div>
+            <Typography className={classes.summaryLine} noWrap type="body2">{label}{': '}</Typography>
+            <Typography className={classes.summaryLine} noWrap type="body1">{value}</Typography>
+          </div>
+        );
         stepHeader = 'Review and purchase';
+        const rect = this.props.rectToPurchase;
         stepContent = (
           <div>
-            <Typography type='body1'>
-              Make sure everything looks good
-            </Typography>
+            {makeLine('Purchase Price', formatEthValueToString(this.props.purchasePriceInWei))}
+            {makeLine('Image', this.props.imageName)}
+            {makeLine('Grid Location', `x: ${rect.x}, y: ${rect.y}`)}
+            {makeLine('Plot Dimensions', `${rect.w} x ${rect.h} (${rect.w * rect.h} units)`)}
+            {makeLine('Website', this.props.website)}
+            {makeLine('Buyout Price', this.props.buyoutPriceInWei)}
+            { this.getButtons({text: 'Back', onClick: defaultBackButtonAction}, {text: 'Buy', onClick: this.completePurchase.bind(this)}) }
           </div>
         );
         break;

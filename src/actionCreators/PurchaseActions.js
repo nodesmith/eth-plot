@@ -58,10 +58,9 @@ export function changePlotWebsite(website, websiteValidation) {
   };
 }
 
-export function changePlotBuyout(buyoutInWei, buyoutValidation) {
+export function changePlotBuyout(buyoutPriceInWei) {
   return {
     type: ActionTypes.CHANGE_PLOT_BUYOUT,
-    buyoutInWei,
-    buyoutValidation
+    buyoutPriceInWei
   };
 }
