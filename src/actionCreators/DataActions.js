@@ -41,13 +41,14 @@ export function doneLoadingPlots() {
 
 function initializeContract(contractInfo) {
   const web3 = getWeb3(contractInfo);
-  const contract = new web3.eth.Contract(contractInfo.abi, contractInfo.contractAddress);
-  return contract;
+  const contract = web3.eth.contract(contractInfo.abi);
+  const contractInstance = contract.at(contractInfo.contractAddress);
+  return contractInstance;
 }
 
 function getWeb3(contractInfo) {
-  const web3 =  window.web3 ? new Web3(window.web3.currentProvider) : new Web3(contractInfo.web3Provider);
-  return web3;
+  // TODO refetch plots when metamask status changes
+  return window.web3;
 }
 
 function getRandomColor() {
@@ -68,7 +69,16 @@ export function fetchPlotsFromWeb3(contractInfo) {
     const contract = initializeContract(contractInfo);
 
     // First make a call to figure out the length of the ownership and data array to iterate through them
-    return contract.methods.ownershipLength().call().then(ownershipLengthString => {
+    
+    return new Promise((resolve, reject) => {
+      contract.ownershipLength.call((error, ownershipLengthString) => {
+        if (!error) {
+          resolve(ownershipLengthString);
+        } else {
+          reject(error);
+        }
+      });
+    }).then((ownershipLengthString) => {
       const ownershipLength = parseInt(ownershipLengthString);
       let currentIndex = 0;
       const ownershipLoadFn = () => {

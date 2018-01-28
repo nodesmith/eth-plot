@@ -29,6 +29,11 @@ const Web3 = require('web3');
  * component to make the Redux store available to the rest of the app.
  */
 class App extends Component {
+  constructor(...args) {
+    super(...args);
+    this.state = {};
+  }
+  
   componentDidMount() {
     this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
 
@@ -42,24 +47,41 @@ class App extends Component {
      * More info available here: 
      * https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md
      */
-    this.accountInterval = setInterval(function() {
-      if (typeof window.web3 !== 'undefined') {
+    /*ithis.accountInterval = setInterval(function() {
+      f (typeof window.web3 !== 'undefined') {
         let newWeb3 = new Web3(window.web3.currentProvider);
-        newWeb3.eth.getAccounts().then(accounts => {
+        newWeb3.eth.getAccounts().then(function(accounts) {
           if (accounts.length > 0) {
             this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
+
+            if (accounts[0] != this.state.activeAccount) {
+              this.setState({ activeAccount: accounts[0] });
+            }
           } else {
             this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
           };
-        });
+        }.bind(this));
       } else {
         this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       }
-    }.bind(this), 1000);
+    }.bind(this), 1000);*/
+
+    // TODO Cleanup
+    if (typeof web3 !== 'undefined') {
+      web3 = new Web3(web3.currentProvider);
+      let filter = web3.eth.filter('pending');
+      
+      // watch for changes
+      filter.watch(function(error, result){
+        if (!error)
+          console.log(result);
+      });
+    }
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    //clearInterval(this.interval);
+    this.pendingTxSubscription.unsubscribe((error, success) => { });
   }
 
   render() {
@@ -83,7 +105,9 @@ class App extends Component {
               <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
-              <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} {...this.props.account} />
+              <PlotManagerContainer 
+                {...routeProps} {...this.props.data} {...this.props.account}
+                actions={this.props.actions} activeAccount={this.state.activeAccount} />
             )}/>
             <Route path='/about' component={About}/>
           </Switch>
