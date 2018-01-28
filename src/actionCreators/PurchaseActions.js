@@ -1,5 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { MovementActions } from '../constants/Enums';
+import { MovementActions, PurchaseStage } from '../constants/Enums';
+import { purchasePlot as purchasePlotFromChain } from './DataActions';
 
 export function togglePurchaseFlow() {
   return {
@@ -75,16 +76,50 @@ export function changeBuyoutEnabled(isEnabled) {
 }
 
 // Thunk action for purchasing a plot. This requires uploading the image, submitting it to the chain, and waiting for transformations
-export function purchasePlot(contractInfo, plots, rectToPurchase, imageData, website, initialBuyout) {
-  debugger;
+export function completePlotPurchase(contractInfo, plots, rectToPurchase, imageData, website, initialBuyout) {
   return function (dispatch) {
-
     dispatch(startPurchasePlot());
+
+    return dispatch(uploadImageData(uploadImageData)).then((ipfsHash) => {
+      return purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash);
+    });
   };
+}
+
+export function cancelPlotPurchase() {
+  return {
+    type: ActionTypes.CANCEL_PLOT_PURCHASE
+  }
 }
 
 function startPurchasePlot() {
   return {
     type: ActionTypes.START_PURCHASING_PLOT
   };
+}
+
+function uploadImageData(imageData) {
+  return function(dispatch) {
+    dispatch(changePurchaseStep(PurchaseStage.UPLOADING_TO_IPFS));
+
+    // Here's were we do the post up to IPFS
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve('abc-123-xyz'), 3000);
+    }).then((ipfsHash) => {
+
+      // Here's where we upload the image data to S3
+      dispatch(changePurchaseStep(PurchaseStage.SAVING_TO_CLOUD));
+
+      return new Promise((resolve2, reject2) => {
+        setTimeout(() => resolve2(ipfsHash));
+      });
+    })
+  };
+}
+
+function changePurchaseStep(purchaseStage) {
+  return {
+    type: ActionTypes.CHANGE_PURCHASE_STAGE,
+    purchaseStage
+  }
 }

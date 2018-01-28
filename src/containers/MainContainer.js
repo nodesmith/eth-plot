@@ -31,7 +31,7 @@ class MainContainer extends Component {
       onWebsiteChanged: this.props.actions.changePlotWebsite,
       onBuyoutChanged: this.props.actions.changePlotBuyout,
       onBuyoutEnabledChanged: this.props.actions.changeBuyoutEnabled,
-      purchasePlot: this.props.actions.purchasePlot
+      purchasePlot: this.props.actions.completePlotPurchase
     };
 
     return (
@@ -51,6 +51,7 @@ class MainContainer extends Component {
           togglePurchaseFlow={this.props.actions.togglePurchaseFlow}
           changeZoom={this.props.actions.changeZoom} />
         <PurchaseDialog
+          cancelPlotPurchase={this.props.actions.cancelPlotPurchase}
           {...this.props.purchaseDialog} />
       </div>
     );

@@ -20,3 +20,13 @@ export const MovementActions = {
   LOWER_RIGHT: 7,
   UPPER_RIGHT: 8,
 };
+
+export const PurchaseStage = {
+  NOT_STARTED: -1,
+  UPLOADING_TO_IPFS: 0,
+  SAVING_TO_CLOUD: 1,
+  WAITING_FOR_UNLOCK: 2,
+  SUBMITTING_TO_BLOCKCHAIN: 3,
+  WAITING_FOR_CONFIRMATIONS: 4,
+  DONE: 5
+};
