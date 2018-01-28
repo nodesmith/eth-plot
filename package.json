@@ -52,14 +52,16 @@
     "decimal.js": "^9.0.1",
     "es6-promise-pool": "^2.5.0",
     "jquery": "^3.2.1",
+    "material-ui": "^1.0.0-beta.30",
+    "material-ui-icons": "^1.0.0-beta.17",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
-    "react-bootstrap": "^0.32.0",
     "react-dom": "^16.2.0",
     "react-redux": "^4.1.1",
     "react-router-dom": "^4.2.2",
     "redux": "^3.7.2",
     "redux-thunk": "^1.0.3",
+    "typeface-roboto": "0.0.50",
     "web3": "^1.0.0-beta.27"
   }
 }

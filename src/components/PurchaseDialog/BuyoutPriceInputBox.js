@@ -1,76 +1,73 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, ControlLabel, DropdownButton, MenuItem, FormControl, FormGroup, Label, InputGroup, Modal, PageHeader, Row, Col, Glyphicon, Image, HelpBlock, Checkbox } from 'react-bootstrap';
 import Decimal from 'decimal.js';
 import { formatEthValue } from '../../data/ValueFormatters';
 
-export default class BuyoutPriceInputBox extends Component {
+
+import { withStyles } from 'material-ui/styles';
+import IconButton from 'material-ui/IconButton';
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import { FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import Switch from 'material-ui/Switch';
+
+import Button from 'material-ui/Button';
+import Menu, { MenuItem } from 'material-ui/Menu';
+import Select from 'material-ui/Select';
+
+import Avatar from 'material-ui/Avatar';
+import Chip from 'material-ui/Chip';
+
+import TextField from 'material-ui/TextField';
+
+const styles = theme => ({
+  wrapper: {
+    margin: theme.spacing.unit
+  },
+  numberInput: {
+    width: '75%',
+    marginRight: theme.spacing.unit,
+  },
+  unitSelect: {
+    width: `20%`
+  }
+});
+
+class BuyoutPriceInputBox extends Component {
   constructor(...args) {
     super(...args);
 
     this.state = {
-      buyout: this.props.initialValue,
-      buyoutValidation: this.validateBuyout(this.props.initialValue, true),
-      buyoutEnabled: true,
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.buyoutValidation.state != prevState.buyoutValidation.state) {
-      const buyoutState = {
-        ammountInWei: this.state.buyout.ammountInWei,
-        buyoutEnabled: this.state.buyoutEnabled,
-        valid: !this.state.buyoutEnabled || this.state.buyoutValidation.state === 'success' || this.state.buyoutValidation.state === 'warning'
-      };
+      buyoutUnits: 'wei',
+      anchorEl: null
     }
   }
 
   buyoutPriceChanged(event) {
-    const units = this.state.buyout.units;
-    let newBuyout = {
-      units: units,
-      ammountInWei: ''
-    };
+    const units = this.state.buyoutUnits;
+    let newPriceInWei = '';
 
     if (event.target.value.length > 0) {
       const mulitplier = units == 'wei' ? 0 : units == 'gwei' ? 9 : 18;
-      const newPriceInWei = Decimal(event.target.value + `e${mulitplier}`);
-      newBuyout.ammountInWei = newPriceInWei.toFixed();
+      newPriceInWei = Decimal(event.target.value + `e${mulitplier}`).toFixed();
     }
 
-    const buyoutValidation = this.validateBuyout(newBuyout, this.state.buyoutEnabled);
-
-    this.setState({
-      buyout: newBuyout,
-      buyoutValidation: buyoutValidation
-    });
-
     const buyoutChangedMessage = {
-      value: newBuyout.ammountInWei,
-      valid: buyoutValidation.state !== 'error'
+      value: newPriceInWei
     };
 
     this.props.onBuyoutChanged(buyoutChangedMessage);
   }
 
-  buyoutUnitChanged(eventKey, event) {
-    const buyoutUnits = eventKey;
-
-    const newBuyout = {
-      units: buyoutUnits,
-      ammountInWei: this.state.buyout.ammountInWei
-    };
-
-    const buyoutValidation = this.validateBuyout(newBuyout, this.state.buyoutEnabled);
-
+  buyoutUnitChanged(event, buyoutUnits) {
     this.setState({
-      buyout: newBuyout,
-      buyoutValidation: buyoutValidation
+      buyoutUnits: buyoutUnits
     });
+
+    this.handleUnitsMenuClosed();
   }
 
-  validateBuyout(buyout, buyoutEnabled) {
-    if (!buyout || buyout.ammountInWei.length === 0) {
+  validateBuyout(buyoutPriceInWei, buyoutEnabled) {
+    if (!buyoutPriceInWei || buyoutPriceInWei.length === 0) {
       return {
         state: null,
         message: 'The price you will receive if your full plot is purchased'
@@ -84,7 +81,7 @@ export default class BuyoutPriceInputBox extends Component {
       };
     }
 
-    const price = Decimal(buyout.ammountInWei);
+    const price = Decimal(buyoutPriceInWei);
 
     if (price.lessThanOrEqualTo(0)) {
       return {
@@ -110,37 +107,67 @@ export default class BuyoutPriceInputBox extends Component {
     };
   }
 
-  allowBuyoutChanged(event) {
-    const newValue = event.target.checked;
-    const buyoutValidation = this.validateBuyout(this.state.buyout, newValue);
+  allowBuyoutChanged(event, checked) {
+    this.props.onBuyoutEnabledChanged(checked);
+  }
 
-    this.setState({
-      buyoutEnabled: newValue,
-      buyoutValidation: buyoutValidation
-    });
+  showUnitsMenu(event) {
+    this.setState({ anchorEl: event.currentTarget });
+  }
+
+  handleUnitsMenuClosed() {
+    this.setState({ anchorEl: null });
   }
 
   render() {
-    const buyoutMultiplier = this.state.buyout.units == 'eth' ? -18 : this.state.buyout.units == 'gwei' ? -9 : 0;
-    const buyoutString = this.state.buyout.ammountInWei.length > 0 ? Decimal(this.state.buyout.ammountInWei + `e${buyoutMultiplier}`).toFixed() : '';
+    const { buyoutPriceInWei, buyoutEnabled, classes } = this.props;
+    const { anchorEl, buyoutUnits } = this.state;
 
-    return (
-      <FormGroup controlId='buyoutPrice' validationState={this.state.buyoutValidation.state}>
-        <ControlLabel>{this.props.title}</ControlLabel>
-        <InputGroup>
-          <InputGroup.Addon>
-            <input type="checkbox" aria-label="Allow Initial Buyout" checked={this.state.buyoutEnabled} onChange={this.allowBuyoutChanged.bind(this)}/>
-          </InputGroup.Addon>
-          <FormControl disabled={!this.state.buyoutEnabled} value={buyoutString} type="number" onChange={this.buyoutPriceChanged.bind(this)}/>
-          <DropdownButton disabled={!this.state.buyoutEnabled} componentClass={InputGroup.Button} id="input-wei" title={this.state.buyout.units} onSelect={this.buyoutUnitChanged.bind(this)} > 
-            <MenuItem eventKey="wei">wei</MenuItem>
-            <MenuItem eventKey="gwei">gwei</MenuItem>
-            <MenuItem eventKey="eth">eth</MenuItem>
-          </DropdownButton>
-        </InputGroup>
-        <HelpBlock>{this.state.buyoutValidation.message}</HelpBlock>
-      </FormGroup>
-    );
+    const buyoutMultiplier = buyoutUnits == 'eth' ? -18 : buyoutUnits == 'gwei' ? -9 : 0;
+    const buyoutString = buyoutPriceInWei.length > 0 ? Decimal(buyoutPriceInWei + `e${buyoutMultiplier}`).toFixed() : '';
+
+    const validation = this.validateBuyout(buyoutPriceInWei, buyoutEnabled)
+
+    const currencies = ['wei', 'gwei', 'eth'];
+
+
+    return (<div className={classes.wrapper} >
+      <FormControlLabel
+          control={
+            <Switch checked={buyoutEnabled} onChange={this.allowBuyoutChanged.bind(this)} />
+          }
+          label="Enable Buyout"
+        />
+      <TextField
+        id="name"
+        label="Buyout Price"
+        disabled={!buyoutEnabled}
+        value={buyoutString}
+        className={classes.numberInput}
+        margin="normal"
+        onChange={this.buyoutPriceChanged.bind(this)}
+        helperText={validation.message}
+      />
+      <Chip
+        className={classes.unitSelect}
+        label={buyoutUnits}
+        onClick={buyoutEnabled ? this.showUnitsMenu.bind(this) : null}
+        aria-owns={anchorEl ? 'units-menu' : null}
+        aria-haspopup="true"
+      />
+      <Menu
+          id="units-menu"
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={this.handleUnitsMenuClosed.bind(this)}
+        >
+        {currencies.map(option => (
+          <MenuItem selected={option === buyoutUnits} key={option} value={option} onClick={(event) => this.buyoutUnitChanged(event, option)}>
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>);
   }
 }
 
@@ -149,5 +176,10 @@ BuyoutPriceInputBox.propTypes = {
   purchasePrice: PropTypes.string.isRequired, // Should be a serialized Decimal.js of wei
   title: PropTypes.string.isRequired,
   initialValue: PropTypes.object.isRequired,
-  onBuyoutChanged: PropTypes.func.isRequired
+  buyoutPriceInWei: PropTypes.string.isRequired,
+  buyoutEnabled: PropTypes.bool.isRequired,
+  onBuyoutChanged: PropTypes.func.isRequired,
+  onBuyoutEnabledChanged: PropTypes.func.isRequired
 }
+
+export default withStyles(styles)(BuyoutPriceInputBox);

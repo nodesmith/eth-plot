@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { HashRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom';
+
+// To get the font for material UI
+// import 'typeface-roboto';
 
 import App from './App';
 import DevTools from './DevTools';

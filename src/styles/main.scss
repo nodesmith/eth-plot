@@ -1,12 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Raleway:100,400);
 
-$main-bg-color: #ffffff;
-
-/*----------- Main App -----------*/
-.main-app-container {
-  background-color: $main-bg-color;
-  font-family: 'Raleway', sans-serif;
-}
 
 .main-app-nav {
   display: inline-block;
@@ -40,19 +33,19 @@ $main-bg-color: #ffffff;
   text-align: center;
 }
 
-/*----------- My Plots -----------*/
-.plot-section {
+// /*----------- My Plots -----------*/
+// .plot-section {
   
-}
+// }
 
-.plot-warning {
-  text-align: center;
-  margin-top: 100px;
-}
+// .plot-warning {
+//   text-align: center;
+//   margin-top: 100px;
+// }
 
-.plot-info {
-  word-wrap: break-word;
-}
+// .plot-info {
+//   word-wrap: break-word;
+// }
 
 #metamaskLogoContainer {
   text-align: center;
@@ -79,11 +72,9 @@ $main-bg-color: #ffffff;
 }
 
 .purchasePlot {
-  background-color: #FFFFFF55;
   outline-color: red;
   outline-width: 2px;
   outline-style: dashed;
-  background-blend-mode: lighten;
 }
 
 .purchaseTooltip {
@@ -108,7 +99,6 @@ $main-bg-color: #ffffff;
 /* ---------- General. -----------*/
 div.well {
   background-image: none;
-  background-color: $main-bg-color;
   border: none;
   box-shadow: none;
   margin: 0px;

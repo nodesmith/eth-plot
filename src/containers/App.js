@@ -3,15 +3,22 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
-import { Nav, Navbar, NavItem } from 'react-bootstrap';
+
+import { withStyles } from 'material-ui/styles';
+import AppBar from 'material-ui/AppBar';
+import Button from 'material-ui/Button';
+import Grid from 'material-ui/Grid';
+import Reboot from 'material-ui/Reboot';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
 
 import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
+import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import * as Enums from '../constants/Enums';
-import GridContainer from './GridContainer';
+import MainContainer from './MainContainer';
 import PlotManagerContainer from './PlotManagerContainer';
-import PurchaseFlowContainer from './PurchaseFlowContainer';
 import About from '../components/About';
 
 const Web3 = require('web3');
@@ -58,21 +65,22 @@ class App extends Component {
   render() {
     return (
       <div className="main-app-container">
-        <Navbar collapseOnSelect className="navbar-static-top">
-          <Navbar.Collapse>
-            <Nav>
-              <NavLink className="main-app-nav" to="/myplots" activeClassName="main-app-navActive">My Plots</NavLink>
-              <NavLink to="/" activeClassName="main-app-navActive">
-                <img src="../assets/logo.png" alt="ethGridLogo" height="21" width="21" />
-              </NavLink>
-              <NavLink className="main-app-nav" to="/about" activeClassName="selected">About</NavLink>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
+        <Reboot />
+        <AppBar position="static" color="primary">
+          <Toolbar>
+            <Button component={NavLink} to="/" color="inherit">
+              <Typography type="title" color="inherit">
+                Eth Grid
+              </Typography>
+            </Button>
+            <Button component={NavLink} to="/myplots" color="inherit">My Plots</Button>
+            <Button component={NavLink} to="/about" color="inherit">About</Button>
+          </Toolbar>
+        </AppBar>
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
-              <GridContainer {...routeProps} actions={this.props.actions} {...this.props.purchase} {...this.props.grid} {...this.props.data} />
+              <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
               <PlotManagerContainer {...routeProps} actions={this.props.actions} {...this.props.data} {...this.props.account} />
@@ -97,12 +105,14 @@ App.propTypes = {
  * Global redux state.
  */
 function mapStateToProps(state) {
-  console.log(state);
+  // console.log(state);
   return {
     account: state.account,
     data: state.data,
     grid: state.grid,
-    purchase: state.purchase
+    purchase: state.purchase,
+    image_to_purchase: state.image_to_purchase,
+    purchaseDialog: state.purchaseDialog
   };
 }
 
@@ -116,7 +126,7 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, AccountActions, DataActions, GridActions), dispatch)
+    actions: bindActionCreators(Object.assign({}, AccountActions, DataActions, GridActions, PurchaseActions), dispatch)
   };
 }
 

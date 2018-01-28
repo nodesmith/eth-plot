@@ -33,3 +33,8 @@ export function formatEthValue(ammountInWei) {
     };
   }
 }
+
+export function formatEthValueToString(ammountInWei) {
+  const formatObj = formatEthValue(ammountInWei);
+  return `${formatObj.value} ${formatObj.unit}`;
+}
