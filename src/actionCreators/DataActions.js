@@ -1,6 +1,7 @@
 import * as ActionTypes from '../constants/ActionTypes';
 const PlotMath = require('../data/PlotMath');
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
+import { PurchaseStage } from '../constants/Enums';
 
 const Web3 = require('web3');
 const PromisePool = require('es6-promise-pool');
@@ -154,7 +155,7 @@ function buildArrayFromRectangles(rects) {
 }
 
 // This is the actual purchase function which will be a thunk
-export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash) {
+export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash, changePurchaseStep) {
   return function(dispatch) {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
@@ -169,19 +170,20 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash)
     const param6 = 10;
     const purchaseFunction = contract.methods.purchaseAreaWithData(param1, param2, param3, param4, param5, param6);
 
-    console.log(`${JSON.stringify(param1)}, ${JSON.stringify(param2)}, ${JSON.stringify(param3)}, "${param4}", "${param5}", ${param6}`)
-    debugger;
-
+    dispatch(changePurchaseStep(PurchaseStage.WAITING_FOR_UNLOCK));
     return web3.eth.getCoinbase().then(coinbase => {
       // return purchaseFunction.estimateGas({from: coinbase, gas: '3000000' }).then((gasEstimate) => {
+
+        dispatch(changePurchaseStep(PurchaseStage.SUBMITTING_TO_BLOCKCHAIN));
 
         const gasEstimate = 2000000;
         return purchaseFunction.send({
           from: coinbase,
           // gasPrice: '30000000000000',
-          gasPrice: '30000000',
+          gasPrice: '3000000000',
           gas: gasEstimate * 2
         }).then((transactionReceipt) => {
+          dispatch(changePurchaseStep(PurchaseStage.WAITING_FOR_CONFIRMATIONS));
           // We need to update the ownership and data arrays with the newly purchased plot
           const ownershipInfo = Object.assign({}, rectToPurchase);
 

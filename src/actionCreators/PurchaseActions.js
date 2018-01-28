@@ -81,7 +81,7 @@ export function completePlotPurchase(contractInfo, plots, rectToPurchase, imageD
     dispatch(startPurchasePlot());
 
     return dispatch(uploadImageData(uploadImageData)).then((ipfsHash) => {
-      return purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash);
+      return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, changePurchaseStep));
     });
   };
 }
@@ -104,14 +104,14 @@ function uploadImageData(imageData) {
 
     // Here's were we do the post up to IPFS
     return new Promise((resolve, reject) => {
-      setTimeout(() => resolve('abc-123-xyz'), 3000);
+      setTimeout(() => resolve('abc-123-xyz'), 500);
     }).then((ipfsHash) => {
 
       // Here's where we upload the image data to S3
       dispatch(changePurchaseStep(PurchaseStage.SAVING_TO_CLOUD));
 
       return new Promise((resolve2, reject2) => {
-        setTimeout(() => resolve2(ipfsHash));
+        setTimeout(() => resolve2(ipfsHash), 500);
       });
     })
   };
