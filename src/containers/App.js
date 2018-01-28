@@ -12,17 +12,13 @@ import Reboot from 'material-ui/Reboot';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
-// import { Nav, Navbar, NavItem } from 'react-bootstrap';
-
 import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
 import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import * as Enums from '../constants/Enums';
-import GridContainer from './GridContainer';
 import MainContainer from './MainContainer';
 import PlotManagerContainer from './PlotManagerContainer';
-import PurchaseFlowContainer from './PurchaseFlowContainer';
 import About from '../components/About';
 
 const Web3 = require('web3');

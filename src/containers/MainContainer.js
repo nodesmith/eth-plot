@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PurchaseModal from '../components/PurchaseModal';
 import MainControlsOverlay from '../components/MainControlsOverlay';
 import PurchaseDialog from '../components/PurchaseDialog';
 

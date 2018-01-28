@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PurchaseModal from '../components/PurchaseModal';
 import PropTypes from 'prop-types';
 
 import { withStyles } from 'material-ui/styles';
