@@ -4,6 +4,7 @@ import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 import { PurchaseStage } from '../constants/Enums';
 
 const Web3 = require('web3');
+const hexy = require('hexy');
 const PromisePool = require('es6-promise-pool');
 
 export function addPlot(newPlot) {
@@ -47,7 +48,6 @@ function initializeContract(contractInfo) {
 }
 
 function getWeb3(contractInfo) {
-  // TODO refetch plots when metamask status changes
   return window.web3;
 }
 
@@ -72,47 +72,49 @@ export function fetchPlotsFromWeb3(contractInfo) {
     
     return new Promise((resolve, reject) => {
       contract.ownershipLength.call((error, ownershipLengthString) => {
-        if (!error) {
-          resolve(ownershipLengthString);
-        } else {
-          reject(error);
-        }
+        if (error) reject(error);
+        resolve(ownershipLengthString);
       });
     }).then((ownershipLengthString) => {
       const ownershipLength = parseInt(ownershipLengthString);
       let currentIndex = 0;
+
       const ownershipLoadFn = () => {
         if (currentIndex >= ownershipLength) {
           // We're done loading here
           return null;
         }
 
-        // Call get plot which returns an array type object which we can get properties from
-        return contract.methods.getPlot(currentIndex).call().then(plotInfo => {
-          const plot = {
-            rect: {
-              x: parseInt(plotInfo['0']),
-              y: parseInt(plotInfo['1']),
-              w: parseInt(plotInfo['2']),
-              h: parseInt(plotInfo['3'])
-            },
-            owner: plotInfo['4'],
-            buyoutPrice: parseInt(plotInfo['5']),
-            data: {
-              url: plotInfo['6'],
-              ipfsHash: plotInfo['7']
-            },
-            color: getRandomColor(),
-            zoneIndex: currentIndex
-          };
+        return new Promise((resolve, reject) => {
+          // Call get plot which returns an array type object which we can get properties from
+          contract.getPlot.call(currentIndex, (error, plotInfo) => {
+            if (error) reject(error);
 
-          plot.rect.x2 = plot.rect.x + plot.rect.w;
-          plot.rect.y2 = plot.rect.y + plot.rect.h;
+            const plot = {
+              rect: {
+                x: parseInt(plotInfo['0']),
+                y: parseInt(plotInfo['1']),
+                w: parseInt(plotInfo['2']),
+                h: parseInt(plotInfo['3'])
+              },
+              owner: plotInfo['4'],
+              buyoutPrice: parseInt(plotInfo['5']),
+              data: {
+                url: plotInfo['6'],
+                ipfsHash: plotInfo['7']
+              },
+              color: getRandomColor(),
+              zoneIndex: currentIndex
+            };
 
-          dispatch(addPlot(plot)); 
-          currentIndex++;
+            plot.rect.x2 = plot.rect.x + plot.rect.w;
+            plot.rect.y2 = plot.rect.y + plot.rect.h;
 
-          return plot;
+            dispatch(addPlot(plot)); 
+            currentIndex++;
+
+            resolve(plot);
+          });
         });
       };
 
@@ -131,21 +133,32 @@ export function fetchPlotsFromWeb3(contractInfo) {
 export function updateAuction(contractInfo, zoneIndex, newPrice) {
   return function(dispatch) {
     const web3 = new Web3(contractInfo.web3Provider);
-    const contract = initializeContract(contractInfo);
-    
-    const param1 = zoneIndex;
-    const param2 = newPrice;
-    const auctionFunction = contract.methods.updateAuction(param1, param2);
 
-    return web3.eth.getCoinbase().then(coinbase => {
+    return new Promise((resolve, reject) => {
+      web3.eth.getCoinbase((error, coinbase) => {
+        if (error) reject(error);  
+        resolve(coinbase);
+      });
+    }).then((coinbase) => {
       const gasEstimate = 2000000;
-      return auctionFunction.send({
+      const contract = initializeContract(contractInfo);
+    
+      const param1 = zoneIndex;
+      const param2 = newPrice;
+      const auctionFunction = contract.methods.updateAuction(param1, param2);
+
+      const txObject = {
         from: coinbase,
-        gasPrice: '30000000',
+        gasPrice: '3000000000',
         gas: gasEstimate * 2
-      }).then((transactionReceipt) => {
-        dispatch(plotListed(transactionReceipt.transactionHash, zoneIndex));        
-        return transactionReceipt;
+      }
+      
+      return new Promise((resolve, reject) => {
+        contract.auctionFunction.sendTransaction(param1, param2, txObject, (error, transactionReceipt) => {
+          if (error) reject(error);
+          dispatch(plotListed(transactionReceipt.transactionHash, zoneIndex));        
+          resolve(transactionReceipt);
+        });
       });
     });
   }
@@ -170,37 +183,44 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
     const web3 = getWeb3(contractInfo);
-    const contract = initializeContract(contractInfo);
-    
-    const param1 = buildArrayFromRectangles([rectToPurchase]);
-    const param2 = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
-    const param3 = purchaseInfo.chunksToPurchaseAreaIndices;
-    const param4 = web3.utils.asciiToHex(ipfsHash);
-    const param5 = url;
-    const param6 = 10;
-    const purchaseFunction = contract.methods.purchaseAreaWithData(param1, param2, param3, param4, param5, param6);
 
     dispatch(changePurchaseStep(PurchaseStage.WAITING_FOR_UNLOCK));
-    return web3.eth.getCoinbase().then(coinbase => {
-      // return purchaseFunction.estimateGas({from: coinbase, gas: '3000000' }).then((gasEstimate) => {
-
+    return new Promise((resolve, reject) => {
+      web3.eth.getCoinbase((error, coinbase) => {
+        if (error) reject(error);  
         dispatch(changePurchaseStep(PurchaseStage.SUBMITTING_TO_BLOCKCHAIN));
+        resolve(coinbase);
+      });
+    }).then((coinbase) => {
+      const contract = initializeContract(contractInfo);
+  
+      const param1 = buildArrayFromRectangles([rectToPurchase]);
+      const param2 = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
+      const param3 = purchaseInfo.chunksToPurchaseAreaIndices;
+      const param4 = hexy.hexy(ipfsHash);
+      const param5 = url;
+      const param6 = 10;
+  
+      const gasEstimate = 2000000;
+      const txObject = {
+        from: coinbase,
+        gasPrice: '3000000000',
+        gas: gasEstimate * 2
+      }
 
-        const gasEstimate = 2000000;
-        return purchaseFunction.send({
-          from: coinbase,
-          // gasPrice: '30000000000000',
-          gasPrice: '3000000000',
-          gas: gasEstimate * 2
-        }).then((transactionReceipt) => {
-          dispatch(changePurchaseStep(PurchaseStage.WAITING_FOR_CONFIRMATIONS));
-          // We need to update the ownership and data arrays with the newly purchased plot
-          const ownershipInfo = Object.assign({}, rectToPurchase);
+      return new Promise((resolve, reject) => {
+        contract.purchaseAreaWithData.sendTransaction(
+          param1, param2, param3, param4, param5, param6, txObject, (error, transactionReceipt) => {
+            if (error) reject(error);
 
-          // TODO - Lots of stuff
-          return transactionReceipt;
+            dispatch(changePurchaseStep(PurchaseStage.WAITING_FOR_CONFIRMATIONS));
+            // We need to update the ownership and data arrays with the newly purchased plot
+            const ownershipInfo = Object.assign({}, rectToPurchase);
+
+            // TODO - Lots of stuff
+            resolve(transactionReceipt);
         });
-      // });
+      });
     });
   };
 }

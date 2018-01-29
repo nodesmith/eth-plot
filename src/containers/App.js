@@ -47,10 +47,10 @@ class App extends Component {
      * More info available here: 
      * https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md
      */
-    /*ithis.accountInterval = setInterval(function() {
-      f (typeof window.web3 !== 'undefined') {
+    this.accountInterval = setInterval(function() {
+      if (typeof window.web3 !== 'undefined') {
         let newWeb3 = new Web3(window.web3.currentProvider);
-        newWeb3.eth.getAccounts().then(function(accounts) {
+        newWeb3.eth.getAccounts((error, accounts) => {
           if (accounts.length > 0) {
             this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
 
@@ -60,23 +60,11 @@ class App extends Component {
           } else {
             this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
           };
-        }.bind(this));
+        });
       } else {
         this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       }
-    }.bind(this), 1000);*/
-
-    // TODO Cleanup
-    if (typeof web3 !== 'undefined') {
-      web3 = new Web3(web3.currentProvider);
-      let filter = web3.eth.filter('pending');
-      
-      // watch for changes
-      filter.watch(function(error, result){
-        if (!error)
-          console.log(result);
-      });
-    }
+    }.bind(this), 1000);
   }
 
   componentWillUnmount() {
