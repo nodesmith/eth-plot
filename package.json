@@ -51,6 +51,7 @@
     "bn.js": "^4.11.8",
     "decimal.js": "^9.0.1",
     "es6-promise-pool": "^2.5.0",
+    "hexy": "^0.2.10",
     "jquery": "^3.2.1",
     "material-ui": "^1.0.0-beta.30",
     "material-ui-icons": "^1.0.0-beta.17",
@@ -62,6 +63,6 @@
     "redux": "^3.7.2",
     "redux-thunk": "^1.0.3",
     "typeface-roboto": "0.0.50",
-    "web3": "^1.0.0-beta.27"
+    "web3": "^0.18.4"
   }
 }

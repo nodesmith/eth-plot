@@ -81,7 +81,6 @@ class PlotManager extends Component {
 
 PlotManager.propTypes = {
   userPlots: PropTypes.array.isRequired,
-  web3Initialized: PropTypes.bool.isRequired,
   metamaskState: PropTypes.number.isRequired
 };
 
