@@ -48,7 +48,11 @@ function initializeContract(contractInfo) {
 }
 
 function getWeb3(contractInfo) {
-  return window.web3;
+  if (typeof window.web3 !== 'undefined') {
+    return window.web3
+  } else {
+    throw 'no web3 provided';
+  }
 }
 
 function getRandomColor() {
@@ -69,7 +73,6 @@ export function fetchPlotsFromWeb3(contractInfo) {
     const contract = initializeContract(contractInfo);
 
     // First make a call to figure out the length of the ownership and data array to iterate through them
-    
     return new Promise((resolve, reject) => {
       contract.ownershipLength.call((error, ownershipLengthString) => {
         if (error) reject(error);

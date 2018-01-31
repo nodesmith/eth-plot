@@ -20,6 +20,7 @@ import * as Enums from '../constants/Enums';
 import MainContainer from './MainContainer';
 import PlotManagerContainer from './PlotManagerContainer';
 import About from '../components/About';
+import ProgressSpinner from '../components/ProgressSpinner';
 
 const Web3 = require('web3');
 
@@ -28,14 +29,11 @@ const Web3 = require('web3');
  * Again, this is because it serves to wrap the rest of our application with the Provider
  * component to make the Redux store available to the rest of the app.
  */
-class App extends Component {
-  constructor(...args) {
-    super(...args);
-    this.state = {};
-  }
-  
+class App extends Component { 
   componentDidMount() {
-    this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
+    if (typeof window.web3 !== 'undefined') {
+      this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
+    } 
 
     /**
      * The following timer is the MetaMask recommended way of checking for 
@@ -53,10 +51,7 @@ class App extends Component {
         newWeb3.eth.getAccounts((error, accounts) => {
           if (accounts.length > 0) {
             this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
-
-            if (accounts[0] != this.state.activeAccount) {
-              this.setState({ activeAccount: accounts[0] });
-            }
+            this.props.actions.updateActiveAccount(accounts[0]);
           } else {
             this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
           };
@@ -90,12 +85,13 @@ class App extends Component {
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
-              <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
+              (this.props.data.isFetchingPlots) 
+              ? <ProgressSpinner />
+              : <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} {...this.props.account} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
               <PlotManagerContainer 
-                {...routeProps} {...this.props.data} {...this.props.account}
-                actions={this.props.actions} activeAccount={this.state.activeAccount} />
+                {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
             )}/>
             <Route path='/about' component={About}/>
           </Switch>

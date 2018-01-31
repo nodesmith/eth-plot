@@ -6,7 +6,6 @@ import PlotInfo from './PlotInfo';
 
 import * as Enums from '../constants/Enums';
 
-
 import { withStyles } from 'material-ui/styles';
 import ExpansionPanel, {
   ExpansionPanelSummary,

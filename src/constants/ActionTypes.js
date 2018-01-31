@@ -19,6 +19,7 @@ export const CHANGE_ZOOM = 'CHANGE_ZOOM';
 
 // Account Actions
 export const UPDATE_METAMASK_STATE = 'UPDATE_METAMASK_STATE';
+export const UPDATE_ACTIVE_ACCOUNT = 'UPDATE_ACTIVE_ACCOUNT';
 
 // Purchase Actions
 export const TOGGLE_PURCHASE_FLOW = 'TOGGLE_PURCHASE_FLOW';
