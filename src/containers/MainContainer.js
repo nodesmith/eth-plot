@@ -7,7 +7,7 @@ import Typography from 'material-ui/Typography';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 
-import FullPageStatus from '../components/FullPageStatus';
+import MetaMaskStatus from '../components/MetaMaskStatus';
 import UIGrid from '../components/UIGrid';
 import * as Enums from '../constants/Enums';
 
@@ -35,15 +35,8 @@ class MainContainer extends Component {
     };
 
     return (
-      (this.props.metamaskState != Enums.METAMASK_STATE.OPEN)
-      ? 
-        (this.props.metamaskState === Enums.METAMASK_STATE.LOCKED)
-        ? <FullPageStatus message="You must unlock MetaMask to proceed." />
-        :
-        <div id="metamaskLogoContainer">
-          <FullPageStatus message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
-          <a href={"https://metamask.io"} target="_blank"><img id="metamaskLogo" src={"../assets/metamasklogo.png"} /></a>
-        </div>
+      (this.props.metamaskState != Enums.METAMASK_STATE.OPEN) ?
+      <MetaMaskStatus metamaskState={this.props.metamaskState} />
       :
       <div className={this.props.classes.root}>
         <UIGrid {...this.props}

@@ -63,8 +63,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
-    //clearInterval(this.interval);
-    this.pendingTxSubscription.unsubscribe((error, success) => { });
+    clearInterval(this.accountInterval);
   }
 
   render() {
