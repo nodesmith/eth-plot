@@ -6,7 +6,6 @@ import PlotInfo from './PlotInfo';
 
 import * as Enums from '../constants/Enums';
 
-
 import { withStyles } from 'material-ui/styles';
 import ExpansionPanel, {
   ExpansionPanelSummary,
@@ -16,6 +15,7 @@ import Typography from 'material-ui/Typography';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
+import MetaMaskStatus from './MetaMaskStatus';
 
 
 const styles = theme => ({
@@ -30,18 +30,9 @@ class PlotManager extends Component {
   getFullPageStatus() {
     if (this.props.metamaskState === Enums.METAMASK_STATE.OPEN) {
       return (<FullPageStatus message="You don't have any owned plots. Visit the grid to purchase a plot." />);
-    } else if (this.props.metamaskState === Enums.METAMASK_STATE.UNINSTALLED) {
+    } else {
       return (
-      <div id="metamaskLogoContainer">
-        <FullPageStatus message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
-        <a href={"https://metamask.io"} target="_blank"><img id="metamaskLogo" src={"../assets/metamasklogo.png"} /></a>
-      </div>
-      );
-    } else if (this.props.metamaskState === Enums.METAMASK_STATE.LOCKED) {
-      return (
-      <div id="metamaskLogoContainer">
-        <FullPageStatus message="You must unlock MetaMask to proceed." />
-      </div>
+        <MetaMaskStatus metamaskState={this.props.metamaskState} />
       );
     }
   }

@@ -7,3 +7,9 @@ export function updateMetamaskState(newState) {
   };
 }
 
+export function updateActiveAccount(newActiveAccount) {
+  return {
+    type: ActionTypes.UPDATE_ACTIVE_ACCOUNT,
+    newActiveAccount
+  };
+}
