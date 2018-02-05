@@ -6,7 +6,7 @@ export const METAMASK_STATE = {
   UNINSTALLED: 0,
   OPEN: 1,
   LOCKED: 2
-}
+};
 
 export const MovementActions = {
   NONE: -1,
@@ -29,4 +29,9 @@ export const PurchaseStage = {
   SUBMITTING_TO_BLOCKCHAIN: 3,
   WAITING_FOR_CONFIRMATIONS: 4,
   DONE: 5
+};
+
+export const TxType = {
+  PURCHASE: 0,
+  AUCTION: 1,
 };

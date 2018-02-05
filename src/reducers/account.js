@@ -3,7 +3,8 @@ import * as Enums from '../constants/Enums';
 
 const initialState = {
   metamaskState: Enums.METAMASK_STATE.UNINSTALLED,
-  activeAccount: ''
+  activeAccount: '',
+  pendingTxs: []
 }
 
 export default function account(state = initialState, action) {
@@ -20,6 +21,10 @@ export default function account(state = initialState, action) {
     } else {
       return state;
     }
+  case ActionTypes.ADD_PENDING_TRANSACTION:
+    let pendingTxsCopy = state.pendingTxs.slice();
+    pendingTxsCopy.push({ txType: action.txType, txHash: action.txHash })    
+    return Object.assign({}, state, { pendingTxs: pendingTxsCopy })
   default:
     return state;
   }

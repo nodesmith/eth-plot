@@ -2,15 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 
 import { withStyles } from 'material-ui/styles';
-import AppBar from 'material-ui/AppBar';
-import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
 import Reboot from 'material-ui/Reboot';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
 
 import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
@@ -18,9 +14,10 @@ import * as GridActions from '../actionCreators/GridActions';
 import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import * as Enums from '../constants/Enums';
 import MainContainer from './MainContainer';
-import PlotManagerContainer from './PlotManagerContainer';
+import AccountManagerContainer from './AccountManagerContainer';
 import About from '../components/About';
 import ProgressSpinner from '../components/ProgressSpinner';
+import Nav from '../components/Nav';
 
 const Web3 = require('web3');
 
@@ -70,17 +67,7 @@ class App extends Component {
     return (
       <div className="main-app-container">
         <Reboot />
-        <AppBar position="static" color="primary">
-          <Toolbar>
-            <Button component={NavLink} to="/" color="inherit">
-              <Typography type="title" color="inherit">
-                Eth Grid
-              </Typography>
-            </Button>
-            <Button component={NavLink} to="/myplots" color="inherit">My Plots</Button>
-            <Button component={NavLink} to="/about" color="inherit">About</Button>
-          </Toolbar>
-        </AppBar>
+        <Nav />
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
@@ -89,7 +76,7 @@ class App extends Component {
               : <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} {...this.props.account} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
-              <PlotManagerContainer 
+              <AccountManagerContainer 
                 {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
             )}/>
             <Route path='/about' component={About}/>

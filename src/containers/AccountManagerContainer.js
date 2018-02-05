@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import PlotManager from '../components/PlotManager';
+import AccountManager from '../components/AccountManager';
 
-class PlotManagerContainer extends Component {
+class AccountManagerContainer extends Component {
   render() {
     let userPlots = this.props.plots ? this.props.plots.filter((plot) => {
       if (plot.owner === this.props.activeAccount) {
@@ -12,21 +12,22 @@ class PlotManagerContainer extends Component {
     }) : [];
 
     return (
-      <PlotManager 
+      <AccountManager 
         userPlots={userPlots} 
         metamaskState={this.props.metamaskState}
         actions={this.props.actions}
         contractInfo={this.props.contractInfo}
+        pendingTxs={this.props.pendingTxs}
       />
     );
   }
 }
 
-PlotManagerContainer.propTypes = {
+AccountManagerContainer.propTypes = {
   metamaskState: PropTypes.number.isRequired,
   actions: PropTypes.object.isRequired,
   contractInfo: PropTypes.object.isRequired,
   activeAccount: PropTypes.string.isRequired
 };
 
-export default PlotManagerContainer;
+export default AccountManagerContainer;

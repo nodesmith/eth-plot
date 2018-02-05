@@ -66,7 +66,7 @@ class BuyoutPriceInputBox extends Component {
     this.handleUnitsMenuClosed();
   }
 
-  validateBuyout(buyoutPriceInWei, buyoutEnabled) {
+  validateBuyout(buyoutPriceInWei, toggleEnabled) {
     if (!buyoutPriceInWei || buyoutPriceInWei.length === 0) {
       return {
         state: null,
@@ -74,7 +74,7 @@ class BuyoutPriceInputBox extends Component {
       }
     }
 
-    if (!buyoutEnabled) {
+    if (!toggleEnabled) {
       return {
         state: null,
         message: 'Buyout disabled. Go to My Plots to set a buyout price'
@@ -90,12 +90,15 @@ class BuyoutPriceInputBox extends Component {
       };
     }
 
-    const purchasePrice = Decimal(this.props.purchasePrice);
-    if (price.lessThan(purchasePrice)) {
-      return {
-        state: 'warning',
-        message: 'Your buyout price is less than your purchase price'
-      };
+
+    if (this.props.purchasePrice) {
+      const purchasePrice = Decimal(this.props.purchasePrice);
+      if (price.lessThan(purchasePrice)) {
+        return {
+          state: 'warning',
+          message: 'Your buyout price is less than your purchase price'
+        };
+      }
     }
 
     const area = this.props.rectToPurchase.w * this.props.rectToPurchase.h;
@@ -108,7 +111,7 @@ class BuyoutPriceInputBox extends Component {
   }
 
   allowBuyoutChanged(event, checked) {
-    this.props.onBuyoutEnabledChanged(checked);
+    this.props.onToggleChanged(checked);
   }
 
   showUnitsMenu(event) {
@@ -118,15 +121,15 @@ class BuyoutPriceInputBox extends Component {
   handleUnitsMenuClosed() {
     this.setState({ anchorEl: null });
   }
-
+  
   render() {
-    const { buyoutPriceInWei, buyoutEnabled, classes } = this.props;
+    const { buyoutPriceInWei, toggleEnabled, classes } = this.props;
     const { anchorEl, buyoutUnits } = this.state;
 
     const buyoutMultiplier = buyoutUnits == 'eth' ? -18 : buyoutUnits == 'gwei' ? -9 : 0;
     const buyoutString = buyoutPriceInWei.length > 0 ? Decimal(buyoutPriceInWei + `e${buyoutMultiplier}`).toFixed() : '';
 
-    const validation = this.validateBuyout(buyoutPriceInWei, buyoutEnabled)
+    const validation = this.validateBuyout(buyoutPriceInWei, toggleEnabled)
 
     const currencies = ['wei', 'gwei', 'eth'];
 
@@ -134,52 +137,58 @@ class BuyoutPriceInputBox extends Component {
     return (<div className={classes.wrapper} >
       <FormControlLabel
           control={
-            <Switch checked={buyoutEnabled} onChange={this.allowBuyoutChanged.bind(this)} />
+            <Switch checked={toggleEnabled} onChange={this.allowBuyoutChanged.bind(this)} />
           }
-          label="Enable Buyout"
+          label={this.props.toggleText}
         />
-      <TextField
-        id="name"
-        label="Buyout Price"
-        disabled={!buyoutEnabled}
-        value={buyoutString}
-        className={classes.numberInput}
-        margin="normal"
-        onChange={this.buyoutPriceChanged.bind(this)}
-        helperText={validation.message}
-      />
-      <Chip
-        className={classes.unitSelect}
-        label={buyoutUnits}
-        onClick={buyoutEnabled ? this.showUnitsMenu.bind(this) : null}
-        aria-owns={anchorEl ? 'units-menu' : null}
-        aria-haspopup="true"
-      />
-      <Menu
-          id="units-menu"
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={this.handleUnitsMenuClosed.bind(this)}
-        >
-        {currencies.map(option => (
-          <MenuItem selected={option === buyoutUnits} key={option} value={option} onClick={(event) => this.buyoutUnitChanged(event, option)}>
-            {option}
-          </MenuItem>
-        ))}
-      </Menu>
+      {this.props.buyoutVisible ? (
+        <div>
+          <TextField
+            id="name"
+            label="Buyout Price"
+            disabled={!toggleEnabled}
+            value={buyoutString}
+            className={classes.numberInput}
+            margin="normal"
+            onChange={this.buyoutPriceChanged.bind(this)}
+            helperText={validation.message}
+          />
+          <Chip
+            className={classes.unitSelect}
+            label={buyoutUnits}
+            onClick={toggleEnabled ? this.showUnitsMenu.bind(this) : null}
+            aria-owns={anchorEl ? 'units-menu' : null}
+            aria-haspopup="true"
+          />
+          <Menu
+              id="units-menu"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={this.handleUnitsMenuClosed.bind(this)}
+            >
+            {currencies.map(option => (
+              <MenuItem selected={option === buyoutUnits} key={option} value={option} onClick={(event) => this.buyoutUnitChanged(event, option)}>
+                {option}
+              </MenuItem>
+            ))}
+          </Menu> 
+        </div>
+       ) : null }
     </div>);
   }
 }
 
 BuyoutPriceInputBox.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
-  purchasePrice: PropTypes.string.isRequired, // Should be a serialized Decimal.js of wei
+  purchasePrice: PropTypes.string.isOptional, // Should be a serialized Decimal.js of wei
   title: PropTypes.string.isRequired,
   initialValue: PropTypes.object.isRequired,
   buyoutPriceInWei: PropTypes.string.isRequired,
-  buyoutEnabled: PropTypes.bool.isRequired,
+  toggleEnabled: PropTypes.bool.isRequired,
   onBuyoutChanged: PropTypes.func.isRequired,
-  onBuyoutEnabledChanged: PropTypes.func.isRequired
+  onToggleChanged: PropTypes.func.isRequired,
+  buyoutVisible: PropTypes.bool.isRequired,
+  toggleText: PropTypes.string.isRequired,
 }
 
 export default withStyles(styles)(BuyoutPriceInputBox);

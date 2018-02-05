@@ -152,3 +152,8 @@ div.well {
   display: flex;
   flex-direction: column;
 }
+
+body {
+  // https://material-ui-next.com/layout/grid/#negative-margin
+  overflow-x: hidden;
+}
