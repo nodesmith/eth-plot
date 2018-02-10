@@ -14,9 +14,10 @@ import ExpansionPanel, {
 import Typography from 'material-ui/Typography';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Grid from 'material-ui/Grid';
+import List, { ListItem, ListItemText } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
-import MetaMaskStatus from './MetaMaskStatus';
 
+import MetaMaskStatus from './MetaMaskStatus';
 import PendingTransaction from './PendingTransaction';
 
 const styles = theme => ({
@@ -27,6 +28,9 @@ const styles = theme => ({
   notificationContent: {
     marginTop: 40
   },
+  txList: {
+    padding: 12
+  }
 });
 
 
@@ -64,7 +68,9 @@ class AccountManager extends Component {
 
     if (pendingTransactions.length == 0) {
       pendingTransactions.push(
-        <h4>There are currently no pending transactions for this account.</h4>
+        <Grid item xs={12} >
+          <p><i>There are currently no pending transactions for this account.</i></p>
+        </Grid>
       )
     }
 
@@ -76,7 +82,9 @@ class AccountManager extends Component {
       (<Grid item xs={8} className={this.props.classes.notificationContent}>
         <Typography type='title' >Pending Transactions</Typography>
       </Grid>),
-      pendingTransactions
+      (<List className={this.props.classes.txList}>
+        {pendingTransactions}
+      </List>),
     ]
   }
 
