@@ -8,7 +8,6 @@ import * as Enums from '../constants/Enums';
 
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
@@ -20,47 +19,50 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
     marginTop: 30,
-    paddingBottom: 30
+  },
+  notificationContent: {
+    marginTop: 40
+  },
+  txList: {
+    padding: 12
   }
 });
 
-
-class AccountManager extends Component {
-  getFullPageStatus() {
-    if (this.props.metamaskState === Enums.METAMASK_STATE.OPEN) {
-      return (<FullPageStatus message="You don't have any owned plots. Visit the grid to purchase a plot." />);
-    } else {
-      return (
-        <MetaMaskStatus metamaskState={this.props.metamaskState} />
-      );
-    }
-  }
-
+class TransactionManager extends Component {
   getUserContent() {
-    const plotInfos = this.props.userPlots.map((plot, index) => {
+    const pendingTransactions = this.props.pendingTxs.map((tx, index) => {
       return (
         <Grid item xs={12}>
           <Paper>
-            <PlotInfo info={plot} key={index} actions={this.props.actions} contractInfo={this.props.contractInfo} />
+            <PendingTransaction txHash={tx.txHash} txType={tx.txType} />
           </Paper>
         </Grid>
       );
     });
 
+    if (pendingTransactions.length == 0) {
+      pendingTransactions.push(
+        <Grid item xs={12} >
+          <p><i>There are currently no pending transactions for this account.</i></p>
+        </Grid>
+      )
+    }
+
     return [
-      (<Grid item xs={8}>
-        <Typography type='title'>My Content</Typography>
+      (<Grid id="asdf" item xs={8} className={this.props.classes.notificationContent}>
+        <Typography type='title' >Pending Transactions</Typography>
       </Grid>),
-      plotInfos
+      (<List className={this.props.classes.txList}>
+        {pendingTransactions}
+      </List>)
     ]
   }
 
   render() {
-    let content = this.props.metamaskState !== Enums.METAMASK_STATE.OPEN || this.props.userPlots.length === 0 ? 
-      this.getFullPageStatus() :
-      this.getUserContent();
-
     return (
+      (this.props.metamaskState != Enums.METAMASK_STATE.OPEN) ?
+      <MetaMaskStatus metamaskState={this.props.metamaskState} />
+      :
       <Grid container className={this.props.classes.root} justify="center" >
         <Grid item xs={9} >
           <Grid container spacing={24} >
@@ -72,10 +74,9 @@ class AccountManager extends Component {
   }
 }
 
-AccountManager.propTypes = {
-  userPlots: PropTypes.array.isRequired,
+TransactionManager.propTypes = {
   metamaskState: PropTypes.number.isRequired,
   pendingTxs: PropTypes.array.isRequired,
 };
 
-export default withStyles(styles)(AccountManager);
+export default withStyles(styles)(TransactionManager);

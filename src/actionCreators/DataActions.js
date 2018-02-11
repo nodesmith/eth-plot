@@ -217,8 +217,9 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
           param1, param2, param3, param4, param5, param6, txObject, (error, transactionReceipt) => {
             if (error) reject(error);
 
-            //dispatch(addPendingTransaction(transactionReceipt, Enums.TxType.PURCHASE));
+            dispatch(addPendingTransaction(transactionReceipt, Enums.TxType.PURCHASE));
             dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_CONFIRMATIONS));
+
             // We need to update the ownership and data arrays with the newly purchased plot
             const ownershipInfo = Object.assign({}, rectToPurchase);
 

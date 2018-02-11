@@ -31,12 +31,16 @@ class Nav extends Component {
                 Eth Grid
               </Typography>                                 
             </Button>
+            <Button component={NavLink} to="/myplots" color="inherit">My Plots</Button>
             <Button component={NavLink} to="/about" color="inherit">About</Button>
             <span className={this.props.classes.flex} />
-            <IconButton component={NavLink} color="inherit" to="/myplots">
-              <Badge className={this.props.classes.badge} badgeContent={2} color="secondary">
+            <IconButton component={NavLink} color="inherit" to="/account">
+              { (this.props.notificationCount) ?
+              (<Badge className={this.props.classes.badge} badgeContent={this.props.notificationCount} color="secondary">
                 <AccountBox />
-              </Badge>
+              </Badge>) :
+              <AccountBox />
+              }
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -47,6 +51,7 @@ class Nav extends Component {
 
 Nav.propTypes = {
   classes: PropTypes.object.isRequired,
+  notificationCount: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Nav);

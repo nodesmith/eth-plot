@@ -67,7 +67,7 @@ class App extends Component {
     return (
       <div className="main-app-container">
         <Reboot />
-        <Nav />
+        <Nav notificationCount={this.props.account.notificationCount} />
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
@@ -80,6 +80,10 @@ class App extends Component {
                 {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
             )}/>
             <Route path='/about' component={About}/>
+            <Route path='/account' render={(routeProps) => (
+            <TransactionContainerManager 
+                {...routeProps} {...this.props.account} actions={this.props.actions} />
+            )}/>
           </Switch>
         </main>
       </div>

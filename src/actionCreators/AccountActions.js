@@ -21,3 +21,9 @@ export function addPendingTransaction(txHash, txType) {
     txType
   };
 }
+
+export function clearNotificationCount() {
+  return {
+    type: ActionTypes.CLEAR_NOTIFICATION_COUNT
+  }
+}

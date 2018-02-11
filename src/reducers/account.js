@@ -4,7 +4,8 @@ import * as Enums from '../constants/Enums';
 const initialState = {
   metamaskState: Enums.METAMASK_STATE.UNINSTALLED,
   activeAccount: '',
-  pendingTxs: []
+  pendingTxs: [],
+  notificationCount: 0
 }
 
 export default function account(state = initialState, action) {
@@ -24,7 +25,12 @@ export default function account(state = initialState, action) {
   case ActionTypes.ADD_PENDING_TRANSACTION:
     let pendingTxsCopy = state.pendingTxs.slice();
     pendingTxsCopy.push({ txType: action.txType, txHash: action.txHash })    
-    return Object.assign({}, state, { pendingTxs: pendingTxsCopy })
+    return Object.assign({}, state, { 
+      pendingTxs: pendingTxsCopy,
+      notificationCount: state.notificationCount+1
+    })
+  case ActionTypes.CLEAR_NOTIFICATION_COUNT:
+    return Object.assign({}, state, { notificationCount: 0})
   default:
     return state;
   }
