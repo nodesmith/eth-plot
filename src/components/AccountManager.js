@@ -14,7 +14,6 @@ import List, { ListItem, ListItemText } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 
 import MetaMaskStatus from './MetaMaskStatus';
-import PendingTransaction from './PendingTransaction';
 
 const styles = theme => ({
   root: {
@@ -23,7 +22,6 @@ const styles = theme => ({
     paddingBottom: 30
   }
 });
-
 
 class AccountManager extends Component {
   getFullPageStatus() {
@@ -41,7 +39,7 @@ class AccountManager extends Component {
       return (
         <Grid item xs={12}>
           <Paper>
-            <PlotInfo info={plot} key={index} actions={this.props.actions} contractInfo={this.props.contractInfo} />
+            <PlotInfo info={plot} key={index} updatePrice={this.props.updatePrice} />
           </Paper>
         </Grid>
       );
@@ -75,7 +73,7 @@ class AccountManager extends Component {
 AccountManager.propTypes = {
   userPlots: PropTypes.array.isRequired,
   metamaskState: PropTypes.number.isRequired,
-  pendingTxs: PropTypes.array.isRequired,
+  updatePrice: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(AccountManager);

@@ -45,10 +45,7 @@ class PlotInfo extends Component {
   }
 
   updatePrice() {
-    this.props.actions.updateAuction(
-      this.props.contractInfo,
-      this.props.info.zoneIndex,
-      this.state.newBuyoutPrice);    
+    this.props.updatePrice(this.props.info.zoneIndex, this.state.newBuyoutPrice);    
   }
 
   render() {
@@ -106,7 +103,7 @@ PlotInfo.propTypes = {
     data: PropTypes.object.isRequired,
     zoneIndex: PropTypes.number.isRequired,
   }),
-  contractInfo: PropTypes.object.isRequired
+  updatePrice: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(PlotInfo);

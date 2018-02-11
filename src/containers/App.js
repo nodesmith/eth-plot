@@ -15,6 +15,7 @@ import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import * as Enums from '../constants/Enums';
 import MainContainer from './MainContainer';
 import AccountManagerContainer from './AccountManagerContainer';
+import TransactionManagerContainer from './TransactionManagerContainer';
 import About from '../components/About';
 import ProgressSpinner from '../components/ProgressSpinner';
 import Nav from '../components/Nav';
@@ -81,7 +82,7 @@ class App extends Component {
             )}/>
             <Route path='/about' component={About}/>
             <Route path='/account' render={(routeProps) => (
-            <TransactionContainerManager 
+            <TransactionManagerContainer 
                 {...routeProps} {...this.props.account} actions={this.props.actions} />
             )}/>
           </Switch>

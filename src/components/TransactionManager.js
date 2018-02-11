@@ -13,15 +13,12 @@ import List, { ListItem, ListItemText } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 
 import MetaMaskStatus from './MetaMaskStatus';
-import PendingTransaction from './PendingTransaction';
+import TransactionStatus from './TransactionStatus';
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
     marginTop: 30,
-  },
-  notificationContent: {
-    marginTop: 40
   },
   txList: {
     padding: 12
@@ -34,7 +31,7 @@ class TransactionManager extends Component {
       return (
         <Grid item xs={12}>
           <Paper>
-            <PendingTransaction txHash={tx.txHash} txType={tx.txType} />
+            <TransactionStatus txHash={tx.txHash} txType={tx.txType} />
           </Paper>
         </Grid>
       );
@@ -43,14 +40,14 @@ class TransactionManager extends Component {
     if (pendingTransactions.length == 0) {
       pendingTransactions.push(
         <Grid item xs={12} >
-          <p><i>There are currently no pending transactions for this account.</i></p>
+          <p><i>There have been no transactions for this account.</i></p>
         </Grid>
       )
     }
 
     return [
-      (<Grid id="asdf" item xs={8} className={this.props.classes.notificationContent}>
-        <Typography type='title' >Pending Transactions</Typography>
+      (<Grid id="asdf" item xs={8}>
+        <Typography type='title' >My Transactions</Typography>
       </Grid>),
       (<List className={this.props.classes.txList}>
         {pendingTransactions}
@@ -59,6 +56,7 @@ class TransactionManager extends Component {
   }
 
   render() {
+    const content = this.getUserContent();
     return (
       (this.props.metamaskState != Enums.METAMASK_STATE.OPEN) ?
       <MetaMaskStatus metamaskState={this.props.metamaskState} />

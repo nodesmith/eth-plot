@@ -35,3 +35,9 @@ export const TxType = {
   PURCHASE: 0,
   AUCTION: 1,
 };
+
+export const TxStatus = {
+  PENDING: 0,
+  FAILED: 1,
+  SUCCESS: 2,
+}

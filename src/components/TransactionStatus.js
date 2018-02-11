@@ -17,7 +17,7 @@ const styles = theme => ({
   }
 });
 
-class PendingTransaction extends Component {
+class TransactionStatus extends Component {
   render() {
     const etherscanUrl = `https://etherscan.io/tx/${this.props.txHash}`;
     const isAuction = (this.props.txType === Enums.TxType.AUCTION);
@@ -36,9 +36,10 @@ class PendingTransaction extends Component {
   }
 }
 
-PendingTransaction.propTypes = {
+TransactionStatus.propTypes = {
   txHash: PropTypes.string.isRequired,
   txType: PropTypes.number.isRequired,
+  txStatus: PropTypes.number.isRequired,
 };
 
-export default withStyles(styles)(PendingTransaction);
+export default withStyles(styles)(TransactionStatus);

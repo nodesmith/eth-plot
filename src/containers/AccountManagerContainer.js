@@ -4,6 +4,11 @@ import PropTypes from 'prop-types';
 import AccountManager from '../components/AccountManager';
 
 class AccountManagerContainer extends Component {
+  updatePrice(zoneIndex, buyoutPrice) {
+    this.props.actions.updateAuction(
+      this.props.contractInfo, zoneIndex, buyoutPrice);    
+  }
+
   render() {
     let userPlots = this.props.plots ? this.props.plots.filter((plot) => {
       if (plot.owner === this.props.activeAccount) {
@@ -15,9 +20,7 @@ class AccountManagerContainer extends Component {
       <AccountManager 
         userPlots={userPlots} 
         metamaskState={this.props.metamaskState}
-        actions={this.props.actions}
-        contractInfo={this.props.contractInfo}
-        pendingTxs={this.props.pendingTxs}
+        updatePrice={this.updatePrice.bind(this)}
       />
     );
   }
