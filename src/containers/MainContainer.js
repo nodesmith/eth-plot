@@ -7,8 +7,9 @@ import Typography from 'material-ui/Typography';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 
+import MetaMaskStatus from '../components/MetaMaskStatus';
 import UIGrid from '../components/UIGrid';
-
+import * as Enums from '../constants/Enums';
 
 const styles = theme => ({
   root: {
@@ -34,6 +35,9 @@ class MainContainer extends Component {
     };
 
     return (
+      (this.props.metamaskState != Enums.METAMASK_STATE.OPEN) ?
+      <MetaMaskStatus metamaskState={this.props.metamaskState} />
+      :
       <div className={this.props.classes.root}>
         <UIGrid {...this.props}
           inPurchaseMode={this.props.purchase.purchaseFlowOpen}

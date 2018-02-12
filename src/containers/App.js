@@ -2,15 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { NavLink, Route, Switch, withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 
 import { withStyles } from 'material-ui/styles';
-import AppBar from 'material-ui/AppBar';
-import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
 import Reboot from 'material-ui/Reboot';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
 
 import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
@@ -18,8 +14,11 @@ import * as GridActions from '../actionCreators/GridActions';
 import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import * as Enums from '../constants/Enums';
 import MainContainer from './MainContainer';
-import PlotManagerContainer from './PlotManagerContainer';
+import AccountManagerContainer from './AccountManagerContainer';
+import TransactionManagerContainer from './TransactionManagerContainer';
 import About from '../components/About';
+import ProgressSpinner from '../components/ProgressSpinner';
+import Nav from '../components/Nav';
 
 const Web3 = require('web3');
 
@@ -28,14 +27,11 @@ const Web3 = require('web3');
  * Again, this is because it serves to wrap the rest of our application with the Provider
  * component to make the Redux store available to the rest of the app.
  */
-class App extends Component {
-  constructor(...args) {
-    super(...args);
-    this.state = {};
-  }
-  
+class App extends Component { 
   componentDidMount() {
-    this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
+    if (typeof window.web3 !== 'undefined') {
+      this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
+    } 
 
     /**
      * The following timer is the MetaMask recommended way of checking for 
@@ -53,10 +49,7 @@ class App extends Component {
         newWeb3.eth.getAccounts((error, accounts) => {
           if (accounts.length > 0) {
             this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
-
-            if (accounts[0] != this.state.activeAccount) {
-              this.setState({ activeAccount: accounts[0] });
-            }
+            this.props.actions.updateActiveAccount(accounts[0]);
           } else {
             this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
           };
@@ -68,36 +61,30 @@ class App extends Component {
   }
 
   componentWillUnmount() {
-    //clearInterval(this.interval);
-    this.pendingTxSubscription.unsubscribe((error, success) => { });
+    clearInterval(this.accountInterval);
   }
 
   render() {
     return (
       <div className="main-app-container">
         <Reboot />
-        <AppBar position="static" color="primary">
-          <Toolbar>
-            <Button component={NavLink} to="/" color="inherit">
-              <Typography type="title" color="inherit">
-                Eth Grid
-              </Typography>
-            </Button>
-            <Button component={NavLink} to="/myplots" color="inherit">My Plots</Button>
-            <Button component={NavLink} to="/about" color="inherit">About</Button>
-          </Toolbar>
-        </AppBar>
+        <Nav notificationCount={this.props.account.notificationCount} />
         <main>
           <Switch>
             <Route exact path='/' render={(routeProps) => (
-              <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
+              (this.props.data.isFetchingPlots) 
+              ? <ProgressSpinner />
+              : <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} {...this.props.account} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
             )}/>
             <Route path='/myplots' render={(routeProps) => (
-              <PlotManagerContainer 
-                {...routeProps} {...this.props.data} {...this.props.account}
-                actions={this.props.actions} activeAccount={this.state.activeAccount} />
+              <AccountManagerContainer 
+                {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
             )}/>
             <Route path='/about' component={About}/>
+            <Route path='/account' render={(routeProps) => (
+            <TransactionManagerContainer 
+                {...routeProps} {...this.props.account} actions={this.props.actions} />
+            )}/>
           </Switch>
         </main>
       </div>
