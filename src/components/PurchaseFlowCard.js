@@ -254,11 +254,11 @@ PurchaseFlowCard.propTypes = {
   buyoutPriceInWei: PropTypes.string.isRequired,
   buyoutEnabled: PropTypes.bool.isRequired,
   
-  imageData: PropTypes.string.optional,
+  imageData: PropTypes.string,
 
   contractInfo: PropTypes.object.isRequired,
   ipfsHost: PropTypes.string.isRequired,
-  plots: PropTypes.object.isRequired,
+  plots: PropTypes.array.isRequired,
 }
 
 export default withStyles(styles)(PurchaseFlowCard);

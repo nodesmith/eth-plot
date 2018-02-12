@@ -51,7 +51,7 @@ class Nav extends Component {
 
 Nav.propTypes = {
   classes: PropTypes.object.isRequired,
-  notificationCount: PropTypes.object.isRequired,
+  notificationCount: PropTypes.number.isRequired,
 };
 
 export default withStyles(styles)(Nav);

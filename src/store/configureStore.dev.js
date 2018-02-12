@@ -14,7 +14,8 @@ const logger = createLogger();
 
 const finalCreateStore = compose(
   // Middleware you want to use in development:
-  applyMiddleware(logger, thunk),
+  // applyMiddleware(logger, thunk),
+  applyMiddleware(thunk),
   // Required! Enable Redux DevTools with the monitors you chose
   DevTools.instrument()
 )(createStore);

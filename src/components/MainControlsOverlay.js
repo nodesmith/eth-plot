@@ -94,7 +94,7 @@ MainControlsOverlay.propTypes = {
   purchase: PropTypes.object.isRequired,
   purchaseActions: PropTypes.object.isRequired,
   contractInfo: PropTypes.object.isRequired,
-  plots: PropTypes.object.isRequired,
+  plots: PropTypes.array.isRequired,
   ipfsHost: PropTypes.string.isRequired
 }
 
