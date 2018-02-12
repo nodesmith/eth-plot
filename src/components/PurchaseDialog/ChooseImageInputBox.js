@@ -51,6 +51,10 @@ class ChooseImageInputBox extends Component {
     const files = event.target.files;
     if (files.length === 1) {
       const chosenFile = files[0];
+
+      // This is super hacky, but lets just try it
+      window._fileToUpload = chosenFile;
+
       const fileSize = chosenFile.size;
       const fileName = chosenFile.name;
       const fileType = chosenFile.type;

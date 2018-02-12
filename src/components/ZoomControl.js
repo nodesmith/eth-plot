@@ -11,7 +11,12 @@ import Icon from 'material-ui/Icon';
 const size = 30;
 const styles = theme => ({
   root: {
-    width: size
+    width: size,
+    borderRadius: '10%',
+    boxShadow: theme.shadows[6],
+    '&:active': {
+      boxShadow: theme.shadows[12],
+    },
   },
   button: {
     height: size,

@@ -60,6 +60,7 @@ class MainControlsOverlay extends Component {
         {...this.props.purchaseActions}
         {...this.props.purchase}
         contractInfo={this.props.contractInfo}
+        ipfsHost={this.props.ipfsHost}
         plots={this.props.plots}
         imageData={this.props.imageData}
         />);
@@ -94,6 +95,7 @@ MainControlsOverlay.propTypes = {
   purchaseActions: PropTypes.object.isRequired,
   contractInfo: PropTypes.object.isRequired,
   plots: PropTypes.object.isRequired,
+  ipfsHost: PropTypes.string.isRequired
 }
 
 export default withStyles(styles)(MainControlsOverlay);

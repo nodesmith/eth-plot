@@ -46,6 +46,7 @@ class MainContainer extends Component {
           purchaseActions={purchaseActions}
           imageData={this.props.imageFileInfo ? this.props.imageFileInfo.fileData : ''}
           contractInfo={this.props.contractInfo}
+          ipfsHost={this.props.ipfsHost}
           plots={this.props.plots}
           togglePurchaseFlow={this.props.actions.togglePurchaseFlow}
           changeZoom={this.props.actions.changeZoom} />

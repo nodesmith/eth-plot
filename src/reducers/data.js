@@ -6,6 +6,7 @@ import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
 const contractAddress = '0x345ca3e014aaf5dca488057592ee47305d9b3e10';
 const web3Provider = 'http://localhost:9545';
+const ipfsHost = 'http://localhost:3001';
 
 const initialState = {
   isFetchingPlots: false,
@@ -21,6 +22,7 @@ const initialState = {
     contractAddress: contractAddress,
     web3Provider: web3Provider
   },
+  ipfsHost: ipfsHost,
   purchaseInfo: null,
 };
 

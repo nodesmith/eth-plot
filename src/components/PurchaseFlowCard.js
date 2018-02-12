@@ -73,10 +73,12 @@ class PurchaseFlowCard extends Component {
   }
 
   completePurchase() {
-    const { contractInfo, plots, rectToPurchase, imageData, website, buyoutPriceInWei, buyoutEnabled } = this.props;
+    const { contractInfo, plots, rectToPurchase, imageData, ipfsHost, website, buyoutPriceInWei, buyoutEnabled } = this.props;
     const initialBuyout = buyoutEnabled ? buyoutPriceInWei : '';
 
-    this.props.purchasePlot(contractInfo, plots, rectToPurchase, imageData, website, initialBuyout);
+    const imageFile = window._fileToUpload;
+
+    this.props.purchasePlot(contractInfo, plots, rectToPurchase, imageFile, ipfsHost, website, initialBuyout);
   }
 
   getButtons(backButtonProps, nextButtonProps) {
@@ -253,6 +255,7 @@ PurchaseFlowCard.propTypes = {
   imageData: PropTypes.string.optional,
 
   contractInfo: PropTypes.object.isRequired,
+  ipfsHost: PropTypes.string.isRequired,
   plots: PropTypes.object.isRequired,
 }
 
