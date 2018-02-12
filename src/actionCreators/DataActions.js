@@ -1,7 +1,9 @@
 import * as ActionTypes from '../constants/ActionTypes';
 const PlotMath = require('../data/PlotMath');
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
-import { PurchaseStage } from '../constants/Enums';
+import * as Enums from '../constants/Enums';
+
+import * as AccountActions from './AccountActions';
 
 const Web3 = require('web3');
 const hexy = require('hexy');
@@ -135,7 +137,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
 // thunk for updating price of plot
 export function updateAuction(contractInfo, zoneIndex, newPrice) {
   return function(dispatch) {
-    const web3 = new Web3(contractInfo.web3Provider);
+    const web3 = getWeb3(contractInfo);
 
     return new Promise((resolve, reject) => {
       web3.eth.getCoinbase((error, coinbase) => {
@@ -148,7 +150,6 @@ export function updateAuction(contractInfo, zoneIndex, newPrice) {
     
       const param1 = zoneIndex;
       const param2 = newPrice;
-      const auctionFunction = contract.methods.updateAuction(param1, param2);
 
       const txObject = {
         from: coinbase,
@@ -157,9 +158,9 @@ export function updateAuction(contractInfo, zoneIndex, newPrice) {
       }
       
       return new Promise((resolve, reject) => {
-        contract.auctionFunction.sendTransaction(param1, param2, txObject, (error, transactionReceipt) => {
+        contract.updateAuction.sendTransaction(param1, param2, txObject, (error, transactionReceipt) => {
           if (error) reject(error);
-          dispatch(plotListed(transactionReceipt.transactionHash, zoneIndex));        
+          dispatch(AccountActions.addPendingTransaction(transactionReceipt, Enums.TxType.AUCTION));     
           resolve(transactionReceipt);
         });
       });
@@ -187,11 +188,11 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
 
     const web3 = getWeb3(contractInfo);
 
-    dispatch(changePurchaseStep(PurchaseStage.WAITING_FOR_UNLOCK));
+    dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_UNLOCK));
     return new Promise((resolve, reject) => {
       web3.eth.getCoinbase((error, coinbase) => {
         if (error) reject(error);  
-        dispatch(changePurchaseStep(PurchaseStage.SUBMITTING_TO_BLOCKCHAIN));
+        dispatch(changePurchaseStep(Enums.PurchaseStage.SUBMITTING_TO_BLOCKCHAIN));
         resolve(coinbase);
       });
     }).then((coinbase) => {
@@ -216,7 +217,9 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
           param1, param2, param3, param4, param5, param6, txObject, (error, transactionReceipt) => {
             if (error) reject(error);
 
-            dispatch(changePurchaseStep(PurchaseStage.WAITING_FOR_CONFIRMATIONS));
+            dispatch(addPendingTransaction(transactionReceipt, Enums.TxType.PURCHASE));
+            dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_CONFIRMATIONS));
+
             // We need to update the ownership and data arrays with the newly purchased plot
             const ownershipInfo = Object.assign({}, rectToPurchase);
 

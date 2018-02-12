@@ -13,3 +13,17 @@ export function updateActiveAccount(newActiveAccount) {
     newActiveAccount
   };
 }
+
+export function addPendingTransaction(txHash, txType) {
+  return {
+    type: ActionTypes.ADD_PENDING_TRANSACTION,
+    txHash,
+    txType
+  };
+}
+
+export function clearNotificationCount() {
+  return {
+    type: ActionTypes.CLEAR_NOTIFICATION_COUNT
+  }
+}

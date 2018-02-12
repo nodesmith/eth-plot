@@ -141,13 +141,15 @@ class PurchaseFlowCard extends Component {
             </Typography>
             <BuyoutPriceInputBox
               onBuyoutChanged={this.onBuyoutChanged.bind(this)}
-              onBuyoutEnabledChanged={this.onBuyoutEnabledChanged.bind(this)}
+              onToggleChanged={this.onBuyoutEnabledChanged.bind(this)}
               rectToPurchase={{x: 0, y: 0, w: 10, h:10}}
               purchasePrice={this.props.purchasePriceInWei}
               buyoutPriceInWei={this.props.buyoutPriceInWei}
-              buyoutEnabled={this.props.buyoutEnabled}
+              toggleEnabled={this.props.buyoutEnabled}
+              toggleText={'Enable Buyout'}
               title={'Buyout Price'}
               initialValue={{units: 'wei', ammountInWei: 500}}
+              buyoutVisible={true}
               />
             { this.getButtons({text: 'Back', onClick: defaultBackButtonAction}, {text: 'Next', onClick: defaultNextButtonAction}) }
           </div>
