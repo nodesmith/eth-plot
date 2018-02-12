@@ -102,28 +102,6 @@ function uploadImageData(imageData, ipfsHost) {
   return function(dispatch) {
     dispatch(changePurchaseStep(PurchaseStage.UPLOADING_TO_IPFS));
 
-
-
-//   tryUpload(file) {
-//     // Experiment here
-//     var formData = new FormData();
-//     formData.append('uploader', 'abc123');
-//     formData.append('image', file);
-
-//     fetch('http://127.0.0.1:3001/upload', {
-//       method: 'PUT',
-//       body: formData,
-//       headers: {
-//         'token': 'abc123'
-//       }
-//     })
-//     .then(response => response.json())
-//     .then(jsonResponse => {
-//       const hash = jsonResponse.ipfsHash;
-//     });
-// }
-
-    debugger;
     // First we call to get an upload token
     return fetch(`${ipfsHost}/token`).then(response => {
       return response.json();
