@@ -40,7 +40,7 @@ class TransactionManager extends Component {
     if (pendingTransactions.length == 0) {
       pendingTransactions.push(
         <Grid item xs={12} >
-          <p><i>There have been no transactions for this account.</i></p>
+          <Typography type="subheading">There have been no transactions for this account.</Typography>
         </Grid>
       )
     }
