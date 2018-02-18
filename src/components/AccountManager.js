@@ -13,8 +13,6 @@ import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 
-import MetaMaskStatus from './MetaMaskStatus';
-
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -24,16 +22,6 @@ const styles = theme => ({
 });
 
 class AccountManager extends Component {
-  getFullPageStatus() {
-    if (this.props.metamaskState === Enums.METAMASK_STATE.OPEN) {
-      return (<FullPageStatus message="You don't have any owned plots. Visit the grid to purchase a plot." />);
-    } else {
-      return (
-        <MetaMaskStatus metamaskState={this.props.metamaskState} />
-      );
-    }
-  }
-
   getUserContent() {
     const plotInfos = this.props.userPlots.map((plot, index) => {
       return (
@@ -45,6 +33,14 @@ class AccountManager extends Component {
       );
     });
 
+    if (plotInfos.length == 0) {
+      plotInfos.push(
+        <Grid item xs={12} >
+          <Typography type="subheading">You don't have any owned plots. Visit the grid to purchase a plot.</Typography>
+        </Grid>
+      )
+    }
+
     return [
       (<Grid item xs={8}>
         <Typography type='title'>My Content</Typography>
@@ -54,9 +50,7 @@ class AccountManager extends Component {
   }
 
   render() {
-    let content = this.props.metamaskState !== Enums.METAMASK_STATE.OPEN || this.props.userPlots.length === 0 ? 
-      this.getFullPageStatus() :
-      this.getUserContent();
+    let content = this.getUserContent();
 
     return (
       <Grid container className={this.props.classes.root} justify="center" >
@@ -72,7 +66,6 @@ class AccountManager extends Component {
 
 AccountManager.propTypes = {
   userPlots: PropTypes.array.isRequired,
-  metamaskState: PropTypes.number.isRequired,
   updatePrice: PropTypes.func.isRequired,
 };
 

@@ -50,7 +50,11 @@ function initializeContract(contractInfo) {
 }
 
 function getWeb3(contractInfo) {
-  if (typeof window.web3 !== 'undefined') {
+  var window;
+  if (!window) {
+    // This is only used to run the setup purchase scripts
+    return new Web3(new Web3.providers.HttpProvider("http://localhost:9545"))
+  } else if (typeof window.web3 !== 'undefined') {
     return window.web3
   } else {
     throw 'no web3 provided';
@@ -217,7 +221,7 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
           param1, param2, param3, param4, param5, param6, txObject, (error, transactionReceipt) => {
             if (error) reject(error);
 
-            dispatch(addPendingTransaction(transactionReceipt, Enums.TxType.PURCHASE));
+            dispatch(AccountActions.addPendingTransaction(transactionReceipt, Enums.TxType.PURCHASE));
             dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_CONFIRMATIONS));
 
             // We need to update the ownership and data arrays with the newly purchased plot

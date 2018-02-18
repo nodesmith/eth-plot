@@ -5,7 +5,8 @@ const initialState = {
   metamaskState: Enums.METAMASK_STATE.UNINSTALLED,
   activeAccount: '',
   pendingTxs: [],
-  notificationCount: 0
+  notificationCount: 0,
+  isFetchingTransactions: false
 }
 
 export default function account(state = initialState, action) {
@@ -31,6 +32,10 @@ export default function account(state = initialState, action) {
     })
   case ActionTypes.CLEAR_NOTIFICATION_COUNT:
     return Object.assign({}, state, { notificationCount: 0})
+  case ActionTypes.LOAD_TRANSACTIONS:
+    return Object.assign({}, state, { isFetchingTransactions: true} );
+  case ActionTypes.LOAD_TRANSACTIONS_DONE:
+    return Object.assign({}, state, { isFetchingTransactions: false} );
   default:
     return state;
   }

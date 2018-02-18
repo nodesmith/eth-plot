@@ -180,7 +180,6 @@ class BuyoutPriceInputBox extends Component {
 
 BuyoutPriceInputBox.propTypes = {
   rectToPurchase: PropTypes.object.isRequired,
-  purchasePrice: PropTypes.string.isOptional, // Should be a serialized Decimal.js of wei
   title: PropTypes.string.isRequired,
   initialValue: PropTypes.object.isRequired,
   buyoutPriceInWei: PropTypes.string.isRequired,
@@ -189,6 +188,7 @@ BuyoutPriceInputBox.propTypes = {
   onToggleChanged: PropTypes.func.isRequired,
   buyoutVisible: PropTypes.bool.isRequired,
   toggleText: PropTypes.string.isRequired,
+  purchasePrice: PropTypes.string, // Should be a serialized Decimal.js of wei
 }
 
 export default withStyles(styles)(BuyoutPriceInputBox);

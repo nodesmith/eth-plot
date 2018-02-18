@@ -12,7 +12,6 @@ import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 
-import MetaMaskStatus from './MetaMaskStatus';
 import TransactionStatus from './TransactionStatus';
 
 const styles = theme => ({
@@ -58,9 +57,6 @@ class TransactionManager extends Component {
   render() {
     const content = this.getUserContent();
     return (
-      (this.props.metamaskState != Enums.METAMASK_STATE.OPEN) ?
-      <MetaMaskStatus metamaskState={this.props.metamaskState} />
-      :
       <Grid container className={this.props.classes.root} justify="center" >
         <Grid item xs={9} >
           <Grid container spacing={24} >
@@ -73,7 +69,6 @@ class TransactionManager extends Component {
 }
 
 TransactionManager.propTypes = {
-  metamaskState: PropTypes.number.isRequired,
   pendingTxs: PropTypes.array.isRequired,
 };
 

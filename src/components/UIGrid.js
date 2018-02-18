@@ -170,8 +170,8 @@ UIGrid.propTypes = {
   plots: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
   inPurchaseMode: PropTypes.bool.isRequired,
-  imageToPurchase: PropTypes.object.isRequired,
-  currentTransform: PropTypes.object.isRequired
+  imageToPurchase: PropTypes.object,
+  currentTransform: PropTypes.object
 };
 
 export default withStyles(styles)(UIGrid);
