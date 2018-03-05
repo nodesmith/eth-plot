@@ -43,6 +43,8 @@ export function doneLoadingTransactions() {
 export function fetchAccountTransactions(contractInfo) {
   return function (dispatch) {
     dispatch(loadTransactions());
+
+    // WIP, filter is not yet working
     dispatch(doneLoadingTransactions());
 
     if (typeof window.web3 !== 'undefined') {

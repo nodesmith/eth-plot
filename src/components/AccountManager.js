@@ -50,7 +50,7 @@ class AccountManager extends Component {
   }
 
   render() {
-    let content = this.getUserContent();
+    const content = this.getUserContent();
 
     return (
       <Grid container className={this.props.classes.root} justify="center" >

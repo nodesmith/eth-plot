@@ -45,7 +45,7 @@ class TransactionManager extends Component {
     }
 
     return [
-      (<Grid id="asdf" item xs={8}>
+      (<Grid item xs={8}>
         <Typography type='title' >My Transactions</Typography>
       </Grid>),
       (<List className={this.props.classes.txList}>
