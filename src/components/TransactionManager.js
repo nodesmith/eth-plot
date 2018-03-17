@@ -26,11 +26,11 @@ const styles = theme => ({
 
 class TransactionManager extends Component {
   getUserContent() {
-    const pendingTransactions = this.props.pendingTxs.map((tx, index) => {
+    const pendingTransactions = this.props.userTransactions.map((tx, index) => {
       return (
         <Grid item xs={12}>
           <Paper>
-            <TransactionStatus txHash={tx.txHash} txType={tx.txType} />
+            <TransactionStatus tx={tx} />
           </Paper>
         </Grid>
       );
@@ -69,7 +69,7 @@ class TransactionManager extends Component {
 }
 
 TransactionManager.propTypes = {
-  pendingTxs: PropTypes.array.isRequired,
+  userTransactions: PropTypes.array.isRequired,
 };
 
 export default withStyles(styles)(TransactionManager);

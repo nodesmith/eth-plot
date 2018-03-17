@@ -1,4 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import * as DataActions from '../actionCreators/DataActions';
+import * as Enums from '../constants/Enums';
 
 export function updateMetamaskState(newState) {
   return {
@@ -14,11 +16,18 @@ export function updateActiveAccount(newActiveAccount) {
   };
 }
 
-export function addPendingTransaction(txHash, txType) {
+// This action adds a new transaction to the list of transactions of the user.
+// This can either be a newly created transaction, or a previous transaction that
+// is stored on chain.  isNew should be true when adding a newly created transaction,
+// and false when reading a transaction from the chain.
+export function addTransaction(txHash, txType, txStatus, blockNumber, isNew) {
   return {
-    type: ActionTypes.ADD_PENDING_TRANSACTION,
+    type: ActionTypes.ADD_TRANSACTION,
     txHash,
-    txType
+    txType,
+    txStatus,
+    blockNumber,
+    isNew
   };
 }
 
@@ -44,24 +53,43 @@ export function fetchAccountTransactions(contractInfo) {
   return function (dispatch) {
     dispatch(loadTransactions());
 
-    // WIP, filter is not yet working
-    dispatch(doneLoadingTransactions());
+    const contract = DataActions.initializeContract(contractInfo);
 
-    if (typeof window.web3 !== 'undefined') {
-      const newWeb3 = new Web3(window.web3.currentProvider);
-      const contractAddress = "0x345ca3e014aaf5dca488057592ee47305d9b3e10";
-      const transactionFilter = newWeb3.eth.filter({
-        address: contractAddress,
-        fromBlock: 1,
-        toBlock: 'latest',
-        topics: [web3.sha3('AuctionUpdated(uint256,uint256)')]
-      }).get(function (err, result) {
-        dispatch(doneLoadingTransactions());
+    const auctionEventPromise = new Promise((resolve, reject) => {
+      const auctionUpdatedEvent = contract.AuctionUpdated({}, {fromBlock: 1, toBlock: 'latest'});
+
+      auctionUpdatedEvent.get((err, data) => {
+        if (err) reject(err);
+  
+        data.forEach(tx => {
+          // Since the auction update is called for new purchases as well as an actual update
+          // to an existing price, we use this flag to determine if we should show this transaction
+          // from a UI standpoint as an "update price" transaction.
+          if (!tx.args.newPurchase) {
+            const txStatus = DataActions.determineTxStatus(tx);
+            dispatch(addTransaction(tx.transactionHash, Enums.TxType.AUCTION, txStatus, tx.blockNumber, false));
+          }
+        });
+
+        resolve();
       });
-      
-      transactionFilter.watch((error, result) => {
-        console.log("asdfasdf");
-      });     
-    }
+    }); 
+    
+    const purchaseEventPromise = new Promise((resolve, reject) => {
+      const purchaseEvent = contract.PlotPurchased({}, {fromBlock: 1, toBlock: 'latest'});
+      purchaseEvent.get((err, data) => {
+        if (err) reject(err);
+  
+        data.forEach(tx => {
+          const txStatus = DataActions.determineTxStatus(tx);
+          dispatch(addTransaction(tx.transactionHash, Enums.TxType.PURCHASE, txStatus, tx.blockNumber, false));
+        });
+      });
+      resolve();
+    }); 
+
+    Promise.all([auctionEventPromise, purchaseEventPromise]).then(values => { 
+      dispatch(doneLoadingTransactions());
+    });
   }
 }
