@@ -4,8 +4,9 @@ import * as Enums from '../constants/Enums';
 const initialState = {
   metamaskState: Enums.METAMASK_STATE.UNINSTALLED,
   activeAccount: '',
-  pendingTxs: [],
-  notificationCount: 0
+  userTransactions: [],
+  notificationCount: 0,
+  isFetchingTransactions: false
 }
 
 export default function account(state = initialState, action) {
@@ -22,15 +23,28 @@ export default function account(state = initialState, action) {
     } else {
       return state;
     }
-  case ActionTypes.ADD_PENDING_TRANSACTION:
-    let pendingTxsCopy = state.pendingTxs.slice();
-    pendingTxsCopy.push({ txType: action.txType, txHash: action.txHash })    
+  case ActionTypes.ADD_TRANSACTION:
+    let userTransactionsCopy = state.userTransactions.slice();
+    userTransactionsCopy.push({ 
+      txType: action.txType,
+      txHash: action.txHash,
+      txStatus: action.txStatus,
+      blockNumber: action.blockNumber
+    });
+
+    // Only queue a notification if this isn't being read from onChain
+    const newNotificationCount = (action.isNew) ? state.notificationCount + 1 : state.notificationCount;
+    
     return Object.assign({}, state, { 
-      pendingTxs: pendingTxsCopy,
-      notificationCount: state.notificationCount+1
+      userTransactions: userTransactionsCopy,
+      notificationCount: newNotificationCount
     })
   case ActionTypes.CLEAR_NOTIFICATION_COUNT:
     return Object.assign({}, state, { notificationCount: 0})
+  case ActionTypes.LOAD_TRANSACTIONS:
+    return Object.assign({}, state, { isFetchingTransactions: true} );
+  case ActionTypes.LOAD_TRANSACTIONS_DONE:
+    return Object.assign({}, state, { isFetchingTransactions: false} );
   default:
     return state;
   }

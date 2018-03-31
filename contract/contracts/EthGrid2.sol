@@ -46,9 +46,8 @@ contract EthGrid2 {
     uint16 constant MAXIMUM_PURCHASE_AREA = 1000;
     
     //----------------------Events---------------------//
-    event AuctionCreated(uint256 tokenId, uint256 priceInGweiPerPixel);
-    event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel);
-    event SaleSuccessful(uint256 newZoneId, uint256 totalPrice, address buyer);
+    event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel, bool newPurchase);
+    event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address buyer);
 
     function EthGrid2() public payable {
         admin = msg.sender;
@@ -70,11 +69,6 @@ contract EthGrid2 {
       require(pricePerPixelInGwei > 0);
 
       tokenIdToAuction[zoneIndex] = pricePerPixelInGwei;
-
-      AuctionCreated(
-        uint256(zoneIndex),
-        uint256(pricePerPixelInGwei)
-      );
     }
 
     function getPlot(uint256 zoneIndex) public constant returns (uint16, uint16, uint16, uint16, address, uint256, string, bytes) {
@@ -97,13 +91,13 @@ contract EthGrid2 {
     }
     
     // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
-    function updateAuction(uint256 zoneIndex, uint256 newPriceInGweiPerPixel) public {
+    function updateAuction(uint256 zoneIndex, uint256 newPriceInGweiPerPixel, bool newPurchase) public {
       require(zoneIndex > 0);
       require(zoneIndex < ownership.length);
       require(msg.sender == ownership[zoneIndex].owner);
 
       tokenIdToAuction[zoneIndex] = newPriceInGweiPerPixel;
-      AuctionUpdated(zoneIndex, newPriceInGweiPerPixel);
+      AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase);
     }
 
     function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
@@ -126,8 +120,9 @@ contract EthGrid2 {
       ZoneData memory newData = ZoneData(ipfsHash, url);
       data.push(newData);
 
-      updateAuction(ownership.length - 1, initialPurchasePrice);
-      
+      updateAuction(ownership.length - 1, initialPurchasePrice, true);
+      PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
+
       return ownership.length - 1;
     }
     

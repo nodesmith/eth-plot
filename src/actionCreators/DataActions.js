@@ -42,15 +42,28 @@ export function doneLoadingPlots() {
   };
 }
 
-function initializeContract(contractInfo) {
+export function initializeContract(contractInfo) {
   const web3 = getWeb3(contractInfo);
   const contract = web3.eth.contract(contractInfo.abi);
   const contractInstance = contract.at(contractInfo.contractAddress);
   return contractInstance;
 }
 
+export function determineTxStatus(tx) {
+  // TODO couldn't find docs here for other types, this is fragile, doesn't have FAILED type yet.
+  if (tx.type === 'mined') {
+    return Enums.TxStatus.SUCCESS;
+  } else {
+    return Enums.TxStatus.PENDING;
+  }
+}
+
 function getWeb3(contractInfo) {
-  if (typeof window.web3 !== 'undefined') {
+  var window;
+  if (!window) {
+    // This is only used to run the setup purchase scripts
+    return new Web3(new Web3.providers.HttpProvider("http://localhost:9545"))
+  } else if (typeof window.web3 !== 'undefined') {
     return window.web3
   } else {
     throw 'no web3 provided';
@@ -150,6 +163,7 @@ export function updateAuction(contractInfo, zoneIndex, newPrice) {
     
       const param1 = zoneIndex;
       const param2 = newPrice;
+      const param3 = false; // this flag indicates to smart contract that this is not a new purchase
 
       const txObject = {
         from: coinbase,
@@ -158,9 +172,11 @@ export function updateAuction(contractInfo, zoneIndex, newPrice) {
       }
       
       return new Promise((resolve, reject) => {
-        contract.updateAuction.sendTransaction(param1, param2, txObject, (error, transactionReceipt) => {
+        contract.updateAuction.sendTransaction(param1, param2, param3, txObject, (error, transactionReceipt) => {
           if (error) reject(error);
-          dispatch(AccountActions.addPendingTransaction(transactionReceipt, Enums.TxType.AUCTION));     
+
+          const txStatus = determineTxStatus(transactionReceipt);
+          dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.AUCTION, txStatus, Number.MAX_SAFE_INTEGER, true));     
           resolve(transactionReceipt);
         });
       });
@@ -217,7 +233,8 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
           param1, param2, param3, param4, param5, param6, txObject, (error, transactionReceipt) => {
             if (error) reject(error);
 
-            dispatch(addPendingTransaction(transactionReceipt, Enums.TxType.PURCHASE));
+            const txStatus = determineTxStatus(transactionReceipt);
+            dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
             dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_CONFIRMATIONS));
 
             // We need to update the ownership and data arrays with the newly purchased plot

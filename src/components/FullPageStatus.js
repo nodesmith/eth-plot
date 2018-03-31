@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+
 import Typography from 'material-ui/Typography/Typography';
+import { withStyles } from 'material-ui/styles';
+
+const styles = theme => ({
+  container: {
+    paddingTop: 30,
+    textAlign: "center"
+  }
+});
 
 class FullPageStatus extends Component {
   render() {
     return (
-      <div className="plot-warning" >
+      <div className={this.props.classes.container} >
         <Typography gutterBottom type='subheading'>
-          <i>{this.props.message}</i>
+          {this.props.message}
         </Typography>
       </div>
     );
@@ -15,7 +24,8 @@ class FullPageStatus extends Component {
 }
 
 FullPageStatus.propTypes = {
-  message: PropTypes.string.isRequired
+  message: PropTypes.string.isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
-export default FullPageStatus;
+export default withStyles(styles)(FullPageStatus);

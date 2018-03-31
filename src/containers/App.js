@@ -19,6 +19,7 @@ import TransactionManagerContainer from './TransactionManagerContainer';
 import About from '../components/About';
 import ProgressSpinner from '../components/ProgressSpinner';
 import Nav from '../components/Nav';
+import MetaMaskStatus from '../components/MetaMaskStatus';
 
 const Web3 = require('web3');
 
@@ -29,8 +30,11 @@ const Web3 = require('web3');
  */
 class App extends Component { 
   componentDidMount() {
+    this.checkMetamaskStatus();
+
     if (typeof window.web3 !== 'undefined') {
       this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
+      this.props.actions.fetchAccountTransactions(this.props.data.contractInfo);
     } 
 
     /**
@@ -44,48 +48,69 @@ class App extends Component {
      * https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md
      */
     this.accountInterval = setInterval(function() {
-      if (typeof window.web3 !== 'undefined') {
-        let newWeb3 = new Web3(window.web3.currentProvider);
-        newWeb3.eth.getAccounts((error, accounts) => {
-          if (accounts.length > 0) {
-            this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
-            this.props.actions.updateActiveAccount(accounts[0]);
-          } else {
-            this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
-          };
-        });
-      } else {
-        this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
-      }
+      this.checkMetamaskStatus();
     }.bind(this), 1000);
+  }
+
+  checkMetamaskStatus() {
+    if (typeof window.web3 !== 'undefined') {
+      let newWeb3 = new Web3(window.web3.currentProvider);
+      newWeb3.eth.getAccounts((error, accounts) => {
+        if (accounts.length > 0) {
+          this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
+          this.props.actions.updateActiveAccount(accounts[0]);
+        } else {
+          this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
+        };
+      });
+    } else {
+      this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
+    }
   }
 
   componentWillUnmount() {
     clearInterval(this.accountInterval);
   }
 
+  clearNotifications() {
+    this.props.actions.clearNotificationCount();
+  }
+
+  getMainBodyContent() {
+    return (
+      <Switch>
+        <Route exact path='/' render={(routeProps) => (
+          <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} {...this.props.account} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
+        )}/>
+        <Route path='/myplots' render={(routeProps) => (
+          <AccountManagerContainer 
+            {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
+        )}/>
+        <Route path='/about' component={About}/>
+        <Route path='/account' render={(routeProps) => (
+        <TransactionManagerContainer 
+            {...routeProps} {...this.props.account} actions={this.props.actions} />
+        )}/>
+      </Switch>
+    );
+  }
+
   render() {
+    const mainBodyContent = this.getMainBodyContent();
     return (
       <div className="main-app-container">
         <Reboot />
-        <Nav notificationCount={this.props.account.notificationCount} />
+        <Nav 
+          notificationCount={this.props.account.notificationCount}
+          clearNotifications={this.clearNotifications.bind(this)} />
         <main>
-          <Switch>
-            <Route exact path='/' render={(routeProps) => (
-              (this.props.data.isFetchingPlots) 
-              ? <ProgressSpinner />
-              : <MainContainer {...routeProps} actions={this.props.actions} imageFileInfo={this.props.image_to_purchase.imageFileInfo} {...this.props.account} purchaseDialog={this.props.purchaseDialog} purchase={this.props.purchase} {...this.props.grid} {...this.props.data} />
-            )}/>
-            <Route path='/myplots' render={(routeProps) => (
-              <AccountManagerContainer 
-                {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
-            )}/>
-            <Route path='/about' component={About}/>
-            <Route path='/account' render={(routeProps) => (
-            <TransactionManagerContainer 
-                {...routeProps} {...this.props.account} actions={this.props.actions} />
-            )}/>
-          </Switch>
+          {
+            (this.props.data.isFetchingPlots || this.props.account.isFetchingTransactions) ?
+            <ProgressSpinner /> :
+              (this.props.account.metamaskState != Enums.METAMASK_STATE.OPEN) ?
+              <MetaMaskStatus metamaskState={this.props.account.metamaskState} /> :
+              mainBodyContent
+          }
         </main>
       </div>
     );

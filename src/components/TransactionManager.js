@@ -12,7 +12,6 @@ import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 
-import MetaMaskStatus from './MetaMaskStatus';
 import TransactionStatus from './TransactionStatus';
 
 const styles = theme => ({
@@ -27,11 +26,11 @@ const styles = theme => ({
 
 class TransactionManager extends Component {
   getUserContent() {
-    const pendingTransactions = this.props.pendingTxs.map((tx, index) => {
+    const pendingTransactions = this.props.userTransactions.map((tx, index) => {
       return (
         <Grid item xs={12}>
           <Paper>
-            <TransactionStatus txHash={tx.txHash} txType={tx.txType} />
+            <TransactionStatus tx={tx} />
           </Paper>
         </Grid>
       );
@@ -46,7 +45,7 @@ class TransactionManager extends Component {
     }
 
     return [
-      (<Grid id="asdf" item xs={8}>
+      (<Grid item xs={8}>
         <Typography type='title' >My Transactions</Typography>
       </Grid>),
       (<List className={this.props.classes.txList}>
@@ -58,9 +57,6 @@ class TransactionManager extends Component {
   render() {
     const content = this.getUserContent();
     return (
-      (this.props.metamaskState != Enums.METAMASK_STATE.OPEN) ?
-      <MetaMaskStatus metamaskState={this.props.metamaskState} />
-      :
       <Grid container className={this.props.classes.root} justify="center" >
         <Grid item xs={9} >
           <Grid container spacing={24} >
@@ -73,8 +69,7 @@ class TransactionManager extends Component {
 }
 
 TransactionManager.propTypes = {
-  metamaskState: PropTypes.number.isRequired,
-  pendingTxs: PropTypes.array.isRequired,
+  userTransactions: PropTypes.array.isRequired,
 };
 
 export default withStyles(styles)(TransactionManager);

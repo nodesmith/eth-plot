@@ -10,6 +10,7 @@ import Avatar from 'material-ui/Avatar';
 import AddCircle from 'material-ui-icons/AddCircle';
 import AttachMoney from 'material-ui-icons/AttachMoney';
 import Divider from 'material-ui/Divider';
+import Typography from 'material-ui/Typography';
 
 const styles = theme => ({
   root: {
@@ -18,10 +19,39 @@ const styles = theme => ({
 });
 
 class TransactionStatus extends Component {
+  getTxStatus() {
+    let colorClass;
+    let statusText;
+    
+    switch (this.props.tx.txStatus) {
+      // TODO clean up colors
+      case Enums.TxStatus.SUCCESS:
+        colorClass = 'primary';
+        statusText = 'Success';
+        break;
+      case Enums.TxStatus.FAILED:
+        colorClass = 'error';
+        statusText = 'Failed';
+        break;
+      case Enums.TxStatus.PENDING:
+        colorClass = 'secondary';
+        statusText = 'Pending';
+        break;
+      default:
+        throw 'unknown tx status type';
+    }
+
+    return <Typography type="subheading" color={colorClass}>{statusText}</Typography>
+  }
+
   render() {
-    const etherscanUrl = `https://etherscan.io/tx/${this.props.txHash}`;
-    const isAuction = (this.props.txType === Enums.TxType.AUCTION);
-    const txText = (isAuction) ? "Purchase Transaction Started" : "Sale Transaction Started";
+    const etherscanUrl = `https://etherscan.io/tx/${this.props.tx.txHash}`;
+    const isAuction = (this.props.tx.txType === Enums.TxType.AUCTION);
+
+    // TODO, this component should contain a more info dropdown with the summary
+    // of each transaction.
+    const txTextComponent = (isAuction) ? "Auction Update Transaction" : "Purchase Transaction";
+    const txStatusComponent = this.getTxStatus();
 
     return (
       <ListItem>
@@ -30,16 +60,15 @@ class TransactionStatus extends Component {
           (<AttachMoney />) :
           (<AddCircle />)}
         </Avatar>
-        <ListItemText primary={txText} secondary={<a href={etherscanUrl}>{this.props.txHash}</a>} />
+        <ListItemText primary={txTextComponent} secondary={<a href={etherscanUrl}>{this.props.tx.txHash}</a>} />
+        {txStatusComponent}
       </ListItem>
     );
   }
 }
 
 TransactionStatus.propTypes = {
-  txHash: PropTypes.string.isRequired,
-  txType: PropTypes.number.isRequired,
-  txStatus: PropTypes.number.isRequired,
+  tx: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(TransactionStatus);

@@ -21,6 +21,10 @@ const styles = theme => ({
 });
 
 class Nav extends Component {
+  clearNotifications() {
+    this.props.clearNotifications();
+  }
+
   render() {
     return (
       <div>
@@ -34,7 +38,7 @@ class Nav extends Component {
             <Button component={NavLink} to="/myplots" color="inherit">My Plots</Button>
             <Button component={NavLink} to="/about" color="inherit">About</Button>
             <span className={this.props.classes.flex} />
-            <IconButton component={NavLink} color="inherit" to="/account">
+            <IconButton component={NavLink} color="inherit" to="/account" onClick={this.clearNotifications.bind(this)}>
               { (this.props.notificationCount) ?
               (<Badge className={this.props.classes.badge} badgeContent={this.props.notificationCount} color="secondary">
                 <AccountBox />
@@ -51,7 +55,8 @@ class Nav extends Component {
 
 Nav.propTypes = {
   classes: PropTypes.object.isRequired,
-  notificationCount: PropTypes.object.isRequired,
+  notificationCount: PropTypes.number.isRequired,
+  clearNotifications: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Nav);
