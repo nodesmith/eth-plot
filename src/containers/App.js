@@ -32,11 +32,6 @@ class App extends Component {
   componentDidMount() {
     this.checkMetamaskStatus();
 
-    if (typeof window.web3 !== 'undefined') {
-      this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
-      this.props.actions.fetchAccountTransactions(this.props.data.contractInfo);
-    } 
-
     /**
      * The following timer is the MetaMask recommended way of checking for 
      * changes to MetaMask.  There are three possible states:
@@ -58,13 +53,30 @@ class App extends Component {
       newWeb3.eth.getAccounts((error, accounts) => {
         if (accounts.length > 0) {
           this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
-          this.props.actions.updateActiveAccount(accounts[0]);
+
+          if (accounts[0] != this.props.account.activeAccount) {
+            this.appDataBootstrap();
+            this.props.actions.updateActiveAccount(accounts[0]);
+          }
         } else {
           this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
         };
       });
     } else {
       this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
+    }
+  }
+
+  // Fetches all data needed for application - this happens when the app
+  // first loads and also when metamask state changes
+  appDataBootstrap() {  
+    this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
+
+    if (typeof window.web3 !== 'undefined') {
+      let newWeb3 = new Web3(window.web3.currentProvider);
+      newWeb3.eth.getAccounts((error, accounts) => {
+        this.props.actions.fetchAccountTransactions(this.props.data.contractInfo, accounts[0]);
+      });
     }
   }
 

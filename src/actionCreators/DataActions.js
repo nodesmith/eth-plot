@@ -58,7 +58,7 @@ export function determineTxStatus(tx) {
   }
 }
 
-function getWeb3(contractInfo) {
+export function getWeb3(contractInfo) {
   var window;
   if (!window) {
     // This is only used to run the setup purchase scripts

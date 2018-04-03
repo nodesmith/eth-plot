@@ -8,7 +8,7 @@ const contractAddress = '0x345ca3e014aaf5dca488057592ee47305d9b3e10';
 const web3Provider = 'http://localhost:9545';
 
 const initialState = {
-  isFetchingPlots: false,
+  isFetchingPlots: true,
   numberOfPlots: 0,
   plots: [],
   holes: {},
@@ -39,7 +39,7 @@ export default function data(state = initialState, action) {
       newState.plots.push(action.newPlot);
       return newState;
     case ActionTypes.LOAD_PLOTS:
-      return Object.assign({}, state, { isFetchingPlots: true} );
+      return Object.assign({}, state, { isFetchingPlots: true, plots: [], newHoles: {}} );
     case ActionTypes.LOAD_PLOTS_DONE:
       return Object.assign({}, state, { isFetchingPlots: false} );
     case ActionTypes.LIST_PLOT:

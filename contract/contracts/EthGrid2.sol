@@ -46,8 +46,8 @@ contract EthGrid2 {
     uint16 constant MAXIMUM_PURCHASE_AREA = 1000;
     
     //----------------------Events---------------------//
-    event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel, bool newPurchase);
-    event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address buyer);
+    event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel, bool newPurchase, address indexed owner);
+    event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address indexed buyer);
 
     function EthGrid2() public payable {
         admin = msg.sender;
@@ -97,7 +97,7 @@ contract EthGrid2 {
       require(msg.sender == ownership[zoneIndex].owner);
 
       tokenIdToAuction[zoneIndex] = newPriceInGweiPerPixel;
-      AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase);
+      AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
     }
 
     function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {

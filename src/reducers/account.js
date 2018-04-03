@@ -4,9 +4,9 @@ import * as Enums from '../constants/Enums';
 const initialState = {
   metamaskState: Enums.METAMASK_STATE.UNINSTALLED,
   activeAccount: '',
-  userTransactions: [],
+  userTransactions: {},
   notificationCount: 0,
-  isFetchingTransactions: false
+  isFetchingTransactions: true
 }
 
 export default function account(state = initialState, action) {
@@ -18,19 +18,15 @@ export default function account(state = initialState, action) {
       return state;
     }
   case ActionTypes.UPDATE_ACTIVE_ACCOUNT:
-    if (action.newActiveAccount != state.activeAccount) {
-      return Object.assign({}, state, { activeAccount: action.newActiveAccount });
-    } else {
-      return state;
-    }
+    return Object.assign({}, state, { activeAccount: action.newActiveAccount });
   case ActionTypes.ADD_TRANSACTION:
-    let userTransactionsCopy = state.userTransactions.slice();
-    userTransactionsCopy.push({ 
+    let userTransactionsCopy = Object.assign({}, state.userTransactions);
+    userTransactionsCopy[action.txHash] = { 
       txType: action.txType,
-      txHash: action.txHash,
       txStatus: action.txStatus,
-      blockNumber: action.blockNumber
-    });
+      blockNumber: action.blockNumber,
+      txHash: action.txHash
+    };
 
     // Only queue a notification if this isn't being read from onChain
     const newNotificationCount = (action.isNew) ? state.notificationCount + 1 : state.notificationCount;
@@ -38,11 +34,11 @@ export default function account(state = initialState, action) {
     return Object.assign({}, state, { 
       userTransactions: userTransactionsCopy,
       notificationCount: newNotificationCount
-    })
+    });
   case ActionTypes.CLEAR_NOTIFICATION_COUNT:
     return Object.assign({}, state, { notificationCount: 0})
   case ActionTypes.LOAD_TRANSACTIONS:
-    return Object.assign({}, state, { isFetchingTransactions: true} );
+    return Object.assign({}, state, { isFetchingTransactions: true, userTransactions: {}} );
   case ActionTypes.LOAD_TRANSACTIONS_DONE:
     return Object.assign({}, state, { isFetchingTransactions: false} );
   default:
