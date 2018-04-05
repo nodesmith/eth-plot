@@ -2,18 +2,22 @@ import * as ActionTypes from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 
 const initialState = {
+  metamaskStateKnown: false,
   metamaskState: Enums.METAMASK_STATE.UNINSTALLED,
   activeAccount: '',
   userTransactions: {},
   notificationCount: 0,
-  isFetchingTransactions: true
+  isFetchingTransactions: false
 }
 
 export default function account(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.UPDATE_METAMASK_STATE:
     if (action.newState != state.metamaskState) {
-      return Object.assign({}, state, { metamaskState: action.newState });
+      return Object.assign({}, state, { 
+        metamaskState: action.newState,
+        metamaskStateKnown: true
+      });
     } else {
       return state;
     }

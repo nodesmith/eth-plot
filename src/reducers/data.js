@@ -8,7 +8,7 @@ const contractAddress = '0x345ca3e014aaf5dca488057592ee47305d9b3e10';
 const web3Provider = 'http://localhost:9545';
 
 const initialState = {
-  isFetchingPlots: true,
+  isFetchingPlots: false,
   numberOfPlots: 0,
   plots: [],
   holes: {},

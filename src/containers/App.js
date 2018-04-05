@@ -55,6 +55,10 @@ class App extends Component {
           this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
 
           if (accounts[0] != this.props.account.activeAccount) {
+            // The only time we ever want to load data from the chain history
+            // is when we receive a change in accounts - this happens anytime 
+            // the page is initially loaded or if there is a change in the account info
+            // via a metamask interaction.
             this.appDataBootstrap();
             this.props.actions.updateActiveAccount(accounts[0]);
           }
@@ -78,6 +82,14 @@ class App extends Component {
         this.props.actions.fetchAccountTransactions(this.props.data.contractInfo, accounts[0]);
       });
     }
+  }
+
+  // Returns true if we have finished loading all the data we need to and 
+  // know the current user's metamask state.
+  shouldShowSpinner() {
+    return (this.props.data.isFetchingPlots ||
+            this.props.account.isFetchingTransactions ||
+            !this.props.account.metamaskStateKnown);
   }
 
   componentWillUnmount() {
@@ -117,7 +129,7 @@ class App extends Component {
           clearNotifications={this.clearNotifications.bind(this)} />
         <main>
           {
-            (this.props.data.isFetchingPlots || this.props.account.isFetchingTransactions) ?
+            (this.shouldShowSpinner()) ?
             <ProgressSpinner /> :
               (this.props.account.metamaskState != Enums.METAMASK_STATE.OPEN) ?
               <MetaMaskStatus metamaskState={this.props.account.metamaskState} /> :
