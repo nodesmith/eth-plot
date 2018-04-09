@@ -12,7 +12,9 @@ class TransactionManagerContainer extends Component {
       else if (tx1.blockNumber === tx2.blockNumber) return 0;
       else return -1;
     }
-    const sortedTransactions = this.props.userTransactions.concat().sort(comparator);
+
+    const transactionArray = Object.values(this.props.userTransactions);
+    const sortedTransactions = transactionArray.concat().sort(comparator);
 
     return (
       <TransactionManager 
@@ -25,7 +27,7 @@ class TransactionManagerContainer extends Component {
 
 TransactionManagerContainer.propTypes = {
   metamaskState: PropTypes.number.isRequired,
-  userTransactions: PropTypes.array.isRequired,
+  userTransactions: PropTypes.object.isRequired,
 };
 
 export default TransactionManagerContainer;

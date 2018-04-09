@@ -49,42 +49,55 @@ export function doneLoadingTransactions() {
   };
 }
 
-export function fetchAccountTransactions(contractInfo) {
+export function fetchAccountTransactions(contractInfo, currentAddress) {
   return function (dispatch) {
     dispatch(loadTransactions());
 
+    const newWeb3 = DataActions.getWeb3(contractInfo);
     const contract = DataActions.initializeContract(contractInfo);
-
+    
     const auctionEventPromise = new Promise((resolve, reject) => {
-      const auctionUpdatedEvent = contract.AuctionUpdated({}, {fromBlock: 1, toBlock: 'latest'});
+      // The owner filter here only fetches events where the owner is the current address, allowing
+      // us to perform that filter on the "server" side.  
+      // TODO: do we need some form of paging when a single user has a ton of transactions?
+      const auctionUpdatedEvent = contract.AuctionUpdated({owner: currentAddress}, {fromBlock: 1, toBlock: 'latest'});
 
+      // Get's historical auction transactions for loading user's transaction list
       auctionUpdatedEvent.get((err, data) => {
         if (err) reject(err);
-  
-        data.forEach(tx => {
-          // Since the auction update is called for new purchases as well as an actual update
-          // to an existing price, we use this flag to determine if we should show this transaction
-          // from a UI standpoint as an "update price" transaction.
-          if (!tx.args.newPurchase) {
-            const txStatus = DataActions.determineTxStatus(tx);
-            dispatch(addTransaction(tx.transactionHash, Enums.TxType.AUCTION, txStatus, tx.blockNumber, false));
-          }
-        });
 
-        resolve();
+        data.forEach(tx => {
+          auctionTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
+        });
       });
+
+      // Listens to incoming auction transnactions
+      auctionUpdatedEvent.watch((err, data) => {
+        if (err) reject(err);
+        auctionTransactionHandler(data, true, Enums.TxType.AUCTION, dispatch);
+      });
+
+      resolve();
     }); 
     
     const purchaseEventPromise = new Promise((resolve, reject) => {
-      const purchaseEvent = contract.PlotPurchased({}, {fromBlock: 1, toBlock: 'latest'});
+      const purchaseEvent = contract.PlotPurchased({buyer: currentAddress}, {fromBlock: 1, toBlock: 'latest'});
+
+      // Get's historical purchase transactions for loading user's transaction list
       purchaseEvent.get((err, data) => {
         if (err) reject(err);
-  
+
         data.forEach(tx => {
-          const txStatus = DataActions.determineTxStatus(tx);
-          dispatch(addTransaction(tx.transactionHash, Enums.TxType.PURCHASE, txStatus, tx.blockNumber, false));
+          genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
         });
       });
+
+      // Listens to incoming purchase transactions
+      purchaseEvent.watch((err, data) => {
+        if (err) reject(err);
+        genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
+      });
+
       resolve();
     }); 
 
@@ -92,4 +105,18 @@ export function fetchAccountTransactions(contractInfo) {
       dispatch(doneLoadingTransactions());
     });
   }
+}
+
+function auctionTransactionHandler(tx, isNew, txType, dispatch) { 
+  // Since the auction update is called for new purchases as well as an actual update
+  // to an existing price, we use this flag to determine if we should show this transaction
+  // from a UI standpoint as an "update price" transaction.
+  if (!tx.args.newPurchase) {
+    genericTransactionHandler(tx, isNew, txType, dispatch);
+  }
+}
+
+function genericTransactionHandler(tx, isNew, txType, dispatch) {
+  const txStatus = DataActions.determineTxStatus(tx);
+  dispatch(addTransaction(tx.transactionHash, txType, txStatus, tx.blockNumber, false));
 }

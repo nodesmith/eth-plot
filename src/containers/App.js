@@ -32,11 +32,6 @@ class App extends Component {
   componentDidMount() {
     this.checkMetamaskStatus();
 
-    if (typeof window.web3 !== 'undefined') {
-      this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
-      this.props.actions.fetchAccountTransactions(this.props.data.contractInfo);
-    } 
-
     /**
      * The following timer is the MetaMask recommended way of checking for 
      * changes to MetaMask.  There are three possible states:
@@ -58,7 +53,15 @@ class App extends Component {
       newWeb3.eth.getAccounts((error, accounts) => {
         if (accounts.length > 0) {
           this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
-          this.props.actions.updateActiveAccount(accounts[0]);
+
+          if (accounts[0] != this.props.account.activeAccount) {
+            // The only time we ever want to load data from the chain history
+            // is when we receive a change in accounts - this happens anytime 
+            // the page is initially loaded or if there is a change in the account info
+            // via a metamask interaction.
+            this.appDataBootstrap();
+            this.props.actions.updateActiveAccount(accounts[0]);
+          }
         } else {
           this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
         };
@@ -66,6 +69,27 @@ class App extends Component {
     } else {
       this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
     }
+  }
+
+  // Fetches all data needed for application - this happens when the app
+  // first loads and also when metamask state changes
+  appDataBootstrap() {  
+    this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
+
+    if (typeof window.web3 !== 'undefined') {
+      let newWeb3 = new Web3(window.web3.currentProvider);
+      newWeb3.eth.getAccounts((error, accounts) => {
+        this.props.actions.fetchAccountTransactions(this.props.data.contractInfo, accounts[0]);
+      });
+    }
+  }
+
+  // Returns true if we have finished loading all the data we need to and 
+  // know the current user's metamask state.
+  shouldShowSpinner() {
+    return (this.props.data.isFetchingPlots ||
+            this.props.account.isFetchingTransactions ||
+            !this.props.account.metamaskStateKnown);
   }
 
   componentWillUnmount() {
@@ -105,7 +129,7 @@ class App extends Component {
           clearNotifications={this.clearNotifications.bind(this)} />
         <main>
           {
-            (this.props.data.isFetchingPlots || this.props.account.isFetchingTransactions) ?
+            (this.shouldShowSpinner()) ?
             <ProgressSpinner /> :
               (this.props.account.metamaskState != Enums.METAMASK_STATE.OPEN) ?
               <MetaMaskStatus metamaskState={this.props.account.metamaskState} /> :
