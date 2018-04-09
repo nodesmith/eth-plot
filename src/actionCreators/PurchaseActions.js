@@ -68,7 +68,7 @@ export function changeBuyoutEnabled(isEnabled) {
 export function completePlotPurchase(contractInfo, plots, rectToPurchase, imageData, website, initialBuyout) {
     return function (dispatch) {
         dispatch(startPurchasePlot());
-        return dispatch(uploadImageData(imageData)).then(function (ipfsHash) {
+        return dispatch(uploadImageData(uploadImageData)).then(function (ipfsHash) {
             return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, changePurchaseStep));
         });
     };

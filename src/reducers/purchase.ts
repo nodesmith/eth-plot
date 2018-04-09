@@ -57,9 +57,9 @@ interface RectDelta {
   right: number;
 }
 
-interface RectTransform {
+export interface RectTransform {
   startLocation: Point;
-  currentTransform: Enums.MovementActions;
+  transformAction: Enums.MovementActions;
 }
 
 export interface PurchaseState {
