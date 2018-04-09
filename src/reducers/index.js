@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux';
-import account from './account';
-import data from './data';
-import grid from './grid';
-import purchase from './purchase';
-import image_to_purchase from './image_to_purchase';
-import purchaseDialog from './purchaseDialog';
-
+import { accountReducer } from './account';
+import { dataReducer } from './data';
+import { gridReducer } from './grid';
+import { purchaseReducer } from './purchase';
+import { imageToPurchaseReducer } from './imageToPurchase';
+import { purchaseDialogReducer } from './purchaseDialog';
 /**
  * combineReducers is important to understand. As your app might grow in size
  * and complexity, you will likely begin to split your reducers into separate
@@ -19,13 +18,13 @@ import purchaseDialog from './purchaseDialog';
  *
  * More info: http://rackt.org/redux/docs/api/combineReducers.html
  */
-const rootReducer = combineReducers({
-  account,
-  data,
-  grid,
-  purchase,
-  image_to_purchase,
-  purchaseDialog
+var rootReducer = combineReducers({
+    account: accountReducer,
+    data: dataReducer,
+    grid: gridReducer,
+    purchase: purchaseReducer,
+    image_to_purchase: imageToPurchaseReducer,
+    purchaseDialog: purchaseDialogReducer
 });
-
 export default rootReducer;
+//# sourceMappingURL=index.js.map

@@ -6,7 +6,6 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import Reboot from 'material-ui/Reboot';
 
 import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
@@ -44,7 +43,7 @@ class App extends Component {
      */
     this.accountInterval = setInterval(function() {
       this.checkMetamaskStatus();
-    }.bind(this), 1000);
+    }.bind(this), 1000000);
   }
 
   checkMetamaskStatus() {
@@ -123,7 +122,6 @@ class App extends Component {
     const mainBodyContent = this.getMainBodyContent();
     return (
       <div className="main-app-container">
-        <Reboot />
         <Nav 
           notificationCount={this.props.account.notificationCount}
           clearNotifications={this.clearNotifications.bind(this)} />
