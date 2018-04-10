@@ -144,7 +144,6 @@ var ChooseImageInputBox = /** @class */ (function (_super) {
         return (React.createElement(FormControl, { fullWidth: true, className: classes.formControl },
             React.createElement(InputLabel, { htmlFor: 'browse-for-image' }),
             React.createElement(Input, { margin: 'dense', fullWidth: true, inputComponent: browseInputFn }),
-            "} />",
             React.createElement(FormHelperText, null, this.state.fileValidation.message),
             React.createElement("input", { accept: allowedFileTypes.join(','), onChange: this.onFileSelected.bind(this), type: 'file', id: 'hidden_input', className: 'hidden' }),
             React.createElement("img", { id: 'hidden_image', className: 'hidden' })));

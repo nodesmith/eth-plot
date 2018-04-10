@@ -160,7 +160,8 @@ class UIGrid extends Component<UIGridProps> {
 
       overlay = (
         <div style={overlayStyle} onMouseMove={this.overlayMouseMove.bind(this)} onMouseUp={this.overlayMouseUp.bind(this)}>
-            <PurchasePlot 
+            <PurchasePlot
+            classes={{}}
             rect={this.props.rectToPurchase}
             scale={scale} 
             src={this.props.imageToPurchase.fileData}

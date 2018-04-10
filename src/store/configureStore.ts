@@ -3,14 +3,16 @@
  * to exclude any DevTools-related code from the production builds.
  * The code is envify'd - using 'DefinePlugin' in Webpack.
  */
+
 import { configureStore as devConfig } from './configureStore.dev';
 import { configureStore as prodConfig } from './configureStore.prod';
-var loadedStore;
+
+let loadedStore;
+
 if (process.env.NODE_ENV === 'production') {
-    loadedStore = prodConfig;
+  loadedStore = prodConfig;
+} else {
+  loadedStore = devConfig;
 }
-else {
-    loadedStore = devConfig;
-}
-export var configureStore = loadedStore;
-//# sourceMappingURL=configureStore.js.map
+
+export const configureStore = loadedStore;

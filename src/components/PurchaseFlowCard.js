@@ -90,7 +90,7 @@ var PurchaseFlowCard = /** @class */ (function (_super) {
         return (React.createElement("div", { className: classes.actionsContainer },
             React.createElement("div", null,
                 React.createElement(Button, __assign({}, backButtonProps, { className: classes.button }), backButtonProps.text),
-                React.createElement(Button, __assign({ raised: true, color: "primary", className: classes.button }, nextButtonProps), nextButtonProps.text))));
+                React.createElement(Button, __assign({ variant: 'raised', color: "primary", className: classes.button }, nextButtonProps), nextButtonProps.text))));
     };
     PurchaseFlowCard.prototype.getStepContents = function (index) {
         var stepHeader, stepContent;

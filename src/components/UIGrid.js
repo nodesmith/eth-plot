@@ -128,7 +128,7 @@ var UIGrid = /** @class */ (function (_super) {
                 }
             }
             overlay = (React.createElement("div", { style: overlayStyle, onMouseMove: this.overlayMouseMove.bind(this), onMouseUp: this.overlayMouseUp.bind(this) },
-                React.createElement(PurchasePlot, { rect: this.props.rectToPurchase, scale: scale, src: this.props.imageToPurchase.fileData, startAction: this.onStartAction.bind(this) })));
+                React.createElement(PurchasePlot, { classes: {}, rect: this.props.rectToPurchase, scale: scale, src: this.props.imageToPurchase.fileData, startAction: this.onStartAction.bind(this) })));
         }
         return (React.createElement("div", { className: this.props.classes.root },
             React.createElement("div", { style: gridStyle, className: "grid", onMouseOut: this.mouseOut.bind(this) }, plots),

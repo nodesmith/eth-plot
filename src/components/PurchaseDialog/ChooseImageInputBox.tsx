@@ -191,7 +191,7 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
     return (
       <FormControl fullWidth className={classes.formControl}>
         <InputLabel htmlFor='browse-for-image'></InputLabel>
-        <Input margin='dense' fullWidth inputComponent={browseInputFn} />} />
+        <Input margin='dense' fullWidth inputComponent={browseInputFn} />
         <FormHelperText>{this.state.fileValidation.message}</FormHelperText>
         <input
           accept={allowedFileTypes.join(',')}

@@ -117,7 +117,7 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
         <Button {...backButtonProps} className={classes.button}>
           {backButtonProps.text}
         </Button>
-        <Button raised color="primary" className={classes.button} {...nextButtonProps}>
+        <Button variant='raised' color="primary" className={classes.button} {...nextButtonProps}>
           {nextButtonProps.text}
         </Button>
       </div>
