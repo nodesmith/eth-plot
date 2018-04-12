@@ -1,2 +1,0 @@
-;
-//# sourceMappingURL=PlotInfo.js.map
