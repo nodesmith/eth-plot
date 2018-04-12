@@ -112,7 +112,7 @@ var App = /** @class */ (function (_super) {
         this.props.actions.clearNotificationCount();
     };
     App.prototype.doNavigation = function (to) {
-        debugger;
+        this.props.history.push(to);
     };
     App.prototype.getMainBodyContent = function () {
         var _this = this;

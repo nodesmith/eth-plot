@@ -135,12 +135,12 @@ class App extends React.Component<AppProps> {
   }
 
   doNavigation(to: string) {
-    debugger;
+    this.props.history.push(to);
   }
 
   getMainBodyContent() {
     const { actions, purchase } = this.props;
-    const mainContainerProps: MainContainerProps = {
+    const mainContainerProps = {
       classes: {},
       actions: {
         purchaseImageSelected: actions.purchaseImageSelected,

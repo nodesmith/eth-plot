@@ -11,6 +11,7 @@ import UIGrid, { UIGridProps } from '../components/UIGrid';
 import * as Enums from '../constants/Enums';
 import { ImageFileInfo, PlotInfo, GridInfo, Rect, RectTransform, ContractInfo, Point } from '../models';
 import * as Actions from '../actions';
+import { RouteComponentProps } from 'react-router-dom';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -24,7 +25,7 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 
-export interface MainContainerProps extends WithStyles {
+export interface MainContainerProps extends WithStyles, RouteComponentProps<any> {
   actions: {
     purchaseImageSelected: Actions.purchaseImageSelected,
     goToPurchaseStep: Actions.goToPurchaseStep,
