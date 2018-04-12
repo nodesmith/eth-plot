@@ -12,10 +12,11 @@ import Stepper, { Step, StepButton, StepLabel, StepContent } from 'material-ui/S
 import { formatEthValueToString } from '../data/ValueFormatters';
 
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
-import { ImageFileInfo } from '../models';
+import { ImageFileInfo, ContractInfo } from '../models';
 import WebsiteInputBox from './PurchaseDialog/WebsiteInputBox';
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import { Rect, PlotInfo } from '../models';
+import * as Actions from '../actions';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -46,16 +47,16 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
+
 export interface PurchaseFlowCardProps extends WithStyles {
     onClose: () => void;
-    onImageSelected: (imageFileInfo: ImageFileInfo, plots: Array<PlotInfo>) => void;
-    onStepComplete: (index: number, wasSkipped: boolean) => void;
-    goToStep: (index: number) => void;
-    onWebsiteChanged: (website: string, validationMessage: string) => void;
-    onBuyoutChanged: (newPrice: string) => void;
-    onBuyoutEnabledChanged: (isEnabled: boolean) => void;
-  
-    purchasePlot: (contractInfo, plots, rectToPurchase, imageData, website, initialBuyout) => void; // TODO
+    onImageSelected: Actions.purchaseImageSelected;
+    onStepComplete: Actions.completePurchaseStep;
+    goToStep: Actions.goToPurchaseStep;
+    onWebsiteChanged: Actions.changePlotWebsite;
+    onBuyoutChanged: Actions.changePlotBuyout;
+    onBuyoutEnabledChanged: Actions.changeBuyoutEnabled;
+    purchasePlot: Actions.completePlotPurchase;
   
     rectToPurchase: Rect;
     purchasePriceInWei: string;
@@ -72,7 +73,7 @@ export interface PurchaseFlowCardProps extends WithStyles {
     
     imageData?: string;
   
-    contractInfo: any; // TODO
+    contractInfo: ContractInfo;
     plots: Array<PlotInfo>;
 }
 
@@ -106,7 +107,7 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
     const { contractInfo, plots, rectToPurchase, imageData, website, buyoutPriceInWei, buyoutEnabled } = this.props;
     const initialBuyout = buyoutEnabled ? buyoutPriceInWei : '';
 
-    this.props.purchasePlot(contractInfo, plots, rectToPurchase, imageData, website, initialBuyout);
+    this.props.purchasePlot(contractInfo, plots, rectToPurchase, imageData!, website, initialBuyout);
   }
 
   getButtons(backButtonProps, nextButtonProps) {

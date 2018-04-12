@@ -1,6 +1,6 @@
 import * as React from 'react';
-import MainControlsOverlay from '../components/MainControlsOverlay';
-import PurchaseDialog from '../components/PurchaseDialog';
+import MainControlsOverlay, { MainControlsOverlayProps } from '../components/MainControlsOverlay';
+import PurchaseDialog, { PurchaseDialogProps } from '../components/PurchaseDialog';
 
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
@@ -9,7 +9,8 @@ import Paper from 'material-ui/Paper';
 
 import UIGrid, { UIGridProps } from '../components/UIGrid';
 import * as Enums from '../constants/Enums';
-import { ImageFileInfo, PlotInfo, GridInfo, Rect } from '../models';
+import { ImageFileInfo, PlotInfo, GridInfo, Rect, RectTransform, ContractInfo } from '../models';
+import * as Actions from '../actions';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -22,17 +23,53 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
+
 export interface MainContainerProps extends WithStyles {
-  actions: any; // TODO
-  purchase: any; // TODO
+  actions: {
+    purchaseImageSelected: Actions.purchaseImageSelected,
+    goToPurchaseStep: Actions.goToPurchaseStep,
+    completePurchaseStep: Actions.completePurchaseStep,
+    changePlotWebsite: Actions.changePlotWebsite,
+    changePlotBuyout: Actions.changePlotBuyout,
+    changeBuyoutEnabled: Actions.changeBuyoutEnabled,
+    completePlotPurchase: Actions.completePlotPurchase,
+    hoverOverPlot: Actions.hoverOverPlot,
+    startTransformRectToPurchase: Actions.startTransformRectToPurchase,
+    stopTransformRectToPurchase: Actions.stopTransformRectToPurchase,
+    transformRectToPurchase: Actions.transformRectToPurchase,
+    togglePurchaseFlow: Actions.togglePurchaseFlow;
+    changeZoom: Actions.changeZoom;
+  },
+  purchase: {
+    rectToPurchase: Rect;
+    purchasePriceInWei: string;
+    activeStep: number;
+    completedSteps: {[index: number]: boolean};
+    imageName: string;
+    imageDimensions: {
+      h: number;
+      w: number;
+    }
+    website: string;
+    buyoutPriceInWei: string;
+    buyoutEnabled: boolean;
+    purchaseFlowOpen: boolean;
+    currentTransform: RectTransform;
+  }
   imageFileInfo: ImageFileInfo;
   plots: Array<PlotInfo>;
+  contractInfo: ContractInfo,
   scale: number;
   gridInfo: GridInfo;
   hoveredIndex: number;
   dragRectCurr: Rect;
   dragRectStart: Rect;
   isDraggingRect: boolean;
+  purchaseDialog: {
+    cancelPlotPurchase: Actions.cancelPlotPurchase;
+    purchaseStage: number;
+    isShowing: boolean;
+  }
 }
 
 class MainContainer extends React.Component<MainContainerProps> {
@@ -68,28 +105,23 @@ class MainContainer extends React.Component<MainContainerProps> {
       isDraggingRect: this.props.isDraggingRect
     };
 
-    const uiGridActions = {
-      hoverOverPlot: this.props.actions.hoverOverPlot,
-      startTransformRectToPurchase: this.props.actions.startTransformRectToPurchase,
-      stopTransformRectToPurchase: this.props.actions.stopTransformRectToPurchase,
-      transformRectToPurchase: this.props.actions.transformRectToPurchase
-    }
+    const mainControlsOverlayProps: MainControlsOverlayProps = {
+      classes: {},
+      purchase: this.props.purchase,
+      zoomLevel: this.props.scale,
+      purchaseActions: purchaseActions,
+      imageData: this.props.imageFileInfo ? this.props.imageFileInfo.fileData : '',
+      contractInfo: this.props.contractInfo,
+      plots: this.props.plots,
+      togglePurchaseFlow: this.props.actions.togglePurchaseFlow,
+      changeZoom: this.props.actions.changeZoom
+    };
 
     return (
       <div className={this.props.classes.root}> 
         <UIGrid {...uiGridProps} />
-        <MainControlsOverlay
-          purchase={this.props.purchase}
-          zoomLevel={this.props.scale}
-          purchaseActions={purchaseActions}
-          imageData={this.props.imageFileInfo ? this.props.imageFileInfo.fileData : ''}
-          contractInfo={this.props.contractInfo}
-          plots={this.props.plots}
-          togglePurchaseFlow={this.props.actions.togglePurchaseFlow}
-          changeZoom={this.props.actions.changeZoom} />
-        <PurchaseDialog
-          cancelPlotPurchase={this.props.actions.cancelPlotPurchase}
-          {...this.props.purchaseDialog} />
+        <MainControlsOverlay {...mainControlsOverlayProps} />
+        <PurchaseDialog {...this.props.purchaseDialog} classes={{}} />
       </div>
     );
   }

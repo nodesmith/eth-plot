@@ -2,7 +2,8 @@ import { ActionTypes } from '../constants/ActionTypes';
 import { MovementActions, PurchaseStage } from '../constants/Enums';
 import { purchasePlot as purchasePlotFromChain } from './DataActions';
 import { Action } from './EthGridAction';
-import { Point } from '../models';
+import { Point, ContractInfo, Rect } from '../models';
+import { PlotInfo } from '../models/PlotInfo';
 
 export function togglePurchaseFlow(): Action {
   return {
@@ -78,7 +79,7 @@ export function changeBuyoutEnabled(isEnabled): Action {
 }
 
 // Thunk action for purchasing a plot. This requires uploading the image, submitting it to the chain, and waiting for transformations
-export function completePlotPurchase(contractInfo, plots, rectToPurchase, imageData, website, initialBuyout) {
+export function completePlotPurchase(contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) {
   return function (dispatch) {
     dispatch(startPurchasePlot());
 

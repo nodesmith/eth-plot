@@ -11,8 +11,9 @@ import ShoppingCart from 'material-ui-icons/ShoppingCart';
 import Drawer from 'material-ui/Drawer';
 
 import { ZoomControlComponent } from './ZoomControl';
-import PurchaseFlowCard from './PurchaseFlowCard';
-import { ContractInfo, PlotInfo } from '../models';
+import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
+import { ContractInfo, PlotInfo, Rect } from '../models';
+import * as Actions from '../actions';
 
 
 const padding = 24;
@@ -49,8 +50,30 @@ const styles: StyleRulesCallback = theme => ({
 export interface MainControlsOverlayProps extends WithStyles {
   zoomLevel: number;
   changeZoom: (direction: number) => void;
-  purchase: any; // TODO
-  purchaseActions: any; // TODO
+  purchase: {
+    rectToPurchase: Rect;
+    purchasePriceInWei: string;
+    activeStep: number;
+    completedSteps: {[index: number]: boolean};
+    imageName: string;
+    imageDimensions: {
+      h: number;
+      w: number;
+    }
+    website: string;
+    buyoutPriceInWei: string;
+    buyoutEnabled: boolean;
+    purchaseFlowOpen: boolean;
+  }
+  purchaseActions: {
+    onImageSelected: Actions.purchaseImageSelected;
+    onStepComplete: Actions.completePurchaseStep;
+    goToStep: Actions.goToPurchaseStep;
+    onWebsiteChanged: Actions.changePlotWebsite;
+    onBuyoutChanged: Actions.changePlotBuyout;
+    onBuyoutEnabledChanged: Actions.changeBuyoutEnabled;
+    purchasePlot: Actions.completePlotPurchase;
+  },
   contractInfo: ContractInfo;
   plots: Array<PlotInfo>;
   imageData?: string;
@@ -64,15 +87,19 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
 
   render() {
     const { classes } = this.props;
+
+    const purchaseFlowCardProps = {
+      onClose: () => this.toggleDrawer(),
+      contractInfo: this.props.contractInfo,
+      plots: this.props.plots,
+      imageData: this.props.imageData,
+      classes: {},
+      ...this.props.purchase,
+      ...this.props.purchaseActions
+    };
+
     const sideList = (
-      <PurchaseFlowCard onClose={() => this.toggleDrawer()}
-        {...this.props.purchaseActions}
-        {...this.props.purchase}
-        contractInfo={this.props.contractInfo}
-        plots={this.props.plots}
-        imageData={this.props.imageData}
-        randomExtraProp={'abc'}
-        />);
+      <PurchaseFlowCard {...purchaseFlowCardProps} />);
     return (
       <div className={classes.root}>
         <div className={classes.zoom}>

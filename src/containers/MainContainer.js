@@ -70,16 +70,21 @@ var MainContainer = /** @class */ (function (_super) {
             dragRectStart: this.props.dragRectStart,
             isDraggingRect: this.props.isDraggingRect
         };
-        var uiGridActions = {
-            hoverOverPlot: this.props.actions.hoverOverPlot,
-            startTransformRectToPurchase: this.props.actions.startTransformRectToPurchase,
-            stopTransformRectToPurchase: this.props.actions.stopTransformRectToPurchase,
-            transformRectToPurchase: this.props.actions.transformRectToPurchase
+        var mainControlsOverlayProps = {
+            classes: {},
+            purchase: this.props.purchase,
+            zoomLevel: this.props.scale,
+            purchaseActions: purchaseActions,
+            imageData: this.props.imageFileInfo ? this.props.imageFileInfo.fileData : '',
+            contractInfo: this.props.contractInfo,
+            plots: this.props.plots,
+            togglePurchaseFlow: this.props.actions.togglePurchaseFlow,
+            changeZoom: this.props.actions.changeZoom
         };
         return (React.createElement("div", { className: this.props.classes.root },
             React.createElement(UIGrid, __assign({}, uiGridProps)),
-            React.createElement(MainControlsOverlay, { purchase: this.props.purchase, zoomLevel: this.props.scale, purchaseActions: purchaseActions, imageData: this.props.imageFileInfo ? this.props.imageFileInfo.fileData : '', contractInfo: this.props.contractInfo, plots: this.props.plots, togglePurchaseFlow: this.props.actions.togglePurchaseFlow, changeZoom: this.props.actions.changeZoom }),
-            React.createElement(PurchaseDialog, __assign({ cancelPlotPurchase: this.props.actions.cancelPlotPurchase }, this.props.purchaseDialog))));
+            React.createElement(MainControlsOverlay, __assign({}, mainControlsOverlayProps)),
+            React.createElement(PurchaseDialog, __assign({}, this.props.purchaseDialog, { classes: {} }))));
     };
     return MainContainer;
 }(React.Component));

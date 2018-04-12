@@ -44,7 +44,8 @@ export type goToPurchaseStep = (index: number) => void;
 export type changePlotWebsite = (website: string, websiteValidation) => void;
 export type changePlotBuyout = (buyoutPriceInWei: string) => void;
 export type changeBuyoutEnabled = (isEnabled: boolean) => void;
-export type completePlotPurchase = (contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: ImageFileInfo, website: string, initialBuyout: string) => void;
+export type completePlotPurchase = (contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) => void;
 export type cancelPlotPurchase = () => void;
 export type startPurchasePlot = () => void;
 export type changePurchaseStep = (purchaseStage: Enums.PurchaseStage) => void;
+

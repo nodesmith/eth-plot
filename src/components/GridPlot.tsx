@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { PlotInfo } from '../data/PlotInfo';
+import { PlotInfo } from '../models';
 
 export interface GridPlotProps {
   plot: PlotInfo;
