@@ -20,7 +20,7 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 export interface MetaMaskStatusProps extends WithStyles {
-  metamaskState: number;
+  metamaskState: Enums.METAMASK_STATE;
 }
 
 class MetaMaskStatus extends Component<MetaMaskStatusProps> {

@@ -6,12 +6,3 @@ export interface UserTransactions {
   blockNumber: number;
   txHash: string;
 }
-
-export interface AccountState {
-  metamaskStateKnown: boolean,
-  metamaskState: Enums.METAMASK_STATE,
-  activeAccount: string,
-  userTransactions: { [hash: string]: UserTransactions },
-  notificationCount: number,
-  isFetchingTransactions: boolean
-}

@@ -5,7 +5,7 @@ import { Rect, Point, RectDelta } from '../models';
 import { ImageFileInfo } from '../models';
 
 // Account Actions
-export type updateMetamaskState = (newState: string) => void;
+export type updateMetamaskState = (newState: Enums.METAMASK_STATE) => void;
 export type updateActiveAccount = (newActiveAccount: string) => void;
 export type addTransaction = (txHash: string, txType: Enums.TxType, txStatus: Enums.TxStatus, blockNumber: number, isNew: boolean) => void;
 export type clearNotificationCount = () => void;
@@ -49,3 +49,43 @@ export type cancelPlotPurchase = () => void;
 export type startPurchasePlot = () => void;
 export type changePurchaseStep = (purchaseStage: Enums.PurchaseStage) => void;
 
+
+export interface AllActions {
+  updateMetamaskState: updateMetamaskState;
+  updateActiveAccount: updateActiveAccount;
+  addTransaction: addTransaction;
+  clearNotificationCount: clearNotificationCount;
+  loadTransactions: loadTransactions; 
+  doneLoadingTransactions: doneLoadingTransactions;
+  fetchAccountTransactions: fetchAccountTransactions;
+  addPlot: addPlot;
+  loadPlots: loadPlots;
+  listPlots: listPlots;
+  plotListed: plotListed;
+  doneLoadingPlots: doneLoadingPlots;
+  fetchPlotsFromWeb3: fetchPlotsFromWeb3;
+  updateAuction: updateAuction;
+  purchasePlot: purchasePlot;
+  hoverOverPlot: hoverOverPlot;
+  enterBuyMode: enterBuyMode;
+  startDraggingRect: startDraggingRect;
+  stopDraggingRect: stopDraggingRect;
+  resizeDraggingRect: resizeDraggingRect;
+  showPurchaseDialog: showPurchaseDialog;
+  hidePurchaseDialog: hidePurchaseDialog;
+  changeZoom: changeZoom;
+  togglePurchaseFlow: togglePurchaseFlow;
+  purchaseImageSelected: purchaseImageSelected;
+  transformRectToPurchase: transformRectToPurchase;
+  startTransformRectToPurchase: startTransformRectToPurchase;
+  stopTransformRectToPurchase: stopTransformRectToPurchase;
+  completePurchaseStep: completePurchaseStep;
+  goToPurchaseStep: goToPurchaseStep;
+  changePlotWebsite: changePlotWebsite;
+  changePlotBuyout: changePlotBuyout;
+  changeBuyoutEnabled: changeBuyoutEnabled;
+  completePlotPurchase: completePlotPurchase;
+  cancelPlotPurchase: cancelPlotPurchase;
+  startPurchasePlot: startPurchasePlot;
+  changePurchaseStep: changePurchaseStep;
+}

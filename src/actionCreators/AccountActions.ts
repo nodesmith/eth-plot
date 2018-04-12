@@ -3,7 +3,7 @@ import * as DataActions from '../actionCreators/DataActions';
 import * as Enums from '../constants/Enums';
 import { Action } from './EthGridAction';
 
-export function updateMetamaskState(newState): Action {
+export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
   return {
     type: ActionTypes.UPDATE_METAMASK_STATE,
     newState

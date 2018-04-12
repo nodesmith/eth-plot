@@ -51,7 +51,7 @@ export interface MainControlsOverlayProps extends WithStyles {
   zoomLevel: number;
   changeZoom: (direction: number) => void;
   purchase: {
-    rectToPurchase: Rect;
+    rectToPurchase?: Rect;
     purchasePriceInWei: string;
     activeStep: number;
     completedSteps: {[index: number]: boolean};

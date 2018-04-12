@@ -8,7 +8,7 @@ import * as ActionTypes from '../actions';
 
 import GridPlot from './GridPlot';
 import PurchasePlot from './PurchasePlot';
-import { ImageFileInfo, PlotInfo, Rect, RectTransform } from '../models';
+import { ImageFileInfo, PlotInfo, Rect, RectTransform, Point } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -28,17 +28,17 @@ export interface UIGridProps extends WithStyles {
     transformRectToPurchase: ActionTypes.transformRectToPurchase;
   };
   inPurchaseMode: boolean;
-  imageToPurchase: ImageFileInfo,
-  currentTransform: RectTransform;
-  rectToPurchase: Rect;
+  imageToPurchase?: ImageFileInfo,
+  currentTransform?: RectTransform;
+  rectToPurchase?: Rect;
   scale: number;
   gridInfo: {
     width: number;
     height: number;
   };
   hoveredIndex: number;
-  dragRectCurr: Rect;
-  dragRectStart: Rect;
+  dragRectCurr?: Point;
+  dragRectStart?: Point;
   isDraggingRect: boolean;
 }
 
@@ -164,7 +164,7 @@ class UIGrid extends Component<UIGridProps> {
         <div style={overlayStyle} onMouseMove={this.overlayMouseMove.bind(this)} onMouseUp={this.overlayMouseUp.bind(this)}>
             <PurchasePlot
             classes={{}}
-            rect={this.props.rectToPurchase}
+            rect={this.props.rectToPurchase!}
             scale={scale} 
             src={this.props.imageToPurchase.fileData}
             startAction={this.onStartAction.bind(this)}

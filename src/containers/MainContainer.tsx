@@ -9,7 +9,7 @@ import Paper from 'material-ui/Paper';
 
 import UIGrid, { UIGridProps } from '../components/UIGrid';
 import * as Enums from '../constants/Enums';
-import { ImageFileInfo, PlotInfo, GridInfo, Rect, RectTransform, ContractInfo } from '../models';
+import { ImageFileInfo, PlotInfo, GridInfo, Rect, RectTransform, ContractInfo, Point } from '../models';
 import * as Actions from '../actions';
 
 const styles: StyleRulesCallback = theme => ({
@@ -41,7 +41,7 @@ export interface MainContainerProps extends WithStyles {
     changeZoom: Actions.changeZoom;
   },
   purchase: {
-    rectToPurchase: Rect;
+    rectToPurchase?: Rect;
     purchasePriceInWei: string;
     activeStep: number;
     completedSteps: {[index: number]: boolean};
@@ -54,16 +54,16 @@ export interface MainContainerProps extends WithStyles {
     buyoutPriceInWei: string;
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
-    currentTransform: RectTransform;
+    currentTransform?: RectTransform;
   }
-  imageFileInfo: ImageFileInfo;
+  imageFileInfo?: ImageFileInfo;
   plots: Array<PlotInfo>;
   contractInfo: ContractInfo,
   scale: number;
   gridInfo: GridInfo;
   hoveredIndex: number;
-  dragRectCurr: Rect;
-  dragRectStart: Rect;
+  dragRectCurr?: Point;
+  dragRectStart?: Point;
   isDraggingRect: boolean;
   purchaseDialog: {
     cancelPlotPurchase: Actions.cancelPlotPurchase;

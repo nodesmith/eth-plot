@@ -1,10 +1,27 @@
 import { combineReducers } from 'redux';
-import { accountReducer } from './account';
-import { dataReducer } from './data';
-import { gridReducer } from './grid';
-import { purchaseReducer } from './purchase';
-import { imageToPurchaseReducer } from './imageToPurchase';
-import { purchaseDialogReducer } from './purchaseDialog';
+
+import { accountReducer, AccountState } from './account';
+import { dataReducer, DataState } from './data';
+import { gridReducer, GridState } from './grid';
+import { purchaseReducer, PurchaseState } from './purchase';
+import { imageToPurchaseReducer, ImageToPurchaseState } from './imageToPurchase';
+import { purchaseDialogReducer, PurchaseDialogState } from './purchaseDialog';
+
+export * from './account';
+export * from './data';
+export * from './grid';
+export * from './imageToPurchase';
+export * from './purchase';
+export * from './purchaseDialog';
+
+export interface RootState {
+  account: AccountState,
+  data: DataState,
+  grid: GridState,
+  purchase: PurchaseState,
+  imageToPurchase: ImageToPurchaseState,
+  purchaseDialog: PurchaseDialogState
+}
 
 /**
  * combineReducers is important to understand. As your app might grow in size
@@ -19,13 +36,14 @@ import { purchaseDialogReducer } from './purchaseDialog';
  *
  * More info: http://rackt.org/redux/docs/api/combineReducers.html
  */
-const rootReducer = combineReducers({
+const rootReducer = combineReducers<RootState>({
   account: accountReducer,
   data: dataReducer,
   grid: gridReducer,
   purchase: purchaseReducer,
-  image_to_purchase: imageToPurchaseReducer,
+  imageToPurchase: imageToPurchaseReducer,
   purchaseDialog: purchaseDialogReducer
 });
+
 
 export default rootReducer;

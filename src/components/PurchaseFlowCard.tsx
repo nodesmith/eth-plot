@@ -58,7 +58,7 @@ export interface PurchaseFlowCardProps extends WithStyles {
     onBuyoutEnabledChanged: Actions.changeBuyoutEnabled;
     purchasePlot: Actions.completePlotPurchase;
   
-    rectToPurchase: Rect;
+    rectToPurchase?: Rect;
     purchasePriceInWei: string;
     activeStep: number;
     completedSteps: {[index: number]: boolean};
@@ -107,7 +107,7 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
     const { contractInfo, plots, rectToPurchase, imageData, website, buyoutPriceInWei, buyoutEnabled } = this.props;
     const initialBuyout = buyoutEnabled ? buyoutPriceInWei : '';
 
-    this.props.purchasePlot(contractInfo, plots, rectToPurchase, imageData!, website, initialBuyout);
+    this.props.purchasePlot(contractInfo, plots, rectToPurchase!, imageData!, website, initialBuyout);
   }
 
   getButtons(backButtonProps, nextButtonProps) {
@@ -196,7 +196,7 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
           </div>
         );
         stepHeader = 'Review and purchase';
-        const rect = this.props.rectToPurchase;
+        const rect = this.props.rectToPurchase!;
         const buyoutPrice = this.props.buyoutEnabled ? formatEthValueToString(this.props.buyoutPriceInWei) : 'Not Enabled';
         stepContent = (
           <div>

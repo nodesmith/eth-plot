@@ -5,6 +5,12 @@ import { gridReducer } from './grid';
 import { purchaseReducer } from './purchase';
 import { imageToPurchaseReducer } from './imageToPurchase';
 import { purchaseDialogReducer } from './purchaseDialog';
+export * from './account';
+export * from './data';
+export * from './grid';
+export * from './imageToPurchase';
+export * from './purchase';
+export * from './purchaseDialog';
 /**
  * combineReducers is important to understand. As your app might grow in size
  * and complexity, you will likely begin to split your reducers into separate
@@ -23,7 +29,7 @@ var rootReducer = combineReducers({
     data: dataReducer,
     grid: gridReducer,
     purchase: purchaseReducer,
-    image_to_purchase: imageToPurchaseReducer,
+    imageToPurchase: imageToPurchaseReducer,
     purchaseDialog: purchaseDialogReducer
 });
 export default rootReducer;
