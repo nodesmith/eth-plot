@@ -9,4 +9,8 @@ export interface PlotInfo {
   color: string;
   txHash: string;
   buyoutPrice: number; // TODO
+  owner: string;
 }
+
+
+export interface HoleInfo {[index: number]: Array<Rect>};

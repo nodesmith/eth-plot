@@ -4,13 +4,11 @@ import * as PropTypes from 'prop-types';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
 import { MovementActions } from '../constants/Enums';
+import * as ActionTypes from '../actions';
 
 import GridPlot from './GridPlot';
 import PurchasePlot from './PurchasePlot';
-import { PlotInfo } from '../data/PlotInfo';
-import { ImageFileInfo } from '../reducers/imageToPurchase';
-import { RectTransform } from '../reducers/purchase';
-import { Rect } from '../data/Rect';
+import { ImageFileInfo, PlotInfo, Rect, RectTransform } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -23,7 +21,12 @@ const styles: StyleRulesCallback = theme => ({
 
 export interface UIGridProps extends WithStyles {
   plots: Array<PlotInfo>;
-  actions: any; // TODO
+  actions: {
+    hoverOverPlot: ActionTypes.hoverOverPlot;
+    startTransformRectToPurchase: ActionTypes.startTransformRectToPurchase;
+    stopTransformRectToPurchase: ActionTypes.stopTransformRectToPurchase;
+    transformRectToPurchase: ActionTypes.transformRectToPurchase;
+  };
   inPurchaseMode: boolean;
   imageToPurchase: ImageFileInfo,
   currentTransform: RectTransform;
@@ -110,7 +113,6 @@ class UIGrid extends Component<UIGridProps> {
 
     this.props.actions.transformRectToPurchase({top, left, bottom, right}, this.props.plots);
 
-    // console.log(rect);
     e.stopPropagation(); 
   }
   

@@ -2,22 +2,14 @@ import { ActionTypes } from '../constants/ActionTypes';
 import * as PlotMath from '../data/PlotMath';
 import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as red from 'redux';
-import { PlotInfo } from '../data/PlotInfo';
-import { Rect } from '../data/Rect';
+import { Rect } from '../models';
 import { Action } from '../actionCreators/EthGridAction';
+import { ContractInfo, HoleInfo, PlotInfo } from '../models';
 
 // TODO - Clean this up a bit and get from some config file
 const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
 const contractAddress = '0x345ca3e014aaf5dca488057592ee47305d9b3e10';
 const web3Provider = 'http://localhost:9545';
-
-interface HoleInfo {[index: number]: Array<Rect>};
-
-export interface ContractInfo {
-  abi: Array<any>;
-  contractAddress: string;
-  web3Provider: string;
-}
 
 export interface DataState {
   isFetchingPlots: boolean;

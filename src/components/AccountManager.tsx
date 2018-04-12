@@ -5,7 +5,7 @@ import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles/'
 
 import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
-import { PlotInfo as PlotInfoData } from '../data/PlotInfo'
+import { PlotInfo as PlotInfoData } from '../models'
 
 import * as Enums from '../constants/Enums';
 
@@ -26,6 +26,7 @@ const styles: StyleRulesCallback = theme => ({
 export interface AccountManagerProps extends WithStyles {
   userPlots: Array<PlotInfoData>;
   updatePrice: () => void;
+  metamaskState: number;
 }
 
 class AccountManager extends Component<AccountManagerProps> {

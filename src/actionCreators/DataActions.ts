@@ -4,7 +4,7 @@ import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as Enums from '../constants/Enums';
 
 import * as AccountActions from './AccountActions';
-import { Rect } from '../data/Rect';
+import { Rect } from '../models';
 
 const Web3 = require('web3');
 const hexy = require('hexy');

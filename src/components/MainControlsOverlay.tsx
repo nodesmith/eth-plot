@@ -12,8 +12,7 @@ import Drawer from 'material-ui/Drawer';
 
 import { ZoomControlComponent } from './ZoomControl';
 import PurchaseFlowCard from './PurchaseFlowCard';
-import { ContractInfo } from '../reducers/data';
-import { PlotInfo } from '../data/PlotInfo';
+import { ContractInfo, PlotInfo } from '../models';
 
 
 const padding = 24;
@@ -72,6 +71,7 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
         contractInfo={this.props.contractInfo}
         plots={this.props.plots}
         imageData={this.props.imageData}
+        randomExtraProp={'abc'}
         />);
     return (
       <div className={classes.root}>

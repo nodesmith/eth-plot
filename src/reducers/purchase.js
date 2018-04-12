@@ -1,6 +1,6 @@
 import { ActionTypes } from '../constants/ActionTypes';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
-import { createEmptyRect } from '../data/Rect';
+import { createEmptyRect } from '../models';
 function determineInitialRect(imageFileInfo) {
     var ratio = imageFileInfo.w / imageFileInfo.h;
     var targetDimension = 30;

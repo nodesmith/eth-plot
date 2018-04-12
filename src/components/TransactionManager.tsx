@@ -3,7 +3,7 @@ import { Component } from 'react';
 import * as PropTypes from 'prop-types';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
-import { UserTransactions } from '../reducers/account';
+import { UserTransactions } from '../models';
 
 import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
@@ -29,6 +29,7 @@ const styles: StyleRulesCallback = theme => ({
 
 export interface TransactionManagerProps extends WithStyles {
   userTransactions: Array<UserTransactions>;
+  metamaskState: number;
 }
 
 class TransactionManager extends Component<TransactionManagerProps> {

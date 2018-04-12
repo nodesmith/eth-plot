@@ -1,3 +1,5 @@
+import * as Enums from '../constants/Enums';
+
 export interface Rect {
   x: number;
   y: number;
@@ -11,6 +13,19 @@ export interface Point {
   x: number;
   y: number;
 }
+
+export interface RectDelta {
+  top: number;
+  left: number;
+  bottom: number;
+  right: number;
+}
+
+export interface RectTransform {
+  startLocation: Point;
+  transformAction: Enums.MovementActions;
+}
+
 
 export function createEmptyRect(): Rect {
   return {

@@ -1,6 +1,6 @@
 import { ActionTypes } from '../constants/ActionTypes';
 import { Action } from './EthGridAction';
-import { Rect } from '../data/Rect';
+import { Rect } from '../models';
 
 export function hoverOverPlot(plotIndex: number): Action {
   return {

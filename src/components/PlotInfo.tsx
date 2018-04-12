@@ -14,9 +14,9 @@ import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
-import { Rect } from '../data/Rect';
+import { Rect } from '../models';
 
-import { PlotInfo as PlotInfoData } from '../data/PlotInfo';
+import { PlotInfo as PlotInfoData } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {

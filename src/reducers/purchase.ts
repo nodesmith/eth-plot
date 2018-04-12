@@ -1,7 +1,7 @@
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
-import { createEmptyRect, Rect, Point } from '../data/Rect';
+import { createEmptyRect, Rect, Point, RectDelta, RectTransform } from '../models';
 import { Action } from '../actionCreators/EthGridAction';
 
 function determineInitialRect(imageFileInfo) {
@@ -48,18 +48,6 @@ function deltasEqual(a, b) {
     a.bottom == b.bottom &&
     a.right == b.right &&
     a.top == b.top );
-}
-
-interface RectDelta {
-  top: number;
-  left: number;
-  bottom: number;
-  right: number;
-}
-
-export interface RectTransform {
-  startLocation: Point;
-  transformAction: Enums.MovementActions;
 }
 
 export interface PurchaseState {

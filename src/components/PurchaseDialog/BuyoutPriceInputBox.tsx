@@ -19,7 +19,7 @@ import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 
 import TextField from 'material-ui/TextField';
-import { Rect } from '../../data/Rect';
+import { Rect } from '../../models';
 
 const styles: StyleRulesCallback = theme => ({
   wrapper: {

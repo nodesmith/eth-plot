@@ -3,6 +3,8 @@ import { Component } from 'react';
 import * as PropTypes from 'prop-types';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
+import { ImageFileInfo } from '../../models';
+
 import Decimal from 'decimal.js';
 
 import Button from 'material-ui/Button';
@@ -36,13 +38,6 @@ const styles: StyleRulesCallback = theme => ({
 export interface ChooseImageInputBoxPropTypes extends WithStyles {
   onImageChanged: (fileInfo: ImageFileInfo) => void;
   imageName: string;
-}
-
-export interface ImageFileInfo {
-  w: number;
-  h: number;
-  fileName: string;
-  fileData: string;
 }
 
 interface ChooseImageInputBoxState {

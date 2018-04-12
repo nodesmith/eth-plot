@@ -12,7 +12,7 @@ import AddCircle from 'material-ui-icons/AddCircle';
 import AttachMoney from 'material-ui-icons/AttachMoney';
 import Divider from 'material-ui/Divider';
 import Typography from 'material-ui/Typography';
-import { UserTransactions } from '../reducers/account';
+import { UserTransactions } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {

@@ -1,12 +1,6 @@
 import { ActionTypes } from '../constants/ActionTypes';
 import { Action } from '../actionCreators/EthGridAction';
-
-export interface ImageFileInfo {
-  w: number;
-  h: number;
-  fileName: string;
-  fileData: string;
-}
+import { ImageFileInfo } from '../models';
 
 export interface ImageToPurchaseState {
   imageFileInfo?: ImageFileInfo

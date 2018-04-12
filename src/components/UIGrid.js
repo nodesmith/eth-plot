@@ -87,7 +87,6 @@ var UIGrid = /** @class */ (function (_super) {
         bottom = Math.round(bottom);
         right = Math.round(right);
         this.props.actions.transformRectToPurchase({ top: top, left: left, bottom: bottom, right: right }, this.props.plots);
-        // console.log(rect);
         e.stopPropagation();
     };
     UIGrid.prototype.render = function () {

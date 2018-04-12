@@ -2,7 +2,7 @@ import { ActionTypes } from '../constants/ActionTypes';
 import { MovementActions, PurchaseStage } from '../constants/Enums';
 import { purchasePlot as purchasePlotFromChain } from './DataActions';
 import { Action } from './EthGridAction';
-import { Point } from '../data/Rect';
+import { Point } from '../models';
 
 export function togglePurchaseFlow(): Action {
   return {

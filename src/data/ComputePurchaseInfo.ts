@@ -1,7 +1,6 @@
 import * as PlotMath from './PlotMath';
 import Decimal from 'decimal.js';
-import { Rect } from './Rect';
-import { PlotInfo } from './PlotInfo';
+import { PlotInfo, Rect } from '../models';
 
 export interface PurchaseInfo {
     chunksToPurchase: Array<Rect>;

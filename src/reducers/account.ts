@@ -1,22 +1,7 @@
 import { ActionTypes } from '../constants/ActionTypes';
 import { Action } from '../actionCreators/EthGridAction';
 import * as Enums from '../constants/Enums';
-
-export interface UserTransactions {
-  txType: Enums.TxType;
-  txStatus: Enums.TxStatus;
-  blockNumber: number;
-  txHash: string;
-}
-
-export interface AccountState {
-  metamaskStateKnown: boolean,
-  metamaskState: Enums.METAMASK_STATE,
-  activeAccount: string,
-  userTransactions: { [hash: string]: UserTransactions },
-  notificationCount: number,
-  isFetchingTransactions: boolean
-}
+import { AccountState, UserTransactions } from '../models';
 
 const initialState: AccountState = {
   metamaskStateKnown: false,

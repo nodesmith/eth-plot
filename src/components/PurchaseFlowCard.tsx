@@ -11,11 +11,11 @@ import CloseIcon from 'material-ui-icons/Close';
 import Stepper, { Step, StepButton, StepLabel, StepContent } from 'material-ui/Stepper';
 import { formatEthValueToString } from '../data/ValueFormatters';
 
-import ChooseImageInputBox, { ImageFileInfo } from './PurchaseDialog/ChooseImageInputBox';
+import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
+import { ImageFileInfo } from '../models';
 import WebsiteInputBox from './PurchaseDialog/WebsiteInputBox';
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
-import { PlotInfo } from '../data/PlotInfo';
-import { Rect } from '../data/Rect';
+import { Rect, PlotInfo } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {

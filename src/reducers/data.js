@@ -5,7 +5,6 @@ import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 var abi = require('../../contract/build/contracts/EthGrid2.json').abi;
 var contractAddress = '0x345ca3e014aaf5dca488057592ee47305d9b3e10';
 var web3Provider = 'http://localhost:9545';
-;
 var initialState = {
     isFetchingPlots: false,
     numberOfPlots: 0,

@@ -64,7 +64,7 @@ var MainControlsOverlay = /** @class */ (function (_super) {
     MainControlsOverlay.prototype.render = function () {
         var _this = this;
         var classes = this.props.classes;
-        var sideList = (React.createElement(PurchaseFlowCard, __assign({ onClose: function () { return _this.toggleDrawer(); } }, this.props.purchaseActions, this.props.purchase, { contractInfo: this.props.contractInfo, plots: this.props.plots, imageData: this.props.imageData })));
+        var sideList = (React.createElement(PurchaseFlowCard, __assign({ onClose: function () { return _this.toggleDrawer(); } }, this.props.purchaseActions, this.props.purchase, { contractInfo: this.props.contractInfo, plots: this.props.plots, imageData: this.props.imageData, randomExtraProp: 'abc' })));
         return (React.createElement("div", { className: classes.root },
             React.createElement("div", { className: classes.zoom },
                 React.createElement(ZoomControlComponent, { classes: {}, scale: this.props.zoomLevel, changeZoom: this.props.changeZoom })),

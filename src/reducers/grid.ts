@@ -1,5 +1,5 @@
 import { ActionTypes } from '../constants/ActionTypes';
-import { Rect, Point } from '../data/Rect';
+import { Rect, Point } from '../models';
 import { Action } from '../actionCreators/EthGridAction';
 
 const MAX_SCALE = 10;

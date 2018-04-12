@@ -1,4 +1,4 @@
-import { fromCoordinates, createEmptyRect, Rect } from './Rect';
+import { fromCoordinates, createEmptyRect, Rect } from '../models';
 
 export function doRectanglesOverlap(a: Rect, b: Rect): boolean {
   return a.x < b.x2 && a.x2 > b.x && a.y < b.y2 && a.y2 > b.y;

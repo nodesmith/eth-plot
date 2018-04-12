@@ -4,7 +4,7 @@ import * as PropTypes from 'prop-types';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
 import { MovementActions } from '../constants/Enums';
-import { Rect } from '../data/Rect';
+import { Rect } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
 });
