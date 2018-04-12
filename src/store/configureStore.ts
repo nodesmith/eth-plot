@@ -6,8 +6,10 @@
 
 import { configureStore as devConfig } from './configureStore.dev';
 import { configureStore as prodConfig } from './configureStore.prod';
+import { Store } from 'redux';
+import { RootState } from '../reducers';
 
-let loadedStore;
+let loadedStore: (initialState?: RootState) => Store<{}>;
 
 if (process.env.NODE_ENV === 'production') {
   loadedStore = prodConfig;
