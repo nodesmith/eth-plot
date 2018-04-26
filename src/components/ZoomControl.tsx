@@ -7,7 +7,8 @@ import ButtonBase from 'material-ui/ButtonBase';
 import Typography from 'material-ui/Typography';
 import Divider from 'material-ui/Divider/Divider';
 
-import Icon from 'material-ui/Icon';
+import Add from 'material-ui-icons/Add';
+import Remove from 'material-ui-icons/Remove';
 
 const size = 30;
 const styles: StyleRulesCallback = theme => ({
@@ -43,11 +44,11 @@ class ZoomControl extends Component<ZoomControlProps> {
 
       <div className={classes.root}>
         <ButtonBase focusRipple key='plus' className={classes.button} onClick={this.zoomIn.bind(this)}>
-          <Icon>add</Icon>
+          <Add />
         </ButtonBase>
         <Divider />
         <ButtonBase focusRipple key='minus' className={classes.button} onClick={this.zoomOut.bind(this)}>
-          <Icon>remove</Icon>
+          <Remove />
         </ButtonBase>
       </div>);
   }

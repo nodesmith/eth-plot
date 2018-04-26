@@ -1,1 +1,0 @@
-- perhaps trim the props passed to grid and plots containers

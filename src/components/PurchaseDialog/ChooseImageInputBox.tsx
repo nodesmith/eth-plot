@@ -33,7 +33,7 @@ const styles: StyleRulesCallback = theme => ({
     marginTop: theme.spacing.unit * 3,
   },
   hidden: {
-    display: 'none';
+    display: 'none'
   }
 });
 

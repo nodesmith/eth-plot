@@ -2,12 +2,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
-/**
- * Import the stylesheet you want used! Here we just reference
- * the main SCSS file we have in the styles directory.
- */
-import './styles/main.scss';
-
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -38,5 +32,5 @@ ReactDOM.render(
   <MuiThemeProvider theme={theme}>
     <Root store={store} />
   </MuiThemeProvider>,
-  document.getElementById('root')
+  document.body.appendChild(document.createElement('div'))
 );
