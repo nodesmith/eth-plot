@@ -76,7 +76,7 @@ class PurchaseDialog extends Component<PurchaseDialogProps> {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.handleCancel.bind(this)} color="secondary">
+          <Button onClick={this.handleCancel.bind(this)}>
             Cancel
           </Button>
         </DialogActions>

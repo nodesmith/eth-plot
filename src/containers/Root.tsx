@@ -1,3 +1,4 @@
+import CssBaseline from 'material-ui/CssBaseline';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
@@ -20,6 +21,7 @@ class Root extends React.Component<{store: Store<{}> }> {
        */
       <Provider store={store}>
         <div>
+          <CssBaseline />
           <HashRouter>
             <App />
           </HashRouter>
