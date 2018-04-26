@@ -1,4 +1,4 @@
-import decimalJs from 'decimal.js';
+import { Decimal } from 'decimal.js';
 import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';

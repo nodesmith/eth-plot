@@ -1,4 +1,4 @@
-import decimalJs from 'decimal.js';
+import { Decimal } from 'decimal.js';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import Button from 'material-ui/Button';
