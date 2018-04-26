@@ -10,7 +10,7 @@
     "build": "npm run clean && npm run build:webpack --progress --profile --colors",
     "dev": "NODE_ENV=development npm start",
     "start": "npm run tsdev",
-    "lint": "eslint src",
+    "lint": "./node_modules/.bin/tslint --project tsconfig.json",
     "tsdev": "node_modules/.bin/webpack-dev-server --port 3000 --hot --inline --mode development -d"
   },
   "devDependencies": {
@@ -43,6 +43,7 @@
     "style-loader": "^0.13.0",
     "ts-loader": "^4.2.0",
     "tslint": "^5.9.1",
+    "tslint-config-airbnb": "^5.8.0",
     "webpack": "^4.5.0",
     "webpack-cli": "^2.0.15",
     "webpack-dev-server": "^3.1.3",
