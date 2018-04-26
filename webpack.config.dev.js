@@ -48,6 +48,8 @@ module.exports = {
   ],
   module: {
     loaders: [
+      { test: /\.tsx?$/, loader: "ts-loader" },
+      // { test: /\.(t|j)sx?$/, loader: 'awesome-typescript-loader' },
       {
         test: /\.js?/,
         exclude: [/node_modules/, /styles/],

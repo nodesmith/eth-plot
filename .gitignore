@@ -5,3 +5,5 @@ lib
 coverage
 dist
 /contract/build
+src/**/*.js
+src/**/*.map
