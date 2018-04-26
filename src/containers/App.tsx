@@ -22,6 +22,7 @@ import AccountManagerContainer from './AccountManagerContainer';
 import MainContainer, { MainContainerProps } from './MainContainer';
 import TransactionManagerContainer from './TransactionManagerContainer';
 
+// tslint:disable-next-line:variable-name
 const Web3 = require('web3');
 
 declare global {
@@ -78,7 +79,8 @@ class App extends React.Component<AppProps> {
     this.accountInterval = setInterval(
       () => {
         this.checkMetamaskStatus();
-      }, 1000000); // TODO Toggle back on
+      },
+      1000000); // TODO Toggle back on
   }
 
   checkMetamaskStatus() {

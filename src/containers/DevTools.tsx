@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { createDevTools } from 'redux-devtools';
 
+// tslint:disable-next-line:import-name
 import DockMonitor from 'redux-devtools-dock-monitor';
+// tslint:disable-next-line:import-name
 import LogMonitor from 'redux-devtools-log-monitor';
 
 const devTools = createDevTools(

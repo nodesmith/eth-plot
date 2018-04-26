@@ -39,7 +39,8 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
         const plotBuyout = new Decimal(currentPlot.buyoutPrice).mul(chunkOverlap.w * chunkOverlap.h);
         purchasePrice = purchasePrice.add(plotBuyout);
 
-        // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is remaining back to remainingChunksToPurchase
+        // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is
+        // remaining back to remainingChunksToPurchase
         remainingChunksToPurchase.splice(j, 1);
 
         const newChunksToPurchase = PlotMath.subtractRectangles(chunkToPurchase, newHole);
