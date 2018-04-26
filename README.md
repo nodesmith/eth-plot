@@ -5,6 +5,7 @@ To run:
 - npm install
 - npm run dev
 - open localhost:3000
+- In new terminal (or via a build task in VS Code) tsc watch
 
 To run with truffle:
 

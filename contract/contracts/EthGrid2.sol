@@ -63,12 +63,12 @@ contract EthGrid2 {
 
     //----------------------Public Functions---------------------//
     function createAuction(uint256 zoneIndex, uint256 pricePerPixelInGwei) public {
-      require(zoneIndex >= 0);
-      require(zoneIndex < ownership.length);
-      require(msg.sender == ownership[zoneIndex].owner);
-      require(pricePerPixelInGwei > 0);
+        require(zoneIndex >= 0);
+        require(zoneIndex < ownership.length);
+        require(msg.sender == ownership[zoneIndex].owner);
+        require(pricePerPixelInGwei > 0);
 
-      tokenIdToAuction[zoneIndex] = pricePerPixelInGwei;
+        tokenIdToAuction[zoneIndex] = pricePerPixelInGwei;
     }
 
     function getPlot(uint256 zoneIndex) public constant returns (uint16, uint16, uint16, uint16, address, uint256, string, bytes) {

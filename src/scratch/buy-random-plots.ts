@@ -1,6 +1,7 @@
 import * as DataActions from '../actionCreators/DataActions';
+import { configureStore }  from '../store/configureStore';
 
-const configureStore = require('../store/configureStore.prod');
+// const configureStore = require('../store/configureStore.prod');
 console.log('Configuring store');
 const store = configureStore();
 
@@ -38,7 +39,7 @@ const buyRandomPlots = () => {
     console.log(`Buying ${JSON.stringify(rectToPurchase)}`);
 
     const state = store.getState();
-    return DataActions.purchasePlot(state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123')(store.dispatch);
+    return DataActions.purchasePlot(state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123', () => {})(store.dispatch);
   };
 
   let buysRemaining = 10;

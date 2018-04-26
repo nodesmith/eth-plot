@@ -1,5 +1,5 @@
-import { createStore, applyMiddleware, compose } from 'redux';
-import rootReducer from '../reducers';
+import { createStore, applyMiddleware, compose, Store, StoreEnhancerStoreCreator } from 'redux';
+import rootReducer, { RootState } from '../reducers';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 import DevTools from '../containers/DevTools';
@@ -14,12 +14,12 @@ import reducers from '../reducers/index';
 
 const finalCreateStore = compose(
   // Middleware you want to use in development:
-  applyMiddleware(createLogger(), thunk),
+  applyMiddleware(createLogger(), thunk)  as (next: StoreEnhancerStoreCreator<RootState>) => StoreEnhancerStoreCreator<RootState>,
   // Required! Enable Redux DevTools with the monitors you chose
   DevTools.instrument()
 )(createStore);
 
-export function configureStore(initialState) {
+export function configureStore(initialState): Store<RootState> {
   const store = finalCreateStore(rootReducer, initialState);
 
   // Hot reload reducers (requires Webpack or Browserify HMR to be enabled)
