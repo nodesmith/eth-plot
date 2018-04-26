@@ -8,9 +8,17 @@
       "target": "es5",            // specify ECMAScript target version
       "allowJs": false,             // allow a partial TypeScript and JavaScript codebase
       "moduleResolution": "node",
-      "lib": ["es5", "es6", "dom", "es2017.object"]
+      "lib": ["es5", "es6", "dom", "es2017.object"],
+    //   "typeRoots": [
+    //       "node_modules/@types",
+    //       "./types"
+    //   ],
+    //   "types": [
+    //       "node"
+    //   ]
   },
   "include": [
+      "./types/**/*.d.ts",
       "./src/**/*.ts",
       "./src/**/*.tsx"
   ]

@@ -61,7 +61,7 @@ export interface AppProps extends RouteComponentProps<any> {
  * component to make the Redux store available to the rest of the app.
  */
 class App extends React.Component<AppProps> { 
-  private accountInterval: NodeJS.Timer;
+  private accountInterval: number;
 
   componentDidMount() {
     this.checkMetamaskStatus();

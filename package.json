@@ -61,9 +61,11 @@
     "@types/react-router-dom": "^4.2.6",
     "@types/redux-thunk": "^2.1.0",
     "bn.js": "^4.11.8",
+    "buffer": "^5.1.0",
     "decimal.js": "^9.0.1",
     "es6-promise-pool": "^2.5.0",
     "hexy": "^0.2.10",
+    "ipfs-api": "^20.0.1",
     "jquery": "^3.2.1",
     "material-ui": "^1.0.0-beta.41",
     "material-ui-icons": "^1.0.0-beta.17",
@@ -76,6 +78,6 @@
     "redux-thunk": "^1.0.3",
     "typeface-roboto": "0.0.50",
     "typescript": "^2.8.1",
-    "web3": "^0.18.4"
+    "web3": "^0.20.6"
   }
 }

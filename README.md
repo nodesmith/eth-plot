@@ -7,6 +7,11 @@ To run:
 - open localhost:3000
 - In new terminal (or via a build task in VS Code) tsc watch
 
+To run with ganache
+- `npm install -g ganache-cli`
+- `ganache-cli -i samm-test -d`
+- `truffle migrate --network ganache`
+
 To run with truffle:
 
 - Do everything above
