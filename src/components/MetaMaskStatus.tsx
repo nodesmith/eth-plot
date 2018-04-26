@@ -30,7 +30,7 @@ class MetaMaskStatus extends Component<MetaMaskStatusProps> {
     } else if (this.props.metamaskState === Enums.METAMASK_STATE.UNINSTALLED) {
       return (
       <div className={this.props.classes.logoContainer}>
-        <FullPageStatus classes={this.props.classes} message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
+        <FullPageStatus classes={{}} message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
         <a href={"https://metamask.io"} target="_blank">
           <img className={this.props.classes.logo} src={"../assets/metamasklogo.png"} />
         </a>
@@ -39,7 +39,7 @@ class MetaMaskStatus extends Component<MetaMaskStatusProps> {
     } else if (this.props.metamaskState === Enums.METAMASK_STATE.LOCKED) {
       return (
       <div id="metamaskLogoContainer">
-        <FullPageStatus classes={this.props.classes} message="You must unlock MetaMask to proceed." />
+        <FullPageStatus classes={{}} message="You must unlock MetaMask to proceed." />
       </div>
       );
     }

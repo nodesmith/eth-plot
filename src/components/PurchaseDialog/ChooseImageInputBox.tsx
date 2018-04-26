@@ -32,6 +32,9 @@ const styles: StyleRulesCallback = theme => ({
   withoutLabel: {
     marginTop: theme.spacing.unit * 3,
   },
+  hidden: {
+    display: 'none';
+  }
 });
 
 
@@ -193,9 +196,9 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
           onChange={this.onFileSelected.bind(this)}
           type='file'
           id='hidden_input'
-          className='hidden' />
+          className={classes.hidden} />
         <img id='hidden_image'
-          className='hidden'/>
+          className={classes.hidden} />
       </FormControl>
     );
   }

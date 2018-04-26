@@ -7,6 +7,19 @@ import { MovementActions } from '../constants/Enums';
 import { Rect } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
+  purchaseTooltip: {
+    backgroundColor: 'rgba($color: #000000, $alpha: 0.6)',
+    borderRadius: 5,
+    display: 'inline',
+    color: 'white',
+    lineHeight: 35,
+    position: 'absolute',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    paddingLeft: '10',
+    paddingRight: '10',
+    whiteSpace: 'nowrap'
+  }
 });
 
 export interface PurchasePlotProps extends WithStyles {
