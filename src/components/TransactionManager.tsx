@@ -38,7 +38,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
       return (
         <Grid item xs={12}>
           <Paper>
-            <TransactionStatus classes={this.props.classes} tx={tx} />
+            <TransactionStatus classes={{}} tx={tx} />
           </Paper>
         </Grid>
       );

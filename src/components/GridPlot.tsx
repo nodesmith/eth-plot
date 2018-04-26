@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { PlotInfo } from '../models';
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
-export interface GridPlotProps {
+export interface GridPlotProps extends WithStyles {
   plot: PlotInfo;
   index: number;
   scale: number;
@@ -9,7 +10,13 @@ export interface GridPlotProps {
   isHovered: boolean;
 }
 
-export default class GridPlot extends React.Component<GridPlotProps> {
+const styles: StyleRulesCallback = theme => ({
+  gridPlot: {
+    position: "absolute"
+  }
+});
+
+class GridPlot extends React.Component<GridPlotProps> {
   mouseOver() {
     this.props.hoverAction(this.props.index);
   }
@@ -35,9 +42,11 @@ export default class GridPlot extends React.Component<GridPlotProps> {
       <a href={this.props.plot.data.url}
         target='blank' key={this.props.index}
         style={plotStyle}
-        className="gridPlot"
+        className={this.props.classes.gridPlot}
         onMouseOver={this.mouseOver.bind(this)}>
       </a>
     );
   }
 }
+
+export default withStyles(styles)(GridPlot);

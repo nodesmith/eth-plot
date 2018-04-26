@@ -1,11 +1,29 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
 /**
  * Import the stylesheet you want used! Here we just reference
  * the main SCSS file we have in the styles directory.
  */
 import './styles/main.scss';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#a7c0cd',
+      main: '#78909c',
+      dark: '#4b636e',
+      contrastText: '#000000',
+    },
+    secondary: {
+      light: '#e6ffff',
+      main: '#f44336',
+      dark: '#82b3c9',
+      contrastText: '#000',
+    }
+  },
+});
 
 /**
  * Both configureStore and Root are required conditionally.
@@ -17,6 +35,8 @@ import Root from './containers/Root';
 const store = configureStore();
 
 ReactDOM.render(
-  <Root store={store} />,
+  <MuiThemeProvider theme={theme}>
+    <Root store={store} />
+  </MuiThemeProvider>,
   document.getElementById('root')
 );
