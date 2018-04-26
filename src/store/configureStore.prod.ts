@@ -1,11 +1,13 @@
-import { createStore, applyMiddleware, compose, Store, AnyAction } from 'redux';
-import rootReducer, { RootState } from '../reducers';
-import thunk from 'redux-thunk';
+import { applyMiddleware, compose, createStore, AnyAction, Store } from 'redux';
+import reduxThunk from 'redux-thunk';
+
+import reducers, { RootState } from '../reducers';
+import index from '../reducers/index';
 
 const finalCreateStore = compose(
-  applyMiddleware(thunk)
+  applyMiddleware(reduxThunk)
 )<RootState>(createStore) ;
 
 export function configureStore(initialState: RootState): Store<RootState> {
-  return finalCreateStore(rootReducer, initialState);  
+  return finalCreateStore(index, initialState);  
 }

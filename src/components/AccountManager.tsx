@@ -1,19 +1,18 @@
-import * as React from 'react';
-import { Component } from 'react';
-import * as PropTypes from 'prop-types';
+import ExpandMore from 'material-ui-icons/ExpandMore';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles/';
-
-import FullPageStatus from './FullPageStatus';
-import PlotInfo from './PlotInfo';
-import { PlotInfo as PlotInfoData } from '../models'
-
-import * as Enums from '../constants/Enums';
-
-import Typography from 'material-ui/Typography';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Grid from 'material-ui/Grid';
 import List, { ListItem } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
+import Typography from 'material-ui/Typography';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
+import { Component } from 'react';
+
+import * as Enums from '../constants/Enums';
+import { PlotInfo as PlotInfoData } from '../models';
+
+import FullPageStatus from './FullPageStatus';
+import PlotInfo from './PlotInfo';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -41,20 +40,20 @@ class AccountManager extends Component<AccountManagerProps> {
       );
     });
 
-    if (plotInfos.length == 0) {
+    if (plotInfos.length === 0) {
       plotInfos.push(
-        <Grid key='no-data' item xs={12} >
+        <Grid key="no-data" item xs={12} >
           <Typography variant="subheading">You don't have any owned plots. Visit the grid to purchase a plot.</Typography>
         </Grid>
-      )
+      );
     }
 
     return [
-      (<Grid key='title' item xs={8}>
-        <Typography variant='title'>My Content</Typography>
+      (<Grid key="title" item xs={8}>
+        <Typography variant="title">My Content</Typography>
       </Grid>),
       plotInfos
-    ]
+    ];
   }
 
   render() {

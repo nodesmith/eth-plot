@@ -1,6 +1,7 @@
-import * as React from 'react';
-import { PlotInfo } from '../models';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import * as React from 'react';
+
+import { PlotInfo } from '../models';
 
 export interface GridPlotProps extends WithStyles {
   plot: PlotInfo;
@@ -12,7 +13,7 @@ export interface GridPlotProps extends WithStyles {
 
 const styles: StyleRulesCallback = theme => ({
   gridPlot: {
-    position: "absolute"
+    position: 'absolute'
   }
 });
 
@@ -40,7 +41,7 @@ class GridPlot extends React.Component<GridPlotProps> {
 
     return (
       <a href={this.props.plot.data.url}
-        target='blank' key={this.props.index}
+        target="blank" key={this.props.index}
         style={plotStyle}
         className={this.props.classes.gridPlot}
         onMouseOver={this.mouseOver.bind(this)}>

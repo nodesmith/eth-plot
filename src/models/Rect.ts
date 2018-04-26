@@ -7,7 +7,7 @@ export interface Rect {
   h: number;
   x2: number;
   y2: number;
-};
+}
 
 export interface Point {
   x: number;
@@ -44,10 +44,10 @@ export function cloneRect(rect: Rect): Rect {
 
 export function fromCoordinates(x: number, y: number, x2: number, y2: number): Rect {
   return {
-    x: x,
-    y: y,
-    x2: x2,
-    y2: y2,
+    x,
+    y,
+    x2,
+    y2,
     w: x2 - x,
     h: y2 - y
   };

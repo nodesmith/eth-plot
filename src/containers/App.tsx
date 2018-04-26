@@ -1,28 +1,28 @@
-import * as React from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
-import { connect } from 'react-redux';
-import { Route, Switch, withRouter, RouteComponentProps } from 'react-router-dom';
-
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
+import * as React from 'react';
+import { connect } from 'react-redux';
+import { withRouter, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { bindActionCreators, Dispatch } from 'redux';
 
+import { AllActions } from '../actions';
 import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
 import * as PurchaseActions from '../actionCreators/PurchaseActions';
-import * as Enums from '../constants/Enums';
-import MainContainer, { MainContainerProps } from './MainContainer';
-import AccountManagerContainer from './AccountManagerContainer';
-import TransactionManagerContainer from './TransactionManagerContainer';
 import About from '../components/About';
-import ProgressSpinner from '../components/ProgressSpinner';
-import Nav, { NavProps } from '../components/Nav';
 import MetaMaskStatus from '../components/MetaMaskStatus';
-
-import { AllActions } from '../actions';
+import Nav, { NavProps } from '../components/Nav';
+import ProgressSpinner from '../components/ProgressSpinner';
+import * as Enums from '../constants/Enums';
 import * as Reducers from '../reducers';
 import { RootState } from '../reducers';
 
+import AccountManagerContainer from './AccountManagerContainer';
+import MainContainer, { MainContainerProps } from './MainContainer';
+import TransactionManagerContainer from './TransactionManagerContainer';
+
+// tslint:disable-next-line:variable-name
 const Web3 = require('web3');
 
 declare global {
@@ -61,7 +61,7 @@ export interface AppProps extends RouteComponentProps<any> {
  * component to make the Redux store available to the rest of the app.
  */
 class App extends React.Component<AppProps> { 
-  private accountInterval: number;
+  private accountInterval: NodeJS.Timer;
 
   componentDidMount() {
     this.checkMetamaskStatus();
@@ -76,19 +76,21 @@ class App extends React.Component<AppProps> {
      * More info available here: 
      * https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md
      */
-    this.accountInterval = setInterval(function() {
-      this.checkMetamaskStatus();
-    }.bind(this), 1000000); // TODO Toggle back on
+    this.accountInterval = setInterval(
+      () => {
+        this.checkMetamaskStatus();
+      },
+      1000000); // TODO Toggle back on
   }
 
   checkMetamaskStatus() {
     if (typeof window.web3 !== 'undefined') {
-      let newWeb3 = new Web3(window.web3.currentProvider);
+      const newWeb3 = new Web3(window.web3.currentProvider);
       newWeb3.eth.getAccounts((error, accounts) => {
         if (accounts.length > 0) {
           this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
 
-          if (accounts[0] != this.props.account.activeAccount) {
+          if (accounts[0] !== this.props.account.activeAccount) {
             // The only time we ever want to load data from the chain history
             // is when we receive a change in accounts - this happens anytime 
             // the page is initially loaded or if there is a change in the account info
@@ -98,7 +100,7 @@ class App extends React.Component<AppProps> {
           }
         } else {
           this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
-        };
+        }
       });
     } else {
       this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
@@ -111,7 +113,7 @@ class App extends React.Component<AppProps> {
     this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
 
     if (typeof window.web3 !== 'undefined') {
-      let newWeb3 = new Web3(window.web3.currentProvider);
+      const newWeb3 = new Web3(window.web3.currentProvider);
       newWeb3.eth.getAccounts((error, accounts) => {
         this.props.actions.fetchAccountTransactions(this.props.data.contractInfo, accounts[0]);
       });
@@ -158,7 +160,7 @@ class App extends React.Component<AppProps> {
         changeZoom: actions.changeZoom
       },
       purchase: // this.props.purchase,
-       {
+      {
         rectToPurchase: purchase.rectToPurchase,
         purchasePriceInWei: purchase.purchasePriceInWei,
         activeStep: purchase.activeStep,
@@ -185,20 +187,20 @@ class App extends React.Component<AppProps> {
         purchaseStage: this.props.purchaseDialog.purchaseStage,
         isShowing: this.props.purchaseDialog.isShowing
       }
-    }
+    };
 
 
     return (
       <Switch>
-        <Route exact path='/' render={(routeProps) => (
+        <Route exact path="/" render={(routeProps) => (
           <MainContainer {...mainContainerProps} {...routeProps}/>
         )}/>
-        <Route path='/myplots' render={(routeProps) => (
+        <Route path="/myplots" render={(routeProps) => (
           <AccountManagerContainer 
             {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
         )}/>
-        <Route path='/about' component={About}/>
-        <Route path='/account' render={(routeProps) => (
+        <Route path="/about" component={About}/>
+        <Route path="/account" render={(routeProps) => (
         <TransactionManagerContainer {...routeProps} {...this.props.account} />
         )}/>
       </Switch>
@@ -210,7 +212,7 @@ class App extends React.Component<AppProps> {
       classes: {},
       notificationCount: this.props.account.notificationCount,
       clearNotifications: this.clearNotifications.bind(this),
-      doNavigation: (to) => this.doNavigation(to)
+      doNavigation: to => this.doNavigation(to)
     };
 
     const mainBodyContent = this.getMainBodyContent();
@@ -221,7 +223,7 @@ class App extends React.Component<AppProps> {
           {
             (this.shouldShowSpinner()) ?
             <ProgressSpinner classes={{}} /> :
-              (this.props.account.metamaskState != Enums.METAMASK_STATE.OPEN) ?
+              (this.props.account.metamaskState !== Enums.METAMASK_STATE.OPEN) ?
               <MetaMaskStatus metamaskState={this.props.account.metamaskState} classes={{}} /> :
               mainBodyContent
           }

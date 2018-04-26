@@ -1,14 +1,15 @@
 import { ActionTypes } from '../constants/ActionTypes';
-import * as PlotMath from '../data/PlotMath';
-import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as Enums from '../constants/Enums';
-
-import * as AccountActions from './AccountActions';
+import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
+import * as PlotMath from '../data/PlotMath';
 import { Rect } from '../models';
 
+import * as AccountActions from './AccountActions';
+
+// tslint:disable-next-line:variable-name
 const Web3 = require('web3');
 const hexy = require('hexy');
-const PromisePool = require('es6-promise-pool');
+const promisePool = require('es6-promise-pool');
 
 export function addPlot(newPlot) {
   return {
@@ -32,8 +33,8 @@ export function listPlot() {
 export function plotListed(txHash, zoneIndex) {
   return {
     type: ActionTypes.PLOT_LISTED,
-    txHash: txHash,
-    zoneIndex: zoneIndex  
+    txHash,
+    zoneIndex  
   };
 }
 
@@ -60,21 +61,20 @@ export function determineTxStatus(tx) {
 }
 
 export function getWeb3(contractInfo) {
-  var window;
   if (!window) {
     // This is only used to run the setup purchase scripts
-    return new Web3(new Web3.providers.HttpProvider("http://localhost:9545"))
+    return new Web3(new Web3.providers.HttpProvider('http://localhost:9545'));
   } else if (typeof window.web3 !== 'undefined') {
-    return window.web3
+    return window.web3;
   } else {
     throw 'no web3 provided';
   }
 }
 
 function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
@@ -98,7 +98,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
         resolve(ownershipLengthString);
       });
     }).then((ownershipLengthString: string) => {
-      const ownershipLength = parseInt(ownershipLengthString);
+      const ownershipLength = parseInt(ownershipLengthString, 10);
       let currentIndex = 0;
 
       const ownershipLoadFn = () => {
@@ -114,15 +114,15 @@ export function fetchPlotsFromWeb3(contractInfo) {
 
             const plot = {
               rect: {
-                x: parseInt(plotInfo['0']),
-                y: parseInt(plotInfo['1']),
-                w: parseInt(plotInfo['2']),
-                h: parseInt(plotInfo['3']),
+                x: parseInt(plotInfo['0'], 10),
+                y: parseInt(plotInfo['1'], 10),
+                w: parseInt(plotInfo['2'], 10),
+                h: parseInt(plotInfo['3'], 10),
                 x2: 0,
                 y2: 0
               },
               owner: plotInfo['4'],
-              buyoutPrice: parseInt(plotInfo['5']),
+              buyoutPrice: parseInt(plotInfo['5'], 10),
               data: {
                 url: plotInfo['6'],
                 ipfsHash: plotInfo['7']
@@ -143,19 +143,19 @@ export function fetchPlotsFromWeb3(contractInfo) {
       };
 
       // Create a pool.
-      var pool = new PromisePool(ownershipLoadFn, 1);
+      const pool = new promisePool(ownershipLoadFn, 1);
       
       // Start the pool. 
       return pool.start().then(() => {
         dispatch(doneLoadingPlots());
       });
     });
-  }
+  };
 }
 
 // thunk for updating price of plot
 export function updateAuction(contractInfo, zoneIndex, newPrice) {
-  return function(dispatch) {
+  return function (dispatch) {
     const web3 = getWeb3(contractInfo);
 
     return new Promise((resolve, reject) => {
@@ -175,7 +175,7 @@ export function updateAuction(contractInfo, zoneIndex, newPrice) {
         from: coinbase,
         gasPrice: '3000000000',
         gas: gasEstimate * 2
-      }
+      };
       
       return new Promise((resolve, reject) => {
         contract.updateAuction.sendTransaction(param1, param2, param3, txObject, (error, transactionReceipt) => {
@@ -187,13 +187,13 @@ export function updateAuction(contractInfo, zoneIndex, newPrice) {
         });
       });
     });
-  }
+  };
 }
 
 // Converts a rect into the format that our contract is expecting
 function buildArrayFromRectangles(rects: Rect[]): Array<number> { 
-  let result = new Array<number>();
-  for(const rect of rects) {
+  const result = new Array<number>();
+  for (const rect of rects) {
     result.push(rect.x);
     result.push(rect.y);
     result.push(rect.w);
@@ -205,7 +205,7 @@ function buildArrayFromRectangles(rects: Rect[]): Array<number> {
 
 // This is the actual purchase function which will be a thunk
 export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash, changePurchaseStep) {
-  return function(dispatch) {
+  return function (dispatch) {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
     const web3 = getWeb3(contractInfo);
@@ -232,7 +232,7 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
         from: coinbase,
         gasPrice: '3000000000',
         gas: gasEstimate * 2
-      }
+      };
 
       return new Promise((resolve, reject) => {
         contract.purchaseAreaWithData.sendTransaction(
@@ -248,7 +248,7 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
 
             // TODO - Lots of stuff
             resolve(transactionReceipt);
-        });
+          });
       });
     });
   };

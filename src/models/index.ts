@@ -15,7 +15,7 @@ export interface PlotInfo {
   rect: Rect;
   data: {
     url: string;
-  }
+  };
   zoneIndex: number;
   color: string;
   txHash: string;

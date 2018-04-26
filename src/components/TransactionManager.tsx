@@ -1,20 +1,17 @@
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Grid from 'material-ui/Grid';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import Paper from 'material-ui/Paper';
+import Typography from 'material-ui/Typography';
+import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
+import * as Enums from '../constants/Enums';
 import { UserTransactions } from '../models';
 
 import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
-
-import * as Enums from '../constants/Enums';
-
-import Typography from 'material-ui/Typography';
-import Grid from 'material-ui/Grid';
-import List, { ListItem, ListItemText } from 'material-ui/List';
-import Paper from 'material-ui/Paper';
-
 import TransactionStatus from './TransactionStatus';
 
 const styles: StyleRulesCallback = theme => ({
@@ -44,22 +41,22 @@ class TransactionManager extends Component<TransactionManagerProps> {
       );
     });
 
-    if (pendingTransactions.length == 0) {
+    if (pendingTransactions.length === 0) {
       pendingTransactions.push(
         <Grid key="no-data" item xs={12} >
           <Typography variant="subheading">There have been no transactions for this account.</Typography>
         </Grid>
-      )
+      );
     }
 
     return [
       (<Grid key="title" item xs={8}>
-        <Typography variant='title' >My Transactions</Typography>
+        <Typography variant="title" >My Transactions</Typography>
       </Grid>),
       (<List key="list" className={this.props.classes.txList}>
         {pendingTransactions}
       </List>)
-    ]
+    ];
   }
 
   render() {

@@ -1,6 +1,7 @@
-import { ActionTypes } from '../constants/ActionTypes';
 import * as DataActions from '../actionCreators/DataActions';
+import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
+
 import { Action } from './EthGridAction';
 
 export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
@@ -35,7 +36,7 @@ export function addTransaction(txHash, txType, txStatus, blockNumber, isNew): Ac
 export function clearNotificationCount(): Action {
   return {
     type: ActionTypes.CLEAR_NOTIFICATION_COUNT
-  }
+  };
 }
 
 export function loadTransactions(): Action {
@@ -61,7 +62,7 @@ export function fetchAccountTransactions(contractInfo, currentAddress) {
       // The owner filter here only fetches events where the owner is the current address, allowing
       // us to perform that filter on the "server" side.  
       // TODO: do we need some form of paging when a single user has a ton of transactions?
-      const auctionUpdatedEvent = contract.AuctionUpdated({owner: currentAddress}, {fromBlock: 1, toBlock: 'latest'});
+      const auctionUpdatedEvent = contract.AuctionUpdated({ owner: currentAddress }, { fromBlock: 1, toBlock: 'latest' });
 
       // Get's historical auction transactions for loading user's transaction list
       auctionUpdatedEvent.get((err, data) => {
@@ -82,7 +83,7 @@ export function fetchAccountTransactions(contractInfo, currentAddress) {
     }); 
     
     const purchaseEventPromise = new Promise((resolve, reject) => {
-      const purchaseEvent = contract.PlotPurchased({buyer: currentAddress}, {fromBlock: 1, toBlock: 'latest'});
+      const purchaseEvent = contract.PlotPurchased({ buyer: currentAddress }, { fromBlock: 1, toBlock: 'latest' });
 
       // Get's historical purchase transactions for loading user's transaction list
       purchaseEvent.get((err, data) => {
@@ -105,7 +106,7 @@ export function fetchAccountTransactions(contractInfo, currentAddress) {
     Promise.all([auctionEventPromise, purchaseEventPromise]).then(values => { 
       dispatch(doneLoadingTransactions());
     });
-  }
+  };
 }
 
 function auctionTransactionHandler(tx, isNew, txType, dispatch) { 

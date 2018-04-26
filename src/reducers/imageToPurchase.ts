@@ -1,9 +1,9 @@
-import { ActionTypes } from '../constants/ActionTypes';
 import { Action } from '../actionCreators/EthGridAction';
+import { ActionTypes } from '../constants/ActionTypes';
 import { ImageFileInfo } from '../models';
 
 export interface ImageToPurchaseState {
-  imageFileInfo?: ImageFileInfo
+  imageFileInfo?: ImageFileInfo;
 }
 
 const initialState: ImageToPurchaseState = {

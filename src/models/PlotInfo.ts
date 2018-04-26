@@ -4,7 +4,7 @@ export interface PlotInfo {
   rect: Rect;
   data: {
     url: string;
-  }
+  };
   zoneIndex: number;
   color: string;
   txHash: string;
@@ -13,4 +13,4 @@ export interface PlotInfo {
 }
 
 
-export interface HoleInfo {[index: number]: Array<Rect>};
+export interface HoleInfo {[index: number]: Array<Rect>;}

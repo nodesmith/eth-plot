@@ -1,0 +1,27 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint-config-airbnb"
+    ],
+    "jsRules": {},
+    "rules": {
+        "max-line-length": [ true, 140 ],
+        "trailing-comma": false,
+        "variable-name": [true, "allow-leading-underscore"],
+        "prefer-array-literal": false,
+        "no-increment-decrement": false,
+        "no-else-after-return": false,
+        "ter-arrow-parens": false,
+        "object-shorthand-properties-first": false,
+        "no-duplicate-imports": false, // TODO - reenable
+        "ordered-imports": [
+            true,
+            {
+                "import-sources-order": "lowercase-first",
+                "grouped-imports": true,
+                "named-imports-order": "lowercase-first"
+            }
+        ]
+    },
+    "rulesDirectory": []
+}

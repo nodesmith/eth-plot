@@ -1,24 +1,19 @@
-import * as React from 'react';
-import { Component } from 'react';
-import * as PropTypes from 'prop-types';
+import { Decimal } from 'decimal.js';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-
-import Decimal from 'decimal.js';
-import { formatEthValue } from '../../data/ValueFormatters';
-
-import IconButton from 'material-ui/IconButton';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import { FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
-import Switch from 'material-ui/Switch';
-
+import Avatar from 'material-ui/Avatar';
 import Button from 'material-ui/Button';
+import Chip from 'material-ui/Chip';
+import { FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import IconButton from 'material-ui/IconButton';
+import Input, { InputAdornment, InputLabel } from 'material-ui/Input';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
-
-import Avatar from 'material-ui/Avatar';
-import Chip from 'material-ui/Chip';
-
+import Switch from 'material-ui/Switch';
 import TextField from 'material-ui/TextField';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
+
+import { formatEthValue } from '../../data/ValueFormatters';
 import { Rect } from '../../models';
 
 const styles: StyleRulesCallback = theme => ({
@@ -39,7 +34,7 @@ export interface BuyoutPriceInputBoxProps extends WithStyles {
   rectToPurchase: Rect;
   title: string;
   buyoutPriceInWei: string;
-  toggleEnabled: boolean
+  toggleEnabled: boolean;
   onBuyoutChanged: (message:{value: string}) => void;
   onToggleChanged: (checked: boolean) => void;
   buyoutVisible: boolean;
@@ -52,14 +47,14 @@ interface BuyoutPriceInputBoxState {
   anchorEl?: HTMLElement;
 }
 
-class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPriceInputBoxState> {
+class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, BuyoutPriceInputBoxState> {
   constructor(props, context) {
     super(props, context);
 
     this.state = {
       buyoutUnits: 'wei',
       anchorEl: undefined
-    }
+    };
   }
 
   buyoutPriceChanged(event) {
@@ -67,7 +62,7 @@ class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPric
     let newPriceInWei = '';
 
     if (event.target.value.length > 0) {
-      const mulitplier = units == 'wei' ? 0 : units == 'gwei' ? 9 : 18;
+      const mulitplier = units === 'wei' ? 0 : units === 'gwei' ? 9 : 18;
       newPriceInWei = new Decimal(event.target.value + `e${mulitplier}`).toFixed();
     }
 
@@ -80,7 +75,7 @@ class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPric
 
   buyoutUnitChanged(event, buyoutUnits) {
     this.setState({
-      buyoutUnits: buyoutUnits
+      buyoutUnits
     });
 
     this.handleUnitsMenuClosed();
@@ -91,7 +86,7 @@ class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPric
       return {
         state: null,
         message: 'The price you will receive if your full plot is purchased'
-      }
+      };
     }
 
     if (!toggleEnabled) {
@@ -146,10 +141,10 @@ class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPric
     const { buyoutPriceInWei, toggleEnabled, classes } = this.props;
     const { anchorEl, buyoutUnits } = this.state;
 
-    const buyoutMultiplier = buyoutUnits == 'eth' ? -18 : buyoutUnits == 'gwei' ? -9 : 0;
+    const buyoutMultiplier = buyoutUnits === 'eth' ? -18 : buyoutUnits === 'gwei' ? -9 : 0;
     const buyoutString = buyoutPriceInWei.length > 0 ? new Decimal(buyoutPriceInWei + `e${buyoutMultiplier}`).toFixed() : '';
 
-    const validation = this.validateBuyout(buyoutPriceInWei, toggleEnabled)
+    const validation = this.validateBuyout(buyoutPriceInWei, toggleEnabled);
 
     const currencies = ['wei', 'gwei', 'eth'];
 
@@ -186,7 +181,8 @@ class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPric
               onClose={this.handleUnitsMenuClosed.bind(this)}
             >
             {currencies.map(option => (
-              <MenuItem selected={option === buyoutUnits} key={option} value={option} onClick={(event) => this.buyoutUnitChanged(event, option)}>
+              <MenuItem 
+                selected={option === buyoutUnits} key={option} value={option} onClick={(event) => this.buyoutUnitChanged(event, option)}>
                 {option}
               </MenuItem>
             ))}

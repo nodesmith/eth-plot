@@ -1,18 +1,15 @@
-import * as React from 'react';
-import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-
-import { ImageFileInfo } from '../../models';
-
-import Decimal from 'decimal.js';
-
-import Button from 'material-ui/Button';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import { FormControl, FormHelperText } from 'material-ui/Form';
+import { Decimal } from 'decimal.js';
 import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Button from 'material-ui/Button';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+import Input, { InputAdornment, InputLabel } from 'material-ui/Input';
 import Typography from 'material-ui/Typography';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
+
+import { ImageFileInfo } from '../../models';
 
 const allowedFileTypes = [
   'image/jpeg',
@@ -33,7 +30,7 @@ const styles: StyleRulesCallback = theme => ({
     marginTop: theme.spacing.unit * 3,
   },
   hidden: {
-    display: 'none';
+    display: 'none'
   }
 });
 
@@ -49,15 +46,15 @@ interface ChooseImageInputBoxState {
     fileName: string;
     fileType: string;
     lastModified: Date;
-  },
+  };
   imageFileInfo?: ImageFileInfo;
   fileValidation: {
     state?: string;
     message: string;
-  }
+  };
 }
 
-class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, ChooseImageInputBoxState> {
+class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes, ChooseImageInputBoxState> {
   // private fileSelectInput?: HTMLInputElement;
   // private imagePreview?: HTMLImageElement;
   constructor(props, context) {
@@ -97,8 +94,8 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
       this.getImageFileInfoAsync(chosenFile).then(imageFileInfo => {
         const fileValidation = this.validateImageFile(this.state.fileToUse, imageFileInfo);
         this.setState({
-          imageFileInfo: imageFileInfo,
-          fileValidation: fileValidation
+          imageFileInfo,
+          fileValidation
         });
 
         this.props.onImageChanged(imageFileInfo);
@@ -106,7 +103,7 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
     }
 
     const fileValidation = this.validateImageFile(this.state.fileToUse, this.state.imageFileInfo);
-    this.setState({fileToUse: newFileToUse, fileValidation: fileValidation});
+    this.setState({ fileToUse: newFileToUse, fileValidation });
   }
 
   validateImageFile(file, imageFileInfo) {
@@ -149,9 +146,9 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
   }
 
   getImageFileInfoAsync(file): Promise<ImageFileInfo> {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       const fileReader = new FileReader;
-      fileReader.onload = function() {
+      fileReader.onload = function () {
         const imagePreview = document.getElementById('hidden_image') as HTMLImageElement;
         imagePreview.onload = function () {
           const imageFileInfo = {
@@ -168,7 +165,7 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
       }.bind(this);
       
       fileReader.readAsDataURL(file);
-    }.bind(this));
+    });
   }
 
   render() {
@@ -188,16 +185,16 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
 
     return (
       <FormControl fullWidth className={classes.formControl}>
-        <InputLabel htmlFor='browse-for-image'></InputLabel>
-        <Input margin='dense' fullWidth inputComponent={browseInputFn} />
+        <InputLabel htmlFor="browse-for-image"></InputLabel>
+        <Input margin="dense" fullWidth inputComponent={browseInputFn} />
         <FormHelperText>{this.state.fileValidation.message}</FormHelperText>
         <input
           accept={allowedFileTypes.join(',')}
           onChange={this.onFileSelected.bind(this)}
-          type='file'
-          id='hidden_input'
+          type="file"
+          id="hidden_input"
           className={classes.hidden} />
-        <img id='hidden_image'
+        <img id="hidden_image"
           className={classes.hidden} />
       </FormControl>
     );

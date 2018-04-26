@@ -3,7 +3,7 @@ export enum METAMASK_STATE {
   UNINSTALLED = 0,
   OPEN = 1,
   LOCKED = 2
-};
+}
 
 export enum MovementActions {
   NONE= -1,
@@ -16,7 +16,7 @@ export enum MovementActions {
   LOWER_LEFT= 6,
   LOWER_RIGHT= 7,
   UPPER_RIGHT= 8,
-};
+}
 
 export enum PurchaseStage {
   NOT_STARTED= -1,
@@ -26,12 +26,12 @@ export enum PurchaseStage {
   SUBMITTING_TO_BLOCKCHAIN= 3,
   WAITING_FOR_CONFIRMATIONS= 4,
   DONE= 5
-};
+}
 
 export enum TxType {
   PURCHASE= 0,
   AUCTION= 1,
-};
+}
 
 export enum TxStatus {
   PENDING= 0,

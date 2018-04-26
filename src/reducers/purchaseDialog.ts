@@ -1,6 +1,6 @@
+import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import { PurchaseStage } from '../constants/Enums';
-import { Action } from '../actionCreators/EthGridAction';
 
 export interface PurchaseDialogState {
   isShowing: boolean;

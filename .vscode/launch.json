@@ -7,24 +7,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Buy Random Plots",
-      "program": "${workspaceRoot}/src/scratch/buy-random-plots.js",
-      "stopOnEntry": false,
-      "args": [],
-      "cwd": "${workspaceRoot}",
-      "preLaunchTask": null,
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/babel-node",
-      "runtimeArgs": [
-          "--nolazy"
-      ],
-      "env": {
-          "NODE_ENV": "production"
-      },
-      "sourceMaps": false,
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Run Current File",
       "program": "${file}"
     },

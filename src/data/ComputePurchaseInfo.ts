@@ -1,17 +1,19 @@
-import * as PlotMath from './PlotMath';
-import Decimal from 'decimal.js';
+import { Decimal } from 'decimal.js';
+
 import { PlotInfo, Rect } from '../models';
 
+import * as PlotMath from './PlotMath';
+
 export interface PurchaseInfo {
-    chunksToPurchase: Array<Rect>;
-    chunksToPurchaseAreaIndices: Array<number>;
-    purchasePrice: string;
+  chunksToPurchase: Array<Rect>;
+  chunksToPurchaseAreaIndices: Array<number>;
+  purchasePrice: string;
 }
 
 // Computes what chunks are needed to be purchased for a particular region
 export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>): PurchaseInfo {
-  let purchasedChunks = new Array<Rect>();
-  let purchasedChunkAreaIndices = new Array<number>();
+  const purchasedChunks = new Array<Rect>();
+  const purchasedChunkAreaIndices = new Array<number>();
   let purchasePrice = new Decimal(0);
 
   // We'll need to walk the ownership array backwards and see who we need to buy chunks from
@@ -26,7 +28,7 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
         // Look at the overlap between the chunk we're trying to purchase, and the ownership plot we have
         const chunkOverlap = PlotMath.computeRectOverlap(currentPlot.rect, chunkToPurchase);
 
-        let newHole = chunkOverlap;
+        const newHole = chunkOverlap;
         // Next, subtract out all of the holes which this ownerhip may have (TODO)
 
         // Add the new holes to the purchaseChunks and keep track of their index
@@ -37,7 +39,8 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
         const plotBuyout = new Decimal(currentPlot.buyoutPrice).mul(chunkOverlap.w * chunkOverlap.h);
         purchasePrice = purchasePrice.add(plotBuyout);
 
-        // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is remaining back to remainingChunksToPurchase
+        // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is
+        // remaining back to remainingChunksToPurchase
         remainingChunksToPurchase.splice(j, 1);
 
         const newChunksToPurchase = PlotMath.subtractRectangles(chunkToPurchase, newHole);

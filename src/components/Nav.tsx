@@ -1,15 +1,16 @@
-import * as React from 'react';
-import { Component } from 'react';
-import * as PropTypes from 'prop-types';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
+// tslint:disable-next-line:no-duplicate-imports
+import { Component } from 'react';
 
 import { NavLink } from 'react-router-dom';
 
+import AccountBox from 'material-ui-icons/AccountBox';
 import AppBar from 'material-ui/AppBar';
 import Badge from 'material-ui/Badge';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
-import AccountBox from 'material-ui-icons/AccountBox';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
