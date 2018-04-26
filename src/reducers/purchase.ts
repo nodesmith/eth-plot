@@ -7,7 +7,8 @@ import { createEmptyRect, Point, Rect, RectDelta, RectTransform } from '../model
 function determineInitialRect(imageFileInfo) {
   const ratio = imageFileInfo.w / imageFileInfo.h;
   const targetDimension = 30;
-  let w = 30, h = 30;
+  let w = 30;
+  let h = 30;
   if (imageFileInfo.w > imageFileInfo.h) {
     h = Math.round((30 / imageFileInfo.w) * imageFileInfo.h);
   } else {
@@ -15,10 +16,10 @@ function determineInitialRect(imageFileInfo) {
   }
   
   return {
-    x: 100,
-    y: 100,
     w,
     h,
+    x: 100,
+    y: 100,
     x2: 100 + w,
     y2: 100 + h
   };
@@ -44,10 +45,10 @@ function addDelta(rect: Rect, delta: RectDelta): Rect {
 
 function deltasEqual(a, b) {
   return (
-    a.left == b.left &&
-    a.bottom == b.bottom &&
-    a.right == b.right &&
-    a.top == b.top);
+    a.left === b.left &&
+    a.bottom === b.bottom &&
+    a.right === b.right &&
+    a.top === b.top);
 }
 
 export interface PurchaseState {
@@ -104,13 +105,13 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
         const initialRect = determineInitialRect(action.imageFileInfo);
         const purchaseInfo = computePurchaseInfo(initialRect, action.plots);
         return Object.assign({}, state, {
-        rectToPurchase: initialRect,
-        initialRectToPurchase: initialRect,
-        initialRectToPurchaseDeltas: [],
-        currentTransform: null,
-        imageName: action.imageFileInfo.fileName,
-        purchasePriceInWei: purchaseInfo.purchasePrice
-      });
+          rectToPurchase: initialRect,
+          initialRectToPurchase: initialRect,
+          initialRectToPurchaseDeltas: [],
+          currentTransform: null,
+          imageName: action.imageFileInfo.fileName,
+          purchasePriceInWei: purchaseInfo.purchasePrice
+        });
       }
     case ActionTypes.START_TRANSFORM_RECT:
       const result = Object.assign({}, state, {
@@ -130,9 +131,9 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
         const previousDeltaIndex = state.initialRectToPurchaseDeltas.length - 1;
         const previousDelta = state.initialRectToPurchaseDeltas[previousDeltaIndex];
         if (deltasEqual(action.delta, previousDelta)) {
-        console.log('deltas equal');
-        return state;
-      }
+          console.log('deltas equal');
+          return state;
+        }
 
       // Clone the array
         const rectDeltas = state.initialRectToPurchaseDeltas.slice(0);
@@ -145,10 +146,10 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
         const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
 
         return Object.assign({}, state, {
-        rectToPurchase,
-        initialRectToPurchaseDeltas: rectDeltas,
-        purchasePriceInWei: purchaseInfo.purchasePrice
-      });
+          rectToPurchase,
+          initialRectToPurchaseDeltas: rectDeltas,
+          purchasePriceInWei: purchaseInfo.purchasePrice
+        });
       }
     case ActionTypes.COMPLETE_PURCHASE_STEP:
       const nextStep = action.index + 1;

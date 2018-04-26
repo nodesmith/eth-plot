@@ -60,7 +60,7 @@ export interface AppProps extends RouteComponentProps<any> {
  * component to make the Redux store available to the rest of the app.
  */
 class App extends React.Component<AppProps> { 
-  private accountInterval: number;
+  private accountInterval: NodeJS.Timer;
 
   componentDidMount() {
     this.checkMetamaskStatus();
@@ -75,9 +75,10 @@ class App extends React.Component<AppProps> {
      * More info available here: 
      * https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md
      */
-    this.accountInterval = setInterval(function () {
-      this.checkMetamaskStatus();
-    }.bind(this),                      1000000); // TODO Toggle back on
+    this.accountInterval = setInterval(
+      () => {
+        this.checkMetamaskStatus();
+      }, 1000000); // TODO Toggle back on
   }
 
   checkMetamaskStatus() {
@@ -87,7 +88,7 @@ class App extends React.Component<AppProps> {
         if (accounts.length > 0) {
           this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
 
-          if (accounts[0] != this.props.account.activeAccount) {
+          if (accounts[0] !== this.props.account.activeAccount) {
             // The only time we ever want to load data from the chain history
             // is when we receive a change in accounts - this happens anytime 
             // the page is initially loaded or if there is a change in the account info
@@ -209,7 +210,7 @@ class App extends React.Component<AppProps> {
       classes: {},
       notificationCount: this.props.account.notificationCount,
       clearNotifications: this.clearNotifications.bind(this),
-      doNavigation: (to) => this.doNavigation(to)
+      doNavigation: to => this.doNavigation(to)
     };
 
     const mainBodyContent = this.getMainBodyContent();
@@ -220,7 +221,7 @@ class App extends React.Component<AppProps> {
           {
             (this.shouldShowSpinner()) ?
             <ProgressSpinner classes={{}} /> :
-              (this.props.account.metamaskState != Enums.METAMASK_STATE.OPEN) ?
+              (this.props.account.metamaskState !== Enums.METAMASK_STATE.OPEN) ?
               <MetaMaskStatus metamaskState={this.props.account.metamaskState} classes={{}} /> :
               mainBodyContent
           }

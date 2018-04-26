@@ -2,5 +2,6 @@
   "files.exclude": {
       "src/**/*.js": true,
       "src/**/*.map": true
-  }
+  },
+  "tslint.autoFixOnSave": true
 }

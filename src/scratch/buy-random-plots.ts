@@ -39,12 +39,13 @@ const buyRandomPlots = () => {
     console.log(`Buying ${JSON.stringify(rectToPurchase)}`);
 
     const state = store.getState();
-    return DataActions.purchasePlot(state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123', () => {})(store.dispatch);
+    return DataActions.purchasePlot(
+      state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123', () => {})(store.dispatch);
   }
 
   let buysRemaining = 10;
   function doWork() {
-    buysRemaining--;
+    buysRemaining -= 1;
     purchaseRandomArea().then(() => {
       if (buysRemaining > 0) {
         doWork();

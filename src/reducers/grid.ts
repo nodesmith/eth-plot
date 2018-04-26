@@ -32,27 +32,27 @@ export function gridReducer(state: GridState = initialState, action: Action): Gr
     case ActionTypes.START_DRAGGING_RECT:
       {
         const dragRectStart = {
-      x: action.x,
-      y: action.y
-    };
+          x: action.x,
+          y: action.y
+        };
 
         const dragRectCurr = {
-      x: action.x,
-      y: action.y
-    };
+          x: action.x,
+          y: action.y
+        };
 
-        return Object.assign({}, state, { isDraggingRect: true, dragRectStart, dragRectCurr });
+        return Object.assign({}, state, { dragRectStart, dragRectCurr, isDraggingRect: true });
       }
     case ActionTypes.RESIZE_DRAGGING_RECT:
       {
         if (!state.isDraggingRect) {
-      return state;
-    }
+          return state;
+        }
 
         const dragRectCurr = {
-      x: action.x,
-      y: action.y
-    };
+          x: action.x,
+          y: action.y
+        };
     
         return Object.assign({}, state, { dragRectCurr });
       }
@@ -62,10 +62,10 @@ export function gridReducer(state: GridState = initialState, action: Action): Gr
       {
         let newScale = state.scale;
         if (action.direction > 0) {
-      newScale = Math.min(state.scale + 1, MAX_SCALE);
-    } else {
-      newScale = Math.max(state.scale - 1, MIN_SCALE);
-    }
+          newScale = Math.min(state.scale + 1, MAX_SCALE);
+        } else {
+          newScale = Math.max(state.scale - 1, MIN_SCALE);
+        }
 
         return Object.assign({}, state, { scale: newScale });
       }

@@ -8,6 +8,10 @@
         "max-line-length": [ true, 140 ],
         "trailing-comma": false,
         "variable-name": [true, "allow-leading-underscore"],
+        "prefer-array-literal": false,
+        "no-increment-decrement": false,
+        "no-else-after-return": false,
+        "ter-arrow-parens": false,
         "ordered-imports": [
             true,
             {

@@ -4,8 +4,7 @@ import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as PlotMath from '../data/PlotMath';
-import { Rect } from '../models';
-import { ContractInfo, HoleInfo, PlotInfo } from '../models';
+import { ContractInfo, HoleInfo, PlotInfo, Rect } from '../models';
 
 // TODO - Clean this up a bit and get from some config file
 const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
@@ -99,7 +98,8 @@ function computeNewHoles(rectToAdd: Rect, currentHoles: HoleInfo, plots: Array<P
         holes.push(overlap);
         result[plotIndex] = holes;
 
-        // Since we've now accounted for overlap from currentRemainingArea, remove currentRemaingingArea and append any remaining area to the end
+        // Since we've now accounted for overlap from currentRemainingArea,
+        // remove currentRemaingingArea and append any remaining area to the end
         const leftoverArea = PlotMath.subtractRectangles(currentRemainingArea, overlap);
 
         // Do the delete
