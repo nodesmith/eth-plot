@@ -11,7 +11,6 @@ import Select from 'material-ui/Select';
 import Switch from 'material-ui/Switch';
 import TextField from 'material-ui/TextField';
 import * as PropTypes from 'prop-types';
-import { Component } from 'react';
 import * as React from 'react';
 
 import { formatEthValue } from '../../data/ValueFormatters';
@@ -48,7 +47,7 @@ interface BuyoutPriceInputBoxState {
   anchorEl?: HTMLElement;
 }
 
-class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPriceInputBoxState> {
+class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, BuyoutPriceInputBoxState> {
   constructor(props, context) {
     super(props, context);
 
@@ -63,7 +62,7 @@ class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPric
     let newPriceInWei = '';
 
     if (event.target.value.length > 0) {
-      const mulitplier = units == 'wei' ? 0 : units == 'gwei' ? 9 : 18;
+      const mulitplier = units === 'wei' ? 0 : units === 'gwei' ? 9 : 18;
       newPriceInWei = new Decimal(event.target.value + `e${mulitplier}`).toFixed();
     }
 
@@ -142,7 +141,7 @@ class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPric
     const { buyoutPriceInWei, toggleEnabled, classes } = this.props;
     const { anchorEl, buyoutUnits } = this.state;
 
-    const buyoutMultiplier = buyoutUnits == 'eth' ? -18 : buyoutUnits == 'gwei' ? -9 : 0;
+    const buyoutMultiplier = buyoutUnits === 'eth' ? -18 : buyoutUnits === 'gwei' ? -9 : 0;
     const buyoutString = buyoutPriceInWei.length > 0 ? new Decimal(buyoutPriceInWei + `e${buyoutMultiplier}`).toFixed() : '';
 
     const validation = this.validateBuyout(buyoutPriceInWei, toggleEnabled);
@@ -182,7 +181,8 @@ class BuyoutPriceInputBox extends Component<BuyoutPriceInputBoxProps, BuyoutPric
               onClose={this.handleUnitsMenuClosed.bind(this)}
             >
             {currencies.map(option => (
-              <MenuItem selected={option === buyoutUnits} key={option} value={option} onClick={(event) => this.buyoutUnitChanged(event, option)}>
+              <MenuItem 
+                selected={option === buyoutUnits} key={option} value={option} onClick={(event) => this.buyoutUnitChanged(event, option)}>
                 {option}
               </MenuItem>
             ))}

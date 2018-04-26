@@ -1,8 +1,6 @@
 import * as DataActions from '../actionCreators/DataActions';
 import * as Enums from '../constants/Enums';
-import { ContractInfo, PlotInfo } from '../models';
-import { Point, Rect, RectDelta } from '../models';
-import { ImageFileInfo } from '../models';
+import { ContractInfo, ImageFileInfo, PlotInfo, Point, Rect, RectDelta } from '../models';
 
 // Account Actions
 export type updateMetamaskState = (newState: Enums.METAMASK_STATE) => void;
@@ -21,7 +19,13 @@ export type plotListed = (txHash: string, zoneIndex: number) => void;
 export type doneLoadingPlots = () => void;
 export type fetchPlotsFromWeb3 = (contractInfo: ContractInfo) => void;
 export type updateAuction = (contractInfo: ContractInfo, zoneIndex: number, newPrice: string) => void;
-export type purchasePlot = (contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, url: string, ipfsHash: string, changePurchaseStep: (stage: Enums.PurchaseStage) => void) => void;
+export type purchasePlot = 
+  (contractInfo: ContractInfo,
+   plots: Array<PlotInfo>,
+   rectToPurchase: Rect,
+   url: string,
+   ipfsHash: string,
+   changePurchaseStep: (stage: Enums.PurchaseStage) => void) => void;
 
 // Grid Actions
 export type hoverOverPlot = (plotIndex: number) => void;
@@ -44,7 +48,9 @@ export type goToPurchaseStep = (index: number) => void;
 export type changePlotWebsite = (website: string, websiteValidation) => void;
 export type changePlotBuyout = (buyoutPriceInWei: string) => void;
 export type changeBuyoutEnabled = (isEnabled: boolean) => void;
-export type completePlotPurchase = (contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) => void;
+export type completePlotPurchase = 
+  (contractInfo: ContractInfo, 
+   plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) => void;
 export type cancelPlotPurchase = () => void;
 export type startPurchasePlot = () => void;
 export type changePurchaseStep = (purchaseStage: Enums.PurchaseStage) => void;

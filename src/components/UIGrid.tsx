@@ -68,6 +68,7 @@ class UIGrid extends Component<UIGridProps> {
     const deltaX = x - this.props.currentTransform.startLocation.x;
     const deltaY = y - this.props.currentTransform.startLocation.y;
 
+    // tslint:disable-next-line:one-variable-per-declaration
     let top = 0, left = 0, bottom = 0, right = 0;
 
     const rect = Object.assign({}, this.props.rectToPurchase);

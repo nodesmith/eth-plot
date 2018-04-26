@@ -7,12 +7,10 @@ import Stepper, { Step, StepButton, StepContent, StepLabel } from 'material-ui/S
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import * as Actions from '../actions';
 import { formatEthValueToString } from '../data/ValueFormatters';
-import { ContractInfo, ImageFileInfo } from '../models';
-import { PlotInfo, Rect } from '../models';
+import { ContractInfo, ImageFileInfo, PlotInfo, Rect } from '../models';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
@@ -64,9 +62,9 @@ export interface PurchaseFlowCardProps extends WithStyles {
   completedSteps: {[index: number]: boolean};
   imageName: string;
   imageDimensions: {
-      h: number;
-      w: number;
-    };
+    h: number;
+    w: number;
+  };
   website: string;
   buyoutPriceInWei: string;
   buyoutEnabled: boolean;
@@ -77,7 +75,7 @@ export interface PurchaseFlowCardProps extends WithStyles {
   plots: Array<PlotInfo>;
 }
 
-class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
+class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
 
   onImageChanged(imageFileInfo) {
     this.props.onImageSelected(imageFileInfo, this.props.plots);
@@ -126,18 +124,19 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
   }
 
   getStepContents(index) {
-    let stepHeader, stepContent;
+    let stepHeader;
+    let stepContent;
     const defaultBackButtonAction = this.goToStep.bind(this, index - 1);
     const defaultNextButtonAction = this.stepCompleted.bind(this, index, false);
-    const stepDisabled = !(index == 0 || this.props.completedSteps[index - 1]);
+    const stepDisabled = !(index === 0 || this.props.completedSteps[index - 1]);
     const { classes } = this.props;
 
     switch (index) {
       case 0:
         {
-        const buttonEnabled = this.props.imageName.length > 0;
-        stepHeader = 'Pick and place an image';
-        stepContent = (
+          const buttonEnabled = this.props.imageName.length > 0;
+          stepHeader = 'Pick and place an image';
+          stepContent = (
           <div>
             <Typography variant="body1">
               Choose an image, then position and resize it in the grid. The purchase price will update as you move
@@ -146,12 +145,12 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
             { this.getButtons({ text: 'Reset' }, { text: 'Next', onClick: defaultNextButtonAction, disabled: !buttonEnabled }) }
           </div>
         );
-        break;
-      }
+          break;
+        }
       case 1:
         {
-        stepHeader = 'Add a URL (optional)';
-        stepContent = (
+          stepHeader = 'Add a URL (optional)';
+          stepContent = (
           <div>
             <Typography variant="body1">
               Add an optional website and initial buyout price
@@ -160,12 +159,12 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
             { this.getButtons({ text: 'Back', onClick: defaultBackButtonAction }, { text: 'Next', onClick: defaultNextButtonAction }) }
           </div>
         );
-        break;
-      }
+          break;
+        }
       case 2:
         {
-        stepHeader = 'Set a buyout price (optional)';
-        stepContent = (
+          stepHeader = 'Set a buyout price (optional)';
+          stepContent = (
           <div>
             <Typography variant="body1">
               Set an optional initial buyout price
@@ -185,20 +184,20 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
             { this.getButtons({ text: 'Back', onClick: defaultBackButtonAction }, { text: 'Next', onClick: defaultNextButtonAction }) }
           </div>
         );
-        break;
-      }
+          break;
+        }
       case 3:
         {
-        const makeLine = (label, value) => (
+          const makeLine = (label, value) => (
           <div>
             <Typography className={classes.summaryLine} noWrap variant="body2">{label}{': '}</Typography>
             <Typography className={classes.summaryLine} noWrap variant="body1">{value}</Typography>
           </div>
         );
-        stepHeader = 'Review and purchase';
-        const rect = this.props.rectToPurchase!;
-        const buyoutPrice = this.props.buyoutEnabled ? formatEthValueToString(this.props.buyoutPriceInWei) : 'Not Enabled';
-        stepContent = (
+          stepHeader = 'Review and purchase';
+          const rect = this.props.rectToPurchase!;
+          const buyoutPrice = this.props.buyoutEnabled ? formatEthValueToString(this.props.buyoutPriceInWei) : 'Not Enabled';
+          stepContent = (
           <div>
             {makeLine('Purchase Price', formatEthValueToString(this.props.purchasePriceInWei))}
             {makeLine('Image', this.props.imageName)}
@@ -206,11 +205,12 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
             {makeLine('Plot Dimensions', `${rect.w}x${rect.h} (${rect.w * rect.h} units)`)}
             {makeLine('Website', this.props.website)}
             {makeLine('Buyout Price', buyoutPrice)}
-            { this.getButtons({ text: 'Back', onClick: defaultBackButtonAction }, { text: 'Buy', onClick: this.completePurchase.bind(this) }) }
+            {this.getButtons({ text: 'Back', onClick: defaultBackButtonAction },
+                             { text: 'Buy', onClick: this.completePurchase.bind(this) })}
           </div>
         );
-        break;
-      }
+          break;
+        }
     }
 
     const isCompleted = !!this.props.completedSteps[index];
@@ -246,7 +246,7 @@ class PurchaseFlowCard extends Component<PurchaseFlowCardProps> {
           classes={{ title: classes.contrastColor, subheader: classes.contrastColor }}
             action={
               <IconButton color="primary" classes={{ colorPrimary: classes.contrastColor }} onClick={this.props.onClose}>
-                <CloseIcon />
+                <Close />
               </IconButton>
             }
             title="Purchase Plot"

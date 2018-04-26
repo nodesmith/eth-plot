@@ -40,7 +40,7 @@ class AccountManager extends Component<AccountManagerProps> {
       );
     });
 
-    if (plotInfos.length == 0) {
+    if (plotInfos.length === 0) {
       plotInfos.push(
         <Grid key="no-data" item xs={12} >
           <Typography variant="subheading">You don't have any owned plots. Visit the grid to purchase a plot.</Typography>

@@ -1,6 +1,7 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
+// tslint:disable-next-line:no-duplicate-imports
 import { Component } from 'react';
 
 import { NavLink } from 'react-router-dom';

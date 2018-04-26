@@ -7,7 +7,6 @@ import { FormControl, FormHelperText } from 'material-ui/Form';
 import Input, { InputAdornment, InputLabel } from 'material-ui/Input';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
-import { Component } from 'react';
 import * as React from 'react';
 
 import { ImageFileInfo } from '../../models';
@@ -55,7 +54,7 @@ interface ChooseImageInputBoxState {
   };
 }
 
-class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, ChooseImageInputBoxState> {
+class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes, ChooseImageInputBoxState> {
   // private fileSelectInput?: HTMLInputElement;
   // private imagePreview?: HTMLImageElement;
   constructor(props, context) {
@@ -147,7 +146,7 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
   }
 
   getImageFileInfoAsync(file): Promise<ImageFileInfo> {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       const fileReader = new FileReader;
       fileReader.onload = function () {
         const imagePreview = document.getElementById('hidden_image') as HTMLImageElement;
@@ -166,7 +165,7 @@ class ChooseImageInputBox extends Component<ChooseImageInputBoxPropTypes, Choose
       }.bind(this);
       
       fileReader.readAsDataURL(file);
-    }.bind(this));
+    });
   }
 
   render() {

@@ -10,10 +10,8 @@ import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
-import { Rect } from '../models';
-import { PlotInfo as PlotInfoData } from '../models';
+import { PlotInfo as PlotInfoData, Rect } from '../models';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 
@@ -39,14 +37,14 @@ interface PlotInfoState {
 }
 
 
-class PlotInfo extends Component<PlotInfoProps, PlotInfoState> {
+class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   constructor(props, context) {
     super(props, context);
     this.state = {
-  newBuyoutPrice: '0',
-  toggleEnabled: false,
-  auctionVisible: false
-};
+      newBuyoutPrice: '0',
+      toggleEnabled: false,
+      auctionVisible: false
+    };
   }
   
   onBuyoutChanged(buyoutChangedMessage) {
@@ -78,7 +76,9 @@ class PlotInfo extends Component<PlotInfoProps, PlotInfoState> {
           
           {
             this.props.info.txHash ?
-            <Typography variant="headline">Trasaction in progress: <a href={`https://etherscan.io/address/${this.props.info.txHash}`}>{this.props.info.txHash}</a></Typography>
+            <Typography variant="headline">
+              Trasaction in progress: 
+            <a href={`https://etherscan.io/address/${this.props.info.txHash}`}>{this.props.info.txHash}</a></Typography>
             : null
           }
 

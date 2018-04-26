@@ -12,6 +12,8 @@
         "no-increment-decrement": false,
         "no-else-after-return": false,
         "ter-arrow-parens": false,
+        "object-shorthand-properties-first": false,
+        "no-duplicate-imports": false, // TODO - reenable
         "ordered-imports": [
             true,
             {

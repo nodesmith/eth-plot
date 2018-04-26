@@ -51,7 +51,7 @@ class WebsiteInputBox extends Component<WebsiteInputBoxPropTypes, {website:strin
   }
 
   validateWebsite(website?: string): WebsiteValidation {
-    if (!website || website.length == 0) {
+    if (!website || website.length === 0) {
       return {
         state: null,
         message: 'The website where your plot links to'
@@ -80,7 +80,7 @@ class WebsiteInputBox extends Component<WebsiteInputBoxPropTypes, {website:strin
 
   render() {
     const { classes } = this.props;
-    const error = this.state.websiteValidation.state == 'error';
+    const error = this.state.websiteValidation.state === 'error';
     return (<TextField
       error={error}
       fullWidth

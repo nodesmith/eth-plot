@@ -6,9 +6,10 @@ import { Rect } from '../models';
 
 import * as AccountActions from './AccountActions';
 
+// tslint:disable-next-line:variable-name
 const Web3 = require('web3');
 const hexy = require('hexy');
-const PromisePool = require('es6-promise-pool');
+const promisePool = require('es6-promise-pool');
 
 export function addPlot(newPlot) {
   return {
@@ -60,7 +61,6 @@ export function determineTxStatus(tx) {
 }
 
 export function getWeb3(contractInfo) {
-  let window;
   if (!window) {
     // This is only used to run the setup purchase scripts
     return new Web3(new Web3.providers.HttpProvider('http://localhost:9545'));
@@ -98,7 +98,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
         resolve(ownershipLengthString);
       });
     }).then((ownershipLengthString: string) => {
-      const ownershipLength = parseInt(ownershipLengthString);
+      const ownershipLength = parseInt(ownershipLengthString, 10);
       let currentIndex = 0;
 
       const ownershipLoadFn = () => {
@@ -114,15 +114,15 @@ export function fetchPlotsFromWeb3(contractInfo) {
 
             const plot = {
               rect: {
-                x: parseInt(plotInfo['0']),
-                y: parseInt(plotInfo['1']),
-                w: parseInt(plotInfo['2']),
-                h: parseInt(plotInfo['3']),
+                x: parseInt(plotInfo['0'], 10),
+                y: parseInt(plotInfo['1'], 10),
+                w: parseInt(plotInfo['2'], 10),
+                h: parseInt(plotInfo['3'], 10),
                 x2: 0,
                 y2: 0
               },
               owner: plotInfo['4'],
-              buyoutPrice: parseInt(plotInfo['5']),
+              buyoutPrice: parseInt(plotInfo['5'], 10),
               data: {
                 url: plotInfo['6'],
                 ipfsHash: plotInfo['7']
@@ -143,7 +143,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
       };
 
       // Create a pool.
-      const pool = new PromisePool(ownershipLoadFn, 1);
+      const pool = new promisePool(ownershipLoadFn, 1);
       
       // Start the pool. 
       return pool.start().then(() => {

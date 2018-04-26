@@ -54,4 +54,4 @@ class ZoomControl extends Component<ZoomControlProps> {
   }
 }
 
-export const ZoomControlComponent = withStyles(styles, { name: 'ZoomControl' })(ZoomControl);
+export default withStyles(styles, { name: 'ZoomControl' })(ZoomControl);

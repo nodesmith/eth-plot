@@ -41,7 +41,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
       );
     });
 
-    if (pendingTransactions.length == 0) {
+    if (pendingTransactions.length === 0) {
       pendingTransactions.push(
         <Grid key="no-data" item xs={12} >
           <Typography variant="subheading">There have been no transactions for this account.</Typography>

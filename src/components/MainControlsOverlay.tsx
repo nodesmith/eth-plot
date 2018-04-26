@@ -13,7 +13,7 @@ import * as Actions from '../actions';
 import { ContractInfo, PlotInfo, Rect } from '../models';
 
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
-import { ZoomControlComponent } from './ZoomControl';
+import ZoomControl from './ZoomControl';
 
 
 const padding = 24;
@@ -103,7 +103,7 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
     return (
       <div className={classes.root}>
         <div className={classes.zoom}>
-          <ZoomControlComponent classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
+          <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
         </div>
         {this.props.purchase.purchaseFlowOpen ? null : 
           <Button variant="fab" color="secondary" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>

@@ -74,13 +74,14 @@ export function changePlotBuyout(buyoutPriceInWei: string): Action {
 
 export function changeBuyoutEnabled(isEnabled): Action {
   return {
-    type: ActionTypes.CHANGE_BUYOUT_ENABLED,
-    isEnabled
+    isEnabled,
+    type: ActionTypes.CHANGE_BUYOUT_ENABLED
   };
 }
 
 // Thunk action for purchasing a plot. This requires uploading the image, submitting it to the chain, and waiting for transformations
-export function completePlotPurchase(contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) {
+export function completePlotPurchase(
+  contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) {
   return function (dispatch) {
     dispatch(startPurchasePlot());
 

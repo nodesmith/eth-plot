@@ -1,7 +1,6 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import { CircularProgress } from 'material-ui/Progress';
 
@@ -27,7 +26,7 @@ export interface ProgressSpinnerProps extends WithStyles {
 
 }
 
-class ProgressSpinner extends Component<ProgressSpinnerProps> {
+class ProgressSpinner extends React.Component<ProgressSpinnerProps> {
   render() {
     const { classes } = this.props;
     return (
