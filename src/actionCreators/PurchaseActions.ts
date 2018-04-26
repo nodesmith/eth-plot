@@ -1,9 +1,10 @@
 import { ActionTypes } from '../constants/ActionTypes';
 import { MovementActions, PurchaseStage } from '../constants/Enums';
+import { ContractInfo, Point, Rect } from '../models';
+import { PlotInfo } from '../models/PlotInfo';
+
 import { purchasePlot as purchasePlotFromChain } from './DataActions';
 import { Action } from './EthGridAction';
-import { Point, ContractInfo, Rect } from '../models';
-import { PlotInfo } from '../models/PlotInfo';
 
 export function togglePurchaseFlow(): Action {
   return {
@@ -16,7 +17,7 @@ export function purchaseImageSelected(imageFileInfo, plots): Action {
     type: ActionTypes.PURCHASE_IMAGE_SELECTED,
     imageFileInfo,
     plots
-  }
+  };
 }
 
 export function transformRectToPurchase(delta, plots): Action {
@@ -24,7 +25,7 @@ export function transformRectToPurchase(delta, plots): Action {
     type: ActionTypes.TRANSFORM_RECT_TO_PURCHASE,
     delta,
     plots
-  }
+  };
 }
 
 export function startTransformRectToPurchase(startLocation: Point, transformAction: MovementActions): Action {
@@ -32,13 +33,13 @@ export function startTransformRectToPurchase(startLocation: Point, transformActi
     type: ActionTypes.START_TRANSFORM_RECT,
     startLocation,
     transformAction
-  }
+  };
 }
 
 export function stopTransformRectToPurchase(): Action {
   return {
     type: ActionTypes.STOP_TRANSFORM_RECT
-  }
+  };
 }
 
 export function completePurchaseStep(index: number, wasSkipped: boolean): Action {
@@ -92,7 +93,7 @@ export function completePlotPurchase(contractInfo: ContractInfo, plots: Array<Pl
 export function cancelPlotPurchase(): Action {
   return {
     type: ActionTypes.CANCEL_PLOT_PURCHASE
-  }
+  };
 }
 
 function startPurchasePlot(): Action {
@@ -102,7 +103,7 @@ function startPurchasePlot(): Action {
 }
 
 function uploadImageData(imageData) {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch(changePurchaseStep(PurchaseStage.UPLOADING_TO_IPFS));
 
     // Here's were we do the post up to IPFS
@@ -116,7 +117,7 @@ function uploadImageData(imageData) {
       return new Promise((resolve2, reject2) => {
         setTimeout(() => resolve2(ipfsHash), 500);
       });
-    })
+    });
   };
 }
 
@@ -124,5 +125,5 @@ function changePurchaseStep(purchaseStage) {
   return {
     type: ActionTypes.CHANGE_PURCHASE_STAGE,
     purchaseStage
-  }
+  };
 }

@@ -1,7 +1,7 @@
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
 import { MovementActions } from '../constants/Enums';
 import { Rect } from '../models';
@@ -75,7 +75,7 @@ class PurchasePlot extends Component<PurchasePlotProps> {
 
     const tooltipStyle = {
       top: -40
-    }
+    };
 
     const handleWidth = 10;
     const leftStyle: React.CSSProperties = {
@@ -85,7 +85,7 @@ class PurchasePlot extends Component<PurchasePlotProps> {
       height: rect.h * scale,
       position: 'absolute',
       cursor: 'ew-resize'
-    }
+    };
 
     const rightStyle: React.CSSProperties = Object.assign({}, leftStyle, {
       left: (rect.w * scale) - (handleWidth * .5)
@@ -102,7 +102,7 @@ class PurchasePlot extends Component<PurchasePlotProps> {
 
     const bottomStyle: React.CSSProperties = Object.assign({}, topStyle, {
       top: (rect.h * scale) - (handleWidth * .5)
-    })
+    });
 
     const upperLeftStyle: React.CSSProperties = {
       top: -handleWidth,
@@ -149,14 +149,14 @@ class PurchasePlot extends Component<PurchasePlotProps> {
         onMouseMove={this.overlayMouseMove.bind(this, item.movement)}
         onMouseUp={this.overlayMouseUp.bind(this, item.movement)}
       ></div>);
-    })
+    });
 
     const tooltipText = `${rect.w} x ${rect.h}`;
 
     return (
       <div draggable={false} style={wrapperStyle}>
         {controls}
-        <div className='purchaseTooltip' style={tooltipStyle}>
+        <div className="purchaseTooltip" style={tooltipStyle}>
           <span>{tooltipText}</span>
         </div>
       </div>

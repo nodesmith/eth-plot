@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
+import { Store } from 'redux';
 
 import App from './App';
 import DevTools from './DevTools';
-import { Store } from 'redux';
 
 /**
  * Component is exported for conditional usage in Root.js
@@ -27,6 +27,6 @@ class Root extends React.Component<{store: Store<{}> }> {
       </Provider>
     );
   }
-};
+}
 
 export default Root;

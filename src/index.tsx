@@ -1,6 +1,6 @@
+import { createMuiTheme, MuiThemeProvider } from 'material-ui/styles';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
 const theme = createMuiTheme({
   palette: {
@@ -23,8 +23,8 @@ const theme = createMuiTheme({
  * Both configureStore and Root are required conditionally.
  * See configureStore.js and Root.js for more details.
  */
-import { configureStore } from './store/configureStore';
 import Root from './containers/Root';
+import { configureStore } from './store/configureStore';
 
 const store = configureStore();
 

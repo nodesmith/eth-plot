@@ -4,10 +4,12 @@
  * The code is envify'd - using 'DefinePlugin' in Webpack.
  */
 
+import { Store } from 'redux';
+
+import { RootState } from '../reducers';
+
 import { configureStore as devConfig } from './configureStore.dev';
 import { configureStore as prodConfig } from './configureStore.prod';
-import { Store } from 'redux';
-import { RootState } from '../reducers';
 
 let loadedStore: (initialState?: RootState) => Store<RootState>;
 

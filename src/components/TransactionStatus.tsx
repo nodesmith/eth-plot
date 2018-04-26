@@ -1,17 +1,16 @@
-import * as React from 'react';
-import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-
-import * as Enums from '../constants/Enums';
-
-import Grid from 'material-ui/Grid';
-import { ListItem, ListItemText } from 'material-ui/List';
-import Avatar from 'material-ui/Avatar';
 import AddCircle from 'material-ui-icons/AddCircle';
 import AttachMoney from 'material-ui-icons/AttachMoney';
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Avatar from 'material-ui/Avatar';
 import Divider from 'material-ui/Divider';
+import Grid from 'material-ui/Grid';
+import { ListItem, ListItemText } from 'material-ui/List';
 import Typography from 'material-ui/Typography';
+import * as PropTypes from 'prop-types';
+import { Component } from 'react';
+import * as React from 'react';
+
+import * as Enums from '../constants/Enums';
 import { UserTransactions } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
@@ -48,7 +47,7 @@ class TransactionStatus extends Component<TransactionStatusProps> {
         throw 'unknown tx status type';
     }
 
-    return <Typography variant="subheading" color={colorClass}>{statusText}</Typography>
+    return <Typography variant="subheading" color={colorClass}>{statusText}</Typography>;
   }
 
   render() {
@@ -57,7 +56,7 @@ class TransactionStatus extends Component<TransactionStatusProps> {
 
     // TODO, this component should contain a more info dropdown with the summary
     // of each transaction.
-    const txTextComponent = (isAuction) ? "Auction Update Transaction" : "Purchase Transaction";
+    const txTextComponent = (isAuction) ? 'Auction Update Transaction' : 'Purchase Transaction';
     const txStatusComponent = this.getTxStatus();
 
     return (

@@ -1,19 +1,19 @@
-import * as React from 'react';
-import { Component } from 'react';
-import * as PropTypes from 'prop-types';
+import ShoppingCart from 'material-ui-icons/ShoppingCart';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-
-import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import Drawer from 'material-ui/Drawer';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
-import Button from 'material-ui/Button';
-import ShoppingCart from 'material-ui-icons/ShoppingCart';
-import Drawer from 'material-ui/Drawer';
+import Typography from 'material-ui/Typography';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
+import { Component } from 'react';
 
-import { ZoomControlComponent } from './ZoomControl';
-import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
-import { ContractInfo, PlotInfo, Rect } from '../models';
 import * as Actions from '../actions';
+import { ContractInfo, PlotInfo, Rect } from '../models';
+
+import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
+import { ZoomControlComponent } from './ZoomControl';
 
 
 const padding = 24;
@@ -64,7 +64,7 @@ export interface MainControlsOverlayProps extends WithStyles {
     buyoutPriceInWei: string;
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
-  }
+  };
   purchaseActions: {
     onImageSelected: Actions.purchaseImageSelected;
     onStepComplete: Actions.completePurchaseStep;
@@ -73,7 +73,7 @@ export interface MainControlsOverlayProps extends WithStyles {
     onBuyoutChanged: Actions.changePlotBuyout;
     onBuyoutEnabledChanged: Actions.changeBuyoutEnabled;
     purchasePlot: Actions.completePlotPurchase;
-  },
+  };
   contractInfo: ContractInfo;
   plots: Array<PlotInfo>;
   imageData?: string;
@@ -106,13 +106,13 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
           <ZoomControlComponent classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
         </div>
         {this.props.purchase.purchaseFlowOpen ? null : 
-          <Button variant='fab' color="secondary" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
+          <Button variant="fab" color="secondary" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />
           </Button>
         }
         <Drawer classes={{
-            paper: classes.drawer
-          }}
+          paper: classes.drawer
+        }}
           anchor="right"
           variant="persistent"
           open={this.props.purchase.purchaseFlowOpen}

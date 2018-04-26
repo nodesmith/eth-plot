@@ -1,4 +1,4 @@
-import Decimal from 'decimal.js';
+import decimalJs from 'decimal.js';
 
 export interface FormattedValue {
   value: string;
@@ -16,7 +16,7 @@ export function formatEthValue(ammountInWei: string | Decimal): FormattedValue {
     return {
       value: '',
       unit: 'wei'
-    }
+    };
   }
 
   const value = new Decimal(ammountInWei);

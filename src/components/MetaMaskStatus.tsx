@@ -1,7 +1,7 @@
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
 import Typography from 'material-ui/Typography/Typography';
 
@@ -11,11 +11,11 @@ import FullPageStatus from './FullPageStatus';
 
 const styles: StyleRulesCallback = theme => ({
   logoContainer: {
-    textAlign: "center"
+    textAlign: 'center'
   },
   logo: {
-    width: "40%",
-    height: "40%"
+    width: '40%',
+    height: '40%'
   }
 });
 
@@ -31,8 +31,8 @@ class MetaMaskStatus extends Component<MetaMaskStatusProps> {
       return (
       <div className={this.props.classes.logoContainer}>
         <FullPageStatus classes={{}} message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
-        <a href={"https://metamask.io"} target="_blank">
-          <img className={this.props.classes.logo} src={"../assets/metamasklogo.png"} />
+        <a href={'https://metamask.io'} target="_blank">
+          <img className={this.props.classes.logo} src={'../assets/metamasklogo.png'} />
         </a>
       </div>
       );

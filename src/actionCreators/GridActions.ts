@@ -1,6 +1,7 @@
 import { ActionTypes } from '../constants/ActionTypes';
-import { Action } from './EthGridAction';
 import { Rect } from '../models';
+
+import { Action } from './EthGridAction';
 
 export function hoverOverPlot(plotIndex: number): Action {
   return {
@@ -12,14 +13,14 @@ export function hoverOverPlot(plotIndex: number): Action {
 export function enterBuyMode(): Action {
   return {
     type: ActionTypes.ENTER_BUY_MODE
-  }
+  };
 }
 
 export function startDraggingRect(x: number, y: number): Action {
   return {
     type: ActionTypes.START_DRAGGING_RECT,
-    x: x,
-    y: y
+    x,
+    y
   };
 }
 
@@ -32,9 +33,9 @@ export function stopDraggingRect(): Action {
 export function resizeDraggingRect(x: number, y: number): Action {
   return {
     type: ActionTypes.RESIZE_DRAGGING_RECT,
-    x: x,
-    y: y
-  }
+    x,
+    y
+  };
 }
 
 export function showPurchaseDialog(rectToPurchase: Rect): Action {

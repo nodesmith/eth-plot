@@ -1,14 +1,14 @@
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
-import { MovementActions } from '../constants/Enums';
 import * as ActionTypes from '../actions';
+import { MovementActions } from '../constants/Enums';
+import { ImageFileInfo, PlotInfo, Point, Rect, RectTransform } from '../models';
 
 import GridPlot from './GridPlot';
 import PurchasePlot from './PurchasePlot';
-import { ImageFileInfo, PlotInfo, Rect, RectTransform, Point } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -28,7 +28,7 @@ export interface UIGridProps extends WithStyles {
     transformRectToPurchase: ActionTypes.transformRectToPurchase;
   };
   inPurchaseMode: boolean;
-  imageToPurchase?: ImageFileInfo,
+  imageToPurchase?: ImageFileInfo;
   currentTransform?: RectTransform;
   rectToPurchase?: Rect;
   scale: number;
@@ -49,7 +49,7 @@ class UIGrid extends Component<UIGridProps> {
   }
 
   onStartAction(x, y, action) {
-    this.props.actions.startTransformRectToPurchase({x, y}, action);
+    this.props.actions.startTransformRectToPurchase({ x, y }, action);
   }
 
   overlayMouseUp(e) { 
@@ -70,8 +70,8 @@ class UIGrid extends Component<UIGridProps> {
 
     let top = 0, left = 0, bottom = 0, right = 0;
 
-    let rect = Object.assign({}, this.props.rectToPurchase);
-    switch(this.props.currentTransform.transformAction) {
+    const rect = Object.assign({}, this.props.rectToPurchase);
+    switch (this.props.currentTransform.transformAction) {
       case MovementActions.DRAG:
         left = right = deltaX;
         top = bottom = deltaY;
@@ -111,7 +111,7 @@ class UIGrid extends Component<UIGridProps> {
     bottom = Math.round(bottom);
     right = Math.round(right);
 
-    this.props.actions.transformRectToPurchase({top, left, bottom, right}, this.props.plots);
+    this.props.actions.transformRectToPurchase({ top, left, bottom, right }, this.props.plots);
 
     e.stopPropagation(); 
   }
@@ -128,7 +128,7 @@ class UIGrid extends Component<UIGridProps> {
     const gridStyle: React.CSSProperties = {
       width: this.props.gridInfo.width * scale,
       height: this.props.gridInfo.height * scale,
-      marginLeft: marginLeft,
+      marginLeft,
       position: 'absolute',
       outlineWidth: 3,
       outlineColor: 'lightgray',
@@ -140,7 +140,7 @@ class UIGrid extends Component<UIGridProps> {
       const overlayStyle: React.CSSProperties = {
         width: this.props.gridInfo.width * scale,
         height: this.props.gridInfo.height * scale,
-        marginLeft: marginLeft,
+        marginLeft,
         position: 'absolute'
       };
 

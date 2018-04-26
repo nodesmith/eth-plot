@@ -1,9 +1,10 @@
-import { ActionTypes } from '../constants/ActionTypes';
-import * as PlotMath from '../data/PlotMath';
-import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as red from 'redux';
-import { Rect } from '../models';
+
 import { Action } from '../actionCreators/EthGridAction';
+import { ActionTypes } from '../constants/ActionTypes';
+import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
+import * as PlotMath from '../data/PlotMath';
+import { Rect } from '../models';
 import { ContractInfo, HoleInfo, PlotInfo } from '../models';
 
 // TODO - Clean this up a bit and get from some config file
@@ -34,9 +35,9 @@ const initialState: DataState = {
     width: 250
   },
   contractInfo: {
-    abi: abi,
-    contractAddress: contractAddress,
-    web3Provider: web3Provider
+    abi,
+    contractAddress,
+    web3Provider
   },
   purchaseInfo: undefined,
 };
@@ -55,9 +56,9 @@ export function dataReducer(state: DataState = initialState, action: Action): Da
       return newState;
     }
     case ActionTypes.LOAD_PLOTS:
-      return Object.assign({}, state, { isFetchingPlots: true, plots: [], newHoles: {}} );
+      return Object.assign({}, state, { isFetchingPlots: true, plots: [], newHoles: {} });
     case ActionTypes.LOAD_PLOTS_DONE:
-      return Object.assign({}, state, { isFetchingPlots: false} );
+      return Object.assign({}, state, { isFetchingPlots: false });
     case ActionTypes.LIST_PLOT:
       // TODO
       return state;
@@ -68,7 +69,7 @@ export function dataReducer(state: DataState = initialState, action: Action): Da
     }
     case ActionTypes.SHOW_PURCHASE_DIALOG: {
       const purchaseInfo = computePurchaseInfo(action.rectToPurchase, state.plots);
-      return Object.assign({}, state, { purchaseInfo: purchaseInfo} );
+      return Object.assign({}, state, { purchaseInfo });
     }
     default:
       return state;
@@ -91,7 +92,7 @@ function computeNewHoles(rectToAdd: Rect, currentHoles: HoleInfo, plots: Array<P
         // These two rects overlap. This overlap will be divided into two parts:
         // 1. The parts which are newly aquired and 2. the parts which already are covered by holes
         // Interestingly, we actually should never have this happen since the holes should already be accounted for 
-        let overlap = PlotMath.computeRectOverlap(currentPlot.rect, currentRemainingArea);
+        const overlap = PlotMath.computeRectOverlap(currentPlot.rect, currentRemainingArea);
 
         // Next, add the overlap to the holes for this plotIndex
         const holes = plotIndex in result ? result[plotIndex] : [];

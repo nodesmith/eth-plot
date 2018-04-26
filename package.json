@@ -10,7 +10,8 @@
     "build": "npm run clean && npm run build:webpack --progress --profile --colors",
     "dev": "NODE_ENV=development npm start",
     "start": "npm run tsdev",
-    "lint": "./node_modules/.bin/tslint --project tsconfig.json",
+    "lint": "./node_modules/.bin/tslint --force --project tsconfig.json",
+    "lint:fix": "./node_modules/.bin/tslint --force --fix --project tsconfig.json",
     "tsdev": "node_modules/.bin/webpack-dev-server --port 3000 --hot --inline --mode development -d"
   },
   "devDependencies": {

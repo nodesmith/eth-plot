@@ -1,7 +1,7 @@
 import * as DataActions from '../actionCreators/DataActions';
 import * as Enums from '../constants/Enums';
 import { ContractInfo, PlotInfo } from '../models';
-import { Rect, Point, RectDelta } from '../models';
+import { Point, Rect, RectDelta } from '../models';
 import { ImageFileInfo } from '../models';
 
 // Account Actions

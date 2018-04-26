@@ -1,13 +1,13 @@
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
+import ExpandMore from 'material-ui-icons/ExpandMore';
 import ExpansionPanel, {
-  ExpansionPanelSummary,
   ExpansionPanelDetails,
+  ExpansionPanelSummary,
 } from 'material-ui/ExpansionPanel';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 
@@ -21,9 +21,9 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 const questionsAndAnswers = [
-  { question: "What is Eth Grid?", answer: "Coolest thing since sliced bread." },
-  { question: "Why would I use this?", answer: "To be part of hethstory."},
-  { question: "Are there fees?", answer: "Minor, to keep the lights on.  You can interact directly with our contracts though." }
+  { question: 'What is Eth Grid?', answer: 'Coolest thing since sliced bread.' },
+  { question: 'Why would I use this?', answer: 'To be part of hethstory.' },
+  { question: 'Are there fees?', answer: 'Minor, to keep the lights on.  You can interact directly with our contracts though.' }
 ];
 
 export interface AboutProps extends WithStyles {

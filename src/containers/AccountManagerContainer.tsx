@@ -8,8 +8,8 @@ export interface AccountManagerContainerProps {
   actions: any; // TODO
   contractInfo: ContractInfo;
   activeAccount: string;
-  plots: Array<PlotInfo>
-};
+  plots: Array<PlotInfo>;
+}
 
 class AccountManagerContainer extends React.Component<AccountManagerContainerProps> {
   updatePrice(zoneIndex, buyoutPrice) {
@@ -18,7 +18,7 @@ class AccountManagerContainer extends React.Component<AccountManagerContainerPro
   }
 
   render() {
-    let userPlots = this.props.plots ? this.props.plots.filter((plot) => {
+    const userPlots = this.props.plots ? this.props.plots.filter((plot) => {
       if (plot.owner === this.props.activeAccount) {
         return plot;
       }

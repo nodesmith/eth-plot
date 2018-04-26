@@ -1,9 +1,9 @@
+import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import * as PropTypes from 'prop-types';
 
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
-import { StyleRulesCallback, WithStyles, withStyles } from 'material-ui/styles';
 
 const styles: StyleRulesCallback = theme => ({
   textField: {

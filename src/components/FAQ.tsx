@@ -1,14 +1,14 @@
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
+import ExpandMore from 'material-ui-icons/ExpandMore';
 import ExpansionPanel, {
-  ExpansionPanelSummary,
   ExpansionPanelDetails,
+  ExpansionPanelSummary,
 } from 'material-ui/ExpansionPanel';
 import Typography from 'material-ui/Typography';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 
 export interface FAQProps {
   question: string;
@@ -20,7 +20,7 @@ class FAQ extends Component<FAQProps> {
     return (
     <ExpansionPanel key={this.props.question}>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant='subheading'>{ this.props.question }</Typography>
+        <Typography variant="subheading">{ this.props.question }</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
         <Typography>

@@ -1,11 +1,11 @@
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 
 import ButtonBase from 'material-ui/ButtonBase';
-import Typography from 'material-ui/Typography';
 import Divider from 'material-ui/Divider/Divider';
+import Typography from 'material-ui/Typography';
 
 import Add from 'material-ui-icons/Add';
 import Remove from 'material-ui-icons/Remove';
@@ -43,15 +43,15 @@ class ZoomControl extends Component<ZoomControlProps> {
     return (
 
       <div className={classes.root}>
-        <ButtonBase focusRipple key='plus' className={classes.button} onClick={this.zoomIn.bind(this)}>
+        <ButtonBase focusRipple key="plus" className={classes.button} onClick={this.zoomIn.bind(this)}>
           <Add />
         </ButtonBase>
         <Divider />
-        <ButtonBase focusRipple key='minus' className={classes.button} onClick={this.zoomOut.bind(this)}>
+        <ButtonBase focusRipple key="minus" className={classes.button} onClick={this.zoomOut.bind(this)}>
           <Remove />
         </ButtonBase>
       </div>);
   }
 }
 
-export const ZoomControlComponent = withStyles(styles, {name: 'ZoomControl'})(ZoomControl);
+export const ZoomControlComponent = withStyles(styles, { name: 'ZoomControl' })(ZoomControl);

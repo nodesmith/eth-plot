@@ -1,17 +1,16 @@
-import * as React from 'react';
-import MainControlsOverlay, { MainControlsOverlayProps } from '../components/MainControlsOverlay';
-import PurchaseDialog, { PurchaseDialogProps } from '../components/PurchaseDialog';
-
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import Typography from 'material-ui/Typography';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
+import Typography from 'material-ui/Typography';
+import * as React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 
+import * as Actions from '../actions';
+import MainControlsOverlay, { MainControlsOverlayProps } from '../components/MainControlsOverlay';
+import PurchaseDialog, { PurchaseDialogProps } from '../components/PurchaseDialog';
 import UIGrid, { UIGridProps } from '../components/UIGrid';
 import * as Enums from '../constants/Enums';
-import { ImageFileInfo, PlotInfo, GridInfo, Rect, RectTransform, ContractInfo, Point } from '../models';
-import * as Actions from '../actions';
-import { RouteComponentProps } from 'react-router-dom';
+import { ContractInfo, GridInfo, ImageFileInfo, PlotInfo, Point, Rect, RectTransform } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -40,7 +39,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     transformRectToPurchase: Actions.transformRectToPurchase,
     togglePurchaseFlow: Actions.togglePurchaseFlow;
     changeZoom: Actions.changeZoom;
-  },
+  };
   purchase: {
     rectToPurchase?: Rect;
     purchasePriceInWei: string;
@@ -56,10 +55,10 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
     currentTransform?: RectTransform;
-  }
+  };
   imageFileInfo?: ImageFileInfo;
   plots: Array<PlotInfo>;
-  contractInfo: ContractInfo,
+  contractInfo: ContractInfo;
   scale: number;
   gridInfo: GridInfo;
   hoveredIndex: number;
@@ -70,7 +69,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     cancelPlotPurchase: Actions.cancelPlotPurchase;
     purchaseStage: number;
     isShowing: boolean;
-  }
+  };
 }
 
 class MainContainer extends React.Component<MainContainerProps> {
@@ -110,7 +109,7 @@ class MainContainer extends React.Component<MainContainerProps> {
       classes: {},
       purchase: this.props.purchase,
       zoomLevel: this.props.scale,
-      purchaseActions: purchaseActions,
+      purchaseActions,
       imageData: this.props.imageFileInfo ? this.props.imageFileInfo.fileData : '',
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,

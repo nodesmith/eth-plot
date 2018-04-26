@@ -1,9 +1,10 @@
-import { createStore, applyMiddleware, compose, Store, StoreEnhancerStoreCreator } from 'redux';
-import rootReducer, { RootState } from '../reducers';
+import { applyMiddleware, compose, createStore, Store, StoreEnhancerStoreCreator } from 'redux';
 import { createLogger } from 'redux-logger';
-import thunk from 'redux-thunk';
+import reduxThunk from 'redux-thunk';
+
 import DevTools from '../containers/DevTools';
-import reducers from '../reducers/index';
+import reducers, { RootState } from '../reducers';
+import index from '../reducers/index';
 
 /**
  * Entirely optional, this tiny library adds some functionality to
@@ -30,4 +31,4 @@ export function configureStore(initialState): Store<RootState> {
   }
 
   return store;
-};
+}

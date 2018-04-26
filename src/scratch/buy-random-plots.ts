@@ -28,10 +28,10 @@ const buyRandomPlots = () => {
     const h = Math.floor(Math.random() * Math.min(50, 250 - y));
 
     const rectToPurchase = {
-      x: x,
-      y: y,
-      w: w,
-      h: h,
+      x,
+      y,
+      w,
+      h,
       x2: x + w,
       y2: y + h
     };
@@ -40,7 +40,7 @@ const buyRandomPlots = () => {
 
     const state = store.getState();
     return DataActions.purchasePlot(state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123', () => {})(store.dispatch);
-  };
+  }
 
   let buysRemaining = 10;
   function doWork() {
@@ -49,8 +49,8 @@ const buyRandomPlots = () => {
       if (buysRemaining > 0) {
         doWork();
       }
-    })
-  };
+    });
+  }
 
   doWork();
 };

@@ -1,11 +1,11 @@
-import { fromCoordinates, createEmptyRect, Rect } from '../models';
+import { createEmptyRect, fromCoordinates, Rect } from '../models';
 
 export function doRectanglesOverlap(a: Rect, b: Rect): boolean {
   return a.x < b.x2 && a.x2 > b.x && a.y < b.y2 && a.y2 > b.y;
 }
 
 export function doAnyOverlap(arrayOfRects: Rect[]): boolean {
-  for(let i = 0; i < arrayOfRects.length - 1; i++) {
+  for (let i = 0; i < arrayOfRects.length - 1; i++) {
     if (doRectanglesOverlap(arrayOfRects[i], arrayOfRects[i + 1])) {
       return true;
     }
@@ -15,7 +15,7 @@ export function doAnyOverlap(arrayOfRects: Rect[]): boolean {
 }
 
 export function computeRectOverlap(a: Rect, b: Rect): Rect {
-  let result = createEmptyRect();
+  const result = createEmptyRect();
 
   // Take the greater of the x and y values;
   result.x = a.x > b.x ? a.x : b.x;

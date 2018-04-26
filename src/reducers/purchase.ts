@@ -1,8 +1,8 @@
+import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
-import { createEmptyRect, Rect, Point, RectDelta, RectTransform } from '../models';
-import { Action } from '../actionCreators/EthGridAction';
+import { createEmptyRect, Point, Rect, RectDelta, RectTransform } from '../models';
 
 function determineInitialRect(imageFileInfo) {
   const ratio = imageFileInfo.w / imageFileInfo.h;
@@ -17,8 +17,8 @@ function determineInitialRect(imageFileInfo) {
   return {
     x: 100,
     y: 100,
-    w: w,
-    h: h,
+    w,
+    h,
     x2: 100 + w,
     y2: 100 + h
   };
@@ -27,7 +27,7 @@ function determineInitialRect(imageFileInfo) {
 function addDelta(rect: Rect, delta: RectDelta): Rect {
   const { top, left, bottom, right } = delta;
 
-  let result = {
+  const result = {
     x: rect.x + left,
     x2: rect.x2 + right,
     y: rect.y + top,
@@ -47,24 +47,24 @@ function deltasEqual(a, b) {
     a.left == b.left &&
     a.bottom == b.bottom &&
     a.right == b.right &&
-    a.top == b.top );
+    a.top == b.top);
 }
 
 export interface PurchaseState {
-  purchaseDialogVisible: boolean,
-  rectToPurchase?: Rect,
-  initialRectToPurchase?: Rect,
-  initialRectToPurchaseDeltas: RectDelta[],
-  currentTransform?: RectTransform,
-  purchaseFlowOpen: boolean,
-  purchasePriceInWei: string,
-  activeStep: number,
-  completedSteps: {[index: number]: boolean},
-  imageName: string,
-  imageDimensions: {w: number, h:number },
-  website: string,
-  buyoutPriceInWei: string,
-  buyoutEnabled: boolean,
+  purchaseDialogVisible: boolean;
+  rectToPurchase?: Rect;
+  initialRectToPurchase?: Rect;
+  initialRectToPurchaseDeltas: RectDelta[];
+  currentTransform?: RectTransform;
+  purchaseFlowOpen: boolean;
+  purchasePriceInWei: string;
+  activeStep: number;
+  completedSteps: {[index: number]: boolean};
+  imageName: string;
+  imageDimensions: {w: number, h:number };
+  website: string;
+  buyoutPriceInWei: string;
+  buyoutEnabled: boolean;
 }
 
 const initialState: PurchaseState = {
@@ -78,7 +78,7 @@ const initialState: PurchaseState = {
   activeStep: 0,
   completedSteps: {},
   imageName: '',
-  imageDimensions: {w: -1, h:-1},
+  imageDimensions: { w: -1, h:-1 },
   website: '',
   buyoutPriceInWei: '328742394234',
   buyoutEnabled: true,
@@ -100,10 +100,10 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
         purchaseFlowOpen: !state.purchaseFlowOpen
       });
     case ActionTypes.PURCHASE_IMAGE_SELECTED:
-    {
-      const initialRect = determineInitialRect(action.imageFileInfo);
-      const purchaseInfo = computePurchaseInfo(initialRect, action.plots);
-      return Object.assign({}, state, {
+      {
+        const initialRect = determineInitialRect(action.imageFileInfo);
+        const purchaseInfo = computePurchaseInfo(initialRect, action.plots);
+        return Object.assign({}, state, {
         rectToPurchase: initialRect,
         initialRectToPurchase: initialRect,
         initialRectToPurchaseDeltas: [],
@@ -111,50 +111,50 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
         imageName: action.imageFileInfo.fileName,
         purchasePriceInWei: purchaseInfo.purchasePrice
       });
-    }
+      }
     case ActionTypes.START_TRANSFORM_RECT:
-      let result = Object.assign({}, state, {
+      const result = Object.assign({}, state, {
         currentTransform: {
           startLocation: action.startLocation,
           transformAction: action.transformAction
         }
       });
-      result.initialRectToPurchaseDeltas.push({top: 0, left: 0, bottom: 0, right: 0});
+      result.initialRectToPurchaseDeltas.push({ top: 0, left: 0, bottom: 0, right: 0 });
       return result;
     case ActionTypes.STOP_TRANSFORM_RECT:
       return Object.assign({}, state, {
         currentTransform: null
       });
     case ActionTypes.TRANSFORM_RECT_TO_PURCHASE:
-    {
-      const previousDeltaIndex = state.initialRectToPurchaseDeltas.length - 1;
-      let previousDelta = state.initialRectToPurchaseDeltas[previousDeltaIndex];
-      if (deltasEqual(action.delta, previousDelta)) {
+      {
+        const previousDeltaIndex = state.initialRectToPurchaseDeltas.length - 1;
+        const previousDelta = state.initialRectToPurchaseDeltas[previousDeltaIndex];
+        if (deltasEqual(action.delta, previousDelta)) {
         console.log('deltas equal');
         return state;
       }
 
       // Clone the array
-      const rectDeltas = state.initialRectToPurchaseDeltas.slice(0);
-      rectDeltas[previousDeltaIndex] = action.delta;
+        const rectDeltas = state.initialRectToPurchaseDeltas.slice(0);
+        rectDeltas[previousDeltaIndex] = action.delta;
 
       // Apply all the deltas to get our new rect
-      const rectToPurchase = rectDeltas.reduce((rect, delta) => addDelta(rect, delta), state.initialRectToPurchase!);
+        const rectToPurchase = rectDeltas.reduce((rect, delta) => addDelta(rect, delta), state.initialRectToPurchase!);
 
       // Recompute how much this will cost
-      const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
+        const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
 
-      return Object.assign({}, state, {
-        rectToPurchase: rectToPurchase,
+        return Object.assign({}, state, {
+        rectToPurchase,
         initialRectToPurchaseDeltas: rectDeltas,
         purchasePriceInWei: purchaseInfo.purchasePrice
       });
-    }
+      }
     case ActionTypes.COMPLETE_PURCHASE_STEP:
       const nextStep = action.index + 1;
-      const completedSteps = Object.assign({}, state.completedSteps, { [action.index]: true} );
+      const completedSteps = Object.assign({}, state.completedSteps, { [action.index]: true });
       return Object.assign({}, state, {
-        completedSteps: completedSteps,
+        completedSteps,
         activeStep: nextStep
       });
     case ActionTypes.GO_TO_PURCHASE_STEP:
