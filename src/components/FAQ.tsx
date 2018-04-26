@@ -10,10 +10,7 @@ import ExpansionPanel, {
 import Typography from 'material-ui/Typography';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 
-const styles: StyleRulesCallback = theme => ({
-});
-
-export interface FAQProps extends WithStyles {
+export interface FAQProps {
   question: string;
   answer: string;
 }
@@ -34,4 +31,4 @@ class FAQ extends Component<FAQProps> {
   }
 }
 
-export default withStyles(styles)(FAQ);
+export default FAQ;

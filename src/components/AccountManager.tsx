@@ -50,7 +50,7 @@ class AccountManager extends Component<AccountManagerProps> {
     }
 
     return [
-      (<Grid item xs={8}>
+      (<Grid key='title' item xs={8}>
         <Typography variant='title'>My Content</Typography>
       </Grid>),
       plotInfos

@@ -78,7 +78,7 @@ class App extends React.Component<AppProps> {
      */
     this.accountInterval = setInterval(function() {
       this.checkMetamaskStatus();
-    }.bind(this), 1000000);
+    }.bind(this), 1000000); // TODO Toggle back on
   }
 
   checkMetamaskStatus() {

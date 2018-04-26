@@ -36,9 +36,9 @@ class TransactionManager extends Component<TransactionManagerProps> {
   getUserContent() {
     const pendingTransactions = this.props.userTransactions.map((tx, index) => {
       return (
-        <Grid item xs={12}>
+        <Grid key={index} item xs={12}>
           <Paper>
-            <TransactionStatus classes={this.props.classes} tx={tx} />
+            <TransactionStatus classes={{}} tx={tx} />
           </Paper>
         </Grid>
       );
@@ -46,17 +46,17 @@ class TransactionManager extends Component<TransactionManagerProps> {
 
     if (pendingTransactions.length == 0) {
       pendingTransactions.push(
-        <Grid item xs={12} >
+        <Grid key="no-data" item xs={12} >
           <Typography variant="subheading">There have been no transactions for this account.</Typography>
         </Grid>
       )
     }
 
     return [
-      (<Grid item xs={8}>
+      (<Grid key="title" item xs={8}>
         <Typography variant='title' >My Transactions</Typography>
       </Grid>),
-      (<List className={this.props.classes.txList}>
+      (<List key="list" className={this.props.classes.txList}>
         {pendingTransactions}
       </List>)
     ]
