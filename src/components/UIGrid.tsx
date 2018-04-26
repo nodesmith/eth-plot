@@ -129,7 +129,10 @@ class UIGrid extends Component<UIGridProps> {
       width: this.props.gridInfo.width * scale,
       height: this.props.gridInfo.height * scale,
       marginLeft: marginLeft,
-      position: 'absolute'
+      position: 'absolute',
+      outlineWidth: 3,
+      outlineColor: 'lightgray',
+      outlineStyle: 'solid'
     };
 
     let overlay: JSX.Element | undefined = undefined;
@@ -174,7 +177,7 @@ class UIGrid extends Component<UIGridProps> {
 
     return (
       <div className={this.props.classes.root}>
-        <div style={gridStyle} className="grid" onMouseOut={this.mouseOut.bind(this)}>
+        <div style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
           {plots}
         </div>
         {overlay}
