@@ -53,9 +53,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
       (<Grid key="title" item xs={8}>
         <Typography variant="title" >My Transactions</Typography>
       </Grid>),
-      (<List key="list" className={this.props.classes.txList}>
-        {pendingTransactions}
-      </List>)
+      pendingTransactions
     ];
   }
 

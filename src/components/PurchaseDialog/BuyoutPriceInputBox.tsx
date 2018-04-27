@@ -26,6 +26,9 @@ const styles: StyleRulesCallback = theme => ({
   },
   unitSelect: {
     width: `20%`
+  },
+  toggle: {
+    color: 'primary'
   }
 });
 
@@ -151,7 +154,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     return (<div className={classes.wrapper} >
       <FormControlLabel
           control={
-            <Switch checked={toggleEnabled} onChange={this.allowBuyoutChanged.bind(this)} />
+            <Switch color="primary" checked={toggleEnabled} onChange={this.allowBuyoutChanged.bind(this)} />
           }
           label={this.props.toggleText}
         />
