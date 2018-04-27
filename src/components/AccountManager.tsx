@@ -16,9 +16,8 @@ import PlotInfo from './PlotInfo';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
-    flexGrow: 1,
-    marginTop: 30,
-    paddingBottom: 30
+    marginTop: 16,
+    paddingBottom: 16
   }
 });
 
@@ -32,7 +31,7 @@ class AccountManager extends Component<AccountManagerProps> {
   getUserContent() {
     const plotInfos = this.props.userPlots.map((plot, index) => {
       return (
-        <Grid key={index} item xs={12}>
+        <Grid key={index} item xs={9}>
           <Paper>
             <PlotInfo info={plot} updatePrice={this.props.updatePrice} />
           </Paper>
@@ -42,14 +41,14 @@ class AccountManager extends Component<AccountManagerProps> {
 
     if (plotInfos.length === 0) {
       plotInfos.push(
-        <Grid key="no-data" item xs={12} >
+        <Grid key="no-data" item xs={9} >
           <Typography variant="subheading">You don't have any owned plots. Visit the grid to purchase a plot.</Typography>
         </Grid>
       );
     }
 
     return [
-      (<Grid key="title" item xs={8}>
+      (<Grid key="title" item xs={9}>
         <Typography variant="title">My Content</Typography>
       </Grid>),
       plotInfos
@@ -60,12 +59,8 @@ class AccountManager extends Component<AccountManagerProps> {
     const content = this.getUserContent();
 
     return (
-      <Grid container className={this.props.classes.root} justify="center" >
-        <Grid item xs={9} >
-          <Grid container spacing={24} >
-            {content}
-          </Grid>
-        </Grid>
+      <Grid container className={this.props.classes.root} justify="center" spacing={24} >
+        {content}
       </Grid>
     );
   }

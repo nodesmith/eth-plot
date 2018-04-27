@@ -16,11 +16,8 @@ import TransactionStatus from './TransactionStatus';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
-    flexGrow: 1,
-    marginTop: 30,
-  },
-  txList: {
-    padding: 12
+    marginTop: 20,
+    paddingBottom: 16
   }
 });
 
@@ -33,7 +30,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
   getUserContent() {
     const pendingTransactions = this.props.userTransactions.map((tx, index) => {
       return (
-        <Grid key={index} item xs={12}>
+        <Grid key={index} item xs={9} >
           <Paper>
             <TransactionStatus classes={{}} tx={tx} />
           </Paper>
@@ -43,14 +40,14 @@ class TransactionManager extends Component<TransactionManagerProps> {
 
     if (pendingTransactions.length === 0) {
       pendingTransactions.push(
-        <Grid key="no-data" item xs={12} >
+        <Grid key="no-data" item xs={9} >
           <Typography variant="subheading">There have been no transactions for this account.</Typography>
         </Grid>
       );
     }
 
     return [
-      (<Grid key="title" item xs={8}>
+      (<Grid key="title" item xs={9}>
         <Typography variant="title" >My Transactions</Typography>
       </Grid>),
       pendingTransactions
@@ -60,12 +57,8 @@ class TransactionManager extends Component<TransactionManagerProps> {
   render() {
     const content = this.getUserContent();
     return (
-      <Grid container className={this.props.classes.root} justify="center" >
-        <Grid item xs={9} >
-          <Grid container spacing={24} >
-            {content}
-          </Grid>
-        </Grid>
+      <Grid container className={this.props.classes.root} justify="center" spacing={16} >
+       {content}
       </Grid>
     );
   }

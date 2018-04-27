@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom';
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#607D8B',
+      main: '#009688',
       contrastText: '#ffffff',
     },
     secondary: {
