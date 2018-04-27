@@ -8,9 +8,11 @@ import { ContractInfo, HoleInfo, PlotInfo, Rect } from '../models';
 
 // TODO - Clean this up a bit and get from some config file
 const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
+
+// Update this if you use ganache!!
+
 // const contractAddress = '0x345ca3e014aaf5dca488057592ee47305d9b3e10';
 // const web3Provider = 'http://localhost:9545';
-
 
 const contractAddress = '0xcfeb869f69431e42cdb54a4f4f105c19c080a601';
 const web3Provider = 'http://localhost:8545';
