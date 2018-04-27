@@ -15,6 +15,7 @@ export interface PlotInfo {
   rect: Rect;
   data: {
     url: string;
+    imageUrl: string;
   };
   zoneIndex: number;
   color: string;

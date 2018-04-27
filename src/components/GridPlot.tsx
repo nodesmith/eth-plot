@@ -9,6 +9,7 @@ export interface GridPlotProps extends WithStyles {
   scale: number;
   hoverAction: (index: number) => void;
   isHovered: boolean;
+  imageUrl: string;
 }
 
 const styles: StyleRulesCallback = theme => ({
@@ -30,7 +31,9 @@ class GridPlot extends React.Component<GridPlotProps> {
       left: rect.x * scale,
       width: rect.w * scale,
       height: rect.h * scale,
-      backgroundColor: this.props.plot.color
+      // backgroundImage: `url("${this.props.imageUrl}")`,
+      backgroundSize: 'cover'
+      // backgroundColor: this.props.plot.color
     };
 
     if (this.props.isHovered) {
@@ -45,6 +48,7 @@ class GridPlot extends React.Component<GridPlotProps> {
         style={plotStyle}
         className={this.props.classes.gridPlot}
         onMouseOver={this.mouseOver.bind(this)}>
+        <img src={this.props.imageUrl} height={'100%'} width={'100%'} />
       </a>
     );
   }

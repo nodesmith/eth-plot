@@ -1,3 +1,6 @@
+import { Buffer } from 'buffer';
+import ipfsApi from 'ipfs-api';
+
 import { ActionTypes } from '../constants/ActionTypes';
 import { MovementActions, PurchaseStage } from '../constants/Enums';
 import { ContractInfo, Point, Rect } from '../models';
@@ -82,12 +85,12 @@ export function changeBuyoutEnabled(isEnabled): Action {
 // Thunk action for purchasing a plot. This requires uploading the image, submitting it to the chain, and waiting for transformations
 export function completePlotPurchase(
   contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) {
-  return function (dispatch) {
+  return async (dispatch) => {
     dispatch(startPurchasePlot());
 
-    return dispatch(uploadImageData(uploadImageData)).then((ipfsHash) => {
-      return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, changePurchaseStep));
-    });
+    const uploadName = `grid-${Date.now()}-${rectToPurchase.w},${rectToPurchase.y},${rectToPurchase.w},${rectToPurchase.h}`;
+    const ipfsHash = await dispatch(uploadImageData(imageData, uploadName));
+    return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, changePurchaseStep));
   };
 }
 
@@ -103,22 +106,19 @@ function startPurchasePlot(): Action {
   };
 }
 
-function uploadImageData(imageData) {
-  return function (dispatch) {
+function uploadImageData(imageData: string, imageName: string) {
+  return async (dispatch) => {
     dispatch(changePurchaseStep(PurchaseStage.UPLOADING_TO_IPFS));
 
-    // Here's were we do the post up to IPFS
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve('abc-123-xyz'), 500);
-    }).then((ipfsHash) => {
+    const convertedImage = await fetch(imageData);
+    const arrayBuffer = await convertedImage.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const ipfs = ipfsApi('ipfs.infura.io', '5001', { protocol: 'https' });
+    const uploadResult = await ipfs.files.add({ content: buffer, path: imageName });
+    const ipfsHash = uploadResult[0].hash;
 
-      // Here's where we upload the image data to S3
-      dispatch(changePurchaseStep(PurchaseStage.SAVING_TO_CLOUD));
-
-      return new Promise((resolve2, reject2) => {
-        setTimeout(() => resolve2(ipfsHash), 500);
-      });
-    });
+    // TODO - maybe upload to S3?
+    return ipfsHash;
   };
 }
 

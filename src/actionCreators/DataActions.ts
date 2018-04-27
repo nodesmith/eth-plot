@@ -5,6 +5,7 @@ import * as PlotMath from '../data/PlotMath';
 import { Rect } from '../models';
 
 import * as AccountActions from './AccountActions';
+import { togglePurchaseFlow } from './PurchaseActions';
 
 // tslint:disable-next-line:variable-name
 const Web3 = require('web3');
@@ -82,6 +83,7 @@ function getRandomColor() {
 
 // This is gonna be a thunk action!
 export function fetchPlotsFromWeb3(contractInfo) {
+  const web3 = getWeb3(contractInfo);
   return function (dispatch) {
     dispatch(loadPlots());
 
@@ -125,7 +127,8 @@ export function fetchPlotsFromWeb3(contractInfo) {
               buyoutPrice: parseInt(plotInfo['5'], 10),
               data: {
                 url: plotInfo['6'],
-                ipfsHash: plotInfo['7']
+                ipfsHash: web3.toUtf8(plotInfo['7']),
+                imageUrl: `https://ipfs.infura.io/ipfs/${web3.toUtf8(plotInfo['7'])}`
               },
               color: getRandomColor(),
               zoneIndex: currentIndex
@@ -223,7 +226,7 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
       const param1 = buildArrayFromRectangles([rectToPurchase]);
       const param2 = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
       const param3 = purchaseInfo.chunksToPurchaseAreaIndices;
-      const param4 = hexy.hexy(ipfsHash);
+      const param4 = ipfsHash;
       const param5 = url;
       const param6 = 10;
   
@@ -241,13 +244,15 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
 
             const txStatus = determineTxStatus(transactionReceipt);
             dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
-            dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_CONFIRMATIONS));
+            dispatch(togglePurchaseFlow());
+            dispatch(changePurchaseStep(Enums.PurchaseStage.DONE));
+            dispatch(fetchPlotsFromWeb3(contractInfo));
 
             // We need to update the ownership and data arrays with the newly purchased plot
-            const ownershipInfo = Object.assign({}, rectToPurchase);
+            // const ownershipInfo = Object.assign({}, rectToPurchase);
 
             // TODO - Lots of stuff
-            resolve(transactionReceipt);
+            // resolve(transactionReceipt);
           });
       });
     });

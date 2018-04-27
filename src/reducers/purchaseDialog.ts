@@ -24,7 +24,8 @@ export function purchaseDialogReducer(state: PurchaseDialogState = initialState,
       });
     case ActionTypes.CHANGE_PURCHASE_STAGE:
       return Object.assign({}, state, {
-        purchaseStage: action.purchaseStage
+        purchaseStage: action.purchaseStage,
+        isShowing: action.purchaseStage !== PurchaseStage.DONE && action.purchaseStage !== PurchaseStage.NOT_STARTED
       });
     case ActionTypes.CANCEL_PLOT_PURCHASE:
       return Object.assign({}, state, {

@@ -11,6 +11,7 @@
       "lib": ["es5", "es6", "dom", "es2017.object"]
   },
   "include": [
+      "./types/**/*.d.ts",
       "./src/**/*.ts",
       "./src/**/*.tsx"
   ]
