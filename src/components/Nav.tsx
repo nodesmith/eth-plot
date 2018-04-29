@@ -20,6 +20,12 @@ const styles: StyleRulesCallback = theme => ({
   },
   flex: {
     flex: 1
+  },
+  navbar: {
+    position:'static'
+  },
+  navbarButton: {
+    color: theme.palette.primary.contrastText
   }
 });
 
@@ -46,31 +52,31 @@ class Nav extends Component<NavProps> {
   
     return (
       <div>
-        <AppBar position="static" color="primary">
+        <AppBar className={this.props.classes.navbar}>
           <Toolbar>
-            <Button color="inherit" onClick={this.navigate.bind(this, '/')}>
-              <Typography color="inherit">
+            <Button onClick={this.navigate.bind(this, '/')}>
+              <Typography className={this.props.classes.navbarButton}>
                 Eth Grid
               </Typography>
             </Button>
 
-            <Button color="inherit" onClick={this.navigate.bind(this, '/myplots')}>
-              <Typography color="inherit">
+            <Button onClick={this.navigate.bind(this, '/myplots')}>
+              <Typography className={this.props.classes.navbarButton}>
                 My Plots
               </Typography>
             </Button>
 
 
-            <Button color="inherit" onClick={this.navigate.bind(this, '/about')}>
-              <Typography color="inherit">
+            <Button onClick={this.navigate.bind(this, '/about')}>
+              <Typography className={this.props.classes.navbarButton}>
                 About
               </Typography>
             </Button>
 
             <span className={this.props.classes.flex} />
-            <IconButton onClick={() => { this.clearNotifications(); this.navigate('/account'); }} color="inherit" >
+            <IconButton className={this.props.classes.navbarButton} onClick={() => { this.clearNotifications(); this.navigate('/account'); }} >
               { (this.props.notificationCount) ?
-              (<Badge className={this.props.classes.badge} badgeContent={this.props.notificationCount} color="secondary">
+              (<Badge className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
                 <AccountBox />
               </Badge>) :
               <AccountBox />

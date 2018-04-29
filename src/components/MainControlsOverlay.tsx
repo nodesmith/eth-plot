@@ -15,7 +15,6 @@ import { ContractInfo, PlotInfo, Rect } from '../models';
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
 import ZoomControl from './ZoomControl';
 
-
 const padding = 24;
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -106,7 +105,7 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
           <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
         </div>
         {this.props.purchase.purchaseFlowOpen ? null : 
-          <Button variant="fab" color="secondary" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
+          <Button variant="fab" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />
           </Button>
         }

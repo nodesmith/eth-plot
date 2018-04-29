@@ -178,7 +178,7 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes, 
 
     const browseInputFn = () => (
     <div>
-      <Button mini={true} color="primary" id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
+      <Button mini={true} id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
       {currentFile}
     </div>);
 
@@ -206,7 +206,7 @@ class ChooseButtonInput extends React.Component<{browseForImage: () => void; cur
   render() {
     return(
       <div>
-        <Button mini={true} color="primary" id="browse-for-image" onClick={this.props.browseForImage}>Browse...</Button>
+        <Button mini={true} id="browse-for-image" onClick={this.props.browseForImage}>Browse...</Button>
         {this.props.currentFile}
       </div>);
   }

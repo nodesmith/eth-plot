@@ -5,16 +5,16 @@ import * as ReactDOM from 'react-dom';
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: '#a7c0cd',
-      main: '#78909c',
-      dark: '#4b636e',
-      contrastText: '#000000',
+      main: '#009688',
+      contrastText: '#ffffff',
     },
     secondary: {
-      light: '#e6ffff',
-      main: '#f44336',
-      dark: '#82b3c9',
-      contrastText: '#000',
+      main: '#ffffff',
+      contrastText: '#000000',
+    },
+    error: {
+      main: '#ef5350',
+      contrastText: '#000000',
     }
   },
 });

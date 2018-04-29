@@ -4,7 +4,6 @@ import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import Divider from 'material-ui/Divider';
 import Grid from 'material-ui/Grid';
-import { ListItem, ListItemText } from 'material-ui/List';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import { Component } from 'react';
@@ -30,7 +29,6 @@ class TransactionStatus extends Component<TransactionStatusProps> {
     let statusText;
     
     switch (this.props.tx.txStatus) {
-      // TODO clean up colors
       case Enums.TxStatus.SUCCESS:
         colorClass = 'primary';
         statusText = 'Success';
@@ -40,7 +38,7 @@ class TransactionStatus extends Component<TransactionStatusProps> {
         statusText = 'Failed';
         break;
       case Enums.TxStatus.PENDING:
-        colorClass = 'secondary';
+        colorClass = undefined;
         statusText = 'Pending';
         break;
       default:
@@ -60,15 +58,26 @@ class TransactionStatus extends Component<TransactionStatusProps> {
     const txStatusComponent = this.getTxStatus();
 
     return (
-      <ListItem>
-        <Avatar>
-          {(isAuction) ?
-          (<AttachMoney />) :
-          (<AddCircle />)}
-        </Avatar>
-        <ListItemText primary={txTextComponent} secondary={<a href={etherscanUrl}>{this.props.tx.txHash}</a>} />
-        {txStatusComponent}
-      </ListItem>
+      <Grid className={this.props.classes.root} container alignItems="center" >
+        <Grid item xs>
+          <Avatar>
+            {(isAuction) ?
+            (<AttachMoney />) :
+            (<AddCircle />)}
+          </Avatar>
+        </Grid>
+ 
+        <Grid container xs={6} sm={8} md={10} spacing={8} wrap="nowrap">
+          <Grid item xs={12} zeroMinWidth>
+            <Typography>{txTextComponent}</Typography>
+            <Typography noWrap><a href={etherscanUrl}>{this.props.tx.txHash}</a></Typography>
+          </Grid>
+        </Grid>
+
+        <Grid item xs>
+          {txStatusComponent}
+        </Grid>
+      </Grid>
     );
   }
 }

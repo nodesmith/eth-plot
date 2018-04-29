@@ -116,7 +116,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
         <Button {...backButtonProps} className={classes.button}>
           {backButtonProps.text}
         </Button>
-        <Button variant="raised" color="primary" className={classes.button} {...nextButtonProps}>
+        <Button variant="raised" className={classes.button} {...nextButtonProps}>
           {nextButtonProps.text}
         </Button>
       </div>
@@ -245,7 +245,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
         <CardHeader className={classes.cardHeader}
           classes={{ title: classes.contrastColor, subheader: classes.contrastColor }}
             action={
-              <IconButton color="primary" classes={{ colorPrimary: classes.contrastColor }} onClick={this.props.onClose}>
+              <IconButton classes={{ colorPrimary: classes.contrastColor }} onClick={this.props.onClose}>
                 <Close />
               </IconButton>
             }

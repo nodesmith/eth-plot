@@ -70,7 +70,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
     };
 
     return (
-      <Grid className={this.props.classes.root} container spacing={24}>
+      <Grid className={this.props.classes.root} container spacing={8}>
         <Grid item xs={6} >
         <Typography variant="headline">Plot url: <a href={this.props.info.data.url}>{this.props.info.data.url}</a></Typography>
           
