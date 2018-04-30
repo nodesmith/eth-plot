@@ -121,24 +121,13 @@ export function fetchPlotsFromWeb3(contractInfo) {
 export function updateAuction(contractInfo, zoneIndex, newPrice) {
   return async (dispatch) => {
     const web3 = getWeb3(contractInfo);
-
-    const coinbase = await new Promise<string>((resolve, reject) => {
-      web3.eth.getCoinbase((error, coinbase) => {
-        if (error) reject(error);  
-        resolve(coinbase);
-      });
-    });
+    const coinbase = await getCoinbase(web3);
   
     const gasEstimate = 2000000;
     const contract = await initializeContract(contractInfo);
-  
-    const param1 = zoneIndex;
-    const param2 = newPrice;
-    const param3 = false; // this flag indicates to smart contract that this is not a new purchase
 
     const txObject = {
       from: coinbase,
-      gasPrice: '3000000000',
       gas: gasEstimate * 2
     };
 
@@ -184,23 +173,20 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
     const coinbase = await getCoinbase(web3);
     const contract = await initializeContract(contractInfo);
 
-    const param1 = buildArrayFromRectangles([rectToPurchase]);
-    const param2 = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
-    const param3 = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
-    const param4 = ipfsHash;
-    const param5 = url;
-    const param6 = 10;
+    const purchase = buildArrayFromRectangles([rectToPurchase]);
+    const purchasedAreas = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
+    const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
+    const initialPurchasePrice = 10; // TODO!
 
     const gasEstimate = 2000000;
     const txObject = {
       from: coinbase,
-      gasPrice: '3000000000',
       gas: gasEstimate * 2,
       value: '10' // TODO!!
     };
 
     const transactionReceipt = await contract.purchaseAreaWithDataTx(
-      param1, param2, param3, param4, param5, param6
+      purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url, initialPurchasePrice
     ).send(txObject);
 
 
