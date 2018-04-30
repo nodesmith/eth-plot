@@ -123,12 +123,14 @@ export function updateAuction(contractInfo, zoneIndex, newPrice) {
     const web3 = getWeb3(contractInfo);
     const coinbase = await getCoinbase(web3);
   
-    const gasEstimate = 2000000;
     const contract = await initializeContract(contractInfo);
+
+    const tx = contract.updateAuctionTx(zoneIndex, newPrice, false);
+    const gasEstimate = await tx.estimateGas();
 
     const txObject = {
       from: coinbase,
-      gas: gasEstimate * 2
+      gas: gasEstimate.times(2)
     };
 
     const transactionReceipt = await contract.updateAuctionTx(zoneIndex, newPrice, false).send(txObject);
@@ -178,17 +180,15 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
     const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
     const initialPurchasePrice = 10; // TODO!
 
-    const gasEstimate = 2000000;
+    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url, initialPurchasePrice);
+    const gasEstimate = await tx.estimateGas();
     const txObject = {
       from: coinbase,
-      gas: gasEstimate * 2,
+      gas: gasEstimate.times(2),
       value: '10' // TODO!!
     };
 
-    const transactionReceipt = await contract.purchaseAreaWithDataTx(
-      purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url, initialPurchasePrice
-    ).send(txObject);
-
+    const transactionReceipt = await tx.send(txObject);
 
     const txStatus = determineTxStatus(transactionReceipt);
     dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));

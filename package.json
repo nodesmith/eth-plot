@@ -16,7 +16,7 @@
     "gen": "./node_modules/.bin/typechain --force --outDir ./gen-src ./contract/build/contracts/*.json"
   },
   "devDependencies": {
-    "@spacedust/typechain": "^0.2.3",
+    "@spacedust/typechain": "^0.2.5",
     "@types/node": "^8.0.0",
     "@types/redux": "^3.6.0",
     "@types/redux-devtools": "^3.0.43",
