@@ -9,3 +9,11 @@ declare class files {
 declare class ipfs {
   files: files;
 }
+
+// Some definitions for the dom-based Buffer we need to use for ipfs
+declare type Buffer = {};
+declare type BufferStatic = { from: (foo: ArrayBuffer) => Buffer };
+
+declare module "buffer" {
+  var Buffer: BufferStatic;
+}
