@@ -42,6 +42,9 @@ const styles: StyleRulesCallback = theme => ({
   },
   summaryLine: {
     display: 'inline'
+  },
+  buyoutWrapper: {
+    margin: theme.spacing.unit
   }
 });
 
@@ -169,6 +172,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
             <Typography variant="body1">
               Set an optional initial buyout price
             </Typography>
+            <div className={this.props.classes.buyoutWrapper}>
             <BuyoutPriceInputBox
               onBuyoutChanged={this.onBuyoutChanged.bind(this)}
               onToggleChanged={this.onBuyoutEnabledChanged.bind(this)}
@@ -181,6 +185,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
               initialValue={{ units: 'wei', ammountInWei: 500 }}
               buyoutVisible={true}
               />
+            </div>
             { this.getButtons({ text: 'Back', onClick: defaultBackButtonAction }, { text: 'Next', onClick: defaultNextButtonAction }) }
           </div>
         );
