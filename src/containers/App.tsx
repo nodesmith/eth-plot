@@ -79,19 +79,15 @@ class App extends React.Component<AppProps> {
   }
 
   checkMetamaskStatus(contractInfo: ContractInfo) {
-    if (isUsingMetamask()) {
-      // TODO - Something
-    }
-
     const web3 = getWeb3(contractInfo);
 
-    if (!web3) {
+    if (!web3 || !web3.isConnected()) {
       this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       return;
     }
 
     web3.eth.getAccounts((err, accounts) => {
-      if (accounts.length > 0) {
+      if (accounts && accounts.length > 0) {
         this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
 
         if (accounts[0] !== this.props.account.activeAccount) {

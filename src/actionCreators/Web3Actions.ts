@@ -10,7 +10,7 @@ export function getWeb3(contractInfo: ContractInfo): Web3 {
   if (typeof window.web3 !== 'undefined') {
     return window.web3;
   } else {
-    return new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    return new Web3(new Web3.providers.HttpProvider(contractInfo.web3Provider));
   }
 }
 
