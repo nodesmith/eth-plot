@@ -12,6 +12,7 @@
   },
   "include": [
       "./types/**/*.d.ts",
+      "./gen-src/**/*.ts",
       "./src/**/*.ts",
       "./src/**/*.tsx"
   ]

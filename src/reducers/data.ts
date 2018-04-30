@@ -7,8 +7,6 @@ import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as PlotMath from '../data/PlotMath';
 import { ContractInfo, HoleInfo, PlotInfo, Rect } from '../models';
 
-// TODO - Clean this up a bit and get from some config file
-const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
 
 type web3ConfigType = { contractAddress: string, web3Provider: string };
 const web3Config = <web3ConfigType>jsCookie.getJSON('web3Config')!;
@@ -37,7 +35,6 @@ const initialState: DataState = {
     width: 250
   },
   contractInfo: {
-    abi,
     contractAddress,
     web3Provider
   },

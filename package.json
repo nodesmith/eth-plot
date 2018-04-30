@@ -12,9 +12,11 @@
     "start": "npm run tsdev",
     "lint": "./node_modules/.bin/tslint --force --project tsconfig.json",
     "lint:fix": "./node_modules/.bin/tslint --force --fix --project tsconfig.json",
-    "tsdev": "node_modules/.bin/webpack-dev-server --port 3000 --hot --inline --mode development -d"
+    "tsdev": "node_modules/.bin/webpack-dev-server --port 3000 --hot --inline --mode development -d",
+    "gen": "./node_modules/.bin/typechain --force --outDir ./gen-src ./contract/build/contracts/*.json"
   },
   "devDependencies": {
+    "@types/node": "^8.0.0",
     "@types/redux": "^3.6.0",
     "@types/redux-devtools": "^3.0.43",
     "@types/redux-devtools-dock-monitor": "^1.1.32",
@@ -54,6 +56,7 @@
   },
   "dependencies": {
     "@material-ui/icons": "^1.0.0-beta.43",
+    "@spacedust/typechain": "^0.2.1",
     "@types/jquery": "^3.3.1",
     "@types/js-cookie": "^2.1.0",
     "@types/prop-types": "^15.5.2",
@@ -62,6 +65,7 @@
     "@types/react-redux": "^5.0.15",
     "@types/react-router-dom": "^4.2.6",
     "@types/redux-thunk": "^2.1.0",
+    "bignumber.js": "^5.0.0",
     "bn.js": "^4.11.8",
     "buffer": "^5.1.0",
     "decimal.js": "^9.0.1",

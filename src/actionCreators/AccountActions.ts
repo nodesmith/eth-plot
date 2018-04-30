@@ -3,6 +3,7 @@ import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 
 import { Action } from './EthGridAction';
+import { getWeb3 } from './Web3Actions';
 
 export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
   return {
@@ -52,58 +53,47 @@ export function doneLoadingTransactions(): Action {
 }
 
 export function fetchAccountTransactions(contractInfo, currentAddress) {
-  return function (dispatch) {
+  return async (dispatch) => {
     dispatch(loadTransactions());
 
-    const newWeb3 = DataActions.getWeb3(contractInfo);
-    const contract = DataActions.initializeContract(contractInfo);
-    
-    const auctionEventPromise = new Promise((resolve, reject) => {
-      // The owner filter here only fetches events where the owner is the current address, allowing
-      // us to perform that filter on the "server" side.  
-      // TODO: do we need some form of paging when a single user has a ton of transactions?
-      const auctionUpdatedEvent = contract.AuctionUpdated({ owner: currentAddress }, { fromBlock: 1, toBlock: 'latest' });
+    const newWeb3 = getWeb3(contractInfo);
+    const contract = await DataActions.initializeContract(contractInfo);
 
-      // Get's historical auction transactions for loading user's transaction list
-      auctionUpdatedEvent.get((err, data) => {
-        if (err) reject(err);
+    // The owner filter here only fetches events where the owner is the current address, allowing
+    // us to perform that filter on the "server" side.  
+    // TODO: do we need some form of paging when a single user has a ton of transactions?
+    const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
 
-        data.forEach(tx => {
-          auctionTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
-        });
+    const auctionEventPromise = auctionEvent.get({ fromBlock: 0, toBlock: 'latest' }).then(events => {
+      events.forEach(tx => {
+        auctionTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
       });
+    });
 
-      // Listens to incoming auction transnactions
-      auctionUpdatedEvent.watch((err, data) => {
-        if (err) reject(err);
-        auctionTransactionHandler(data, true, Enums.TxType.AUCTION, dispatch);
+    // We really should return this in some way since we need to stop listening to it
+    auctionEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, event) => {
+      if (!err) {
+        auctionTransactionHandler(event, true, Enums.TxType.AUCTION, dispatch);
+      }
+    });
+
+    const purchaseEvent = contract.PlotPurchasedEvent({ buyer: currentAddress });
+
+    // Get's historical purchase transactions for loading user's transaction list
+    const purchaseEventPromise = purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' }).then(events => {
+      events.forEach(tx => {
+        genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
       });
+    });
 
-      resolve();
-    }); 
-    
-    const purchaseEventPromise = new Promise((resolve, reject) => {
-      const purchaseEvent = contract.PlotPurchased({ buyer: currentAddress }, { fromBlock: 1, toBlock: 'latest' });
-
-      // Get's historical purchase transactions for loading user's transaction list
-      purchaseEvent.get((err, data) => {
-        if (err) reject(err);
-
-        data.forEach(tx => {
-          genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
-        });
-      });
-
-      // Listens to incoming purchase transactions
-      purchaseEvent.watch((err, data) => {
-        if (err) reject(err);
+    // Listens to incoming purchase transactions
+    purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {
+      if (!err) {
         genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
-      });
+      }
+    });
 
-      resolve();
-    }); 
-
-    Promise.all([auctionEventPromise, purchaseEventPromise]).then(values => { 
+    return Promise.all([auctionEventPromise, purchaseEventPromise]).then(values => { 
       dispatch(doneLoadingTransactions());
     });
   };
