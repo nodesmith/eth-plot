@@ -16,6 +16,7 @@
     "gen": "./node_modules/.bin/typechain --force --outDir ./gen-src ./contract/build/contracts/*.json"
   },
   "devDependencies": {
+    "@spacedust/typechain": "^0.2.3",
     "@types/node": "^8.0.0",
     "@types/redux": "^3.6.0",
     "@types/redux-devtools": "^3.0.43",
@@ -56,7 +57,6 @@
   },
   "dependencies": {
     "@material-ui/icons": "^1.0.0-beta.43",
-    "@spacedust/typechain": "^0.2.1",
     "@types/jquery": "^3.3.1",
     "@types/js-cookie": "^2.1.0",
     "@types/prop-types": "^15.5.2",
