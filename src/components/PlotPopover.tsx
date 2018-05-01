@@ -5,6 +5,7 @@ import Button from 'material-ui/Button';
 import Card, { CardActions, CardContent, CardHeader, CardMedia } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
+import moment from 'moment';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
@@ -44,7 +45,11 @@ class PlotPopover extends Component<PlotPopoverProps> {
       title = (<a target="_blank" href={this.props.plot.data.url}>{this.props.plot.data.url}</a>);
     }
 
-    const purchaseDateMessage = `Block ${this.props.purchaseEventInfo.blockNumber}`;
+    let purchaseDateMessage = `Block ${this.props.purchaseEventInfo.blockNumber}`;
+    if (this.props.purchaseEventInfo.timestamp) {
+      const purchaseDate = new Date(this.props.purchaseEventInfo.timestamp * 1000);
+      purchaseDateMessage = moment(purchaseDate).fromNow();
+    }
 
     return (<div>
     <Card className={classes.card}>
@@ -63,13 +68,13 @@ class PlotPopover extends Component<PlotPopoverProps> {
       />
       <CardContent>
         <Typography variant="body1">
-          <strong>Owner </strong><span>{this.props.plot.owner}</span>
+          <strong>Owner: </strong><span>{this.props.plot.owner}</span>
         </Typography>
         <Typography variant="body1">
-          <strong>Purchased </strong><span>{purchaseDateMessage}</span>
+          <strong>Purchased: </strong><span>{purchaseDateMessage}</span>
         </Typography>
         <Typography variant="body1">
-          <strong>Purchase Price </strong><span>{formatEthValueToString(this.props.purchaseEventInfo.purchasePrice)}</span>
+          <strong>Purchase Price: </strong><span>{formatEthValueToString(this.props.purchaseEventInfo.purchasePrice)}</span>
         </Typography>
 
       </CardContent>

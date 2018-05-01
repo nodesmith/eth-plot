@@ -39,6 +39,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     transformRectToPurchase: Actions.transformRectToPurchase,
     togglePurchaseFlow: Actions.togglePurchaseFlow;
     changeZoom: Actions.changeZoom;
+    loadBlockInfo: Actions.loadBlockInfo;
   };
   purchase: {
     rectToPurchase?: Rect;
@@ -90,7 +91,8 @@ class MainContainer extends React.Component<MainContainerProps> {
         hoverOverPlot: this.props.actions.hoverOverPlot,
         startTransformRectToPurchase: this.props.actions.startTransformRectToPurchase,
         stopTransformRectToPurchase: this.props.actions.stopTransformRectToPurchase,
-        transformRectToPurchase: this.props.actions.transformRectToPurchase
+        transformRectToPurchase: this.props.actions.transformRectToPurchase,
+        loadBlockInfo: this.props.actions.loadBlockInfo
       },
       classes: {},
       inPurchaseMode: this.props.purchase.purchaseFlowOpen,
@@ -104,7 +106,8 @@ class MainContainer extends React.Component<MainContainerProps> {
       hoveredIndex: this.props.hoveredIndex,
       dragRectCurr: this.props.dragRectCurr,
       dragRectStart: this.props.dragRectStart,
-      isDraggingRect: this.props.isDraggingRect
+      isDraggingRect: this.props.isDraggingRect,
+      contractInfo: this.props.contractInfo
     };
 
     const mainControlsOverlayProps: MainControlsOverlayProps = {

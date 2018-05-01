@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as jsCookie from 'js-cookie';
 import * as red from 'redux';
+import * as Web3 from 'web3';
 
 import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
@@ -32,7 +33,7 @@ const initialState: DataState = {
   numberOfPlots: 0,
   plots: [],
   plotTransactions: {
-    0: { purchaseIndex: 0, purchasePrice: '0', blockNumber: 0, txHash: '' } // Initialize the background block
+    0: { purchaseIndex: 0, purchasePrice: '0', blockNumber: 0, txHash: '', timestamp: undefined } // Initialize the background block
   },
   holes: {},
   gridInfo: {
@@ -83,6 +84,17 @@ export function dataReducer(state: DataState = initialState, action: Action): Da
           return result;
         },
         {});
+
+      return Object.assign({}, state, { plotTransactions });
+    }
+    case ActionTypes.ADD_BLOCK_INFO: {
+      const blockInfo: Web3.BlockWithoutTransactionData = action.blockInfo;
+      const plotTransactions = Object.assign({}, state.plotTransactions);
+      for (const key of Object.keys(plotTransactions)) {
+        if (plotTransactions[key].blockNumber === blockInfo.number) {
+          plotTransactions[key].timestamp = blockInfo.timestamp;
+        }
+      }
 
       return Object.assign({}, state, { plotTransactions });
     }

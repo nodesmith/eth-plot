@@ -20,6 +20,7 @@ export interface PurchaseEventInfo {
   purchasePrice: string;
   blockNumber: number;
   txHash: string;
+  timestamp: number | undefined;
 }
 
 export interface HoleInfo {[index: number]: Array<Rect>;}

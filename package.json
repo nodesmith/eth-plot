@@ -78,6 +78,7 @@
     "localforage": "^1.7.1",
     "material-ui": "^1.0.0-beta.41",
     "material-ui-icons": "^1.0.0-beta.17",
+    "moment": "^2.22.1",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

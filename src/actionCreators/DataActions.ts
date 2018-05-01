@@ -1,4 +1,5 @@
 import { BigNumber } from 'bignumber.js';
+import * as Web3 from 'web3';
 
 import { EthGrid2 } from '../../gen-src/EthGrid2';
 import { ActionTypes } from '../constants/ActionTypes';
@@ -9,11 +10,9 @@ import * as PlotMath from '../data/PlotMath';
 import { ContractInfo, PlotInfo, Rect } from '../models';
 
 import * as AccountActions from './AccountActions';
+import { Action } from './EthGridAction';
 import { togglePurchaseFlow } from './PurchaseActions';
 import { getWeb3 } from './Web3Actions';
-
-// tslint:disable-next-line:variable-name
-const Web3 = require('web3');
 const hexy = require('hexy');
 const promisePool = require('es6-promise-pool');
 
@@ -71,6 +70,26 @@ function getRandomColor() {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
+}
+
+export function loadBlockInfo(contractInfo: ContractInfo, blockNumber: number) {
+  return async (dispatch) => {
+    const web3 = getWeb3(contractInfo);
+    return new Promise((resolve, reject) => {
+      web3.eth.getBlock(blockNumber, (err, blockObj) => {
+        if (err) { reject(err); }
+        dispatch(addBlockInfo(blockObj));
+        resolve();
+      });
+    });
+  };
+}
+
+export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Action {
+  return {
+    type: ActionTypes.ADD_BLOCK_INFO,
+    blockInfo
+  };
 }
 
 // This is gonna be a thunk action!

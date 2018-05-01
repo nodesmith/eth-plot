@@ -7,7 +7,7 @@ import { Component } from 'react';
 
 import * as ActionTypes from '../actions';
 import { MovementActions } from '../constants/Enums';
-import { ImageFileInfo, PlotInfo as PlotInfoModel, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
+import { ContractInfo, ImageFileInfo, PlotInfo as PlotInfoModel, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
 import GridPlot from './GridPlot';
 import PlotPopover, { PlotPopoverProps } from './PlotPopover';
@@ -33,6 +33,7 @@ export interface UIGridProps extends WithStyles {
     startTransformRectToPurchase: ActionTypes.startTransformRectToPurchase;
     stopTransformRectToPurchase: ActionTypes.stopTransformRectToPurchase;
     transformRectToPurchase: ActionTypes.transformRectToPurchase;
+    loadBlockInfo: ActionTypes.loadBlockInfo;
   };
   inPurchaseMode: boolean;
   imageToPurchase?: ImageFileInfo;
@@ -47,6 +48,7 @@ export interface UIGridProps extends WithStyles {
   dragRectCurr?: Point;
   dragRectStart?: Point;
   isDraggingRect: boolean;
+  contractInfo: ContractInfo;
 }
 
 class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
@@ -150,7 +152,11 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
   }
 
   plotClicked(index: number, eventTarget: HTMLElement) {
-    this.setState({ popoverTarget: eventTarget, popoverIndex: index });
+    this.setState({ popoverTarget: eventTarget, popoverIndex: index }, () => {
+      const popoverInfo = this.getPlotPopoverInfo()!;
+      this.props.actions.loadBlockInfo(this.props.contractInfo, popoverInfo.purchaseEventInfo.blockNumber);
+    });
+
   }
 
   plotHovered(index: number, eventTarget: HTMLElement) {

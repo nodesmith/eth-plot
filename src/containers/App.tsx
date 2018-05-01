@@ -148,7 +148,8 @@ class App extends React.Component<AppProps> {
         stopTransformRectToPurchase: actions.stopTransformRectToPurchase,
         transformRectToPurchase: actions.transformRectToPurchase,
         togglePurchaseFlow: actions.togglePurchaseFlow,
-        changeZoom: actions.changeZoom
+        changeZoom: actions.changeZoom,
+        loadBlockInfo: actions.loadBlockInfo
       },
       purchase: // this.props.purchase,
       {
