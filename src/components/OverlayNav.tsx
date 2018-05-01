@@ -33,7 +33,7 @@ const styles: StyleRulesCallback = theme => ({
   homeButton: {
     left: padding,
     top: padding,
-    position: 'absolute',
+    position: 'fixed',
     display: 'inline',
     pointerEvents: 'all'
   },
@@ -50,7 +50,7 @@ const styles: StyleRulesCallback = theme => ({
     right: padding,
     top: padding,
     width: sideIconSize,
-    position: 'absolute',
+    position: 'fixed',
     display: 'inline',
     pointerEvents: 'all',
     backgroundColor: theme.palette.grey[200]

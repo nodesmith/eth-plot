@@ -14,8 +14,7 @@ import { getWeb3, isUsingMetamask } from '../actionCreators/Web3Actions';
 import About from '../components/About';
 import FloatingLogo from '../components/FloatingLogo';
 import MetaMaskStatus from '../components/MetaMaskStatus';
-import Nav, { NavProps } from '../components/Nav';
-import OverlayNav from '../components/OverlayNav';
+import OverlayNav, { OverlayNavProps } from '../components/OverlayNav';
 import ProgressSpinner from '../components/ProgressSpinner';
 import * as Enums from '../constants/Enums';
 import { ContractInfo } from '../models';
@@ -203,7 +202,7 @@ class App extends React.Component<AppProps> {
   }
 
   render() {
-    const navProps: NavProps = {
+    const navProps: OverlayNavProps = {
       classes: {},
       notificationCount: this.props.account.notificationCount,
       clearNotifications: this.clearNotifications.bind(this),
@@ -214,7 +213,6 @@ class App extends React.Component<AppProps> {
     const mainBodyContent = this.getMainBodyContent();
     return (
       <div className="main-app-container">
-        {/* <Nav {...navProps} /> */}
         <main>
           {
             (this.shouldShowSpinner()) ?
