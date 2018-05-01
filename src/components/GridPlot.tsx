@@ -1,5 +1,4 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import Tooltip from 'material-ui/Tooltip';
 import * as React from 'react';
 
 import { loadFromIpfsOrCache } from '../data/ImageRepository';
@@ -13,7 +12,6 @@ export interface GridPlotProps extends WithStyles {
   clickAction: (index: number, source: HTMLElement) => void;
   isHovered: boolean;
   ipfsHash: string;
-  tooltipTitle: string;
 }
 
 const styles: StyleRulesCallback = theme => ({
@@ -36,13 +34,6 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 class GridPlot extends React.Component<GridPlotProps> {
-  constructor(props: GridPlotProps, context?: any) {
-    super(props, context);
-
-    this.state = {
-      imageUrl: undefined
-    };
-  }
 
   mouseOver(event: MouseEvent) {
     this.props.hoverAction(this.props.index, event.target as HTMLElement);
@@ -51,14 +42,6 @@ class GridPlot extends React.Component<GridPlotProps> {
   onClick(event: MouseEvent) {
     this.props.clickAction(this.props.index, event.target as HTMLElement);
   }
-
-  // componentDidMount() {
-  //   loadFromIpfsOrCache(this.props.ipfsHash).then(imageBlob => {
-  //     this.setState({ imageUrl: URL.createObjectURL(imageBlob) });
-  //   }).catch(err => {
-  //     // TODO - Put in some sort of error url
-  //   });
-  // }
 
   render() {
     const rect = this.props.plot.rect;
@@ -71,10 +54,10 @@ class GridPlot extends React.Component<GridPlotProps> {
       backgroundSize: 'cover'
     };
 
-    const showToolTip = this.props.isHovered && this.props.index !== 0;
+    const showHoverStyle = this.props.isHovered && this.props.index !== 0;
     const overlayStyle: React.CSSProperties = {};
 
-    if (showToolTip) {
+    if (showHoverStyle) {
       plotStyle.cursor = 'pointer';
       overlayStyle.opacity = .25;
     }

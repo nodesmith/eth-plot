@@ -88,9 +88,7 @@ export function completePlotPurchase(
   return async (dispatch) => {
     dispatch(startPurchasePlot());
 
-    // const uploadName = `grid-${Date.now()}-${rectToPurchase.w},${rectToPurchase.y},${rectToPurchase.w},${rectToPurchase.h}`;
-    const uploadName = 'img';
-    const ipfsHash = await dispatch(uploadImageData(imageData, uploadName));
+    const ipfsHash = await dispatch(uploadImageData(imageData));
     return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, changePurchaseStep));
   };
 }
@@ -107,7 +105,7 @@ function startPurchasePlot(): Action {
   };
 }
 
-function uploadImageData(imageData: string, imageName: string) {
+function uploadImageData(imageData: string) {
   return async (dispatch) => {
     dispatch(changePurchaseStep(PurchaseStage.UPLOADING_TO_IPFS));
 
@@ -124,9 +122,10 @@ function uploadImageData(imageData: string, imageName: string) {
     const arrayBuffer = await convertedImage.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const ipfs = ipfsApi('ipfs.infura.io', '5001', { protocol: 'https' });
-    const uploadResult = await ipfs.files.add({ content: buffer, path: `${folder}/${imageName}.${extension}` });
+    const fileName = `img.${extension}`;
+    const uploadResult = await ipfs.files.add({ content: buffer, path: `${folder}/${fileName}` });
 
-    const ipfsHash = `${uploadResult[1].hash}/${imageName}.${extension}`;
+    const ipfsHash = `${uploadResult[1].hash}/${fileName}`;
     return ipfsHash;
   };
 }

@@ -19,9 +19,6 @@ const styles: StyleRulesCallback = theme => ({
     width: '100%',
     height: '100%',
     overflow: 'scroll'
-  },
-  tooltip: {
-    fontFamily: theme.typography.fontFamily
   }
 });
 
@@ -130,15 +127,6 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
 
     e.stopPropagation(); 
   }
-  
-  getTooltip(): JSX.Element | undefined {
-    if (this.props.hoveredIndex > 0) {
-      const url = this.props.plots[this.props.hoveredIndex].data.url || 'No Website Provided';
-      return (<div className={this.props.classes.tooltip}>{url}</div>);
-    }
-
-    return undefined;
-  }
 
   getPlotPopoverInfo() : PlotPopoverProps | undefined {
     if (this.state.popoverIndex > 0) {
@@ -167,9 +155,8 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
     const scale = this.props.scale;
 
     const plots = this.props.plots.map((plot, index) => {
-      const tooltipTitle = index === 0 ? '' : plot.data.url || 'No Website Provided';
       return (<GridPlot scale={scale} plot={plot} ipfsHash={plot.data.ipfsHash} index={index} isHovered={this.props.hoveredIndex === index}
-        hoverAction={this.plotHovered.bind(this)} key={index} classes={{}} tooltipTitle={tooltipTitle}
+        hoverAction={this.plotHovered.bind(this)} key={index} classes={{}}
         clickAction={this.plotClicked.bind(this)} />);
     });
 

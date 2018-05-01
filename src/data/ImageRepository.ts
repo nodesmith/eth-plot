@@ -23,12 +23,7 @@ export async function loadFromIpfsOrCache(ipfsHash: string, ipfsHost: string = '
   const response = await fetch(ipfsUrl);
   const responseBlob = await response.blob();
 
-  // const contentType = response.headers.get('content-type');
-
-  // debugger;
-  // const responseBuffer = await response.arrayBuffer();
-  // const responseBlob = new Blob([responseBuffer], { type: 'image/svg+xml' });
-
+  // Save the blob in the cache and return it from the cache
   return localforage.setItem(ipfsHash, responseBlob);
 }
 

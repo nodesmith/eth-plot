@@ -18,7 +18,6 @@
   "devDependencies": {
     "@spacedust/typechain": "^0.2.5",
     "@types/node": "^8.0.0",
-    "@types/react-tooltip": "^3.3.4",
     "@types/redux": "^3.6.0",
     "@types/redux-devtools": "^3.0.43",
     "@types/redux-devtools-dock-monitor": "^1.1.32",
@@ -84,7 +83,6 @@
     "react-dom": "^16.2.0",
     "react-redux": "^4.1.1",
     "react-router-dom": "^4.2.2",
-    "react-tooltip": "^3.5.0",
     "redux": "^3.7.2",
     "redux-thunk": "^1.0.3",
     "typeface-roboto": "0.0.50",

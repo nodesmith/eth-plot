@@ -107,6 +107,8 @@ export function fetchPlotsFromWeb3(contractInfo) {
     for (let i = 0; i < ownershipLength; i++) {
       const plotInfo = await contract.getPlot(i);
 
+      const ipfsHash = web3.toUtf8(plotInfo[7]);
+
       const plot: PlotInfo = {
         rect: {
           x: plotInfo[0].toNumber(),
@@ -120,9 +122,8 @@ export function fetchPlotsFromWeb3(contractInfo) {
         buyoutPrice: plotInfo[5].toNumber(), // TODO
         data: {
           url: plotInfo[6],
-          ipfsHash: web3.toUtf8(plotInfo[7]),
-          imageUrl: `https://ipfs.infura.io/ipfs/${web3.toUtf8(plotInfo[7])}`,
-          blobUrl: URL.createObjectURL(await loadFromIpfsOrCache(web3.toUtf8(plotInfo[7])))
+          ipfsHash,
+          blobUrl: URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash))
         },
         color: getRandomColor(),
         zoneIndex: i,
