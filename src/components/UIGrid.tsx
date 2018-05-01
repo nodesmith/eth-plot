@@ -140,11 +140,12 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
   }
 
   plotClicked(index: number, eventTarget: HTMLElement) {
-    this.setState({ popoverTarget: eventTarget, popoverIndex: index }, () => {
-      const popoverInfo = this.getPlotPopoverInfo()!;
-      this.props.actions.loadBlockInfo(this.props.contractInfo, popoverInfo.purchaseEventInfo.blockNumber);
-    });
-
+    if (index !== 0) {
+      this.setState({ popoverTarget: eventTarget, popoverIndex: index }, () => {
+        const popoverInfo = this.getPlotPopoverInfo()!;
+        this.props.actions.loadBlockInfo(this.props.contractInfo, popoverInfo.purchaseEventInfo.blockNumber);
+      });
+    }
   }
 
   plotHovered(index: number, eventTarget: HTMLElement) {

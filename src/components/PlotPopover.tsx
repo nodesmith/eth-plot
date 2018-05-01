@@ -76,7 +76,6 @@ class PlotPopover extends Component<PlotPopoverProps> {
         <Typography variant="body1">
           <strong>Purchase Price: </strong><span>{formatEthValueToString(this.props.purchaseEventInfo.purchasePrice)}</span>
         </Typography>
-
       </CardContent>
       <CardActions>
         <Button size="small" color="primary" onClick={this.viewTransaction.bind(this)}>View Transaction</Button>

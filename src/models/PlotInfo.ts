@@ -4,7 +4,6 @@ export interface PlotInfo {
   rect: Rect;
   data: {
     url: string;
-    imageUrl: string;
     ipfsHash: string;
     blobUrl: string;
   };
