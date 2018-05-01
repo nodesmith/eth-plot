@@ -42,7 +42,8 @@ class PlotPopover extends Component<PlotPopoverProps> {
     <Card className={classes.card}>
       <CardHeader
         avatar={
-          <Avatar className={classes.avatar} src={`https://ipfs.infura.io/ipfs/${this.props.plot.data.ipfsHash}`} />
+          <Avatar className={classes.avatar}
+           src={this.props.plot.data.blobUrl} />
         }
         action={
           <IconButton>
@@ -60,7 +61,7 @@ class PlotPopover extends Component<PlotPopoverProps> {
           <strong>Purchased </strong><span>{'May 12, 2017'}</span>
         </Typography>
         <Typography variant="body1">
-          <strong>Zone Index </strong><span>{this.props.plot.zoneIndex}</span>
+          <strong>Purchase Price </strong><span>{this.props.plot.zoneIndex}</span>
         </Typography>
 
       </CardContent>

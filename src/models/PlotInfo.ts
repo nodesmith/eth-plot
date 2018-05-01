@@ -6,6 +6,7 @@ export interface PlotInfo {
     url: string;
     imageUrl: string;
     ipfsHash: string;
+    blobUrl: string;
   };
   zoneIndex: number;
   color: string;

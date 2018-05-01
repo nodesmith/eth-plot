@@ -4,9 +4,6 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
-// tslint:disable-next-line:import-name
-import ReactTooltip from 'react-tooltip';
-
 import * as ActionTypes from '../actions';
 import { MovementActions } from '../constants/Enums';
 import { ImageFileInfo, PlotInfo as PlotInfoModel, Point, Rect, RectTransform } from '../models';
@@ -149,13 +146,18 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
     this.setState({ popoverTarget: eventTarget, popoverIndex: index });
   }
 
+  plotHovered(index: number, eventTarget: HTMLElement) {
+    this.props.actions.hoverOverPlot(index);
+    // this.setState({ popoverTarget: eventTarget, popoverIndex: index });
+  }
+
   render() {
     const scale = this.props.scale;
 
     const plots = this.props.plots.map((plot, index) => {
       const tooltipTitle = index === 0 ? '' : plot.data.url || 'No Website Provided';
       return (<GridPlot scale={scale} plot={plot} ipfsHash={plot.data.ipfsHash} index={index} isHovered={this.props.hoveredIndex === index}
-        hoverAction={this.props.actions.hoverOverPlot} key={index} classes={{}} tooltipTitle={tooltipTitle}
+        hoverAction={this.plotHovered.bind(this)} key={index} classes={{}} tooltipTitle={tooltipTitle}
         clickAction={this.plotClicked.bind(this)} />);
     });
 
@@ -230,7 +232,6 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
             }}>
             {plotInfoPopover}
           </Popover>
-          <ReactTooltip className={this.props.classes.tooltip} effect={'solid'} delayShow={300} getContent={this.getTooltip.bind(this)} />
         </div>
         {overlay}
       </div>

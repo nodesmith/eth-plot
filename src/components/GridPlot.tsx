@@ -9,7 +9,7 @@ export interface GridPlotProps extends WithStyles {
   plot: PlotInfo;
   index: number;
   scale: number;
-  hoverAction: (index: number) => void;
+  hoverAction: (index: number, source: HTMLElement) => void;
   clickAction: (index: number, source: HTMLElement) => void;
   isHovered: boolean;
   ipfsHash: string;
@@ -35,7 +35,7 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
-class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undefined }> {
+class GridPlot extends React.Component<GridPlotProps> {
   constructor(props: GridPlotProps, context?: any) {
     super(props, context);
 
@@ -44,21 +44,21 @@ class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undef
     };
   }
 
-  mouseOver() {
-    this.props.hoverAction(this.props.index);
+  mouseOver(event: MouseEvent) {
+    this.props.hoverAction(this.props.index, event.target as HTMLElement);
   }
 
   onClick(event: MouseEvent) {
     this.props.clickAction(this.props.index, event.target as HTMLElement);
   }
 
-  componentDidMount() {
-    loadFromIpfsOrCache(this.props.ipfsHash).then(imageBlob => {
-      this.setState({ imageUrl: URL.createObjectURL(imageBlob) });
-    }).catch(err => {
-      // TODO - Put in some sort of error url
-    });
-  }
+  // componentDidMount() {
+  //   loadFromIpfsOrCache(this.props.ipfsHash).then(imageBlob => {
+  //     this.setState({ imageUrl: URL.createObjectURL(imageBlob) });
+  //   }).catch(err => {
+  //     // TODO - Put in some sort of error url
+  //   });
+  // }
 
   render() {
     const rect = this.props.plot.rect;
@@ -72,19 +72,17 @@ class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undef
     };
 
     const showToolTip = this.props.isHovered && this.props.index !== 0;
-
     const overlayStyle: React.CSSProperties = {};
 
     if (showToolTip) {
       plotStyle.cursor = 'pointer';
-      overlayStyle.opacity = .15;
+      overlayStyle.opacity = .25;
     }
 
-    const imageSource = this.state.imageUrl || '';
+    const imageSource = this.props.plot.data.blobUrl;
 
     return (
-      <div 
-        data-tip data-tip-disable={!showToolTip}
+      <div
         key={this.props.index}
         style={plotStyle}
         className={this.props.classes.gridPlot}

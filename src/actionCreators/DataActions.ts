@@ -4,8 +4,9 @@ import { EthGrid2 } from '../../gen-src/EthGrid2';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
+import { loadFromIpfsOrCache } from '../data/ImageRepository';
 import * as PlotMath from '../data/PlotMath';
-import { ContractInfo, Rect } from '../models';
+import { ContractInfo, PlotInfo, Rect } from '../models';
 
 import * as AccountActions from './AccountActions';
 import { togglePurchaseFlow } from './PurchaseActions';
@@ -87,7 +88,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
     for (let i = 0; i < ownershipLength; i++) {
       const plotInfo = await contract.getPlot(i);
 
-      const plot = {
+      const plot: PlotInfo = {
         rect: {
           x: plotInfo[0].toNumber(),
           y: plotInfo[1].toNumber(),
@@ -101,10 +102,12 @@ export function fetchPlotsFromWeb3(contractInfo) {
         data: {
           url: plotInfo[6],
           ipfsHash: web3.toUtf8(plotInfo[7]),
-          imageUrl: `https://ipfs.infura.io/ipfs/${web3.toUtf8(plotInfo[7])}`
+          imageUrl: `https://ipfs.infura.io/ipfs/${web3.toUtf8(plotInfo[7])}`,
+          blobUrl: URL.createObjectURL(await loadFromIpfsOrCache(web3.toUtf8(plotInfo[7])))
         },
         color: getRandomColor(),
-        zoneIndex: i
+        zoneIndex: i,
+        txHash: ''
       };
 
       plot.rect.x2 = plot.rect.x + plot.rect.w;
