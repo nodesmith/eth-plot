@@ -1,4 +1,3 @@
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
@@ -17,9 +16,9 @@ class TextLabel extends Component<TextLabelProps> {
       <div>
         <Typography variant="caption">{this.props.caption}:</Typography>
         {this.props.urlLink ?
-          <Typography variant="body1" gutterBottom={true}><a href={this.props.urlLink}>{this.props.value}</a></Typography>
+          <Typography variant="body1" gutterBottom={true} noWrap><a href={this.props.urlLink}>{this.props.value}</a></Typography>
         : 
-          <Typography variant="body1" gutterBottom={true}>{this.props.value}</Typography>
+          <Typography variant="body1" gutterBottom={true} noWrap>{this.props.value}</Typography>
         }
       </div>
     );

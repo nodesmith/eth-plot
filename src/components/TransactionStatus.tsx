@@ -18,7 +18,6 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
-
 export interface TransactionStatusProps extends WithStyles {
   tx: UserTransactions;
 }

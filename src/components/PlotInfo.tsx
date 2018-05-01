@@ -8,6 +8,7 @@ import ExpansionPanel, {
 } from 'material-ui/ExpansionPanel';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
+import PlotPreviewCard from './PlotPreviewCard';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
@@ -71,47 +72,40 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   }
 
   render() {
-    const previewStyle = {
-      backgroundColor: this.props.info.color,
-      width: `200px`,
-      height: `200px`,
-    };
-
-    const imageStyle = {
-      width: `${this.props.info.rect.w}px`,
-      height: `${this.props.info.rect.w}px`,
-    }
+    const plotURL = (this.props.info.data.url) ? this.props.info.data.url : 'None';
+    const forSale = (this.props.info.buyoutPrice > 0);
 
     return (
-      <Grid className={this.props.classes.root} container spacing={8} justify="space-around">
+      <Grid className={this.props.classes.root} container spacing={8}>
         <Grid item xs={12} sm={6} >
-          <img src={this.props.info.data.imageUrl} height={'100%'} width={'100%'} />
+          <PlotPreviewCard imgUrl={this.props.info.data.imageUrl} 
+                           w={this.props.info.rect.w}
+                           h={this.props.info.rect.h}
+                           classes={{}} />
         </Grid>
         <Grid item xs={12} sm={6}>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Plot url" value={this.props.info.data.url} urlLink={this.props.info.data.url}/>
+              <TextLabel caption="Plot url" value={plotURL} urlLink={this.props.info.data.url}/>
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Buyout price per pixel" value=
-                {(this.props.info.buyoutPrice > 0) ? this.props.info.buyoutPrice : 'Not For Sale'}
-              />
+              <TextLabel caption="Purchase Transaction" value="0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a" urlLink="https://etherscan.io/tx/0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a"/>
             </Grid>
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Purchase Date" value ="10/24/2081" />
+              <TextLabel caption="Plot for Sale" value ={(forSale) ? 'Yes' : 'No'} />
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Purchase Price" value ="10.4 ETH" />
+              <TextLabel caption="Original Purchase Price" value ="10.4 ETH" />
             </Grid>
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Total Remaining Pixels" value ="12/25" />
+              <TextLabel caption="Buyout Price Per Pixel" value ="0.02 ETH" />
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Total Remaining Pixels" value ="12/25" />
+              <TextLabel caption="Total Unsold Pixels" value ="12/25" />
             </Grid>
           </Grid>
           <Divider className={this.props.classes.divider} light />
