@@ -1,6 +1,7 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as React from 'react';
 
+import { loadFromIpfsOrCache } from '../data/ImageRepository';
 import { PlotInfo } from '../models';
 
 export interface GridPlotProps extends WithStyles {
@@ -9,7 +10,8 @@ export interface GridPlotProps extends WithStyles {
   scale: number;
   hoverAction: (index: number) => void;
   isHovered: boolean;
-  imageUrl: string;
+  // imageUrl: string;
+  ipfsHash: string;
 }
 
 const styles: StyleRulesCallback = theme => ({
@@ -18,9 +20,25 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
-class GridPlot extends React.Component<GridPlotProps> {
+class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undefined }> {
+  constructor(props: GridPlotProps, context?: any) {
+    super(props, context);
+
+    this.state = {
+      imageUrl: undefined
+    };
+  }
+
   mouseOver() {
     this.props.hoverAction(this.props.index);
+  }
+
+  componentDidMount() {
+    loadFromIpfsOrCache(this.props.ipfsHash).then(imageBlob => {
+      this.setState({ imageUrl: URL.createObjectURL(imageBlob) });
+    }).catch(err => {
+      // debugger;
+    });
   }
 
   render() {
@@ -42,13 +60,15 @@ class GridPlot extends React.Component<GridPlotProps> {
       plotStyle.outlineStyle = 'solid';
     }
 
+    const imageSource = this.state.imageUrl || '';
+
     return (
       <a href={this.props.plot.data.url}
         target="blank" key={this.props.index}
         style={plotStyle}
         className={this.props.classes.gridPlot}
         onMouseOver={this.mouseOver.bind(this)}>
-        <img src={this.props.imageUrl} height={'100%'} width={'100%'} />
+          <img src={imageSource} height={'100%'} width={'100%'} />
       </a>
     );
   }

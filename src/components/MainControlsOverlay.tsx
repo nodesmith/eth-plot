@@ -76,6 +76,7 @@ export interface MainControlsOverlayProps extends WithStyles {
   contractInfo: ContractInfo;
   plots: Array<PlotInfo>;
   imageData?: string;
+  imageType?: string;
   togglePurchaseFlow: () => void;
 }
 
@@ -92,6 +93,7 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,
       imageData: this.props.imageData,
+      imageType: this.props.imageType,
       classes: {},
       ...this.props.purchase,
       ...this.props.purchaseActions

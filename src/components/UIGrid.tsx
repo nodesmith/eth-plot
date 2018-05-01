@@ -122,7 +122,7 @@ class UIGrid extends Component<UIGridProps> {
     const scale = this.props.scale;
 
     const plots = this.props.plots.map((plot, index) => {
-      return (<GridPlot scale={scale} plot={plot} imageUrl={plot.data.imageUrl} index={index} isHovered={this.props.hoveredIndex === index}
+      return (<GridPlot scale={scale} plot={plot} ipfsHash={plot.data.ipfsHash} index={index} isHovered={this.props.hoveredIndex === index}
         hoverAction={this.props.actions.hoverOverPlot} key={index} classes={{}} />);
     });
 
