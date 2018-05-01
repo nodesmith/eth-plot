@@ -3,8 +3,8 @@ import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { Point, Rect } from '../models';
 
-const MAX_SCALE = 10;
-const MIN_SCALE = 1;
+const MAX_SCALE = 20;
+const MIN_SCALE = .2;
 
 export interface GridState {
   hoveredIndex: number;

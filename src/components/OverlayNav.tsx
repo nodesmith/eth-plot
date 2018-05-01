@@ -1,4 +1,5 @@
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import Home from '@material-ui/icons/Home';
 import ImportExport from '@material-ui/icons/ImportExport';
 import Info from '@material-ui/icons/Info';
 import { Badge } from 'material-ui';
@@ -71,8 +72,9 @@ class OverlayNav extends Component<OverlayNavProps> {
   }
 
   navigate(to) {
-    console.log(`Navigating to ${to}`);
-    this.props.doNavigation(to);
+    if (this.props.currentPath !== to) { 
+      this.props.doNavigation(to);
+    }
   }
 
   getButtonColor(pathName: string) : 'default' | 'primary' {
@@ -92,6 +94,9 @@ class OverlayNav extends Component<OverlayNavProps> {
       <div className={classes.root}>
         <FloatingLogo size={logoSize} classes={{ root: classes.homeButton }} onClick={this.navigate.bind(this, '/')} />
         <Paper  className={classes.otherNav}>
+          <Button {...buttonProps} color={this.getButtonColor('/')} key="Home" onClick={this.navigate.bind(this, '/')}>
+            <Home />
+          </Button>
           <Button {...buttonProps} color={this.getButtonColor('/myplots')} key="My Plots" onClick={this.navigate.bind(this, '/myplots')}>
             <AccountCircle />
           </Button>

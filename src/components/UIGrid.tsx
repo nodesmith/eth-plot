@@ -271,7 +271,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
 
   onWheel(event: WheelEvent): void {
     const { clientX, clientY, deltaY, deltaMode } = event;
-    this.props.actions.changeZoom(deltaY / 400);
+    this.props.actions.changeZoom(-deltaY / 400);
   }
 }
 

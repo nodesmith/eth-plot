@@ -25,10 +25,10 @@ const styles: StyleRulesCallback = theme => ({
     height: '100%'
   },
   contrastColor: {
-    color: theme.palette.secondary.contrastText
+    color: theme.palette.primary.contrastText
   },
   cardHeader: {
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.primary.main
   },
   media: {
     height: 150,
@@ -245,7 +245,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
         <CardHeader className={classes.cardHeader}
           classes={{ title: classes.contrastColor, subheader: classes.contrastColor }}
             action={
-              <IconButton classes={{ colorPrimary: classes.contrastColor }} onClick={this.props.onClose}>
+              <IconButton color="primary" classes={{ colorPrimary: classes.contrastColor }} onClick={this.props.onClose}>
                 <Close />
               </IconButton>
             }
