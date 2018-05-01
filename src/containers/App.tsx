@@ -150,7 +150,8 @@ class App extends React.Component<AppProps> {
         transformRectToPurchase: actions.transformRectToPurchase,
         togglePurchaseFlow: actions.togglePurchaseFlow,
         changeZoom: actions.changeZoom,
-        loadBlockInfo: actions.loadBlockInfo
+        loadBlockInfo: actions.loadBlockInfo,
+        reportGridDragging: actions.reportGridDragging
       },
       purchase: // this.props.purchase,
       {
@@ -172,6 +173,8 @@ class App extends React.Component<AppProps> {
       contractInfo: this.props.data.contractInfo,
       scale: this.props.grid.scale,
       gridInfo: this.props.data.gridInfo,
+      centerPoint: this.props.grid.centerPoint,
+      isDraggingGrid: !!this.props.grid.dragStart,
       hoveredIndex: this.props.grid.hoveredIndex,
       dragRectCurr: this.props.grid.dragRectCurr,
       dragRectStart: this.props.grid.dragRectStart,

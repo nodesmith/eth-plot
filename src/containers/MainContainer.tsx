@@ -40,6 +40,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     togglePurchaseFlow: Actions.togglePurchaseFlow;
     changeZoom: Actions.changeZoom;
     loadBlockInfo: Actions.loadBlockInfo;
+    reportGridDragging: Actions.reportGridDragging;
   };
   purchase: {
     rectToPurchase?: Rect;
@@ -63,6 +64,8 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
   contractInfo: ContractInfo;
   scale: number;
   gridInfo: GridInfo;
+  centerPoint: Point;
+  isDraggingGrid: boolean;
   hoveredIndex: number;
   dragRectCurr?: Point;
   dragRectStart?: Point;
@@ -92,7 +95,8 @@ class MainContainer extends React.Component<MainContainerProps> {
         startTransformRectToPurchase: this.props.actions.startTransformRectToPurchase,
         stopTransformRectToPurchase: this.props.actions.stopTransformRectToPurchase,
         transformRectToPurchase: this.props.actions.transformRectToPurchase,
-        loadBlockInfo: this.props.actions.loadBlockInfo
+        loadBlockInfo: this.props.actions.loadBlockInfo,
+        reportGridDragging: this.props.actions.reportGridDragging
       },
       classes: {},
       inPurchaseMode: this.props.purchase.purchaseFlowOpen,
@@ -103,6 +107,8 @@ class MainContainer extends React.Component<MainContainerProps> {
       plotTransactions: this.props.plotTransactions,
       scale: this.props.scale,
       gridInfo: this.props.gridInfo,
+      centerPoint: this.props.centerPoint,
+      isDraggingGrid: this.props.isDraggingGrid,
       hoveredIndex: this.props.hoveredIndex,
       dragRectCurr: this.props.dragRectCurr,
       dragRectStart: this.props.dragRectStart,
