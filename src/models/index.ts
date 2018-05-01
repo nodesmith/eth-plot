@@ -10,17 +10,3 @@ export interface GridInfo {
   width: number;
   height: number;
 }
-
-export interface PlotInfo {
-  rect: Rect;
-  data: {
-    url: string;
-    imageUrl: string;
-    ipfsHash: string;
-  };
-  zoneIndex: number;
-  color: string;
-  txHash: string;
-  buyoutPrice: number; // TODO
-  owner: string;
-}

@@ -1,4 +1,5 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Popover from 'material-ui/Popover';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
@@ -8,9 +9,10 @@ import ReactTooltip from 'react-tooltip';
 
 import * as ActionTypes from '../actions';
 import { MovementActions } from '../constants/Enums';
-import { ImageFileInfo, PlotInfo, Point, Rect, RectTransform } from '../models';
+import { ImageFileInfo, PlotInfo as PlotInfoModel, Point, Rect, RectTransform } from '../models';
 
 import GridPlot from './GridPlot';
+import PlotPopover from './PlotPopover';
 import PurchasePlot from './PurchasePlot';
 
 const styles: StyleRulesCallback = theme => ({
@@ -26,7 +28,7 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 export interface UIGridProps extends WithStyles {
-  plots: Array<PlotInfo>;
+  plots: Array<PlotInfoModel>;
   actions: {
     hoverOverPlot: ActionTypes.hoverOverPlot;
     startTransformRectToPurchase: ActionTypes.startTransformRectToPurchase;
@@ -48,7 +50,12 @@ export interface UIGridProps extends WithStyles {
   isDraggingRect: boolean;
 }
 
-class UIGrid extends Component<UIGridProps> {
+class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
+  constructor(props: UIGridProps, context?: any) {
+    super(props, context);
+
+    this.state = { popoverTarget: undefined, popoverIndex: -1 };
+  }
   mouseOut() {
     // Reset the hover once the mouse leaves this area
     this.props.actions.hoverOverPlot(-1);
@@ -132,12 +139,24 @@ class UIGrid extends Component<UIGridProps> {
     return undefined;
   }
 
+  getPlotInfo() {
+    if (this.state.popoverIndex > 0) {
+      return this.props.plots[this.state.popoverIndex];
+    }
+  }
+
+  plotClicked(index: number, eventTarget: HTMLElement) {
+    this.setState({ popoverTarget: eventTarget, popoverIndex: index });
+  }
+
   render() {
     const scale = this.props.scale;
 
     const plots = this.props.plots.map((plot, index) => {
+      const tooltipTitle = index === 0 ? '' : plot.data.url || 'No Website Provided';
       return (<GridPlot scale={scale} plot={plot} ipfsHash={plot.data.ipfsHash} index={index} isHovered={this.props.hoveredIndex === index}
-        hoverAction={this.props.actions.hoverOverPlot} key={index} classes={{}} />);
+        hoverAction={this.props.actions.hoverOverPlot} key={index} classes={{}} tooltipTitle={tooltipTitle}
+        clickAction={this.plotClicked.bind(this)} />);
     });
 
     const marginLeft = `calc(calc(100vw - ${this.props.gridInfo.width * scale}px) / 2)`;
@@ -191,10 +210,26 @@ class UIGrid extends Component<UIGridProps> {
         </div>);
     }
 
+    const plotInfoPopover = this.getPlotInfo() ? <PlotPopover classes={{}} plot={this.getPlotInfo()!} /> : null;
+
     return (
       <div className={this.props.classes.root}>
         <div style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
           {plots}
+          <Popover
+            open={Boolean(this.state.popoverTarget)}
+            anchorEl={this.state.popoverTarget!}
+            onClose={() => this.setState({ popoverTarget: undefined })}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}>
+            {plotInfoPopover}
+          </Popover>
           <ReactTooltip className={this.props.classes.tooltip} effect={'solid'} delayShow={300} getContent={this.getTooltip.bind(this)} />
         </div>
         {overlay}

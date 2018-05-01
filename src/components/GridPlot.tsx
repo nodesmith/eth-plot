@@ -1,4 +1,5 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Tooltip from 'material-ui/Tooltip';
 import * as React from 'react';
 
 import { loadFromIpfsOrCache } from '../data/ImageRepository';
@@ -9,8 +10,10 @@ export interface GridPlotProps extends WithStyles {
   index: number;
   scale: number;
   hoverAction: (index: number) => void;
+  clickAction: (index: number, source: HTMLElement) => void;
   isHovered: boolean;
   ipfsHash: string;
+  tooltipTitle: string;
 }
 
 const styles: StyleRulesCallback = theme => ({
@@ -45,6 +48,10 @@ class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undef
     this.props.hoverAction(this.props.index);
   }
 
+  onClick(event: MouseEvent) {
+    this.props.clickAction(this.props.index, event.target as HTMLElement);
+  }
+
   componentDidMount() {
     loadFromIpfsOrCache(this.props.ipfsHash).then(imageBlob => {
       this.setState({ imageUrl: URL.createObjectURL(imageBlob) });
@@ -76,10 +83,13 @@ class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undef
     const imageSource = this.state.imageUrl || '';
 
     return (
-      <div data-tip data-tip-disable={!showToolTip} key={this.props.index}
+      <div 
+        data-tip data-tip-disable={!showToolTip}
+        key={this.props.index}
         style={plotStyle}
         className={this.props.classes.gridPlot}
-        onMouseOver={this.mouseOver.bind(this)}>
+        onMouseOver={this.mouseOver.bind(this)}
+        onClick={this.onClick.bind(this)}>
           <img src={imageSource} height={'100%'} width={'100%'} />
           <div className={this.props.classes.overlay} style={overlayStyle} />
       </div>
@@ -88,3 +98,4 @@ class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undef
 }
 
 export default withStyles(styles)(GridPlot);
+    
