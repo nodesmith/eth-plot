@@ -3,6 +3,9 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
+// tslint:disable-next-line:import-name
+import ReactTooltip from 'react-tooltip';
+
 import * as ActionTypes from '../actions';
 import { MovementActions } from '../constants/Enums';
 import { ImageFileInfo, PlotInfo, Point, Rect, RectTransform } from '../models';
@@ -16,6 +19,9 @@ const styles: StyleRulesCallback = theme => ({
     width: '100%',
     height: '100%',
     overflow: 'scroll'
+  },
+  tooltip: {
+    fontFamily: theme.typography.fontFamily
   }
 });
 
@@ -117,6 +123,14 @@ class UIGrid extends Component<UIGridProps> {
     e.stopPropagation(); 
   }
   
+  getTooltip(): JSX.Element | undefined {
+    if (this.props.hoveredIndex > 0) {
+      const url = this.props.plots[this.props.hoveredIndex].data.url || 'No Website Provided';
+      return (<div className={this.props.classes.tooltip}>{url}</div>);
+    }
+
+    return undefined;
+  }
 
   render() {
     const scale = this.props.scale;
@@ -181,6 +195,7 @@ class UIGrid extends Component<UIGridProps> {
       <div className={this.props.classes.root}>
         <div style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
           {plots}
+          <ReactTooltip className={this.props.classes.tooltip} effect={'solid'} delayShow={300} getContent={this.getTooltip.bind(this)} />
         </div>
         {overlay}
       </div>

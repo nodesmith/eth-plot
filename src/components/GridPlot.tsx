@@ -10,13 +10,25 @@ export interface GridPlotProps extends WithStyles {
   scale: number;
   hoverAction: (index: number) => void;
   isHovered: boolean;
-  // imageUrl: string;
   ipfsHash: string;
 }
 
 const styles: StyleRulesCallback = theme => ({
   gridPlot: {
     position: 'absolute'
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '100%',
+    width: '100%',
+    opacity: 0,
+    transition: '.5s ease',
+    backgroundColor: '#FFFFFF',
+    backgroundBlendMode: 'multiply'
   }
 });
 
@@ -37,7 +49,7 @@ class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undef
     loadFromIpfsOrCache(this.props.ipfsHash).then(imageBlob => {
       this.setState({ imageUrl: URL.createObjectURL(imageBlob) });
     }).catch(err => {
-      // debugger;
+      // TODO - Put in some sort of error url
     });
   }
 
@@ -49,27 +61,28 @@ class GridPlot extends React.Component<GridPlotProps, { imageUrl: string | undef
       left: rect.x * scale,
       width: rect.w * scale,
       height: rect.h * scale,
-      // backgroundImage: `url("${this.props.imageUrl}")`,
       backgroundSize: 'cover'
-      // backgroundColor: this.props.plot.color
     };
 
-    if (this.props.isHovered) {
-      plotStyle.outlineColor = '#fff';
-      plotStyle.outlineWidth = '1px';
-      plotStyle.outlineStyle = 'solid';
+    const showToolTip = this.props.isHovered && this.props.index !== 0;
+
+    const overlayStyle: React.CSSProperties = {};
+
+    if (showToolTip) {
+      plotStyle.cursor = 'pointer';
+      overlayStyle.opacity = .15;
     }
 
     const imageSource = this.state.imageUrl || '';
 
     return (
-      <a href={this.props.plot.data.url}
-        target="blank" key={this.props.index}
+      <div data-tip data-tip-disable={!showToolTip} key={this.props.index}
         style={plotStyle}
         className={this.props.classes.gridPlot}
         onMouseOver={this.mouseOver.bind(this)}>
           <img src={imageSource} height={'100%'} width={'100%'} />
-      </a>
+          <div className={this.props.classes.overlay} style={overlayStyle} />
+      </div>
     );
   }
 }
