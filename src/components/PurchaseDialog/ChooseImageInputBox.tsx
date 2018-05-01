@@ -75,7 +75,7 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes, 
   onFileSelected(event) {
     let newFileToUse;
 
-    const files = event.target.files;
+    const files: File[] = event.target.files;
     if (files.length === 1) {
       const chosenFile = files[0];
       const fileSize = chosenFile.size;
@@ -145,26 +145,23 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes, 
     };
   }
 
-  getImageFileInfoAsync(file): Promise<ImageFileInfo> {
+  getImageFileInfoAsync(file: File): Promise<ImageFileInfo> {
     return new Promise((resolve, reject) => {
-      const fileReader = new FileReader;
-      fileReader.onload = function () {
-        const imagePreview = document.getElementById('hidden_image') as HTMLImageElement;
-        imagePreview.onload = function () {
-          const imageFileInfo = {
-            w: imagePreview.width,
-            h: imagePreview.height,
-            fileName: file.name,
-            fileData: fileReader.result
-          };
+      const blobUrl = URL.createObjectURL(file);
+      const imagePreview = document.getElementById('hidden_image') as HTMLImageElement;
 
-          resolve(imageFileInfo);
-        }.bind(this);
+      imagePreview.onload = () => {
+        const imageFileInfo = {
+          w: imagePreview.width,
+          h: imagePreview.height,
+          fileName: file.name,
+          fileData: blobUrl
+        };
 
-        imagePreview.src = fileReader.result;
-      }.bind(this);
-      
-      fileReader.readAsDataURL(file);
+        resolve(imageFileInfo);
+      };
+
+      imagePreview.src = blobUrl;
     });
   }
 

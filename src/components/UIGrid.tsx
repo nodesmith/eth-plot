@@ -1,13 +1,16 @@
+import { Paper } from 'material-ui';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Popover from 'material-ui/Popover';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
 import * as ActionTypes from '../actions';
 import { MovementActions } from '../constants/Enums';
-import { ImageFileInfo, PlotInfo, Point, Rect, RectTransform } from '../models';
+import { ContractInfo, ImageFileInfo, PlotInfo as PlotInfoModel, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
 import GridPlot from './GridPlot';
+import PlotPopover, { PlotPopoverProps } from './PlotPopover';
 import PurchasePlot from './PurchasePlot';
 
 const styles: StyleRulesCallback = theme => ({
@@ -20,12 +23,14 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 export interface UIGridProps extends WithStyles {
-  plots: Array<PlotInfo>;
+  plots: Array<PlotInfoModel>;
+  plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
   actions: {
     hoverOverPlot: ActionTypes.hoverOverPlot;
     startTransformRectToPurchase: ActionTypes.startTransformRectToPurchase;
     stopTransformRectToPurchase: ActionTypes.stopTransformRectToPurchase;
     transformRectToPurchase: ActionTypes.transformRectToPurchase;
+    loadBlockInfo: ActionTypes.loadBlockInfo;
   };
   inPurchaseMode: boolean;
   imageToPurchase?: ImageFileInfo;
@@ -40,9 +45,15 @@ export interface UIGridProps extends WithStyles {
   dragRectCurr?: Point;
   dragRectStart?: Point;
   isDraggingRect: boolean;
+  contractInfo: ContractInfo;
 }
 
-class UIGrid extends Component<UIGridProps> {
+class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
+  constructor(props: UIGridProps, context?: any) {
+    super(props, context);
+
+    this.state = { popoverTarget: undefined, popoverIndex: -1 };
+  }
   mouseOut() {
     // Reset the hover once the mouse leaves this area
     this.props.actions.hoverOverPlot(-1);
@@ -116,14 +127,38 @@ class UIGrid extends Component<UIGridProps> {
 
     e.stopPropagation(); 
   }
-  
+
+  getPlotPopoverInfo() : PlotPopoverProps | undefined {
+    if (this.state.popoverIndex > 0) {
+      const plotInfo = this.props.plots[this.state.popoverIndex];
+      return {
+        plot: plotInfo,
+        purchaseEventInfo: this.props.plotTransactions[plotInfo.zoneIndex],
+        classes:{}
+      };
+    }
+  }
+
+  plotClicked(index: number, eventTarget: HTMLElement) {
+    if (index !== 0) {
+      this.setState({ popoverTarget: eventTarget, popoverIndex: index }, () => {
+        const popoverInfo = this.getPlotPopoverInfo()!;
+        this.props.actions.loadBlockInfo(this.props.contractInfo, popoverInfo.purchaseEventInfo.blockNumber);
+      });
+    }
+  }
+
+  plotHovered(index: number, eventTarget: HTMLElement) {
+    this.props.actions.hoverOverPlot(index);
+  }
 
   render() {
     const scale = this.props.scale;
 
     const plots = this.props.plots.map((plot, index) => {
-      return (<GridPlot scale={scale} plot={plot} imageUrl={plot.data.imageUrl} index={index} isHovered={this.props.hoveredIndex === index}
-        hoverAction={this.props.actions.hoverOverPlot} key={index} classes={{}} />);
+      return (<GridPlot scale={scale} plot={plot} ipfsHash={plot.data.ipfsHash} index={index} isHovered={this.props.hoveredIndex === index}
+        hoverAction={this.plotHovered.bind(this)} key={index} classes={{}}
+        clickAction={this.plotClicked.bind(this)} />);
     });
 
     const marginLeft = `calc(calc(100vw - ${this.props.gridInfo.width * scale}px) / 2)`;
@@ -131,10 +166,7 @@ class UIGrid extends Component<UIGridProps> {
       width: this.props.gridInfo.width * scale,
       height: this.props.gridInfo.height * scale,
       marginLeft,
-      position: 'absolute',
-      outlineWidth: 3,
-      outlineColor: 'lightgray',
-      outlineStyle: 'solid'
+      position: 'absolute'
     };
 
     let overlay: JSX.Element | undefined = undefined;
@@ -177,11 +209,28 @@ class UIGrid extends Component<UIGridProps> {
         </div>);
     }
 
+    const plotInfo = this.getPlotPopoverInfo();
+    const plotInfoPopover = plotInfo ? <PlotPopover {...plotInfo} /> : null;
+
     return (
       <div className={this.props.classes.root}>
-        <div style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
+        <Paper style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
           {plots}
-        </div>
+          <Popover
+            open={Boolean(this.state.popoverTarget) && this.state.popoverIndex !== 0}
+            anchorEl={this.state.popoverTarget!}
+            onClose={() => this.setState({ popoverTarget: undefined })}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}>
+            {plotInfoPopover}
+          </Popover>
+        </Paper>
         {overlay}
       </div>
     );

@@ -148,7 +148,8 @@ class App extends React.Component<AppProps> {
         stopTransformRectToPurchase: actions.stopTransformRectToPurchase,
         transformRectToPurchase: actions.transformRectToPurchase,
         togglePurchaseFlow: actions.togglePurchaseFlow,
-        changeZoom: actions.changeZoom
+        changeZoom: actions.changeZoom,
+        loadBlockInfo: actions.loadBlockInfo
       },
       purchase: // this.props.purchase,
       {
@@ -166,6 +167,7 @@ class App extends React.Component<AppProps> {
       },
       imageFileInfo: this.props.imageToPurchase.imageFileInfo,
       plots: this.props.data.plots,
+      plotTransactions: this.props.data.plotTransactions,
       contractInfo: this.props.data.contractInfo,
       scale: this.props.grid.scale,
       gridInfo: this.props.data.gridInfo,

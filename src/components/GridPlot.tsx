@@ -1,26 +1,46 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as React from 'react';
 
+import { loadFromIpfsOrCache } from '../data/ImageRepository';
 import { PlotInfo } from '../models';
 
 export interface GridPlotProps extends WithStyles {
   plot: PlotInfo;
   index: number;
   scale: number;
-  hoverAction: (index: number) => void;
+  hoverAction: (index: number, source: HTMLElement) => void;
+  clickAction: (index: number, source: HTMLElement) => void;
   isHovered: boolean;
-  imageUrl: string;
+  ipfsHash: string;
 }
 
 const styles: StyleRulesCallback = theme => ({
   gridPlot: {
     position: 'absolute'
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '100%',
+    width: '100%',
+    opacity: 0,
+    transition: '.5s ease',
+    backgroundColor: '#FFFFFF',
+    backgroundBlendMode: 'multiply'
   }
 });
 
 class GridPlot extends React.Component<GridPlotProps> {
-  mouseOver() {
-    this.props.hoverAction(this.props.index);
+
+  mouseOver(event: MouseEvent) {
+    this.props.hoverAction(this.props.index, event.target as HTMLElement);
+  }
+
+  onClick(event: MouseEvent) {
+    this.props.clickAction(this.props.index, event.target as HTMLElement);
   }
 
   render() {
@@ -31,27 +51,32 @@ class GridPlot extends React.Component<GridPlotProps> {
       left: rect.x * scale,
       width: rect.w * scale,
       height: rect.h * scale,
-      // backgroundImage: `url("${this.props.imageUrl}")`,
       backgroundSize: 'cover'
-      // backgroundColor: this.props.plot.color
     };
 
-    if (this.props.isHovered) {
-      plotStyle.outlineColor = '#fff';
-      plotStyle.outlineWidth = '1px';
-      plotStyle.outlineStyle = 'solid';
+    const showHoverStyle = this.props.isHovered && this.props.index !== 0;
+    const overlayStyle: React.CSSProperties = {};
+
+    if (showHoverStyle) {
+      plotStyle.cursor = 'pointer';
+      overlayStyle.opacity = .25;
     }
 
+    const imageSource = this.props.plot.data.blobUrl;
+
     return (
-      <a href={this.props.plot.data.url}
-        target="blank" key={this.props.index}
+      <div
+        key={this.props.index}
         style={plotStyle}
         className={this.props.classes.gridPlot}
-        onMouseOver={this.mouseOver.bind(this)}>
-        <img src={this.props.imageUrl} height={'100%'} width={'100%'} />
-      </a>
+        onMouseOver={this.mouseOver.bind(this)}
+        onClick={this.onClick.bind(this)}>
+          <img src={imageSource} height={'100%'} width={'100%'} />
+          <div className={this.props.classes.overlay} style={overlayStyle} />
+      </div>
     );
   }
 }
 
 export default withStyles(styles)(GridPlot);
+    

@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import { Dispatch } from 'react-redux';
 import * as Web3 from 'web3';
 
@@ -6,7 +7,7 @@ import { EthGrid2, EthGrid2EventTypes } from '../../gen-src/EthGrid2';
 import * as DataActions from '../actionCreators/DataActions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
-import { ContractInfo } from '../models';
+import { ContractInfo, PurchaseEventInfo } from '../models';
 
 import { Action } from './EthGridAction';
 import { getWeb3 } from './Web3Actions';
@@ -22,6 +23,14 @@ export function updateActiveAccount(newActiveAccount: string): Action {
   return {
     type: ActionTypes.UPDATE_ACTIVE_ACCOUNT,
     newActiveAccount
+  };
+}
+
+export function addPurchaseEventTransactions(
+  purchaseTransactions: PurchaseEventInfo[]): Action {
+  return {
+    type: ActionTypes.ADD_PURCHASE_TRANSACTIONS,
+    purchaseTransactions
   };
 }
 
@@ -96,13 +105,27 @@ async function getAuctionEvents(contract: EthGrid2, currentAddress: string, disp
 
 async function getPurchaseEvents(contract: EthGrid2, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
 
-  const purchaseEvent = contract.PlotPurchasedEvent({ buyer: currentAddress });
+  const purchaseEvent = contract.PlotPurchasedEvent({ });
 
   // Get's historical purchase transactions for loading user's transaction list
   const events = await purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' });
   events.forEach(tx => {
-    genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
+    if (tx.args.buyer === currentAddress) {
+      genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
+    }
   });
+
+
+  const purchaseEventInfo: PurchaseEventInfo[] = events.map(tx => {
+    return  { 
+      purchaseIndex: (<BigNumber>tx.args.newZoneId).toNumber(),
+      purchasePrice: tx.args.totalPrice.toString(),
+      blockNumber: tx.blockNumber!,
+      txHash: tx.transactionHash
+    };
+  });
+
+  dispatch(addPurchaseEventTransactions(purchaseEventInfo));
 
   // Listens to incoming purchase transactions
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {

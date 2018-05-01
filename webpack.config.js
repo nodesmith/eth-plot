@@ -36,7 +36,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json']
   },
-  plugins: [new HtmlWebpackPlugin(), new ForkTsCheckerWebpackPlugin()],
+  plugins: [new HtmlWebpackPlugin({title: 'Aion Grid'}), new ForkTsCheckerWebpackPlugin()],
   devServer: {
     contentBase: path.resolve('public'),
     headers: { 
