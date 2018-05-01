@@ -28,14 +28,14 @@ const styles: StyleRulesCallback = theme => ({
   zoom: {
     left: padding,
     bottom: padding,
-    position: 'absolute',
+    position: 'fixed',
     display: 'inline',
-    pointerEvents: 'all'
+    pointerEvents: 'all',
   },
   purchase: {
     right: padding,
     bottom: padding,
-    position: 'absolute',
+    position: 'fixed',
     pointerEvents: 'all'
   },
   drawer: {

@@ -17,9 +17,6 @@ import { formatEthValue } from '../../data/ValueFormatters';
 import { Rect } from '../../models';
 
 const styles: StyleRulesCallback = theme => ({
-  wrapper: {
-    margin: theme.spacing.unit
-  },
   numberInput: {
     width: '75%',
     marginRight: theme.spacing.unit,
@@ -151,7 +148,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
 
     const currencies = ['wei', 'gwei', 'eth'];
 
-    return (<div className={classes.wrapper} >
+    return (<div>
       <FormControlLabel
           control={
             <Switch color="primary" checked={toggleEnabled} onChange={this.allowBuyoutChanged.bind(this)} />

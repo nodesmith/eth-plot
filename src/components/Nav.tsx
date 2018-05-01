@@ -76,7 +76,7 @@ class Nav extends Component<NavProps> {
             <span className={this.props.classes.flex} />
             <IconButton className={this.props.classes.navbarButton} onClick={() => { this.clearNotifications(); this.navigate('/account'); }} >
               { (this.props.notificationCount) ?
-              (<Badge className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
+              (<Badge className={this.props.classes.badge} color="secondary" badgeContent={this.props.notificationCount} >
                 <AccountBox />
               </Badge>) :
               <AccountBox />

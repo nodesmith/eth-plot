@@ -1,12 +1,14 @@
 import ExpandMore from 'material-ui-icons/ExpandMore';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
+import Divider from 'material-ui/Divider';
 import ExpansionPanel, {
   ExpansionPanelDetails,
   ExpansionPanelSummary,
 } from 'material-ui/ExpansionPanel';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
+import PlotPreviewCard from './PlotPreviewCard';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
@@ -14,6 +16,7 @@ import * as React from 'react';
 import { PlotInfo as PlotInfoData, Rect } from '../models';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
+import TextLabel from './TextLabel';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -22,8 +25,15 @@ const styles: StyleRulesCallback = theme => ({
   button: {
     marginRight: theme.spacing.unit,
   },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
+  divider: {
+    marginTop: 16
+  }
 });
-
 
 export interface PlotInfoProps extends WithStyles {
   info: PlotInfoData;
@@ -35,7 +45,6 @@ interface PlotInfoState {
   toggleEnabled: boolean;
   auctionVisible: boolean;
 }
-
 
 class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   constructor(props, context) {
@@ -63,28 +72,43 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   }
 
   render() {
-    const previewStyle = {
-      backgroundColor: this.props.info.color,
-      width: `${this.props.info.rect.w}px`,
-      height: `${this.props.info.rect.w}px`,
-    };
+    const plotURL = (this.props.info.data.url) ? this.props.info.data.url : 'None';
+    const forSale = (this.props.info.buyoutPrice > 0);
 
     return (
       <Grid className={this.props.classes.root} container spacing={8}>
-        <Grid item xs={6} >
-        <Typography variant="headline">Plot url: <a href={this.props.info.data.url}>{this.props.info.data.url}</a></Typography>
-          
-          {
-            this.props.info.txHash ?
-            <Typography variant="headline">
-              Trasaction in progress: 
-            <a href={`https://etherscan.io/address/${this.props.info.txHash}`}>{this.props.info.txHash}</a></Typography>
-            : null
-          }
-
-          <Typography variant="headline">Buyout price per pixel: {
-            (this.props.info.buyoutPrice > 0) ? this.props.info.buyoutPrice : 'Not For Sale' }
-          </Typography>
+        <Grid item xs={12} sm={6} >
+          <PlotPreviewCard blobUrl={this.props.info.data.blobUrl} 
+                           w={this.props.info.rect.w}
+                           h={this.props.info.rect.h}
+                           classes={{}} />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Grid container spacing={8}>
+            <Grid item xs={6}>
+              <TextLabel caption="Plot url" value={plotURL} urlLink={this.props.info.data.url}/>
+            </Grid>
+            <Grid item xs={6}>
+              <TextLabel caption="Purchase Transaction" value="0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a" urlLink="https://etherscan.io/tx/0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a"/>
+            </Grid>
+          </Grid>
+          <Grid container spacing={8}>
+            <Grid item xs={6}>
+              <TextLabel caption="Plot for Sale" value ={(forSale) ? 'Yes' : 'No'} />
+            </Grid>
+            <Grid item xs={6}>
+              <TextLabel caption="Original Purchase Price" value ="10.4 ETH" />
+            </Grid>
+          </Grid>
+          <Grid container spacing={8}>
+            <Grid item xs={6}>
+              <TextLabel caption="Buyout Price Per Pixel" value ="0.02 ETH" />
+            </Grid>
+            <Grid item xs={6}>
+              <TextLabel caption="Total Unsold Pixels" value ="12/25" />
+            </Grid>
+          </Grid>
+          <Divider className={this.props.classes.divider} light />
           <BuyoutPriceInputBox
             onBuyoutChanged={this.onBuyoutChanged.bind(this)}
             onToggleChanged={this.onToggleChanged.bind(this)}
@@ -97,16 +121,8 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
             buyoutVisible={this.state.auctionVisible}
           />
           {this.state.toggleEnabled ? (
-            <Button className={this.props.classes.button} onClick={this.updatePrice.bind(this)}>Submit</Button>
+            <Button variant="raised" color="primary" className={this.props.classes.button} onClick={this.updatePrice.bind(this)}>Update Buyout</Button>
            ) : null }
-        </Grid>
-        <Grid item xs={6}>
-            { this.props.info.color ? 
-              <div style={previewStyle} />
-            :
-            // TODO update with image support later
-            <img src="asdf" />
-            }
         </Grid>
       </Grid>
     );
