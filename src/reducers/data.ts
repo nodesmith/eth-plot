@@ -33,7 +33,7 @@ const initialState: DataState = {
   numberOfPlots: 0,
   plots: [],
   plotTransactions: {
-    0: { purchaseIndex: 0, purchasePrice: '0', blockNumber: 0, txHash: '', timestamp: undefined } // Initialize the background block
+    0: { purchaseIndex: 0, purchasePrice: '0', blockNumber: 0, txHash: '' } // Initialize the background block
   },
   holes: {},
   gridInfo: {
