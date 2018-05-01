@@ -96,7 +96,8 @@ class MainContainer extends React.Component<MainContainerProps> {
         stopTransformRectToPurchase: this.props.actions.stopTransformRectToPurchase,
         transformRectToPurchase: this.props.actions.transformRectToPurchase,
         loadBlockInfo: this.props.actions.loadBlockInfo,
-        reportGridDragging: this.props.actions.reportGridDragging
+        reportGridDragging: this.props.actions.reportGridDragging,
+        changeZoom: this.props.actions.changeZoom
       },
       classes: {},
       inPurchaseMode: this.props.purchase.purchaseFlowOpen,

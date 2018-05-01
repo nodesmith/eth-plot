@@ -77,9 +77,9 @@ export function gridReducer(state: GridState = initialState, action: Action): Gr
       {
         let newScale = state.scale;
         if (action.direction > 0) {
-          newScale = Math.min(state.scale + 1, MAX_SCALE);
+          newScale = Math.min(state.scale + action.direction, MAX_SCALE);
         } else {
-          newScale = Math.max(state.scale - 1, MIN_SCALE);
+          newScale = Math.max(state.scale + action.direction, MIN_SCALE);
         }
 
         return Object.assign({}, state, { scale: newScale });

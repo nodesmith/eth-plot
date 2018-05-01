@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const path = require('path');
 
 // Truffle Addresses
@@ -36,7 +37,12 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json']
   },
-  plugins: [new HtmlWebpackPlugin({title: 'Aion Grid'}), new ForkTsCheckerWebpackPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Aion Grid'
+    }),
+    new HtmlWebpackIncludeAssetsPlugin({ assets: ['main.css'], append: false }),
+    new ForkTsCheckerWebpackPlugin()],
   devServer: {
     contentBase: path.resolve('public'),
     headers: { 

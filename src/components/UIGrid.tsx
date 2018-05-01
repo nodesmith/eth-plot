@@ -36,6 +36,7 @@ export interface UIGridProps extends WithStyles {
     transformRectToPurchase: ActionTypes.transformRectToPurchase;
     loadBlockInfo: ActionTypes.loadBlockInfo;
     reportGridDragging: ActionTypes.reportGridDragging;
+    changeZoom: ActionTypes.changeZoom;
   };
   inPurchaseMode: boolean;
   imageToPurchase?: ImageFileInfo;
@@ -227,7 +228,8 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
         onDragStart={this.onDragStart.bind(this)}
         onMouseMove={this.onMouseMove.bind(this)}
         onMouseUp={this.onDragStop.bind(this)}
-        onMouseLeave={this.onDragStop.bind(this)}>
+        onMouseLeave={this.onDragStop.bind(this)}
+        onWheel={this.onWheel.bind(this)}>
 
         <Paper style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
           {plots}
@@ -265,6 +267,11 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
 
   onDragStop(dragEvent) {
     this.props.actions.reportGridDragging(DragType.STOP, { x: dragEvent.clientX, y: dragEvent.clientY });
+  }
+
+  onWheel(event: WheelEvent): void {
+    const { clientX, clientY, deltaY, deltaMode } = event;
+    this.props.actions.changeZoom(deltaY / 400);
   }
 }
 
