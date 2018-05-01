@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import * as jsCookie from 'js-cookie';
 import * as red from 'redux';
 
@@ -5,7 +6,7 @@ import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as PlotMath from '../data/PlotMath';
-import { ContractInfo, HoleInfo, PlotInfo, Rect } from '../models';
+import { ContractInfo, HoleInfo, PlotInfo, PurchaseEventInfo, Rect } from '../models';
 
 
 type web3ConfigType = { contractAddress: string, web3Provider: string };
@@ -16,6 +17,7 @@ export interface DataState {
   isFetchingPlots: boolean;
   numberOfPlots: number;
   plots: Array<PlotInfo>;
+  plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
   holes: HoleInfo;
   gridInfo: {
     height:number;
@@ -29,6 +31,9 @@ const initialState: DataState = {
   isFetchingPlots: false,
   numberOfPlots: 0,
   plots: [],
+  plotTransactions: {
+    0: { purchaseIndex: 0, purchasePrice: '0', blockNumber: 0, txHash: '' } // Initialize the background block
+  },
   holes: {},
   gridInfo: {
     height: 250,
@@ -69,6 +74,17 @@ export function dataReducer(state: DataState = initialState, action: Action): Da
     case ActionTypes.SHOW_PURCHASE_DIALOG: {
       const purchaseInfo = computePurchaseInfo(action.rectToPurchase, state.plots);
       return Object.assign({}, state, { purchaseInfo });
+    }
+    case ActionTypes.ADD_PURCHASE_TRANSACTIONS: {
+      const purchaseTransactionInfo: PurchaseEventInfo[] = action.purchaseTransactions;
+      const plotTransactions = purchaseTransactionInfo.reduce(
+        (result, curr) => {
+          result[curr.purchaseIndex] = curr;
+          return result;
+        },
+        {});
+
+      return Object.assign({}, state, { plotTransactions });
     }
     default:
       return state;

@@ -10,7 +10,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { formatEthValueToString } from '../data/ValueFormatters';
-import { PlotInfo } from '../models/PlotInfo';
+import { PlotInfo, PurchaseEventInfo } from '../models/PlotInfo';
 
 
 const styles: StyleRulesCallback = theme => ({
@@ -22,9 +22,15 @@ const styles: StyleRulesCallback = theme => ({
 
 export interface PlotPopoverProps extends WithStyles {
   plot: PlotInfo;
+  purchaseEventInfo: PurchaseEventInfo;
 }
 
 class PlotPopover extends Component<PlotPopoverProps> {
+
+  viewTransaction() {
+    const viewTransactionLink = `https://etherscan.io/tx/${this.props.purchaseEventInfo.txHash}`;
+    window.open(viewTransactionLink, '_blank');
+  }
 
   render() {
     const { classes } = this.props;
@@ -37,6 +43,8 @@ class PlotPopover extends Component<PlotPopoverProps> {
     if (this.props.plot.data.url) {
       title = (<a target="_blank" href={this.props.plot.data.url}>{this.props.plot.data.url}</a>);
     }
+
+    const purchaseDateMessage = `Block ${this.props.purchaseEventInfo.blockNumber}`;
 
     return (<div>
     <Card className={classes.card}>
@@ -58,15 +66,15 @@ class PlotPopover extends Component<PlotPopoverProps> {
           <strong>Owner </strong><span>{this.props.plot.owner}</span>
         </Typography>
         <Typography variant="body1">
-          <strong>Purchased </strong><span>{'May 12, 2017'}</span>
+          <strong>Purchased </strong><span>{purchaseDateMessage}</span>
         </Typography>
         <Typography variant="body1">
-          <strong>Purchase Price </strong><span>{this.props.plot.zoneIndex}</span>
+          <strong>Purchase Price </strong><span>{formatEthValueToString(this.props.purchaseEventInfo.purchasePrice)}</span>
         </Typography>
 
       </CardContent>
       <CardActions>
-        <Button size="small" color="primary">View Transaction</Button>
+        <Button size="small" color="primary" onClick={this.viewTransaction.bind(this)}>View Transaction</Button>
       </CardActions>
     </Card>
     </div>);

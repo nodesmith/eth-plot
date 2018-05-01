@@ -15,4 +15,11 @@ export interface PlotInfo {
   owner: string;
 }
 
+export interface PurchaseEventInfo {
+  purchaseIndex: number;
+  purchasePrice: string;
+  blockNumber: number;
+  txHash: string;
+}
+
 export interface HoleInfo {[index: number]: Array<Rect>;}
