@@ -26,6 +26,7 @@ export type purchasePlot =
    url: string,
    ipfsHash: string,
    changePurchaseStep: (stage: Enums.PurchaseStage) => void) => void;
+export type loadBlockInfo = (contractInfo: ContractInfo, blockNumber: number) => void;
 
 // Grid Actions
 export type hoverOverPlot = (plotIndex: number) => void;
@@ -72,6 +73,7 @@ export interface AllActions {
   fetchPlotsFromWeb3: fetchPlotsFromWeb3;
   updateAuction: updateAuction;
   purchasePlot: purchasePlot;
+  loadBlockInfo: loadBlockInfo;
   hoverOverPlot: hoverOverPlot;
   enterBuyMode: enterBuyMode;
   startDraggingRect: startDraggingRect;
@@ -94,4 +96,5 @@ export interface AllActions {
   cancelPlotPurchase: cancelPlotPurchase;
   startPurchasePlot: startPurchasePlot;
   changePurchaseStep: changePurchaseStep;
+
 }

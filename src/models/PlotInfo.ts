@@ -4,6 +4,8 @@ export interface PlotInfo {
   rect: Rect;
   data: {
     url: string;
+    ipfsHash: string;
+    blobUrl: string;
   };
   zoneIndex: number;
   color: string;
@@ -12,5 +14,12 @@ export interface PlotInfo {
   owner: string;
 }
 
+export interface PurchaseEventInfo {
+  purchaseIndex: number;
+  purchasePrice: string;
+  blockNumber: number;
+  txHash: string;
+  timestamp?: number;
+}
 
 export interface HoleInfo {[index: number]: Array<Rect>;}

@@ -88,8 +88,7 @@ export function completePlotPurchase(
   return async (dispatch) => {
     dispatch(startPurchasePlot());
 
-    const uploadName = `grid-${Date.now()}-${rectToPurchase.w},${rectToPurchase.y},${rectToPurchase.w},${rectToPurchase.h}`;
-    const ipfsHash = await dispatch(uploadImageData(imageData, uploadName));
+    const ipfsHash = await dispatch(uploadImageData(imageData));
     return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, changePurchaseStep));
   };
 }
@@ -106,18 +105,27 @@ function startPurchasePlot(): Action {
   };
 }
 
-function uploadImageData(imageData: string, imageName: string) {
+function uploadImageData(imageData: string) {
   return async (dispatch) => {
     dispatch(changePurchaseStep(PurchaseStage.UPLOADING_TO_IPFS));
 
     const convertedImage = await fetch(imageData);
+
+    const contentType = convertedImage.headers.get('content-type')!;
+    let extension = contentType.split('/')[1];
+    if (extension.indexOf('svg') >= 0) {
+      extension = 'svg';
+    }
+
+    const folder = 'images';
+
     const arrayBuffer = await convertedImage.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const ipfs = ipfsApi('ipfs.infura.io', '5001', { protocol: 'https' });
-    const uploadResult = await ipfs.files.add({ content: buffer, path: imageName });
-    const ipfsHash = uploadResult[0].hash;
+    const fileName = `img.${extension}`;
+    const uploadResult = await ipfs.files.add({ content: buffer, path: `${folder}/${fileName}` });
 
-    // TODO - maybe upload to S3?
+    const ipfsHash = `${uploadResult[1].hash}/${fileName}`;
     return ipfsHash;
   };
 }

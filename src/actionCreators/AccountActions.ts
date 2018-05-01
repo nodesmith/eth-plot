@@ -1,8 +1,16 @@
+import { BigNumber } from 'bignumber.js';
+import { Dispatch } from 'react-redux';
+import * as Web3 from 'web3';
+
+import { DecodedLogEntry } from '../../gen-src/typechain-runtime';
+import { EthGrid2, EthGrid2EventTypes } from '../../gen-src/EthGrid2';
 import * as DataActions from '../actionCreators/DataActions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
+import { ContractInfo, PurchaseEventInfo } from '../models';
 
 import { Action } from './EthGridAction';
+import { getWeb3 } from './Web3Actions';
 
 export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
   return {
@@ -11,10 +19,18 @@ export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
   };
 }
 
-export function updateActiveAccount(newActiveAccount): Action {
+export function updateActiveAccount(newActiveAccount: string): Action {
   return {
     type: ActionTypes.UPDATE_ACTIVE_ACCOUNT,
     newActiveAccount
+  };
+}
+
+export function addPurchaseEventTransactions(
+  purchaseTransactions: PurchaseEventInfo[]): Action {
+  return {
+    type: ActionTypes.ADD_PURCHASE_TRANSACTIONS,
+    purchaseTransactions
   };
 }
 
@@ -22,7 +38,8 @@ export function updateActiveAccount(newActiveAccount): Action {
 // This can either be a newly created transaction, or a previous transaction that
 // is stored on chain.  isNew should be true when adding a newly created transaction,
 // and false when reading a transaction from the chain.
-export function addTransaction(txHash, txType, txStatus, blockNumber, isNew): Action {
+export function addTransaction(
+  txHash: string, txType: Enums.TxType, txStatus: Enums.TxStatus, blockNumber: number, isNew: boolean): Action {
   return {
     type: ActionTypes.ADD_TRANSACTION,
     txHash,
@@ -51,65 +68,75 @@ export function doneLoadingTransactions(): Action {
   };
 }
 
-export function fetchAccountTransactions(contractInfo, currentAddress) {
-  return function (dispatch) {
+export function fetchAccountTransactions(contractInfo: ContractInfo, currentAddress: string) {
+  return async (dispatch: Dispatch<{}>) => {
     dispatch(loadTransactions());
 
-    const newWeb3 = DataActions.getWeb3(contractInfo);
-    const contract = DataActions.initializeContract(contractInfo);
-    
-    const auctionEventPromise = new Promise((resolve, reject) => {
-      // The owner filter here only fetches events where the owner is the current address, allowing
-      // us to perform that filter on the "server" side.  
-      // TODO: do we need some form of paging when a single user has a ton of transactions?
-      const auctionUpdatedEvent = contract.AuctionUpdated({ owner: currentAddress }, { fromBlock: 1, toBlock: 'latest' });
+    const newWeb3 = getWeb3(contractInfo);
+    const contract = await DataActions.initializeContract(contractInfo);
 
-      // Get's historical auction transactions for loading user's transaction list
-      auctionUpdatedEvent.get((err, data) => {
-        if (err) reject(err);
+    await Promise.all([
+      getAuctionEvents(contract, currentAddress, dispatch),
+      getPurchaseEvents(contract, currentAddress, dispatch)
+    ]);
 
-        data.forEach(tx => {
-          auctionTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
-        });
-      });
-
-      // Listens to incoming auction transnactions
-      auctionUpdatedEvent.watch((err, data) => {
-        if (err) reject(err);
-        auctionTransactionHandler(data, true, Enums.TxType.AUCTION, dispatch);
-      });
-
-      resolve();
-    }); 
-    
-    const purchaseEventPromise = new Promise((resolve, reject) => {
-      const purchaseEvent = contract.PlotPurchased({ buyer: currentAddress }, { fromBlock: 1, toBlock: 'latest' });
-
-      // Get's historical purchase transactions for loading user's transaction list
-      purchaseEvent.get((err, data) => {
-        if (err) reject(err);
-
-        data.forEach(tx => {
-          genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
-        });
-      });
-
-      // Listens to incoming purchase transactions
-      purchaseEvent.watch((err, data) => {
-        if (err) reject(err);
-        genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
-      });
-
-      resolve();
-    }); 
-
-    Promise.all([auctionEventPromise, purchaseEventPromise]).then(values => { 
-      dispatch(doneLoadingTransactions());
-    });
+    dispatch(doneLoadingTransactions());
   };
 }
 
-function auctionTransactionHandler(tx, isNew, txType, dispatch) { 
+async function getAuctionEvents(contract: EthGrid2, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+  // The owner filter here only fetches events where the owner is the current address, allowing
+  // us to perform that filter on the "server" side.  
+  // TODO: do we need some form of paging when a single user has a ton of transactions?
+  const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
+  const events = await auctionEvent.get({ fromBlock: 0, toBlock: 'latest' });
+
+  events.forEach(tx => {
+    auctionTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
+  });
+
+  // We really should return this in some way since we need to stop listening to it
+  auctionEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, event) => {
+    if (!err) {
+      auctionTransactionHandler(event, true, Enums.TxType.AUCTION, dispatch);
+    }
+  });
+}
+
+async function getPurchaseEvents(contract: EthGrid2, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+
+  const purchaseEvent = contract.PlotPurchasedEvent({ });
+
+  // Get's historical purchase transactions for loading user's transaction list
+  const events = await purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' });
+  events.forEach(tx => {
+    if (tx.args.buyer === currentAddress) {
+      genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
+    }
+  });
+
+
+  const purchaseEventInfo: PurchaseEventInfo[] = events.map(tx => {
+    return  { 
+      purchaseIndex: (<BigNumber>tx.args.newZoneId).toNumber(),
+      purchasePrice: tx.args.totalPrice.toString(),
+      blockNumber: tx.blockNumber!,
+      txHash: tx.transactionHash
+    };
+  });
+
+  dispatch(addPurchaseEventTransactions(purchaseEventInfo));
+
+  // Listens to incoming purchase transactions
+  purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {
+    if (!err) {
+      genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
+    }
+  });
+}
+
+function auctionTransactionHandler(
+  tx: DecodedLogEntry<EthGrid2EventTypes.AuctionUpdatedEventArgs>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void { 
   // Since the auction update is called for new purchases as well as an actual update
   // to an existing price, we use this flag to determine if we should show this transaction
   // from a UI standpoint as an "update price" transaction.
@@ -118,7 +145,7 @@ function auctionTransactionHandler(tx, isNew, txType, dispatch) {
   }
 }
 
-function genericTransactionHandler(tx, isNew, txType, dispatch) {
+function genericTransactionHandler(tx: DecodedLogEntry<{}>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void {
   const txStatus = DataActions.determineTxStatus(tx);
-  dispatch(addTransaction(tx.transactionHash, txType, txStatus, tx.blockNumber, false));
+  dispatch(addTransaction(tx.transactionHash, txType, txStatus, tx.blockNumber!, false));
 }

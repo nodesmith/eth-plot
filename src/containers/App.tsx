@@ -10,24 +10,19 @@ import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
 import * as PurchaseActions from '../actionCreators/PurchaseActions';
+import { getWeb3, isUsingMetamask } from '../actionCreators/Web3Actions';
 import About from '../components/About';
 import MetaMaskStatus from '../components/MetaMaskStatus';
 import Nav, { NavProps } from '../components/Nav';
 import ProgressSpinner from '../components/ProgressSpinner';
 import * as Enums from '../constants/Enums';
+import { ContractInfo } from '../models';
 import * as Reducers from '../reducers';
 import { RootState } from '../reducers';
 
 import AccountManagerContainer from './AccountManagerContainer';
 import MainContainer, { MainContainerProps } from './MainContainer';
 import TransactionManagerContainer from './TransactionManagerContainer';
-
-// tslint:disable-next-line:variable-name
-const Web3 = require('web3');
-
-declare global {
-  interface Window { web3: any; }
-}
 
 interface AppDataProps {
   account: Reducers.AccountState;
@@ -64,7 +59,7 @@ class App extends React.Component<AppProps> {
   private accountInterval: number;
 
   componentDidMount() {
-    this.checkMetamaskStatus();
+    this.checkMetamaskStatus(this.props.data.contractInfo);
 
     /**
      * The following timer is the MetaMask recommended way of checking for 
@@ -76,48 +71,44 @@ class App extends React.Component<AppProps> {
      * More info available here: 
      * https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md
      */
-    this.accountInterval = setInterval(
+    this.accountInterval = window.setInterval(
       () => {
-        this.checkMetamaskStatus();
+        this.checkMetamaskStatus(this.props.data.contractInfo);
       },
       1000000); // TODO Toggle back on
   }
 
-  checkMetamaskStatus() {
-    if (typeof window.web3 !== 'undefined') {
-      const newWeb3 = new Web3(window.web3.currentProvider);
-      newWeb3.eth.getAccounts((error, accounts) => {
-        if (accounts.length > 0) {
-          this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
+  checkMetamaskStatus(contractInfo: ContractInfo) {
+    const web3 = getWeb3(contractInfo);
 
-          if (accounts[0] !== this.props.account.activeAccount) {
-            // The only time we ever want to load data from the chain history
-            // is when we receive a change in accounts - this happens anytime 
-            // the page is initially loaded or if there is a change in the account info
-            // via a metamask interaction.
-            this.appDataBootstrap();
-            this.props.actions.updateActiveAccount(accounts[0]);
-          }
-        } else {
-          this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
-        }
-      });
-    } else {
+    if (!web3 || !web3.isConnected()) {
       this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
+      return;
     }
+
+    web3.eth.getAccounts((err, accounts) => {
+      if (accounts && accounts.length > 0) {
+        this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
+
+        if (accounts[0] !== this.props.account.activeAccount) {
+          // The only time we ever want to load data from the chain history
+          // is when we receive a change in accounts - this happens anytime 
+          // the page is initially loaded or if there is a change in the account info
+          // via a metamask interaction.
+          this.props.actions.updateActiveAccount(accounts[0]);
+          this.appDataBootstrap(accounts[0]);
+        }
+      } else {
+        this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
+      }
+    });
   }
 
   // Fetches all data needed for application - this happens when the app
   // first loads and also when metamask state changes
-  appDataBootstrap() {  
+  appDataBootstrap(activeAccount: string) {  
     this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
-
-    if (typeof window.web3 !== 'undefined') {
-      const newWeb3 = new Web3(window.web3.currentProvider);
-      newWeb3.eth.getAccounts((error, accounts) => {
-        this.props.actions.fetchAccountTransactions(this.props.data.contractInfo, accounts[0]);
-      });
-    }
+    this.props.actions.fetchAccountTransactions(this.props.data.contractInfo, activeAccount);
   }
 
   // Returns true if we have finished loading all the data we need to and 
@@ -129,7 +120,7 @@ class App extends React.Component<AppProps> {
   }
 
   componentWillUnmount() {
-    clearInterval(this.accountInterval);
+    window.clearInterval(this.accountInterval);
   }
 
   clearNotifications() {
@@ -157,7 +148,8 @@ class App extends React.Component<AppProps> {
         stopTransformRectToPurchase: actions.stopTransformRectToPurchase,
         transformRectToPurchase: actions.transformRectToPurchase,
         togglePurchaseFlow: actions.togglePurchaseFlow,
-        changeZoom: actions.changeZoom
+        changeZoom: actions.changeZoom,
+        loadBlockInfo: actions.loadBlockInfo
       },
       purchase: // this.props.purchase,
       {
@@ -175,6 +167,7 @@ class App extends React.Component<AppProps> {
       },
       imageFileInfo: this.props.imageToPurchase.imageFileInfo,
       plots: this.props.data.plots,
+      plotTransactions: this.props.data.plotTransactions,
       contractInfo: this.props.data.contractInfo,
       scale: this.props.grid.scale,
       gridInfo: this.props.data.gridInfo,

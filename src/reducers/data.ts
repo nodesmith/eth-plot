@@ -1,25 +1,24 @@
+import { BigNumber } from 'bignumber.js';
+import * as jsCookie from 'js-cookie';
 import * as red from 'redux';
+import * as Web3 from 'web3';
 
 import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as PlotMath from '../data/PlotMath';
-import { ContractInfo, HoleInfo, PlotInfo, Rect } from '../models';
+import { ContractInfo, HoleInfo, PlotInfo, PurchaseEventInfo, Rect } from '../models';
 
-// TODO - Clean this up a bit and get from some config file
-const abi = require('../../contract/build/contracts/EthGrid2.json').abi;
 
-// Update this if you use ganache!!
-// const contractAddress = '0x345ca3e014aaf5dca488057592ee47305d9b3e10';
-// const web3Provider = 'http://localhost:9545';
-
-const contractAddress = '0xcfeb869f69431e42cdb54a4f4f105c19c080a601';
-const web3Provider = 'http://localhost:8545';
+type web3ConfigType = { contractAddress: string, web3Provider: string };
+const web3Config = <web3ConfigType>jsCookie.getJSON('web3Config')!;
+const { contractAddress, web3Provider } = web3Config;
 
 export interface DataState {
   isFetchingPlots: boolean;
   numberOfPlots: number;
   plots: Array<PlotInfo>;
+  plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
   holes: HoleInfo;
   gridInfo: {
     height:number;
@@ -33,13 +32,15 @@ const initialState: DataState = {
   isFetchingPlots: false,
   numberOfPlots: 0,
   plots: [],
+  plotTransactions: {
+    0: { purchaseIndex: 0, purchasePrice: '0', blockNumber: 0, txHash: '' } // Initialize the background block
+  },
   holes: {},
   gridInfo: {
     height: 250,
     width: 250
   },
   contractInfo: {
-    abi,
     contractAddress,
     web3Provider
   },
@@ -74,6 +75,28 @@ export function dataReducer(state: DataState = initialState, action: Action): Da
     case ActionTypes.SHOW_PURCHASE_DIALOG: {
       const purchaseInfo = computePurchaseInfo(action.rectToPurchase, state.plots);
       return Object.assign({}, state, { purchaseInfo });
+    }
+    case ActionTypes.ADD_PURCHASE_TRANSACTIONS: {
+      const purchaseTransactionInfo: PurchaseEventInfo[] = action.purchaseTransactions;
+      const plotTransactions = purchaseTransactionInfo.reduce(
+        (result, curr) => {
+          result[curr.purchaseIndex] = curr;
+          return result;
+        },
+        {});
+
+      return Object.assign({}, state, { plotTransactions });
+    }
+    case ActionTypes.ADD_BLOCK_INFO: {
+      const blockInfo: Web3.BlockWithoutTransactionData = action.blockInfo;
+      const plotTransactions = Object.assign({}, state.plotTransactions);
+      for (const key of Object.keys(plotTransactions)) {
+        if (plotTransactions[key].blockNumber === blockInfo.number) {
+          plotTransactions[key].timestamp = blockInfo.timestamp;
+        }
+      }
+
+      return Object.assign({}, state, { plotTransactions });
     }
     default:
       return state;

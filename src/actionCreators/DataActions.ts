@@ -1,14 +1,18 @@
+import { BigNumber } from 'bignumber.js';
+import * as Web3 from 'web3';
+
+import { EthGrid2 } from '../../gen-src/EthGrid2';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
+import { loadFromIpfsOrCache } from '../data/ImageRepository';
 import * as PlotMath from '../data/PlotMath';
-import { Rect } from '../models';
+import { ContractInfo, PlotInfo, Rect } from '../models';
 
 import * as AccountActions from './AccountActions';
+import { Action } from './EthGridAction';
 import { togglePurchaseFlow } from './PurchaseActions';
-
-// tslint:disable-next-line:variable-name
-const Web3 = require('web3');
+import { getWeb3 } from './Web3Actions';
 const hexy = require('hexy');
 const promisePool = require('es6-promise-pool');
 
@@ -45,11 +49,9 @@ export function doneLoadingPlots() {
   };
 }
 
-export function initializeContract(contractInfo) {
+export function initializeContract(contractInfo: ContractInfo): Promise<EthGrid2> {
   const web3 = getWeb3(contractInfo);
-  const contract = web3.eth.contract(contractInfo.abi);
-  const contractInstance = contract.at(contractInfo.contractAddress);
-  return contractInstance;
+  return EthGrid2.createAndValidate(web3, contractInfo.contractAddress);
 }
 
 export function determineTxStatus(tx) {
@@ -58,17 +60,6 @@ export function determineTxStatus(tx) {
     return Enums.TxStatus.SUCCESS;
   } else {
     return Enums.TxStatus.PENDING;
-  }
-}
-
-export function getWeb3(contractInfo) {
-  if (!window) {
-    // This is only used to run the setup purchase scripts
-    return new Web3(new Web3.providers.HttpProvider('http://localhost:9545'));
-  } else if (typeof window.web3 !== 'undefined') {
-    return window.web3;
-  } else {
-    throw 'no web3 provided';
   }
 }
 
@@ -81,180 +72,151 @@ function getRandomColor() {
   return color;
 }
 
+export function loadBlockInfo(contractInfo: ContractInfo, blockNumber: number) {
+  return async (dispatch) => {
+    const web3 = getWeb3(contractInfo);
+    return new Promise((resolve, reject) => {
+      web3.eth.getBlock(blockNumber, (err, blockObj) => {
+        if (err) { reject(err); }
+        dispatch(addBlockInfo(blockObj));
+        resolve();
+      });
+    });
+  };
+}
+
+export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Action {
+  return {
+    type: ActionTypes.ADD_BLOCK_INFO,
+    blockInfo
+  };
+}
+
 // This is gonna be a thunk action!
 export function fetchPlotsFromWeb3(contractInfo) {
   const web3 = getWeb3(contractInfo);
-  return function (dispatch) {
+  return async (dispatch) => {
     dispatch(loadPlots());
 
     // We need to get a handle to the actual instance of our running contract and figure out the current ownership info
-    const contract = initializeContract(contractInfo);
+    const contract = await initializeContract(contractInfo);
 
-    // First make a call to figure out the length of the ownership and data array to iterate through them
-    return new Promise((resolve, reject) => {
-      contract.ownershipLength.call((error, ownershipLengthString: string) => {
-        if (error) {
-          return reject(error);
-        }
+    const ownershipLengthBn: BigNumber = await contract.ownershipLength;
+    const ownershipLength = ownershipLengthBn.toNumber();
 
-        resolve(ownershipLengthString);
-      });
-    }).then((ownershipLengthString: string) => {
-      const ownershipLength = parseInt(ownershipLengthString, 10);
-      let currentIndex = 0;
+    for (let i = 0; i < ownershipLength; i++) {
+      const plotInfo = await contract.getPlot(i);
 
-      const ownershipLoadFn = () => {
-        if (currentIndex >= ownershipLength) {
-          // We're done loading here
-          return null;
-        }
+      const ipfsHash = web3.toUtf8(plotInfo[7]);
 
-        return new Promise((resolve, reject) => {
-          // Call get plot which returns an array type object which we can get properties from
-          contract.getPlot.call(currentIndex, (error, plotInfo) => {
-            if (error) reject(error);
-
-            const plot = {
-              rect: {
-                x: parseInt(plotInfo['0'], 10),
-                y: parseInt(plotInfo['1'], 10),
-                w: parseInt(plotInfo['2'], 10),
-                h: parseInt(plotInfo['3'], 10),
-                x2: 0,
-                y2: 0
-              },
-              owner: plotInfo['4'],
-              buyoutPrice: parseInt(plotInfo['5'], 10),
-              data: {
-                url: plotInfo['6'],
-                ipfsHash: web3.toUtf8(plotInfo['7']),
-                imageUrl: `https://ipfs.infura.io/ipfs/${web3.toUtf8(plotInfo['7'])}`
-              },
-              color: getRandomColor(),
-              zoneIndex: currentIndex
-            };
-
-            plot.rect.x2 = plot.rect.x + plot.rect.w;
-            plot.rect.y2 = plot.rect.y + plot.rect.h;
-
-            dispatch(addPlot(plot)); 
-            currentIndex++;
-
-            resolve(plot);
-          });
-        });
+      const plot: PlotInfo = {
+        rect: {
+          x: plotInfo[0].toNumber(),
+          y: plotInfo[1].toNumber(),
+          w: plotInfo[2].toNumber(),
+          h: plotInfo[3].toNumber(),
+          x2: 0,
+          y2: 0
+        },
+        owner: plotInfo[4],
+        buyoutPrice: plotInfo[5].toNumber(), // TODO
+        data: {
+          url: plotInfo[6],
+          ipfsHash,
+          blobUrl: URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash))
+        },
+        color: getRandomColor(),
+        zoneIndex: i,
+        txHash: ''
       };
 
-      // Create a pool.
-      const pool = new promisePool(ownershipLoadFn, 1);
-      
-      // Start the pool. 
-      return pool.start().then(() => {
-        dispatch(doneLoadingPlots());
-      });
-    });
+      plot.rect.x2 = plot.rect.x + plot.rect.w;
+      plot.rect.y2 = plot.rect.y + plot.rect.h;
+
+      dispatch(addPlot(plot)); 
+    }
+
+    dispatch(doneLoadingPlots());
   };
 }
 
 // thunk for updating price of plot
 export function updateAuction(contractInfo, zoneIndex, newPrice) {
-  return function (dispatch) {
+  return async (dispatch) => {
     const web3 = getWeb3(contractInfo);
+    const coinbase = await getCoinbase(web3);
+  
+    const contract = await initializeContract(contractInfo);
 
-    return new Promise((resolve, reject) => {
-      web3.eth.getCoinbase((error, coinbase) => {
-        if (error) reject(error);  
-        resolve(coinbase);
-      });
-    }).then((coinbase) => {
-      const gasEstimate = 2000000;
-      const contract = initializeContract(contractInfo);
-    
-      const param1 = zoneIndex;
-      const param2 = newPrice;
-      const param3 = false; // this flag indicates to smart contract that this is not a new purchase
+    const tx = contract.updateAuctionTx(zoneIndex, newPrice, false);
+    const gasEstimate = await tx.estimateGas();
 
-      const txObject = {
-        from: coinbase,
-        gasPrice: '3000000000',
-        gas: gasEstimate * 2
-      };
-      
-      return new Promise((resolve, reject) => {
-        contract.updateAuction.sendTransaction(param1, param2, param3, txObject, (error, transactionReceipt) => {
-          if (error) reject(error);
+    const txObject = {
+      from: coinbase,
+      gas: gasEstimate.times(2)
+    };
 
-          const txStatus = determineTxStatus(transactionReceipt);
-          dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.AUCTION, txStatus, Number.MAX_SAFE_INTEGER, true));     
-          resolve(transactionReceipt);
-        });
-      });
-    });
+    const transactionReceipt = await contract.updateAuctionTx(zoneIndex, newPrice, false).send(txObject);
+
+    const txStatus = determineTxStatus(transactionReceipt);
+    dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.AUCTION, txStatus, Number.MAX_SAFE_INTEGER, true));
+    return transactionReceipt;
   };
 }
 
 // Converts a rect into the format that our contract is expecting
-function buildArrayFromRectangles(rects: Rect[]): Array<number> { 
-  const result = new Array<number>();
+function buildArrayFromRectangles(rects: Rect[]): Array<BigNumber> { 
+  const result = new Array<BigNumber>();
   for (const rect of rects) {
-    result.push(rect.x);
-    result.push(rect.y);
-    result.push(rect.w);
-    result.push(rect.h);
+    result.push(new BigNumber(rect.x));
+    result.push(new BigNumber(rect.y));
+    result.push(new BigNumber(rect.w));
+    result.push(new BigNumber(rect.h));
   }
 
   return result;
 }
 
+function getCoinbase(web3: any): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    web3.eth.getCoinbase((error, coinbase) => {
+      if (error) reject(error);  
+      resolve(coinbase);
+    });
+  });
+}
+
 // This is the actual purchase function which will be a thunk
 export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash, changePurchaseStep) {
-  return function (dispatch) {
+  return async (dispatch) => {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
     const web3 = getWeb3(contractInfo);
 
     dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_UNLOCK));
-    return new Promise((resolve, reject) => {
-      web3.eth.getCoinbase((error, coinbase) => {
-        if (error) reject(error);  
-        dispatch(changePurchaseStep(Enums.PurchaseStage.SUBMITTING_TO_BLOCKCHAIN));
-        resolve(coinbase);
-      });
-    }).then((coinbase) => {
-      const contract = initializeContract(contractInfo);
-  
-      const param1 = buildArrayFromRectangles([rectToPurchase]);
-      const param2 = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
-      const param3 = purchaseInfo.chunksToPurchaseAreaIndices;
-      const param4 = ipfsHash;
-      const param5 = url;
-      const param6 = 10;
-  
-      const gasEstimate = 2000000;
-      const txObject = {
-        from: coinbase,
-        gasPrice: '3000000000',
-        gas: gasEstimate * 2
-      };
 
-      return new Promise((resolve, reject) => {
-        contract.purchaseAreaWithData.sendTransaction(
-          param1, param2, param3, param4, param5, param6, txObject, (error, transactionReceipt) => {
-            if (error) reject(error);
+    const coinbase = await getCoinbase(web3);
+    const contract = await initializeContract(contractInfo);
 
-            const txStatus = determineTxStatus(transactionReceipt);
-            dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
-            dispatch(togglePurchaseFlow());
-            dispatch(changePurchaseStep(Enums.PurchaseStage.DONE));
-            dispatch(fetchPlotsFromWeb3(contractInfo));
+    const purchase = buildArrayFromRectangles([rectToPurchase]);
+    const purchasedAreas = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
+    const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
+    const initialPurchasePrice = 10; // TODO!
 
-            // We need to update the ownership and data arrays with the newly purchased plot
-            // const ownershipInfo = Object.assign({}, rectToPurchase);
+    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url, initialPurchasePrice);
+    const gasEstimate = await tx.estimateGas();
+    const txObject = {
+      from: coinbase,
+      gas: gasEstimate.times(2),
+      value: '10' // TODO!!
+    };
 
-            // TODO - Lots of stuff
-            // resolve(transactionReceipt);
-          });
-      });
-    });
+    const transactionReceipt = await tx.send(txObject);
+
+    const txStatus = determineTxStatus(transactionReceipt);
+    dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
+    dispatch(togglePurchaseFlow());
+    dispatch(changePurchaseStep(Enums.PurchaseStage.DONE));
+    dispatch(fetchPlotsFromWeb3(contractInfo));
   };
 }

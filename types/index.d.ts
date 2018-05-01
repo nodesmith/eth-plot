@@ -3,7 +3,7 @@ declare module 'ipfs-api' {
 }
 
 declare class files {
-  add(fileInfo: {content: Buffer, path: string}): Promise<{hash: string, path: string, size: number}[]>;
+  add(fileInfo: {content: Buffer | Buffer, path: string}): Promise<{hash: string, path: string, size: number}[]>;
 }
 
 declare class ipfs {
