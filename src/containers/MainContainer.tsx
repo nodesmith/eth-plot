@@ -15,9 +15,9 @@ import { ContractInfo, GridInfo, ImageFileInfo, PlotInfo, Point, PurchaseEventIn
 const styles: StyleRulesCallback = theme => ({
   root: {
     position: 'relative',
-    height: 'calc(100vh - 64px)',
+    height: 'calc(100vh - 0px)',
     [theme.breakpoints.down('xs')]: {
-      height: 'calc(100vh - 54px)',
+      height: 'calc(100vh - 0px)',
     },
     userDrag: 'none'
   }

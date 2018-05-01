@@ -12,8 +12,10 @@ import * as GridActions from '../actionCreators/GridActions';
 import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import { getWeb3, isUsingMetamask } from '../actionCreators/Web3Actions';
 import About from '../components/About';
+import FloatingLogo from '../components/FloatingLogo';
 import MetaMaskStatus from '../components/MetaMaskStatus';
 import Nav, { NavProps } from '../components/Nav';
+import OverlayNav from '../components/OverlayNav';
 import ProgressSpinner from '../components/ProgressSpinner';
 import * as Enums from '../constants/Enums';
 import { ContractInfo } from '../models';
@@ -205,13 +207,14 @@ class App extends React.Component<AppProps> {
       classes: {},
       notificationCount: this.props.account.notificationCount,
       clearNotifications: this.clearNotifications.bind(this),
-      doNavigation: to => this.doNavigation(to)
+      doNavigation: to => this.doNavigation(to),
+      currentPath: this.props.history.location.pathname
     };
 
     const mainBodyContent = this.getMainBodyContent();
     return (
       <div className="main-app-container">
-        <Nav {...navProps} />
+        {/* <Nav {...navProps} /> */}
         <main>
           {
             (this.shouldShowSpinner()) ?
@@ -221,6 +224,7 @@ class App extends React.Component<AppProps> {
               mainBodyContent
           }
         </main>
+        <OverlayNav {...navProps} />
       </div>
     );
   }

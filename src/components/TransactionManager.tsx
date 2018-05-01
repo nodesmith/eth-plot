@@ -16,7 +16,7 @@ import TransactionStatus from './TransactionStatus';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
-    marginTop: 20,
+    marginTop: 16,
     paddingBottom: 16
   }
 });
@@ -48,7 +48,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
 
     return [
       (<Grid key="title" item xs={9}>
-        <Typography variant="title" >My Transactions</Typography>
+        <Typography align="center" variant="headline" >My Transactions</Typography>
       </Grid>),
       pendingTransactions
     ];
@@ -57,7 +57,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
   render() {
     const content = this.getUserContent();
     return (
-      <Grid container className={this.props.classes.root} justify="center" spacing={16} >
+      <Grid container className={this.props.classes.root} justify="center" spacing={24} >
        {content}
       </Grid>
     );
