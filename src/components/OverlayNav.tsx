@@ -106,7 +106,7 @@ class OverlayNav extends Component<OverlayNavProps> {
           <Button {...buttonProps} color={this.getButtonColor('/account')}
             key="Transactions" onClick={() => { this.clearNotifications(); this.navigate('/account'); }}>
             { (this.props.notificationCount) ?
-              (<Badge className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
+              (<Badge color="secondary" className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
                 <ImportExport />
               </Badge>) :
               <ImportExport />
