@@ -78,7 +78,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
     return (
       <Grid className={this.props.classes.root} container spacing={8}>
         <Grid item xs={12} sm={6} >
-          <PlotPreviewCard imgUrl={this.props.info.data.imageUrl} 
+          <PlotPreviewCard blobUrl={this.props.info.data.blobUrl} 
                            w={this.props.info.rect.w}
                            h={this.props.info.rect.h}
                            classes={{}} />

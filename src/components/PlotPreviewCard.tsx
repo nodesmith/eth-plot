@@ -6,7 +6,7 @@ import { Component } from 'react';
 import Grid from 'material-ui/Grid';
 
 export interface PlotPreviewCardProps extends WithStyles {
-  imgUrl: string;
+  blobUrl: string;
   w: number;
   h: number;
 }
@@ -35,6 +35,12 @@ const styles: StyleRulesCallback = theme => ({
     width: '100%',
     height: '100%',
     maxWidth: 300,
+  },
+  unsoldPixelColor: {
+    color: "rgba(255,255,255,0.7)"
+  },
+  soldPixelColor: {
+    color: "rgba(200,200,200,0.7)"
   }
 });
 
@@ -46,10 +52,6 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
     this.state = {
       showGrid: false
     };
-  }
-
-  componentDidMount() {
-
   }
   
   showGrid() {
@@ -99,7 +101,7 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
       <Grid container justify="center">
         <div onMouseEnter={this.showGrid.bind(this)} onMouseLeave={this.hideGrid.bind(this)} className={this.props.classes.imgContainer}>
           <img ref={element => this.imageRef = element} 
-               src={this.props.imgUrl}
+               src={this.props.blobUrl}
                className={this.props.classes.imgStyle} />
           <svg className={this.props.classes.svgStyle} xmlns="http://www.w3.org/2000/svg">
             { (this.state.showGrid) ? gridElements : null }
