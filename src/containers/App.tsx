@@ -214,8 +214,19 @@ class App extends React.Component<AppProps> {
     };
 
     const mainBodyContent = this.getMainBodyContent();
+
+    const mainAppStyle: React.CSSProperties = {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      overflowY: 'auto',
+      overflowX: 'hidden'
+    };
+
     return (
-      <div className="main-app-container">
+      <div className="main-app-container" style={mainAppStyle}>
         <main>
           {
             (this.shouldShowSpinner()) ?

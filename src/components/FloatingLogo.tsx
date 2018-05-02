@@ -7,8 +7,7 @@ import ButtonBase from 'material-ui/ButtonBase';
 import Paper from 'material-ui/Paper';
 
 const styles: StyleRulesCallback = theme => ({
-  root: {
-  },
+  root: {}, // Intentionally Empty
   button: {
     margin: 0,
     backgroundColor: theme.palette.grey[200]
