@@ -1,7 +1,7 @@
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import Help from '@material-ui/icons/Help';
 import Home from '@material-ui/icons/Home';
-import ImportExport from '@material-ui/icons/ImportExport';
-import Info from '@material-ui/icons/Info';
+import Notifications from '@material-ui/icons/Notifications';
+import Person from '@material-ui/icons/Person';
 import { Badge } from 'material-ui';
 import ShoppingCart from 'material-ui-icons/ShoppingCart';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
@@ -98,18 +98,18 @@ class OverlayNav extends Component<OverlayNavProps> {
             <Home />
           </Button>
           <Button {...buttonProps} color={this.getButtonColor('/myplots')} key="My Plots" onClick={this.navigate.bind(this, '/myplots')}>
-            <AccountCircle />
+            <Person />
           </Button>
           <Button {...buttonProps} color={this.getButtonColor('/about')} key="About" onClick={this.navigate.bind(this, '/about')}>
-            <Info />
+            <Help />
           </Button>
           <Button {...buttonProps} color={this.getButtonColor('/account')}
             key="Transactions" onClick={() => { this.clearNotifications(); this.navigate('/account'); }}>
             { (this.props.notificationCount) ?
               (<Badge color="secondary" className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
-                <ImportExport />
+                <Notifications />
               </Badge>) :
-              <ImportExport />
+              <Notifications />
             }
           </Button>
         </Paper>
