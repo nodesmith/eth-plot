@@ -265,7 +265,6 @@ function mapDispatchToProps(dispatch: Dispatch<any>) {
  * The withRouter wrapper ensures routes are properly updated.  More info here: 
  * https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/redux.md
  */
-
 export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps

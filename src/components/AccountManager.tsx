@@ -9,7 +9,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as Enums from '../constants/Enums';
-import { PlotInfo as PlotInfoData } from '../models';
+import { PlotInfo as PlotInfoData, HoleInfo as HoleInfoData } from '../models';
 
 import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
@@ -23,6 +23,7 @@ const styles: StyleRulesCallback = theme => ({
 
 export interface AccountManagerProps extends WithStyles {
   userPlots: Array<PlotInfoData>;
+  holes: HoleInfoData;
   updatePrice: () => void;
   metamaskState: number;
 }
@@ -33,7 +34,7 @@ class AccountManager extends Component<AccountManagerProps> {
       return (
         <Grid key={index} item xs={9}>
           <Paper>
-            <PlotInfo info={plot} updatePrice={this.props.updatePrice} />
+            <PlotInfo info={plot} holes={this.props.holes[index] || []} updatePrice={this.props.updatePrice} />
           </Paper>
         </Grid>
       );
