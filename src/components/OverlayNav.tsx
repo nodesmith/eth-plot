@@ -9,6 +9,8 @@ import Button, { ButtonProps } from 'material-ui/Button';
 import Drawer from 'material-ui/Drawer';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
+import { SvgIconProps } from 'material-ui/SvgIcon';
+import Tooltip from 'material-ui/Tooltip';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
@@ -38,16 +40,12 @@ const styles: StyleRulesCallback = theme => ({
     display: 'inline',
     pointerEvents: 'all'
   },
-  otherNavButton: {
-    marginTop: theme.spacing.unit,
-  },
   minButton: {
     minWidth: 32,
     paddingTop: 8,
     paddingBottom: 8
   },
   otherNav: {
-    // left: padding + theme.spacing.unit + logoSize,
     right: padding,
     top: padding,
     width: sideIconSize,
@@ -57,7 +55,6 @@ const styles: StyleRulesCallback = theme => ({
     backgroundColor: theme.palette.grey[200]
   }
 });
-
 
 export interface OverlayNavProps extends WithStyles {
   notificationCount: number;
@@ -81,6 +78,28 @@ class OverlayNav extends Component<OverlayNavProps> {
     return this.props.currentPath === pathName ? 'primary' : 'default';
   }
 
+  createNavButton(path: string, tooltip: string, icon: JSX.Element, clickHandler?: () => void): JSX.Element {
+    const { classes } = this.props;
+    const buttonProps: ButtonProps = {
+      color: 'default',
+      size: 'small',
+      classes: { sizeSmall: classes.minButton }
+    };
+
+    return (
+    <Tooltip title={tooltip} key={tooltip} placement="left">
+      <Button {...buttonProps} color={this.getButtonColor(path)} onClick={() => {
+        if (clickHandler) {
+          clickHandler();
+        }
+
+        this.navigate(path);
+      }}>
+        {icon}
+      </Button>
+    </Tooltip>);
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -90,28 +109,20 @@ class OverlayNav extends Component<OverlayNavProps> {
       classes: { sizeSmall: classes.minButton }
     };
 
+    const transactionsIcon = this.props.notificationCount ?
+      (<Badge color="secondary" className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
+        <Notifications />
+      </Badge>) :
+      (<Notifications />);
+
     return (
       <div className={classes.root}>
         <FloatingLogo size={logoSize} classes={{ root: classes.homeButton }} onClick={this.navigate.bind(this, '/')} />
         <Paper  className={classes.otherNav}>
-          <Button {...buttonProps} color={this.getButtonColor('/')} key="Home" onClick={this.navigate.bind(this, '/')}>
-            <Home />
-          </Button>
-          <Button {...buttonProps} color={this.getButtonColor('/myplots')} key="My Plots" onClick={this.navigate.bind(this, '/myplots')}>
-            <Person />
-          </Button>
-          <Button {...buttonProps} color={this.getButtonColor('/about')} key="About" onClick={this.navigate.bind(this, '/about')}>
-            <Help />
-          </Button>
-          <Button {...buttonProps} color={this.getButtonColor('/account')}
-            key="Transactions" onClick={() => { this.clearNotifications(); this.navigate('/account'); }}>
-            { (this.props.notificationCount) ?
-              (<Badge color="secondary" className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
-                <Notifications />
-              </Badge>) :
-              <Notifications />
-            }
-          </Button>
+          {this.createNavButton('/', 'Home', (<Home />))}
+          {this.createNavButton('/myplots', 'My Plots', (<Person />))}
+          {this.createNavButton('/about', 'About', (<Help />))}
+          {this.createNavButton('/account', 'Transactions', transactionsIcon, () => this.clearNotifications())}
         </Paper>
       </div>
     );
