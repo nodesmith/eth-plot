@@ -10,7 +10,7 @@ import MainControlsOverlay, { MainControlsOverlayProps } from '../components/Mai
 import PurchaseDialog, { PurchaseDialogProps } from '../components/PurchaseDialog';
 import UIGrid, { UIGridProps } from '../components/UIGrid';
 import * as Enums from '../constants/Enums';
-import { ContractInfo, GridInfo, ImageFileInfo, PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
+import { ContractInfo, GridInfo, HoleInfo, ImageFileInfo, PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -61,6 +61,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
   imageFileInfo?: ImageFileInfo;
   plots: Array<PlotInfo>;
   plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
+  holes: HoleInfo;
   contractInfo: ContractInfo;
   scale: number;
   gridInfo: GridInfo;
@@ -106,6 +107,7 @@ class MainContainer extends React.Component<MainContainerProps> {
       rectToPurchase: this.props.purchase.rectToPurchase,
       plots: this.props.plots,
       plotTransactions: this.props.plotTransactions,
+      holes: this.props.holes,
       scale: this.props.scale,
       gridInfo: this.props.gridInfo,
       centerPoint: this.props.centerPoint,

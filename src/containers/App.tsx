@@ -170,6 +170,7 @@ class App extends React.Component<AppProps> {
       imageFileInfo: this.props.imageToPurchase.imageFileInfo,
       plots: this.props.data.plots,
       plotTransactions: this.props.data.plotTransactions,
+      holes: this.props.data.holes,
       contractInfo: this.props.data.contractInfo,
       scale: this.props.grid.scale,
       gridInfo: this.props.data.gridInfo,

@@ -17,6 +17,8 @@
   },
   "devDependencies": {
     "@spacedust/typechain": "^0.2.5",
+    "@types/d3-interpolate": "^1.1.6",
+    "@types/d3-scale-chromatic": "^1.2.0",
     "@types/node": "^8.0.0",
     "@types/redux": "^3.6.0",
     "@types/redux-devtools": "^3.0.43",
@@ -69,6 +71,8 @@
     "bignumber.js": "^5.0.0",
     "bn.js": "^4.11.8",
     "buffer": "^5.1.0",
+    "d3-interpolate": "^1.1.6",
+    "d3-scale-chromatic": "^1.2.0",
     "decimal.js": "^9.0.1",
     "es6-promise-pool": "^2.5.0",
     "hexy": "^0.2.10",

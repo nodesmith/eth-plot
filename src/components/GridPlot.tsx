@@ -50,8 +50,7 @@ class GridPlot extends React.Component<GridPlotProps> {
       top: rect.y * scale,
       left: rect.x * scale,
       width: rect.w * scale,
-      height: rect.h * scale,
-      backgroundSize: 'cover'
+      height: rect.h * scale
     };
 
     const showHoverStyle = this.props.isHovered && this.props.index !== 0;
