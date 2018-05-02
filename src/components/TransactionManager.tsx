@@ -16,7 +16,7 @@ import TransactionStatus from './TransactionStatus';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
-    marginTop: 16,
+    paddingTop: 24,
     paddingBottom: 16
   }
 });

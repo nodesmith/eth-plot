@@ -26,7 +26,7 @@ const styles: StyleRulesCallback = theme => ({
   root: {
     width: '100%',
     height: '100%',
-    position: 'absolute',
+    position: 'fixed',
     left: 0,
     top: 0,
     pointerEvents: 'none'

@@ -15,7 +15,7 @@ import FAQ from './FAQ';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
-    marginTop: 16,
+    paddingTop: 24,
     paddingBottom: 16
   }
 });
