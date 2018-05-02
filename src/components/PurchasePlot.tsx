@@ -7,19 +7,6 @@ import { MovementActions } from '../constants/Enums';
 import { Rect } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
-  purchaseTooltip: {
-    backgroundColor: 'rgba($color: #000000, $alpha: 0.6)',
-    borderRadius: 5,
-    display: 'inline',
-    color: 'white',
-    lineHeight: 35,
-    position: 'absolute',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    paddingLeft: '10',
-    paddingRight: '10',
-    whiteSpace: 'nowrap'
-  }
 });
 
 export interface PurchasePlotProps extends WithStyles {
@@ -71,10 +58,6 @@ class PurchasePlot extends Component<PurchasePlotProps> {
       position: 'absolute',
       pointerEvents: 'auto',
       userDrag: 'none'
-    };
-
-    const tooltipStyle = {
-      top: -40
     };
 
     const handleWidth = 10;
@@ -151,14 +134,9 @@ class PurchasePlot extends Component<PurchasePlotProps> {
       ></div>);
     });
 
-    const tooltipText = `${rect.w} x ${rect.h}`;
-
     return (
       <div draggable={false} style={wrapperStyle}>
         {controls}
-        <div className="purchaseTooltip" style={tooltipStyle}>
-          <span>{tooltipText}</span>
-        </div>
       </div>
     );
   }

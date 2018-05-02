@@ -1,5 +1,6 @@
 import { ActionTypes } from '../constants/ActionTypes';
-import { Rect } from '../models';
+import * as Enums from '../constants/Enums';
+import { Point, Rect } from '../models';
 
 import { Action } from './EthGridAction';
 
@@ -55,5 +56,14 @@ export function changeZoom(direction: number): Action {
   return {
     type: ActionTypes.CHANGE_ZOOM,
     direction
+  };
+}
+
+
+export function reportGridDragging(action: Enums.DragType, location: Point): Action {
+  return {
+    type: ActionTypes.REPORT_GRID_DRAG,
+    action,
+    location
   };
 }

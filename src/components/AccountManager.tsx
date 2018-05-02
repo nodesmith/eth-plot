@@ -16,7 +16,7 @@ import PlotInfo from './PlotInfo';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
-    marginTop: 16,
+    paddingTop: 24,
     paddingBottom: 16
   }
 });
@@ -49,7 +49,7 @@ class AccountManager extends Component<AccountManagerProps> {
 
     return [
       (<Grid key="title" item xs={9}>
-        <Typography variant="title">My Content</Typography>
+        <Typography align="center" variant="headline">My Plots</Typography>
       </Grid>),
       plotInfos
     ];

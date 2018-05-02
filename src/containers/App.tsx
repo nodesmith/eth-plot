@@ -12,8 +12,9 @@ import * as GridActions from '../actionCreators/GridActions';
 import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import { getWeb3, isUsingMetamask } from '../actionCreators/Web3Actions';
 import About from '../components/About';
+import FloatingLogo from '../components/FloatingLogo';
 import MetaMaskStatus from '../components/MetaMaskStatus';
-import Nav, { NavProps } from '../components/Nav';
+import OverlayNav, { OverlayNavProps } from '../components/OverlayNav';
 import ProgressSpinner from '../components/ProgressSpinner';
 import * as Enums from '../constants/Enums';
 import { ContractInfo } from '../models';
@@ -149,7 +150,8 @@ class App extends React.Component<AppProps> {
         transformRectToPurchase: actions.transformRectToPurchase,
         togglePurchaseFlow: actions.togglePurchaseFlow,
         changeZoom: actions.changeZoom,
-        loadBlockInfo: actions.loadBlockInfo
+        loadBlockInfo: actions.loadBlockInfo,
+        reportGridDragging: actions.reportGridDragging
       },
       purchase: // this.props.purchase,
       {
@@ -171,6 +173,8 @@ class App extends React.Component<AppProps> {
       contractInfo: this.props.data.contractInfo,
       scale: this.props.grid.scale,
       gridInfo: this.props.data.gridInfo,
+      centerPoint: this.props.grid.centerPoint,
+      isDraggingGrid: !!this.props.grid.dragStart,
       hoveredIndex: this.props.grid.hoveredIndex,
       dragRectCurr: this.props.grid.dragRectCurr,
       dragRectStart: this.props.grid.dragRectStart,
@@ -201,17 +205,28 @@ class App extends React.Component<AppProps> {
   }
 
   render() {
-    const navProps: NavProps = {
+    const navProps: OverlayNavProps = {
       classes: {},
       notificationCount: this.props.account.notificationCount,
       clearNotifications: this.clearNotifications.bind(this),
-      doNavigation: to => this.doNavigation(to)
+      doNavigation: to => this.doNavigation(to),
+      currentPath: this.props.history.location.pathname
     };
 
     const mainBodyContent = this.getMainBodyContent();
+
+    const mainAppStyle: React.CSSProperties = {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      overflowY: 'auto',
+      overflowX: 'hidden'
+    };
+
     return (
-      <div className="main-app-container">
-        <Nav {...navProps} />
+      <div className="main-app-container" style={mainAppStyle}>
         <main>
           {
             (this.shouldShowSpinner()) ?
@@ -221,6 +236,7 @@ class App extends React.Component<AppProps> {
               mainBodyContent
           }
         </main>
+        <OverlayNav {...navProps} />
       </div>
     );
   }

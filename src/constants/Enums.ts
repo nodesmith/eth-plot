@@ -38,3 +38,9 @@ export enum TxStatus {
   FAILED= 1,
   SUCCESS= 2,
 }
+
+export enum DragType {
+  START,
+  MOVE,
+  STOP
+}

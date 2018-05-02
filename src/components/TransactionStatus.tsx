@@ -65,11 +65,13 @@ class TransactionStatus extends Component<TransactionStatusProps> {
             (<AddCircle />)}
           </Avatar>
         </Grid>
- 
-        <Grid container xs={6} sm={8} md={10} spacing={8} wrap="nowrap">
-          <Grid item xs={12} zeroMinWidth>
-            <Typography>{txTextComponent}</Typography>
-            <Typography noWrap><a href={etherscanUrl}>{this.props.tx.txHash}</a></Typography>
+        
+        <Grid item xs={6} sm={8} md={10} >
+          <Grid container spacing={8} wrap="nowrap">
+            <Grid item xs={12} zeroMinWidth>
+              <Typography>{txTextComponent}</Typography>
+              <Typography noWrap><a href={etherscanUrl}>{this.props.tx.txHash}</a></Typography>
+            </Grid>
           </Grid>
         </Grid>
 

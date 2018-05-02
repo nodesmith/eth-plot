@@ -38,6 +38,8 @@ export type showPurchaseDialog = (rectToPurchase: Rect) => void;
 export type hidePurchaseDialog = () => void;
 export type changeZoom = (direction: number) => void;
 
+export type reportGridDragging = (action: Enums.DragType, location: Point) => void;
+
 // Purchase Actions
 export type togglePurchaseFlow = () => void;
 export type purchaseImageSelected = (imageFileInfo: ImageFileInfo, plots: Array<PlotInfo>) => void;
@@ -82,6 +84,7 @@ export interface AllActions {
   showPurchaseDialog: showPurchaseDialog;
   hidePurchaseDialog: hidePurchaseDialog;
   changeZoom: changeZoom;
+  reportGridDragging: reportGridDragging;
   togglePurchaseFlow: togglePurchaseFlow;
   purchaseImageSelected: purchaseImageSelected;
   transformRectToPurchase: transformRectToPurchase;

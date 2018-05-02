@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as ActionTypes from '../actions';
-import { MovementActions } from '../constants/Enums';
+import { DragType, MovementActions } from '../constants/Enums';
 import { ContractInfo, ImageFileInfo, PlotInfo as PlotInfoModel, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
 import GridPlot from './GridPlot';
@@ -18,7 +18,14 @@ const styles: StyleRulesCallback = theme => ({
     padding: 24,
     width: '100%',
     height: '100%',
-    overflow: 'scroll'
+    overflow: 'scroll',
+    userSelect: 'none'
+  },
+  dragging: {
+    cursor: 'grabbing'
+  },
+  overlay: {
+    backgroundColor: '#00000055'
   }
 });
 
@@ -31,6 +38,8 @@ export interface UIGridProps extends WithStyles {
     stopTransformRectToPurchase: ActionTypes.stopTransformRectToPurchase;
     transformRectToPurchase: ActionTypes.transformRectToPurchase;
     loadBlockInfo: ActionTypes.loadBlockInfo;
+    reportGridDragging: ActionTypes.reportGridDragging;
+    changeZoom: ActionTypes.changeZoom;
   };
   inPurchaseMode: boolean;
   imageToPurchase?: ImageFileInfo;
@@ -46,6 +55,8 @@ export interface UIGridProps extends WithStyles {
   dragRectStart?: Point;
   isDraggingRect: boolean;
   contractInfo: ContractInfo;
+  centerPoint: Point;
+  isDraggingGrid: boolean;
 }
 
 class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
@@ -154,7 +165,6 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
 
   render() {
     const scale = this.props.scale;
-
     const plots = this.props.plots.map((plot, index) => {
       return (<GridPlot scale={scale} plot={plot} ipfsHash={plot.data.ipfsHash} index={index} isHovered={this.props.hoveredIndex === index}
         hoverAction={this.plotHovered.bind(this)} key={index} classes={{}}
@@ -162,21 +172,19 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
     });
 
     const marginLeft = `calc(calc(100vw - ${this.props.gridInfo.width * scale}px) / 2)`;
+
+    const left = `calc(50vw - ${this.props.centerPoint.x * scale}px)`;
+    const top = `calc(50vh - ${this.props.centerPoint.y * scale}px)`;
     const gridStyle: React.CSSProperties = {
       width: this.props.gridInfo.width * scale,
       height: this.props.gridInfo.height * scale,
-      marginLeft,
-      position: 'absolute'
+      left,
+      top,
+      position: 'fixed'
     };
 
     let overlay: JSX.Element | undefined = undefined;
     if (this.props.inPurchaseMode && this.props.imageToPurchase) {
-      const overlayStyle: React.CSSProperties = {
-        width: this.props.gridInfo.width * scale,
-        height: this.props.gridInfo.height * scale,
-        marginLeft,
-        position: 'absolute'
-      };
 
       let purchasePlotRect: Rect | undefined;
       if (this.props.dragRectCurr && this.props.dragRectStart) {
@@ -198,7 +206,8 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
       }
 
       overlay = (
-        <div style={overlayStyle} onMouseMove={this.overlayMouseMove.bind(this)} onMouseUp={this.overlayMouseUp.bind(this)}>
+        <div className={this.props.classes.overlay}
+          style={gridStyle} onMouseMove={this.overlayMouseMove.bind(this)} onMouseUp={this.overlayMouseUp.bind(this)}>
             <PurchasePlot
             classes={{}}
             rect={this.props.rectToPurchase!}
@@ -212,8 +221,20 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
     const plotInfo = this.getPlotPopoverInfo();
     const plotInfoPopover = plotInfo ? <PlotPopover {...plotInfo} /> : null;
 
+    const { classes } = this.props;
+    let rootClassName = this.props.classes.root;
+    if (this.props.isDraggingGrid) {
+      rootClassName += ' ' + classes.dragging;
+    }
+
     return (
-      <div className={this.props.classes.root}>
+      <div className={rootClassName} draggable={true}
+        onDragStart={this.onDragStart.bind(this)}
+        onMouseMove={this.onMouseMove.bind(this)}
+        onMouseUp={this.onDragStop.bind(this)}
+        onMouseLeave={this.onDragStop.bind(this)}
+        onWheel={this.onWheel.bind(this)}>
+
         <Paper style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
           {plots}
           <Popover
@@ -234,6 +255,27 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
         {overlay}
       </div>
     );
+  }
+
+  dragStart: {x: number, y: number} | undefined;
+  onDragStart(dragEvent) {
+    dragEvent.preventDefault();
+    this.props.actions.reportGridDragging(DragType.START, { x: dragEvent.clientX, y: dragEvent.clientY });
+  }
+
+  onMouseMove(mouseEvent) {
+    if (this.props.isDraggingGrid) {
+      this.props.actions.reportGridDragging(DragType.MOVE, { x: mouseEvent.clientX, y: mouseEvent.clientY });
+    }
+  }
+
+  onDragStop(dragEvent) {
+    this.props.actions.reportGridDragging(DragType.STOP, { x: dragEvent.clientX, y: dragEvent.clientY });
+  }
+
+  onWheel(event: WheelEvent): void {
+    const { clientX, clientY, deltaY, deltaMode } = event;
+    this.props.actions.changeZoom(-deltaY / 400);
   }
 }
 
