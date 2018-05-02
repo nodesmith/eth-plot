@@ -23,6 +23,9 @@ const styles: StyleRulesCallback = theme => ({
   },
   dragging: {
     cursor: 'grabbing'
+  },
+  overlay: {
+    backgroundColor: '#00000055'
   }
 });
 
@@ -203,7 +206,8 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
       }
 
       overlay = (
-        <div style={gridStyle} onMouseMove={this.overlayMouseMove.bind(this)} onMouseUp={this.overlayMouseUp.bind(this)}>
+        <div className={this.props.classes.overlay}
+          style={gridStyle} onMouseMove={this.overlayMouseMove.bind(this)} onMouseUp={this.overlayMouseUp.bind(this)}>
             <PurchasePlot
             classes={{}}
             rect={this.props.rectToPurchase!}
