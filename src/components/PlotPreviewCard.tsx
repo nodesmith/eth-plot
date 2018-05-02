@@ -4,11 +4,13 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import Grid from 'material-ui/Grid';
+import { PixelStatus } from './PlotInfo';
 
 export interface PlotPreviewCardProps extends WithStyles {
   blobUrl: string;
   w: number;
   h: number;
+  pixelStatus: PixelStatus;
 }
 
 interface PlotPreviewCardState {
@@ -24,9 +26,6 @@ const styles: StyleRulesCallback = theme => ({
   imgStyle: {
     width: '100%',
     maxWidth: 300,
-    '&:hover': {
-      opacity: 0.3
-    },
   },
   svgStyle: {
     position: 'absolute',
@@ -37,10 +36,10 @@ const styles: StyleRulesCallback = theme => ({
     maxWidth: 300,
   },
   unsoldPixelColor: {
-    color: "rgba(255,255,255,0.7)"
+    fill: 'rgba(255,255,255,0.3)'
   },
   soldPixelColor: {
-    color: "rgba(200,200,200,0.7)"
+    fill: 'rgba(0,0,0,0.3)'
   }
 });
 
@@ -63,8 +62,6 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
   }
 
   getGridSvgElements(): Array<JSX.Element> {    
-    const unsoldColor = "rgba(255,255,255,0.7)";
-    const soldColor = "rgba(200,200,200,0.7)";
     const pixelsPerRow = this.props.w;
     const pixelsPerColumn = this.props.h;
     const pixelWidth = this.imageRef.clientWidth / pixelsPerRow;  
@@ -74,15 +71,15 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
 
     for (let i = 0; i < pixelsPerRow; i++) {
       for (let j = 0; j < pixelsPerColumn; j++) {
-        const colorRand = Math.round(Math.random()); // TEMP
-        const currentColor = (colorRand == 0) ? soldColor : unsoldColor;
+        const pixelIsSold = this.props.pixelStatus.soldPixels[i*pixelsPerColumn + j];
+        const pixelClass = (pixelIsSold) ? this.props.classes.soldPixelColor : this.props.classes.unsoldPixelColor;
 
         gridElements.push(
           <rect x={i*pixelWidth}
                 y={j*pixelHeight} 
                 width={pixelWidth} 
                 height={pixelHeight} 
-                fill={currentColor}
+                className={pixelClass}
                 key={i*pixelsPerColumn + j} />
         );
       }
@@ -96,6 +93,12 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
     if (this.state.showGrid) {
       gridElements = this.getGridSvgElements();
     }
+    
+    let hasSoldPixels = this.props.pixelStatus.soldPixelCount > 0;
+    let caption = "The darker pixels are pixels that have already been sold.";
+    if (!hasSoldPixels) {
+      caption = "No portion of this plot has been sold.";
+    }
 
     return (
       <Grid container justify="center">
@@ -104,8 +107,8 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
                src={this.props.blobUrl}
                className={this.props.classes.imgStyle} />
           <svg className={this.props.classes.svgStyle} xmlns="http://www.w3.org/2000/svg">
-            { (this.state.showGrid) ? gridElements : null }
-            <title>The darker pixels are pixels that have already been sold.</title>
+            { (this.state.showGrid && hasSoldPixels) ? gridElements : null }
+            <title>{caption}</title>
           </svg>
         </div>
       </Grid>
