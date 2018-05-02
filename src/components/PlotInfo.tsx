@@ -14,6 +14,7 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import { PlotInfo as PlotInfoData, Rect } from '../models';
+import * as PlotMath from '../data/PlotMath';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import TextLabel from './TextLabel';
@@ -37,6 +38,7 @@ const styles: StyleRulesCallback = theme => ({
 
 export interface PlotInfoProps extends WithStyles {
   info: PlotInfoData;
+  holes: Array<Rect>;
   updatePrice: (zoneIndex: number, newBuyoutPrice: string) => void;
 }
 
@@ -44,6 +46,11 @@ interface PlotInfoState {
   newBuyoutPrice: string;
   toggleEnabled: boolean;
   auctionVisible: boolean;
+}
+
+export interface PixelStatus {
+  soldPixels: Array<boolean>; 
+  soldPixelCount: number;
 }
 
 class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
@@ -71,9 +78,48 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
     this.props.updatePrice(this.props.info.zoneIndex, this.state.newBuyoutPrice);    
   }
 
+  /**
+   * Computes an array with a single entry for each pixel in this plot.
+   * The entry is true if the pixel has been sold and false otherwise.
+   */
+  computePixelStatus(): PixelStatus {
+    let pixelStatus: Array<boolean> = [];
+    let soldPixelCount = 0;
+
+    let startingX = this.props.info.rect.x;
+    let startingY = this.props.info.rect.y;
+    let endingX = startingX + this.props.info.rect.w;
+    let endingY = startingY + this.props.info.rect.h;
+
+    for (let x = startingX; x < endingX; x++) {
+      for (let y = startingY; y < endingY; y++) {
+        let pixelSold = false;
+
+        this.props.holes.forEach(hole => {
+          if (PlotMath.pixelInsideRectangle(hole, x, y)) {
+            pixelSold = true;
+            soldPixelCount++;
+          }
+        });
+  
+        pixelStatus.push(pixelSold);
+      }
+    }
+
+    // Return in a wrapped interace that also includes the total number of sold
+    // pixels for this plot.  This wrapper can be passed down to child components. 
+    return {
+      soldPixels: pixelStatus,
+      soldPixelCount: soldPixelCount
+    };
+  }
+
   render() {
     const plotURL = (this.props.info.data.url) ? this.props.info.data.url : 'None';
     const forSale = (this.props.info.buyoutPrice > 0);
+
+    const pixelStatus = this.computePixelStatus();
+    const totalPixels = this.props.info.rect.w * this.props.info.rect.h;
 
     return (
       <Grid className={this.props.classes.root} container spacing={8}>
@@ -81,6 +127,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
           <PlotPreviewCard blobUrl={this.props.info.data.blobUrl} 
                            w={this.props.info.rect.w}
                            h={this.props.info.rect.h}
+                           pixelStatus={pixelStatus}
                            classes={{}} />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -94,18 +141,18 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Plot for Sale" value ={(forSale) ? 'Yes' : 'No'} />
+              <TextLabel caption="Plot for Sale" value={(forSale) ? 'Yes' : 'No'} />
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Original Purchase Price" value ="10.4 ETH" />
+              <TextLabel caption="Original Purchase Price" value='10 ETH' />
             </Grid>
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Buyout Price Per Pixel" value ="0.02 ETH" />
+              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? `${this.props.info.buyoutPrice} wei` : 'NA'} />
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Total Unsold Pixels" value ="12/25" />
+              <TextLabel caption="Number of Pixels Sold" value={`${pixelStatus.soldPixelCount} of ${totalPixels}`} />
             </Grid>
           </Grid>
           <Divider className={this.props.classes.divider} light />

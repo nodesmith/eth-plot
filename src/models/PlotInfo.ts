@@ -8,7 +8,6 @@ export interface PlotInfo {
     blobUrl: string;
   };
   zoneIndex: number;
-  color: string;
   txHash: string;
   buyoutPrice: number; // TODO
   owner: string;

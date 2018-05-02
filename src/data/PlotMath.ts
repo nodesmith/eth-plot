@@ -4,6 +4,10 @@ export function doRectanglesOverlap(a: Rect, b: Rect): boolean {
   return a.x < b.x2 && a.x2 > b.x && a.y < b.y2 && a.y2 > b.y;
 }
 
+export function pixelInsideRectangle(rect: Rect, x: number, y: number) {
+  return x >= rect.x && x <= rect.x2 && y >= rect.y && y <= rect.y2;
+}
+
 export function doAnyOverlap(arrayOfRects: Rect[]): boolean {
   for (let i = 0; i < arrayOfRects.length - 1; i++) {
     if (doRectanglesOverlap(arrayOfRects[i], arrayOfRects[i + 1])) {
