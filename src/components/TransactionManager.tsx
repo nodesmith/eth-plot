@@ -40,14 +40,6 @@ class TransactionManager extends Component<TransactionManagerProps> {
       );
     });
 
-    if (pendingTransactions.length === 0) {
-      pendingTransactions.push(
-        <Grid key="no-data" item xs={9} >
-          <Typography variant="subheading">There have been no transactions for this account.</Typography>
-        </Grid>
-      );
-    }
-
     return [
       (<Grid key="title" item xs={9}>
         <Typography className={this.props.classes.title} align="center" variant="headline" >My Transactions</Typography>
@@ -58,9 +50,14 @@ class TransactionManager extends Component<TransactionManagerProps> {
 
   render() {
     const content = this.getUserContent();
+    
     return (
       <Grid container className={this.props.classes.root} justify="center" spacing={0} >
-       {content}
+        {content}
+        {(this.props.userTransactions.length == 0) ? 
+          <Typography variant="subheading">There are no Eth Grid transactions associated with this account.</Typography>
+          : null
+        }
       </Grid>
     );
   }
