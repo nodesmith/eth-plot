@@ -3,7 +3,7 @@ import ipfsApi from 'ipfs-api';
 
 import { ActionTypes } from '../constants/ActionTypes';
 import { MovementActions, PurchaseStage } from '../constants/Enums';
-import { ContractInfo, Point, Rect } from '../models';
+import { ContractInfo, ImageFileInfo, Point, Rect } from '../models';
 import { PlotInfo } from '../models/PlotInfo';
 
 import { purchasePlot as purchasePlotFromChain } from './DataActions';
@@ -15,7 +15,7 @@ export function togglePurchaseFlow(): Action {
   };
 }
 
-export function purchaseImageSelected(imageFileInfo, plots): Action {
+export function purchaseImageSelected(imageFileInfo: ImageFileInfo, plots: Array<PlotInfo>): Action {
   return {
     type: ActionTypes.PURCHASE_IMAGE_SELECTED,
     imageFileInfo,
@@ -89,7 +89,7 @@ export function completePlotPurchase(
     dispatch(startPurchasePlot());
 
     const ipfsHash = await dispatch(uploadImageData(imageData));
-    return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, changePurchaseStep));
+    return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, initialBuyout!, changePurchaseStep));
   };
 }
 

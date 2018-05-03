@@ -177,7 +177,7 @@ function getCoinbase(web3: any): Promise<string> {
 }
 
 // This is the actual purchase function which will be a thunk
-export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash, changePurchaseStep) {
+export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash, initialBuyout: string, changePurchaseStep) {
   return async (dispatch) => {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
@@ -191,7 +191,7 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
     const purchase = buildArrayFromRectangles([rectToPurchase]);
     const purchasedAreas = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
     const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
-    const initialPurchasePrice = 10; // TODO!
+    const initialPurchasePrice = new BigNumber(initialBuyout || 0);
 
     const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url, initialPurchasePrice);
     const gasEstimate = await tx.estimateGas();

@@ -9,8 +9,9 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import * as Actions from '../actions';
+import { InputValidationState } from '../constants/Enums';
 import { formatEthValueToString } from '../data/ValueFormatters';
-import { ContractInfo, ImageFileInfo, PlotInfo, Rect } from '../models';
+import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
@@ -63,7 +64,7 @@ export interface PurchaseFlowCardProps extends WithStyles {
   purchasePriceInWei: string;
   activeStep: number;
   completedSteps: {[index: number]: boolean};
-  imageName: string;
+  imageFileInfo?: ImageFileInfo;
   imageDimensions: {
     h: number;
     w: number;
@@ -71,11 +72,12 @@ export interface PurchaseFlowCardProps extends WithStyles {
   website: string;
   buyoutPriceInWei: string;
   buyoutEnabled: boolean;
-    
-  imageData?: string;
-  
+
+  allowedFileTypes: string[];
   contractInfo: ContractInfo;
   plots: Array<PlotInfo>;
+
+  imageValidation: InputValidation;
 }
 
 class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
@@ -105,10 +107,10 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
   }
 
   completePurchase() {
-    const { contractInfo, plots, rectToPurchase, imageData, website, buyoutPriceInWei, buyoutEnabled } = this.props;
+    const { contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPriceInWei, buyoutEnabled } = this.props;
     const initialBuyout = buyoutEnabled ? buyoutPriceInWei : '';
 
-    this.props.purchasePlot(contractInfo, plots, rectToPurchase!, imageData!, website, initialBuyout);
+    this.props.purchasePlot(contractInfo, plots, rectToPurchase!, imageFileInfo!.blobUrl, website, initialBuyout);
   }
 
   getButtons(backButtonProps, nextButtonProps) {
@@ -137,14 +139,19 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
     switch (index) {
       case 0:
         {
-          const buttonEnabled = this.props.imageName.length > 0;
+          const buttonEnabled = this.props.imageValidation.state === InputValidationState.SUCCESS;
           stepHeader = 'Pick and place an image';
           stepContent = (
           <div>
             <Typography variant="body1">
               Choose an image, then position and resize it in the grid. The purchase price will update as you move
             </Typography>
-            <ChooseImageInputBox onImageChanged={this.onImageChanged.bind(this)} imageName={this.props.imageName}/>
+            <ChooseImageInputBox
+              onImageChanged={this.onImageChanged.bind(this)}
+              imageFileInfo={this.props.imageFileInfo}
+              validation={this.props.imageValidation}
+              allowedFileTypes={this.props.allowedFileTypes}
+              classes={{}}/>
             { this.getButtons({ text: 'Reset' }, { text: 'Next', onClick: defaultNextButtonAction, disabled: !buttonEnabled }) }
           </div>
         );
@@ -202,10 +209,11 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
           stepHeader = 'Review and purchase';
           const rect = this.props.rectToPurchase!;
           const buyoutPrice = this.props.buyoutEnabled ? formatEthValueToString(this.props.buyoutPriceInWei) : 'Not Enabled';
+          const imageName = this.props.imageValidation.state === InputValidationState.SUCCESS ? this.props.imageFileInfo!.fileName : '';
           stepContent = (
           <div>
             {makeLine('Purchase Price', formatEthValueToString(this.props.purchasePriceInWei))}
-            {makeLine('Image', this.props.imageName)}
+            {makeLine('Image', imageName)}
             {makeLine('Grid Location', `x: ${rect.x} y: ${rect.y}`)}
             {makeLine('Plot Dimensions', `${rect.w}x${rect.h} (${rect.w * rect.h} units)`)}
             {makeLine('Website', this.props.website)}

@@ -1,6 +1,7 @@
 import ShoppingCart from 'material-ui-icons/ShoppingCart';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Grow from 'material-ui/transitions/Grow';
+import Slide from 'material-ui/transitions/Slide';
 import Zoom from 'material-ui/transitions/Zoom';
 import Button from 'material-ui/Button';
 import Drawer from 'material-ui/Drawer';
@@ -13,7 +14,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as Actions from '../actions';
-import { ContractInfo, PlotInfo, Rect } from '../models';
+import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
 
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
 import PurchaseToolbar from './PurchaseToolbar';
@@ -49,7 +50,9 @@ const styles: StyleRulesCallback = theme => ({
   },
   filterCard: {
     position: 'fixed',
-    right: 24,
+    width: '500px',
+    left: 'calc(50% - 250px)',
+    // right: 24,
     bottom: 24
   }
 });
@@ -63,7 +66,8 @@ export interface MainControlsOverlayProps extends WithStyles {
     purchasePriceInWei: string;
     activeStep: number;
     completedSteps: {[index: number]: boolean};
-    imageName: string;
+    imageFileInfo?: ImageFileInfo;
+    allowedFileTypes: string[];
     imageDimensions: {
       h: number;
       w: number;
@@ -72,6 +76,7 @@ export interface MainControlsOverlayProps extends WithStyles {
     buyoutPriceInWei: string;
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
+    imageValidation: InputValidation;
   };
   purchaseActions: {
     onImageSelected: Actions.purchaseImageSelected;
@@ -84,11 +89,17 @@ export interface MainControlsOverlayProps extends WithStyles {
   };
   contractInfo: ContractInfo;
   plots: Array<PlotInfo>;
-  imageData?: string;
   togglePurchaseFlow: () => void;
 }
 
-class MainControlsOverlay extends Component<MainControlsOverlayProps> {
+class MainControlsOverlay extends Component<MainControlsOverlayProps, {purchaseEntered: boolean}> {
+  constructor(props: MainControlsOverlayProps, context?: any) {
+    super(props, context);
+
+    this.state = {
+      purchaseEntered: false
+    };
+  }
   toggleDrawer() {
     this.props.togglePurchaseFlow();
   }
@@ -100,7 +111,6 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
       onClose: () => this.toggleDrawer(),
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,
-      imageData: this.props.imageData,
       classes: {},
       ...this.props.purchase,
       ...this.props.purchaseActions
@@ -123,15 +133,24 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
         }}
           anchor="right"
           variant="persistent"
-          open={this.props.purchase.purchaseFlowOpen && false}
+          open={this.props.purchase.purchaseFlowOpen}
           onClose={() => this.toggleDrawer()}>
           {sideList}
         </Drawer>
-        <Grow in={this.props.purchase.purchaseFlowOpen}> 
+        <Slide direction="left" in={this.props.purchase.purchaseFlowOpen && false}
+          onEntered={() => this.setState({ purchaseEntered: true })}
+          onExiting={() => this.setState({ purchaseEntered: false })} > 
           <div className={classes.filterCard}>
-            <PurchaseToolbar currentPrice={'23432'} classes={{}} onClose={() => this.toggleDrawer()}/>
+            <PurchaseToolbar
+              currentPrice={this.props.purchase.purchasePriceInWei}
+              classes={{}}
+              plots={this.props.plots}
+              onImageSelected={this.props.purchaseActions.onImageSelected}
+              entered={this.state.purchaseEntered}
+              onClose={() => this.toggleDrawer()}
+              onCheckout={() => this.toggleDrawer()}/>
           </div>
-        </Grow>
+        </Slide>
         
         {/* <Snackbar open={this.props.purchase.purchaseFlowOpen} >
           <PurchaseToolbar currentPrice={'23432'} />

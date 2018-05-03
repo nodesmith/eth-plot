@@ -68,15 +68,15 @@ const styles: StyleRulesCallback = theme => ({
     marginTop: theme.spacing.unit,
     transition: '.5s ease',
   },
-  hidden: {
-    opacity: 0,
-    visibility: 'gone',
-    pointerEvents: 'none'
-  },
-  visible: {
-    opacity: 1,
-    visibility: 'visible',
-  }
+  // hidden: {
+  //   opacity: 0,
+  //   visibility: 'gone',
+  //   pointerEvents: 'none'
+  // },
+  // visible: {
+  //   opacity: 1,
+  //   visibility: 'visible'
+  // }
 });
 
 export interface OverlayNavProps extends WithStyles {
@@ -138,7 +138,7 @@ class OverlayNav extends Component<OverlayNavProps> {
       </Badge>) :
       (<Notifications />);
 
-    const showToggleNav = this.props.currentPath === '/';
+    // const showToggleNav = this.props.currentPath === '/';
     return (
       <div className={classes.root}>
         <FloatingLogo size={logoSize} classes={{ root: classes.homeButton }} onClick={this.navigate.bind(this, '/')} />
@@ -149,9 +149,9 @@ class OverlayNav extends Component<OverlayNavProps> {
             {this.createNavButton('/about', 'About', (<Help />))}
             {this.createNavButton('/account', 'Transactions', transactionsIcon, () => this.clearNotifications())}
           </Paper>
-          <Paper className={[classes.otherNav, classes.toggleNav, showToggleNav ? classes.visible : classes.hidden].join(' ')}>
+          {/* <Paper className={[classes.otherNav, classes.toggleNav, showToggleNav ? classes.visible : classes.hidden].join(' ')}>
             {this.createNavButton(this.props.currentPath, 'Purchase Plot', (<ShoppingCart />))}
-          </Paper>
+          </Paper> */}
         </div>
       </div >
     );

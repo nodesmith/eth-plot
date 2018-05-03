@@ -2,7 +2,7 @@ import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
-import { createEmptyRect, Point, Rect, RectDelta, RectTransform } from '../models';
+import { createEmptyRect, ImageFileInfo, InputValidation, Point, Rect, RectDelta, RectTransform } from '../models';
 
 function determineInitialRect(imageFileInfo) {
   const ratio = imageFileInfo.w / imageFileInfo.h;
@@ -51,6 +51,15 @@ function deltasEqual(a, b) {
     a.top === b.top);
 }
 
+
+const allowedFileTypes = [
+  'image/jpeg',
+  'image/jpeg',
+  'image/png',
+  'image/svg+xml'
+];
+
+
 export interface PurchaseState {
   purchaseDialogVisible: boolean;
   rectToPurchase?: Rect;
@@ -61,11 +70,13 @@ export interface PurchaseState {
   purchasePriceInWei: string;
   activeStep: number;
   completedSteps: {[index: number]: boolean};
-  imageName: string;
+  imageFileInfo?: ImageFileInfo;
   imageDimensions: {w: number, h:number };
   website: string;
   buyoutPriceInWei: string;
   buyoutEnabled: boolean;
+  allowedFileTypes: string[];
+  imageValidation: InputValidation;
 }
 
 const initialState: PurchaseState = {
@@ -78,12 +89,48 @@ const initialState: PurchaseState = {
   purchasePriceInWei: '',
   activeStep: 0,
   completedSteps: {},
-  imageName: '',
+  imageFileInfo: undefined,
   imageDimensions: { w: -1, h:-1 },
   website: '',
   buyoutPriceInWei: '328742394234',
   buyoutEnabled: true,
+  allowedFileTypes,
+  imageValidation: validateImageFile()
 };
+
+
+function validateImageFile(imageFileInfo?: ImageFileInfo): InputValidation {
+  if (!imageFileInfo) {
+    return {
+      state: Enums.InputValidationState.UNKNOWN,
+      message: 'This is the file which will be in your plot'
+    };
+  }
+
+  if (allowedFileTypes.indexOf(imageFileInfo.fileType) < 0) {
+    // Not allowed file
+    return {
+      state: Enums.InputValidationState.ERROR,
+      message: 'File must be an image type'
+    };
+  }
+
+  if (imageFileInfo.fileSize > 3000000) {
+    const fileSizeInMb = imageFileInfo.fileSize / 1000000;
+    return {
+      state: Enums.InputValidationState.ERROR,
+      message: `File must be less than 3MB (file is ${fileSizeInMb}MB)`
+    };
+  }
+
+  const aspectRatio = imageFileInfo.w / imageFileInfo.h;
+
+  return {
+    state: Enums.InputValidationState.SUCCESS,
+    message: 'The image looks great!'
+  };
+}
+
 
 export function purchaseReducer(state: PurchaseState = initialState, action: Action): PurchaseState {
   switch (action.type) {
@@ -102,14 +149,16 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
       });
     case ActionTypes.PURCHASE_IMAGE_SELECTED:
       {
+        const imageValidation = validateImageFile(action.imageFileInfo);
         const initialRect = determineInitialRect(action.imageFileInfo);
         const purchaseInfo = computePurchaseInfo(initialRect, action.plots);
         return Object.assign({}, state, {
+          imageValidation,
           rectToPurchase: initialRect,
           initialRectToPurchase: initialRect,
           initialRectToPurchaseDeltas: [],
           currentTransform: null,
-          imageName: action.imageFileInfo.fileName,
+          imageFileInfo: action.imageFileInfo,
           purchasePriceInWei: purchaseInfo.purchasePrice
         });
       }

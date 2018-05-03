@@ -159,13 +159,17 @@ class App extends React.Component<AppProps> {
         purchasePriceInWei: purchase.purchasePriceInWei,
         activeStep: purchase.activeStep,
         completedSteps: purchase.completedSteps,
-        imageName: purchase.imageName,
+        imageFileInfo: purchase.imageFileInfo,
+        allowedFileTypes: purchase.allowedFileTypes,
+
         imageDimensions: purchase.imageDimensions,
         website: purchase.website,
         buyoutPriceInWei: purchase.buyoutPriceInWei,
         buyoutEnabled: purchase.buyoutEnabled,
         purchaseFlowOpen: purchase.purchaseFlowOpen,
-        currentTransform: purchase.currentTransform
+        currentTransform: purchase.currentTransform,
+        
+        imageValidation: purchase.imageValidation
       },
       imageFileInfo: this.props.imageToPurchase.imageFileInfo,
       plots: this.props.data.plots,

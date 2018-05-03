@@ -10,7 +10,9 @@ import MainControlsOverlay, { MainControlsOverlayProps } from '../components/Mai
 import PurchaseDialog, { PurchaseDialogProps } from '../components/PurchaseDialog';
 import UIGrid, { UIGridProps } from '../components/UIGrid';
 import * as Enums from '../constants/Enums';
-import { ContractInfo, GridInfo, HoleInfo, ImageFileInfo, PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
+import { 
+  ContractInfo, GridInfo, HoleInfo, ImageFileInfo, InputValidation,
+  PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -47,7 +49,8 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     purchasePriceInWei: string;
     activeStep: number;
     completedSteps: {[index: number]: boolean};
-    imageName: string;
+    allowedFileTypes: string[];
+    currentTransform: RectTransform | undefined;
     imageDimensions: {
       h: number;
       w: number;
@@ -56,7 +59,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     buyoutPriceInWei: string;
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
-    currentTransform?: RectTransform;
+    imageValidation: InputValidation;
   };
   imageFileInfo?: ImageFileInfo;
   plots: Array<PlotInfo>;
@@ -121,10 +124,9 @@ class MainContainer extends React.Component<MainContainerProps> {
 
     const mainControlsOverlayProps: MainControlsOverlayProps = {
       classes: {},
-      purchase: this.props.purchase,
+      purchase: Object.assign(this.props.purchase, { imageFileInfo: this.props.imageFileInfo }),
       zoomLevel: this.props.scale,
       purchaseActions,
-      imageData: this.props.imageFileInfo ? this.props.imageFileInfo.fileData : '',
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,
       togglePurchaseFlow: this.props.actions.togglePurchaseFlow,

@@ -303,7 +303,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
             classes={{}}
             rect={this.props.rectToPurchase!}
             scale={scale} 
-            src={this.props.imageToPurchase.fileData}
+            src={this.props.imageToPurchase.blobUrl}
             startAction={this.onStartAction.bind(this)}
              />
         </div>);
@@ -324,6 +324,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
         onMouseMove={this.onMouseMove.bind(this)}
         onMouseUp={this.onDragStop.bind(this)}
         onMouseLeave={this.onDragStop.bind(this)}
+        
         onWheel={this.onWheel.bind(this)}>
 
         <div style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
@@ -377,8 +378,10 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
   }
 
   onWheel(event: WheelEvent): void {
+    event.stopPropagation();
     const { clientX, clientY, deltaY, deltaMode } = event;
     this.props.actions.changeZoom(-deltaY / 400);
+    // this.reportScroll(-deltaY / 400);
   }
 }
 
