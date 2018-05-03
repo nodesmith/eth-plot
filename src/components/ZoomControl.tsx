@@ -5,6 +5,7 @@ import { Component } from 'react';
 
 import ButtonBase from 'material-ui/ButtonBase';
 import Divider from 'material-ui/Divider/Divider';
+import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 
 import Add from 'material-ui-icons/Add';
@@ -42,7 +43,7 @@ class ZoomControl extends Component<ZoomControlProps> {
     const { classes } = this.props;
     return (
 
-      <div className={classes.root}>
+      <Paper className={classes.root}>
         <ButtonBase focusRipple key="plus" className={classes.button} onClick={this.zoomIn.bind(this)}>
           <Add />
         </ButtonBase>
@@ -50,7 +51,7 @@ class ZoomControl extends Component<ZoomControlProps> {
         <ButtonBase focusRipple key="minus" className={classes.button} onClick={this.zoomOut.bind(this)}>
           <Remove />
         </ButtonBase>
-      </div>);
+      </Paper>);
   }
 }
 

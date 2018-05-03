@@ -73,10 +73,10 @@ class PlaceImageInput extends Component<PlaceImageInputProps> {
         <FormGroup row>
           <FormControlLabel
             control={<Checkbox checked={this.props.showHeatmap} color="primary" value="checkedA" />}
-            label="Prices" onChange={(event) => this.props.toggleShowHeatmap(event.target.checked)} />
+            label="Prices" onChange={(event) => this.props.toggleShowHeatmap((event.target as HTMLInputElement).checked)} />
           <FormControlLabel
             control={<Checkbox checked={this.props.showGrid} color="primary" value="checkedA" />}
-            label="Grid"  onChange={(event) => this.props.toggleShowGrid(event.target.checked)}/>
+            label="Grid"  onChange={(event) => this.props.toggleShowGrid((event.target as HTMLInputElement).checked)}/>
         </FormGroup>
         <Typography className={classes.priceLabel} variant="body2">
           Current Price:

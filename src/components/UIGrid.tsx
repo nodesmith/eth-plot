@@ -10,7 +10,6 @@ import * as ActionTypes from '../actions';
 import { DragType, MovementActions } from '../constants/Enums';
 import { ContractInfo, HoleInfo, ImageFileInfo, PlotInfo as PlotInfoModel, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
-import CoordinateOverlay from './CoordinateOverlay';
 import GridPlot from './GridPlot';
 import PlotPopover, { PlotPopoverProps } from './PlotPopover';
 import PriceHeatMap from './PriceHeatMap';

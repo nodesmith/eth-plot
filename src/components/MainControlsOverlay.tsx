@@ -123,9 +123,9 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps, {purchaseE
       <PurchaseFlowCard {...purchaseFlowCardProps} />);
     return (
       <div className={classes.root}>
-        {/* <div className={classes.zoom}>
+        <div className={classes.zoom}>
           <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
-        </div> */}
+        </div>
         <Zoom in={!this.props.purchase.purchaseFlowOpen}> 
           <Button variant="fab" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />
@@ -140,10 +140,6 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps, {purchaseE
           onClose={() => this.toggleDrawer()}>
           {sideList}
         </Drawer>
-        
-        {/* <Snackbar open={this.props.purchase.purchaseFlowOpen} >
-          <PurchaseToolbar currentPrice={'23432'} />
-        </Snackbar> */}
       </div>
     );
   }
