@@ -1,56 +1,24 @@
-import Close from '@material-ui/icons/Close';
-import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { Button, Divider, Snackbar } from 'material-ui';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import Card, { CardActions, CardContent, CardHeader, CardMedia } from 'material-ui/Card';
 import Checkbox from 'material-ui/Checkbox';
 import { FormControlLabel, FormGroup } from 'material-ui/Form';
-import IconButton from 'material-ui/IconButton';
-import Paper from 'material-ui/Paper';
-import Switch from 'material-ui/Switch';
 import Typography from 'material-ui/Typography';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
-import * as Actions from '../../actions';
 import { formatEthValueToString } from '../../data/ValueFormatters';
-import { ImageFileInfo, PlotInfo } from '../../models';
+
 
 const styles: StyleRulesCallback = theme => ({
-  root: {
-  },
-  contrastColor: {
-    color: theme.palette.primary.contrastText
-  },
-  cardHeader: {
-    backgroundColor: theme.palette.primary.main
-  },
+  root: { },
   priceText: {
     alignSelf: 'center',
     marginRight: theme.spacing.unit
-  },
-  dividerDiv: {
-    backgroundColor: theme.palette.divider,
-    width: 1,
-    height: 48,
-    margin: 0
-  },
-  mainContainer: {
-    display: 'flex',
-    flexWrap: 'nowrap',
-    justifyContent: 'space-between'
-  },
-  gone: {
-    display: 'none'
   },
   showLabel: {
     marginTop: theme.spacing.unit,
     marginBottom: -10
   },
-  priceLabel: {
-
-  }
+  priceLabel: { }
 });
 
 export interface PlaceImageInputProps extends WithStyles {

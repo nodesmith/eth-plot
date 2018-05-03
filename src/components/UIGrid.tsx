@@ -1,19 +1,16 @@
 import * as d3Palette from 'd3-scale-chromatic';
-import { Paper } from 'material-ui';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Popover from 'material-ui/Popover';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component, SVGAttributes } from 'react';
 
 import * as ActionTypes from '../actions';
 import { DragType, MovementActions } from '../constants/Enums';
-import { ContractInfo, HoleInfo, ImageFileInfo, PlotInfo as PlotInfoModel, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
+import { ContractInfo, HoleInfo, ImageFileInfo, PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
-import GridPlot from './GridPlot';
 import PlotPopover, { PlotPopoverProps } from './PlotPopover';
-import PriceHeatMap from './PriceHeatMap';
 import PurchasePlot from './PurchasePlot';
+
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -56,9 +53,9 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 function buildSvgComponents(
-  plots: Array<PlotInfoModel>, plotTransactions: {[plotIndex: number]: PurchaseEventInfo}, holes: HoleInfo, key: string,
+  plots: Array<PlotInfo>, plotTransactions: {[plotIndex: number]: PurchaseEventInfo}, holes: HoleInfo, key: string,
   // tslint:disable-next-line:max-line-length
-  cb: (plot: PlotInfoModel, plotTransaction:  PurchaseEventInfo, hole: Array<Rect>, index: number, props: SVGAttributes<{}>) => JSX.Element | undefined)
+  cb: (plot: PlotInfo, plotTransaction:  PurchaseEventInfo, hole: Array<Rect>, index: number, props: SVGAttributes<{}>) => JSX.Element | undefined)
     : JSX.Element[] {
   const result = new Array<JSX.Element>();
   for (let i = 0; i < plots.length; i++) {
@@ -119,7 +116,7 @@ function buildGridSvg(scale: number): JSX.Element[] {
 }
 
 export interface UIGridProps extends WithStyles {
-  plots: Array<PlotInfoModel>;
+  plots: Array<PlotInfo>;
   plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
   holes: HoleInfo;
   actions: {

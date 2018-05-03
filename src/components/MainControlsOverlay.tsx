@@ -1,13 +1,10 @@
 import ShoppingCart from 'material-ui-icons/ShoppingCart';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import Grow from 'material-ui/transitions/Grow';
 import Slide from 'material-ui/transitions/Slide';
-import Zoom from 'material-ui/transitions/Zoom';
 import Button from 'material-ui/Button';
 import Drawer from 'material-ui/Drawer';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
-import Snackbar from 'material-ui/Snackbar';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
@@ -43,16 +40,8 @@ const styles: StyleRulesCallback = theme => ({
     pointerEvents: 'all'
   },
   drawer: {
-    // marginTop: '64px',
     width: 400,
     pointerEvents: 'all'
-  },
-  filterCard: {
-    position: 'fixed',
-    width: '500px',
-    left: 'calc(50% - 250px)',
-    // right: 24,
-    bottom: 24
   }
 });
 
@@ -95,14 +84,8 @@ export interface MainControlsOverlayProps extends WithStyles {
   togglePurchaseFlow: () => void;
 }
 
-class MainControlsOverlay extends Component<MainControlsOverlayProps, {purchaseEntered: boolean}> {
-  constructor(props: MainControlsOverlayProps, context?: any) {
-    super(props, context);
+class MainControlsOverlay extends Component<MainControlsOverlayProps> {
 
-    this.state = {
-      purchaseEntered: false
-    };
-  }
   toggleDrawer() {
     this.props.togglePurchaseFlow();
   }
@@ -123,14 +106,16 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps, {purchaseE
       <PurchaseFlowCard {...purchaseFlowCardProps} />);
     return (
       <div className={classes.root}>
-        <div className={classes.zoom}>
-          <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
-        </div>
-        <Zoom in={!this.props.purchase.purchaseFlowOpen}> 
+        <Slide in={!this.props.purchase.purchaseFlowOpen} direction="up"> 
+          <div className={classes.zoom}>
+            <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
+          </div>
+        </Slide>
+        <Slide in={!this.props.purchase.purchaseFlowOpen} direction="up"> 
           <Button variant="fab" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />
           </Button>
-        </Zoom>
+        </Slide>
         <Drawer classes={{
           paper: classes.drawer
         }}
