@@ -282,7 +282,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
 
   render() {
     const { classes, purchasePriceInWei } = this.props;
-    const subheading = purchasePriceInWei ? formatEthValueToString(purchasePriceInWei) : 'Be Part of History';
+    const subheading = 'Be Part of History';
     return (<div className={classes.root}>
       <Card className={classes.card}>
         <CardHeader className={classes.cardHeader}

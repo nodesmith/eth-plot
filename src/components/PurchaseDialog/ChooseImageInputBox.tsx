@@ -104,11 +104,9 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes> 
     const validationMessage = (validation.state === InputValidationState.SUCCESS || validation.state === InputValidationState.UNKNOWN) ?
       '' : validation.message;
     return (
-      <FormControl className={classes.formControl}>
-        {/* <InputLabel htmlFor="browse-for-image"></InputLabel>
-        <Input margin="dense" fullWidth inputComponent={browseInputFn} /> */}
-        <Button variant="raised" id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
+      <div>
         <FormHelperText>{validationMessage}</FormHelperText>
+        <Button variant="raised" id="browse-for-image" onClick={this.browseForImage.bind(this)} > Browse...</Button >
         <input
           accept={allowedFileTypes.join(',')}
           onChange={this.onFileSelected.bind(this)}
@@ -116,7 +114,7 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes> 
           id="hidden_input"
           className={classes.hidden} />
         <img id="hidden_image" className={classes.hidden} />
-      </FormControl>
+      </div>
     );
   }
 }
