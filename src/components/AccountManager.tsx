@@ -9,7 +9,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as Enums from '../constants/Enums';
-import { PlotInfo as PlotInfoData, HoleInfo as HoleInfoData } from '../models';
+import { PlotInfo as PlotInfoData, HoleInfo as HoleInfoData, PurchaseEventInfo } from '../models';
 
 import PlotInfo from './PlotInfo';
 
@@ -21,22 +21,33 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 export interface AccountManagerProps extends WithStyles {
-  userPlots: Array<PlotInfoData>;
+  plots: Array<PlotInfoData>;
   holes: HoleInfoData;
+  plotTransactions: {[index: number]: PurchaseEventInfo};
   updatePrice: () => void;
   metamaskState: number;
+  activeAccount: string;
 }
 
 class AccountManager extends Component<AccountManagerProps> {
   getUserContent() {
-    const plotInfos = this.props.userPlots.map((plot, index) => {
-      return (
-        <Grid key={index} item xs={9}>
-          <Paper>
-            <PlotInfo info={plot} holes={this.props.holes[index] || []} updatePrice={this.props.updatePrice} />
-          </Paper>
-        </Grid>
-      );
+    const plotInfos = this.props.plots.map((plot, index) => {
+      if (index != plot.zoneIndex) {
+        throw 'Unexpected malformed data in plots data.';
+      }
+      
+      if (plot.owner === this.props.activeAccount && index > 0) {
+        return (
+          <Grid key={index} item xs={9}>
+            <Paper>
+              <PlotInfo info={plot} 
+                        holes={this.props.holes[index] || []} 
+                        updatePrice={this.props.updatePrice}
+                        purchaseInfo={this.props.plotTransactions[index]} />
+            </Paper>
+          </Grid>
+        );
+      }
     });
 
     return [

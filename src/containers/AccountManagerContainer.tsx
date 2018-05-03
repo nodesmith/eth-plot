@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import AccountManager from '../components/AccountManager';
-import { ContractInfo, PlotInfo, HoleInfo } from '../models';
+import { ContractInfo, PlotInfo, HoleInfo, PurchaseEventInfo } from '../models';
 
 export interface AccountManagerContainerProps {
   metamaskState: number;
@@ -10,6 +10,7 @@ export interface AccountManagerContainerProps {
   activeAccount: string;
   plots: Array<PlotInfo>;
   holes: HoleInfo;
+  plotTransactions: {[index: number]: PurchaseEventInfo};
 }
 
 class AccountManagerContainer extends React.Component<AccountManagerContainerProps> {
@@ -19,23 +20,15 @@ class AccountManagerContainer extends React.Component<AccountManagerContainerPro
   }
 
   render() {
-    let filteredHoles: HoleInfo = {};
-    let newIndex = 0;
-
-    const userPlots = this.props.plots ? this.props.plots.filter((plot, index) => {
-      if (plot.owner === this.props.activeAccount) {
-        filteredHoles[newIndex++] = this.props.holes[index];
-        return plot;
-      }
-    }) : [];
-
     return (
       <AccountManager 
         classes={{}}
-        userPlots={userPlots} 
+        plots={this.props.plots} 
         metamaskState={this.props.metamaskState}
         updatePrice={this.updatePrice.bind(this)}
-        holes={filteredHoles}
+        holes={this.props.holes}
+        plotTransactions={this.props.plotTransactions}
+        activeAccount={this.props.activeAccount}
       />
     );
   }
