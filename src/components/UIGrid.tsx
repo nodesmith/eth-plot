@@ -81,6 +81,44 @@ function buildSvgComponents(
   return result;
 }
 
+function buildGridSvg(scale: number): JSX.Element[] {
+  const result: JSX.Element[] = [];
+  const scaledBox = 250 * 1;
+
+  const thin = {
+    strokeWidth: `${.5 / scale}px`,
+    stroke: 'black'
+  };
+
+  const thick = {
+    strokeWidth: `${1.5 / scale}px`,
+    stroke: 'black'
+  };
+
+  // We either have 5, 10, 25, 50, 125, 250 lines to draw
+  // The higher scale is, the more lines we'll draw
+  const lineEstimate = scale * 20;
+
+  const options = [5, 10, 25, 50, 125, 250];
+  let numLines = options[0];
+  for (const option of options) {
+    if (Math.abs(lineEstimate - option) < Math.abs(lineEstimate - numLines)) {
+      numLines = option;
+    }
+  }
+
+  const jump = 250 / numLines;
+  
+  for (let i = 0; i <= 250; i += jump) {
+    const style = (i % (jump * 5) === 0) ? thick : thin;
+    const scaled = i * 1;
+    result.push((<line style={style} x1={scaled} x2={scaled} y1={0} y2={scaledBox} key={`vert_${i}`} />));
+    result.push((<line style={style} y1={scaled} y2={scaled} x1={0} x2={scaledBox} key={`hori_${i}`} />));
+  }
+
+  return result;
+}
+
 export interface UIGridProps extends WithStyles {
   plots: Array<PlotInfoModel>;
   plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
@@ -263,6 +301,8 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
         onClick={(event) => this.plotClicked(plot.zoneIndex, event.target as HTMLElement)}/>);
     });
 
+    const gridLines = buildGridSvg(this.props.scale);
+
     const left = `calc(50vw - ${this.props.centerPoint.x * scale}px)`;
     const top = `calc(50vh - ${this.props.centerPoint.y * scale}px)`;
     const gridStyle: React.CSSProperties = {
@@ -338,8 +378,11 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
           <svg className={classes.svgMap} viewBox="0 0 250 250">
             {plotRects}
             {plotOverlayRects}
-            <g className={[classes.heatmap, this.props.showHeatmap ? classes.heatmapShowing : ''].join(' ')}>
+            <g key="heatmap" className={[classes.heatmap, this.props.showHeatmap ? classes.heatmapShowing : ''].join(' ')}>
               {heatMapRects}
+            </g>
+            <g key="grids" className={[classes.heatmap, this.props.showGrid ? classes.heatmapShowing : ''].join(' ')}>
+              {gridLines}
             </g>
           </svg>
           <Popover

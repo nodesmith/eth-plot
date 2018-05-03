@@ -99,7 +99,7 @@ const initialState: PurchaseState = {
   allowedFileTypes,
   imageValidation: validateImageFile(),
   showHeatmap: true,
-  showGrid: false
+  showGrid: true
 };
 
 
