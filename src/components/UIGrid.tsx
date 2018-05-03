@@ -32,7 +32,11 @@ const styles: StyleRulesCallback = theme => ({
   },
   heatmap: {
     pointerEvents: 'none',
-    opacity: .3
+    opacity: 0,
+    transition: '.5s ease'
+  },
+  heatmapShowing: {
+    opacity: .95
   },
   svgMap: {
     position: 'absolute',
@@ -106,6 +110,9 @@ export interface UIGridProps extends WithStyles {
   contractInfo: ContractInfo;
   centerPoint: Point;
   isDraggingGrid: boolean;
+
+  showHeatmap: boolean;
+  showGrid: boolean;
 }
 
 class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
@@ -331,7 +338,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
           <svg className={classes.svgMap} viewBox="0 0 250 250">
             {plotRects}
             {plotOverlayRects}
-            <g className={classes.heatmap}>
+            <g className={[classes.heatmap, this.props.showHeatmap ? classes.heatmapShowing : ''].join(' ')}>
               {heatMapRects}
             </g>
           </svg>

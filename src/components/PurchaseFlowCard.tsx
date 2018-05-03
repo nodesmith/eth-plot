@@ -15,6 +15,7 @@ import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '..
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
+import PlaceImageInput from './PurchaseDialog/PlaceImageInput';
 import WebsiteInputBox from './PurchaseDialog/WebsiteInputBox';
 
 const styles: StyleRulesCallback = theme => ({
@@ -59,6 +60,8 @@ export interface PurchaseFlowCardProps extends WithStyles {
   onBuyoutChanged: Actions.changePlotBuyout;
   onBuyoutEnabledChanged: Actions.changeBuyoutEnabled;
   purchasePlot: Actions.completePlotPurchase;
+  toggleShowHeatmap: Actions.toggleShowHeatmap;
+  toggleShowGrid: Actions.toggleShowGrid;
   
   rectToPurchase?: Rect;
   purchasePriceInWei: string;
@@ -78,6 +81,9 @@ export interface PurchaseFlowCardProps extends WithStyles {
   plots: Array<PlotInfo>;
 
   imageValidation: InputValidation;
+
+  showHeatmap: boolean;
+  showGrid : boolean;
 }
 
 class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
@@ -118,9 +124,11 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
     return (
     <div className={classes.actionsContainer}>
       <div>
-        <Button {...backButtonProps} className={classes.button}>
-          {backButtonProps.text}
-        </Button>
+        { backButtonProps ? 
+          (<Button {...backButtonProps} className={classes.button}>
+            {backButtonProps.text}
+          </Button>) : null
+        }
         <Button variant="raised" className={classes.button} {...nextButtonProps}>
           {nextButtonProps.text}
         </Button>
@@ -140,11 +148,11 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
       case 0:
         {
           const buttonEnabled = this.props.imageValidation.state === InputValidationState.SUCCESS;
-          stepHeader = 'Pick and place an image';
+          stepHeader = 'Pick an image';
           stepContent = (
           <div>
-            <Typography variant="body1">
-              Choose an image, then position and resize it in the grid. The purchase price will update as you move
+            <Typography variant="caption">
+              Choose an image to save into the grid forever
             </Typography>
             <ChooseImageInputBox
               onImageChanged={this.onImageChanged.bind(this)}
@@ -152,17 +160,39 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
               validation={this.props.imageValidation}
               allowedFileTypes={this.props.allowedFileTypes}
               classes={{}}/>
-            { this.getButtons({ text: 'Reset' }, { text: 'Next', onClick: defaultNextButtonAction, disabled: !buttonEnabled }) }
           </div>
         );
           break;
         }
       case 1:
         {
+          const buttonEnabled = this.props.imageValidation.state === InputValidationState.SUCCESS;
+          stepHeader = 'Position and resize your image';
+          stepContent = (
+          <div>
+            <Typography variant="caption">
+              Drag your image to position it where you'd like it. Pay attention to the price because different areas have different prices.
+            </Typography>
+            <PlaceImageInput
+              classes={{}}
+              currentPrice={this.props.purchasePriceInWei}
+              showHeatmap={this.props.showHeatmap}
+              showGrid={this.props.showGrid}
+              toggleShowHeatmap={this.props.toggleShowHeatmap}
+              toggleShowGrid={this.props.toggleShowGrid} />
+            { this.getButtons(
+              { text: 'Back', onClick: defaultBackButtonAction },
+              { text: 'Next', onClick: defaultNextButtonAction, disabled: !buttonEnabled }) }
+          </div>
+        );
+        }
+        break;
+      case 2:
+        {
           stepHeader = 'Add a URL (optional)';
           stepContent = (
           <div>
-            <Typography variant="body1">
+            <Typography variant="caption">
               Add an optional website and initial buyout price
             </Typography>
             <WebsiteInputBox onWebsiteChanged={this.onWebsiteChanged.bind(this)} website={this.props.website}/>
@@ -171,12 +201,12 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
         );
           break;
         }
-      case 2:
+      case 3:
         {
           stepHeader = 'Set a buyout price (optional)';
           stepContent = (
           <div>
-            <Typography variant="body1">
+            <Typography variant="caption">
               Set an optional initial buyout price
             </Typography>
             <div className={this.props.classes.buyoutWrapper}>
@@ -198,7 +228,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
         );
           break;
         }
-      case 3:
+      case 4:
         {
           const makeLine = (label, value) => (
           <div>
@@ -242,7 +272,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
 
   getStepperContent() {
     const { activeStep } = this.props;
-    const steps = [0, 1, 2, 3].map(index => this.getStepContents(index));
+    const steps = [0, 1, 2, 3, 4].map(index => this.getStepContents(index));
     return (
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
         {steps}

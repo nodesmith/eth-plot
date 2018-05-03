@@ -43,6 +43,8 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     changeZoom: Actions.changeZoom;
     loadBlockInfo: Actions.loadBlockInfo;
     reportGridDragging: Actions.reportGridDragging;
+    toggleShowHeatmap: Actions.toggleShowHeatmap;
+    toggleShowGrid: Actions.toggleShowGrid;
   };
   purchase: {
     rectToPurchase?: Rect;
@@ -60,6 +62,8 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
     imageValidation: InputValidation;
+    showHeatmap: boolean;
+    showGrid : boolean;
   };
   imageFileInfo?: ImageFileInfo;
   plots: Array<PlotInfo>;
@@ -90,7 +94,9 @@ class MainContainer extends React.Component<MainContainerProps> {
       onWebsiteChanged: this.props.actions.changePlotWebsite,
       onBuyoutChanged: this.props.actions.changePlotBuyout,
       onBuyoutEnabledChanged: this.props.actions.changeBuyoutEnabled,
-      purchasePlot: this.props.actions.completePlotPurchase
+      purchasePlot: this.props.actions.completePlotPurchase,
+      toggleShowHeatmap: this.props.actions.toggleShowHeatmap,
+      toggleShowGrid: this.props.actions.toggleShowGrid
     };
 
     const uiGridProps: UIGridProps = {
@@ -119,7 +125,9 @@ class MainContainer extends React.Component<MainContainerProps> {
       dragRectCurr: this.props.dragRectCurr,
       dragRectStart: this.props.dragRectStart,
       isDraggingRect: this.props.isDraggingRect,
-      contractInfo: this.props.contractInfo
+      contractInfo: this.props.contractInfo,
+      showHeatmap: this.props.purchase.showHeatmap && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen,
+      showGrid: this.props.purchase.showGrid && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen
     };
 
     const mainControlsOverlayProps: MainControlsOverlayProps = {

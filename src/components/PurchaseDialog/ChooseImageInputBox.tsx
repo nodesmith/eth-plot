@@ -28,7 +28,6 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
-
 export interface ChooseImageInputBoxPropTypes extends WithStyles {
   onImageChanged: (fileInfo: ImageFileInfo) => void;
   imageFileInfo?: ImageFileInfo;
@@ -90,45 +89,35 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes> 
   }
 
   render() {
-    // const imageLabel = `Plot Image (${this.props.rectToPurchase.w} x ${this.props.rectToPurchase.h})`;
     const imageLabel = 'Choose an image';
     const { classes, imageFileInfo, allowedFileTypes, validation } = this.props;
-
     const currentFileName = imageFileInfo ? imageFileInfo.fileName : '';
 
     const browseInputFn = () => (
-    <div>
-      <Button mini={true} id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
-      {currentFileName}
-    </div>);
+      <div>
+        <Button id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
+        {currentFileName}
+      </div>
+    );
 
 
+    const validationMessage = (validation.state === InputValidationState.SUCCESS || validation.state === InputValidationState.UNKNOWN) ?
+      '' : validation.message;
     return (
-      <FormControl fullWidth className={classes.formControl}>
-        <InputLabel htmlFor="browse-for-image"></InputLabel>
-        <Input margin="dense" fullWidth inputComponent={browseInputFn} />
-        <FormHelperText>{validation.message}</FormHelperText>
+      <FormControl className={classes.formControl}>
+        {/* <InputLabel htmlFor="browse-for-image"></InputLabel>
+        <Input margin="dense" fullWidth inputComponent={browseInputFn} /> */}
+        <Button variant="raised" id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
+        <FormHelperText>{validationMessage}</FormHelperText>
         <input
           accept={allowedFileTypes.join(',')}
           onChange={this.onFileSelected.bind(this)}
           type="file"
           id="hidden_input"
           className={classes.hidden} />
-        <img id="hidden_image"
-          className={classes.hidden} />
+        <img id="hidden_image" className={classes.hidden} />
       </FormControl>
     );
-  }
-}
-
-
-class ChooseButtonInput extends React.Component<{browseForImage: () => void; currentFile: string;}> {
-  render() {
-    return(
-      <div>
-        <Button mini={true} id="browse-for-image" onClick={this.props.browseForImage}>Browse...</Button>
-        {this.props.currentFile}
-      </div>);
   }
 }
 

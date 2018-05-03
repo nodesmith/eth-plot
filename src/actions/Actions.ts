@@ -57,6 +57,8 @@ export type completePlotPurchase =
 export type cancelPlotPurchase = () => void;
 export type startPurchasePlot = () => void;
 export type changePurchaseStep = (purchaseStage: Enums.PurchaseStage) => void;
+export type toggleShowHeatmap = (show: boolean) => void;
+export type toggleShowGrid = (show: boolean) => void;
 
 
 export interface AllActions {
@@ -99,5 +101,6 @@ export interface AllActions {
   cancelPlotPurchase: cancelPlotPurchase;
   startPurchasePlot: startPurchasePlot;
   changePurchaseStep: changePurchaseStep;
-
+  toggleShowHeatmap: toggleShowHeatmap;
+  toggleShowGrid: toggleShowGrid;
 }

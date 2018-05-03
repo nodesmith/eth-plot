@@ -17,7 +17,6 @@ import * as Actions from '../actions';
 import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
 
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
-import PurchaseToolbar from './PurchaseToolbar';
 import ZoomControl from './ZoomControl';
 
 const padding = 24;
@@ -77,6 +76,8 @@ export interface MainControlsOverlayProps extends WithStyles {
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
     imageValidation: InputValidation;
+    showHeatmap: boolean;
+    showGrid: boolean;
   };
   purchaseActions: {
     onImageSelected: Actions.purchaseImageSelected;
@@ -86,6 +87,8 @@ export interface MainControlsOverlayProps extends WithStyles {
     onBuyoutChanged: Actions.changePlotBuyout;
     onBuyoutEnabledChanged: Actions.changeBuyoutEnabled;
     purchasePlot: Actions.completePlotPurchase;
+    toggleShowHeatmap: Actions.toggleShowHeatmap;
+    toggleShowGrid: Actions.toggleShowGrid;
   };
   contractInfo: ContractInfo;
   plots: Array<PlotInfo>;
@@ -137,20 +140,6 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps, {purchaseE
           onClose={() => this.toggleDrawer()}>
           {sideList}
         </Drawer>
-        <Slide direction="left" in={this.props.purchase.purchaseFlowOpen && false}
-          onEntered={() => this.setState({ purchaseEntered: true })}
-          onExiting={() => this.setState({ purchaseEntered: false })} > 
-          <div className={classes.filterCard}>
-            <PurchaseToolbar
-              currentPrice={this.props.purchase.purchasePriceInWei}
-              classes={{}}
-              plots={this.props.plots}
-              onImageSelected={this.props.purchaseActions.onImageSelected}
-              entered={this.state.purchaseEntered}
-              onClose={() => this.toggleDrawer()}
-              onCheckout={() => this.toggleDrawer()}/>
-          </div>
-        </Slide>
         
         {/* <Snackbar open={this.props.purchase.purchaseFlowOpen} >
           <PurchaseToolbar currentPrice={'23432'} />

@@ -130,9 +130,24 @@ function uploadImageData(imageData: string) {
   };
 }
 
+export function toggleShowHeatmap(show: boolean): Action {
+  return {
+    type: ActionTypes.TOGGLE_SHOW_HEATMAP,
+    show
+  };
+}
+
+export function toggleShowGrid(show: boolean): Action {
+  return {
+    type: ActionTypes.TOGGLE_SHOW_GRID,
+    show
+  };
+}
+
 function changePurchaseStep(purchaseStage) {
   return {
     type: ActionTypes.CHANGE_PURCHASE_STAGE,
     purchaseStage
   };
 }
+

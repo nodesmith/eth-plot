@@ -151,7 +151,9 @@ class App extends React.Component<AppProps> {
         togglePurchaseFlow: actions.togglePurchaseFlow,
         changeZoom: actions.changeZoom,
         loadBlockInfo: actions.loadBlockInfo,
-        reportGridDragging: actions.reportGridDragging
+        reportGridDragging: actions.reportGridDragging,
+        toggleShowHeatmap: actions.toggleShowHeatmap,
+        toggleShowGrid: actions.toggleShowGrid
       },
       purchase: // this.props.purchase,
       {
@@ -168,8 +170,10 @@ class App extends React.Component<AppProps> {
         buyoutEnabled: purchase.buyoutEnabled,
         purchaseFlowOpen: purchase.purchaseFlowOpen,
         currentTransform: purchase.currentTransform,
-        
-        imageValidation: purchase.imageValidation
+
+        imageValidation: purchase.imageValidation,
+        showHeatmap: purchase.showHeatmap,
+        showGrid: purchase.showGrid
       },
       imageFileInfo: this.props.imageToPurchase.imageFileInfo,
       plots: this.props.data.plots,

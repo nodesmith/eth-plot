@@ -77,6 +77,8 @@ export interface PurchaseState {
   buyoutEnabled: boolean;
   allowedFileTypes: string[];
   imageValidation: InputValidation;
+  showHeatmap: boolean;
+  showGrid : boolean;
 }
 
 const initialState: PurchaseState = {
@@ -95,7 +97,9 @@ const initialState: PurchaseState = {
   buyoutPriceInWei: '328742394234',
   buyoutEnabled: true,
   allowedFileTypes,
-  imageValidation: validateImageFile()
+  imageValidation: validateImageFile(),
+  showHeatmap: true,
+  showGrid: false
 };
 
 
@@ -131,6 +135,15 @@ function validateImageFile(imageFileInfo?: ImageFileInfo): InputValidation {
   };
 }
 
+function completePurchaseStep(state: PurchaseState, index: number): PurchaseState {
+  const nextStep = index + 1;
+  const completedSteps = Object.assign({}, state.completedSteps, { [index]: true });
+  return Object.assign({}, state, {
+    completedSteps,
+    activeStep: nextStep
+  });
+}
+
 
 export function purchaseReducer(state: PurchaseState = initialState, action: Action): PurchaseState {
   switch (action.type) {
@@ -150,9 +163,14 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
     case ActionTypes.PURCHASE_IMAGE_SELECTED:
       {
         const imageValidation = validateImageFile(action.imageFileInfo);
+        if (imageValidation.state === Enums.InputValidationState.SUCCESS) {
+          const nextStep = 1;
+          const completedSteps = Object.assign({}, state.completedSteps, { [1]: true });
+        }
+
         const initialRect = determineInitialRect(action.imageFileInfo);
         const purchaseInfo = computePurchaseInfo(initialRect, action.plots);
-        return Object.assign({}, state, {
+        const nextState = Object.assign({}, state, {
           imageValidation,
           rectToPurchase: initialRect,
           initialRectToPurchase: initialRect,
@@ -161,6 +179,12 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
           imageFileInfo: action.imageFileInfo,
           purchasePriceInWei: purchaseInfo.purchasePrice
         });
+
+        if (imageValidation.state === Enums.InputValidationState.SUCCESS) {
+          return completePurchaseStep(nextState, 0);
+        } else {
+          return nextState;
+        }
       }
     case ActionTypes.START_TRANSFORM_RECT:
       const result = Object.assign({}, state, {
@@ -201,12 +225,7 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
         });
       }
     case ActionTypes.COMPLETE_PURCHASE_STEP:
-      const nextStep = action.index + 1;
-      const completedSteps = Object.assign({}, state.completedSteps, { [action.index]: true });
-      return Object.assign({}, state, {
-        completedSteps,
-        activeStep: nextStep
-      });
+      return completePurchaseStep(state, action.index);
     case ActionTypes.GO_TO_PURCHASE_STEP:
       return Object.assign({}, state, {
         activeStep: action.index
@@ -222,6 +241,14 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
     case ActionTypes.CHANGE_BUYOUT_ENABLED:
       return Object.assign({}, state, {
         buyoutEnabled: action.isEnabled
+      });
+    case ActionTypes.TOGGLE_SHOW_HEATMAP:
+      return Object.assign({}, state, {
+        showHeatmap: action.show
+      });
+    case ActionTypes.TOGGLE_SHOW_GRID:
+      return Object.assign({}, state, {
+        showGrid: action.show
       });
     default:
       return state;
