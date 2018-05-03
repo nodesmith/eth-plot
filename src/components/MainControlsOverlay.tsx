@@ -1,9 +1,12 @@
 import ShoppingCart from 'material-ui-icons/ShoppingCart';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Grow from 'material-ui/transitions/Grow';
+import Zoom from 'material-ui/transitions/Zoom';
 import Button from 'material-ui/Button';
 import Drawer from 'material-ui/Drawer';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
+import Snackbar from 'material-ui/Snackbar';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
@@ -13,6 +16,7 @@ import * as Actions from '../actions';
 import { ContractInfo, PlotInfo, Rect } from '../models';
 
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
+import PurchaseToolbar from './PurchaseToolbar';
 import ZoomControl from './ZoomControl';
 
 const padding = 24;
@@ -42,6 +46,11 @@ const styles: StyleRulesCallback = theme => ({
     // marginTop: '64px',
     width: 400,
     pointerEvents: 'all'
+  },
+  filterCard: {
+    position: 'fixed',
+    right: 24,
+    bottom: 24
   }
 });
 
@@ -101,23 +110,32 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
       <PurchaseFlowCard {...purchaseFlowCardProps} />);
     return (
       <div className={classes.root}>
-        <div className={classes.zoom}>
+        {/* <div className={classes.zoom}>
           <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
-        </div>
-        {this.props.purchase.purchaseFlowOpen ? null : 
+        </div> */}
+        <Zoom in={!this.props.purchase.purchaseFlowOpen}> 
           <Button variant="fab" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />
           </Button>
-        }
+        </Zoom>
         <Drawer classes={{
           paper: classes.drawer
         }}
           anchor="right"
           variant="persistent"
-          open={this.props.purchase.purchaseFlowOpen}
+          open={this.props.purchase.purchaseFlowOpen && false}
           onClose={() => this.toggleDrawer()}>
           {sideList}
         </Drawer>
+        <Grow in={this.props.purchase.purchaseFlowOpen}> 
+          <div className={classes.filterCard}>
+            <PurchaseToolbar currentPrice={'23432'} classes={{}} onClose={() => this.toggleDrawer()}/>
+          </div>
+        </Grow>
+        
+        {/* <Snackbar open={this.props.purchase.purchaseFlowOpen} >
+          <PurchaseToolbar currentPrice={'23432'} />
+        </Snackbar> */}
       </div>
     );
   }
