@@ -226,7 +226,7 @@ class App extends React.Component<AppProps> {
     };
 
     return (
-      <div className="main-app-container" style={mainAppStyle}>
+      <div style={mainAppStyle}>
         <main>
           {
             (this.shouldShowSpinner()) ?

@@ -10,7 +10,6 @@ import { Component } from 'react';
 import * as Enums from '../constants/Enums';
 import { UserTransactions } from '../models';
 
-import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
 import TransactionStatus from './TransactionStatus';
 
@@ -18,6 +17,9 @@ const styles: StyleRulesCallback = theme => ({
   root: {
     paddingTop: 24,
     paddingBottom: 16
+  },
+  title: {
+    paddingBottom: 20
   }
 });
 
@@ -48,7 +50,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
 
     return [
       (<Grid key="title" item xs={9}>
-        <Typography align="center" variant="headline" >My Transactions</Typography>
+        <Typography className={this.props.classes.title} align="center" variant="headline" >My Transactions</Typography>
       </Grid>),
       pendingTransactions
     ];
@@ -57,7 +59,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
   render() {
     const content = this.getUserContent();
     return (
-      <Grid container className={this.props.classes.root} justify="center" spacing={24} >
+      <Grid container className={this.props.classes.root} justify="center" spacing={0} >
        {content}
       </Grid>
     );

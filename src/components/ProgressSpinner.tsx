@@ -5,9 +5,6 @@ import * as React from 'react';
 import { CircularProgress } from 'material-ui/Progress';
 
 const styles: StyleRulesCallback = theme => ({
-  progress: {
-    
-  },
   container: { // Used to center the spinner
     position: 'fixed',
     zIndex: 999,
@@ -31,7 +28,7 @@ class ProgressSpinner extends React.Component<ProgressSpinnerProps> {
     const { classes } = this.props;
     return (
       <div className={classes.container} >
-        <CircularProgress className={classes.progress} size={50} />
+        <CircularProgress size={50} />
       </div>
     );
   }

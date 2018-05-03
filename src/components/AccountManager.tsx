@@ -11,7 +11,6 @@ import { Component } from 'react';
 import * as Enums from '../constants/Enums';
 import { PlotInfo as PlotInfoData, HoleInfo as HoleInfoData } from '../models';
 
-import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
 
 const styles: StyleRulesCallback = theme => ({
@@ -40,14 +39,6 @@ class AccountManager extends Component<AccountManagerProps> {
       );
     });
 
-    if (plotInfos.length === 0) {
-      plotInfos.push(
-        <Grid key="no-data" item xs={9} >
-          <Typography variant="subheading">You don't have any owned plots. Visit the grid to purchase a plot.</Typography>
-        </Grid>
-      );
-    }
-
     return [
       (<Grid key="title" item xs={9}>
         <Typography align="center" variant="headline">My Plots</Typography>
@@ -62,6 +53,10 @@ class AccountManager extends Component<AccountManagerProps> {
     return (
       <Grid container className={this.props.classes.root} justify="center" spacing={24} >
         {content}
+        {(this.props.userPlots.length == 0) ? 
+          <Typography variant="subheading">You don't have any owned plots. Visit the grid to purchase a plot.</Typography>
+          : null
+        }
       </Grid>
     );
   }
