@@ -1,4 +1,5 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
+
 
 /// @title EthGrid
 /// @author nova-network
@@ -97,7 +98,7 @@ contract EthGrid2 {
       require(msg.sender == ownership[zoneIndex].owner);
 
       tokenIdToAuction[zoneIndex] = newPriceInGweiPerPixel;
-      AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
+      emit AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
     }
 
     function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
@@ -121,7 +122,7 @@ contract EthGrid2 {
       data.push(newData);
 
       updateAuction(ownership.length - 1, initialPurchasePrice, true);
-      PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
+      emit PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
 
       return ownership.length - 1;
     }
@@ -137,7 +138,7 @@ contract EthGrid2 {
 
     // It is assumed that we will have called doRectanglesOverlap before calling this method and we will know they overlap
     function computeRectOverlap(Rect memory a, Rect memory b) private pure returns (Rect memory) {
-      Rect memory result = Rect(0,0,0,0);
+      Rect memory result = Rect(0, 0, 0, 0);
 
       // Take the greater of the x and y values;
       result.x = a.x > b.x ? a.x : b.x;

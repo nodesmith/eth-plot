@@ -12,6 +12,7 @@
     "start": "npm run tsdev",
     "lint": "./node_modules/.bin/tslint --force --project tsconfig.json",
     "lint:fix": "./node_modules/.bin/tslint --force --fix --project tsconfig.json",
+    "solint": "node_modules/.bin/solhint contracts/**/*.sol",
     "tsdev": "node_modules/.bin/webpack-dev-server --port 3000 --hot --inline --mode development -d",
     "gen": "./node_modules/.bin/typechain --force --outDir ./gen-src ./build/contracts/*.json"
   },
@@ -48,6 +49,7 @@
     "redux-devtools-log-monitor": "^1.0.2",
     "redux-logger": "^3.0.6",
     "rimraf": "^2.4.3",
+    "solhint": "^1.1.10",
     "source-map-loader": "^0.2.3",
     "style-loader": "^0.13.0",
     "truffle": "^4.1.8",

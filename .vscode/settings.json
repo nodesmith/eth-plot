@@ -3,5 +3,6 @@
       "src/**/*.js": true,
       "src/**/*.map": true
   },
-  "tslint.autoFixOnSave": true
+  "tslint.autoFixOnSave": true,
+  "solidity.linter": "solhint"
 }
