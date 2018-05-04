@@ -15,11 +15,12 @@ import About from '../components/About';
 import FloatingLogo from '../components/FloatingLogo';
 import MetaMaskStatus from '../components/MetaMaskStatus';
 import OverlayNav, { OverlayNavProps } from '../components/OverlayNav';
-import ProgressSpinner from '../components/ProgressSpinner';
 import * as Enums from '../constants/Enums';
 import { ContractInfo } from '../models';
 import * as Reducers from '../reducers';
 import { RootState } from '../reducers';
+
+import { CircularProgress } from 'material-ui/Progress';
 
 import AccountManagerContainer from './AccountManagerContainer';
 import MainContainer, { MainContainerProps } from './MainContainer';
@@ -225,17 +226,35 @@ class App extends React.Component<AppProps> {
       overflowX: 'hidden'
     };
 
+    const fullPageContainer: React.CSSProperties = {
+      width: '100%',
+      height: '100%'
+    };
+
+    const metamaskStatus: JSX.Element = (
+      <Grid container style={fullPageContainer} justify="center" alignItems="center">
+        <Grid item>
+          <MetaMaskStatus metamaskState={this.props.account.metamaskState} classes={{}} />
+        </Grid>
+      </Grid>
+    );
+
+    const spinner: JSX.Element = (
+      <Grid container style={fullPageContainer} justify="center" alignItems="center">
+        <Grid item>
+          <CircularProgress size={50} />
+        </Grid>
+      </Grid>
+    );
+
     return (
       <div style={mainAppStyle}>
-        <main>
-          {
-            (this.shouldShowSpinner()) ?
-            <ProgressSpinner classes={{}} /> :
-              (this.props.account.metamaskState !== Enums.METAMASK_STATE.OPEN) ?
-              <MetaMaskStatus metamaskState={this.props.account.metamaskState} classes={{}} /> :
-              mainBodyContent
-          }
-        </main>
+        {
+          (this.shouldShowSpinner()) ? spinner
+           :
+            (this.props.account.metamaskState !== Enums.METAMASK_STATE.OPEN) ? metamaskStatus 
+            : mainBodyContent
+        }
         <OverlayNav {...navProps} />
       </div>
     );
