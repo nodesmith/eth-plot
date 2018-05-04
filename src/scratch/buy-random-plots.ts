@@ -25,6 +25,7 @@ const buyRandomPlots = () => {
     const x = Math.floor(Math.random() * 250);
     const y = Math.floor(Math.random() * 250);
     const w = Math.floor(Math.random() * Math.min(50, 250 - x));
+    
     const h = Math.floor(Math.random() * Math.min(50, 250 - y));
 
     const rectToPurchase = {
@@ -40,7 +41,7 @@ const buyRandomPlots = () => {
 
     const state = store.getState();
     return DataActions.purchasePlot(
-      state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123', () => {})(store.dispatch);
+      state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123', '5512', () => {})(store.dispatch);
   }
 
   let buysRemaining = 10;

@@ -44,3 +44,10 @@ export enum DragType {
   MOVE,
   STOP
 }
+
+export enum InputValidationState {
+  UNKNOWN,
+  ERROR,
+  WARNING,
+  SUCCESS
+}

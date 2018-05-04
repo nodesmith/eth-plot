@@ -1,5 +1,6 @@
 import ShoppingCart from 'material-ui-icons/ShoppingCart';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Slide from 'material-ui/transitions/Slide';
 import Button from 'material-ui/Button';
 import Drawer from 'material-ui/Drawer';
 import Grid from 'material-ui/Grid';
@@ -10,7 +11,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as Actions from '../actions';
-import { ContractInfo, PlotInfo, Rect } from '../models';
+import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
 
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
 import ZoomControl from './ZoomControl';
@@ -39,7 +40,6 @@ const styles: StyleRulesCallback = theme => ({
     pointerEvents: 'all'
   },
   drawer: {
-    // marginTop: '64px',
     width: 400,
     pointerEvents: 'all'
   }
@@ -54,7 +54,8 @@ export interface MainControlsOverlayProps extends WithStyles {
     purchasePriceInWei: string;
     activeStep: number;
     completedSteps: {[index: number]: boolean};
-    imageName: string;
+    imageFileInfo?: ImageFileInfo;
+    allowedFileTypes: string[];
     imageDimensions: {
       h: number;
       w: number;
@@ -63,6 +64,9 @@ export interface MainControlsOverlayProps extends WithStyles {
     buyoutPriceInWei: string;
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
+    imageValidation: InputValidation;
+    showHeatmap: boolean;
+    showGrid: boolean;
   };
   purchaseActions: {
     onImageSelected: Actions.purchaseImageSelected;
@@ -72,14 +76,16 @@ export interface MainControlsOverlayProps extends WithStyles {
     onBuyoutChanged: Actions.changePlotBuyout;
     onBuyoutEnabledChanged: Actions.changeBuyoutEnabled;
     purchasePlot: Actions.completePlotPurchase;
+    toggleShowHeatmap: Actions.toggleShowHeatmap;
+    toggleShowGrid: Actions.toggleShowGrid;
   };
   contractInfo: ContractInfo;
   plots: Array<PlotInfo>;
-  imageData?: string;
   togglePurchaseFlow: () => void;
 }
 
 class MainControlsOverlay extends Component<MainControlsOverlayProps> {
+
   toggleDrawer() {
     this.props.togglePurchaseFlow();
   }
@@ -91,7 +97,6 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
       onClose: () => this.toggleDrawer(),
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,
-      imageData: this.props.imageData,
       classes: {},
       ...this.props.purchase,
       ...this.props.purchaseActions
@@ -101,14 +106,16 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
       <PurchaseFlowCard {...purchaseFlowCardProps} />);
     return (
       <div className={classes.root}>
-        <div className={classes.zoom}>
-          <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
-        </div>
-        {this.props.purchase.purchaseFlowOpen ? null : 
+        <Slide in={!this.props.purchase.purchaseFlowOpen} direction="up"> 
+          <div className={classes.zoom}>
+            <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
+          </div>
+        </Slide>
+        <Slide in={!this.props.purchase.purchaseFlowOpen} direction="up"> 
           <Button variant="fab" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />
           </Button>
-        }
+        </Slide>
         <Drawer classes={{
           paper: classes.drawer
         }}

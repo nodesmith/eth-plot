@@ -10,7 +10,9 @@ import MainControlsOverlay, { MainControlsOverlayProps } from '../components/Mai
 import PurchaseDialog, { PurchaseDialogProps } from '../components/PurchaseDialog';
 import UIGrid, { UIGridProps } from '../components/UIGrid';
 import * as Enums from '../constants/Enums';
-import { ContractInfo, GridInfo, ImageFileInfo, PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
+import { 
+  ContractInfo, GridInfo, HoleInfo, ImageFileInfo, InputValidation,
+  PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -41,13 +43,16 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     changeZoom: Actions.changeZoom;
     loadBlockInfo: Actions.loadBlockInfo;
     reportGridDragging: Actions.reportGridDragging;
+    toggleShowHeatmap: Actions.toggleShowHeatmap;
+    toggleShowGrid: Actions.toggleShowGrid;
   };
   purchase: {
     rectToPurchase?: Rect;
     purchasePriceInWei: string;
     activeStep: number;
     completedSteps: {[index: number]: boolean};
-    imageName: string;
+    allowedFileTypes: string[];
+    currentTransform: RectTransform | undefined;
     imageDimensions: {
       h: number;
       w: number;
@@ -56,11 +61,14 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     buyoutPriceInWei: string;
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
-    currentTransform?: RectTransform;
+    imageValidation: InputValidation;
+    showHeatmap: boolean;
+    showGrid : boolean;
   };
   imageFileInfo?: ImageFileInfo;
   plots: Array<PlotInfo>;
   plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
+  holes: HoleInfo;
   contractInfo: ContractInfo;
   scale: number;
   gridInfo: GridInfo;
@@ -86,7 +94,9 @@ class MainContainer extends React.Component<MainContainerProps> {
       onWebsiteChanged: this.props.actions.changePlotWebsite,
       onBuyoutChanged: this.props.actions.changePlotBuyout,
       onBuyoutEnabledChanged: this.props.actions.changeBuyoutEnabled,
-      purchasePlot: this.props.actions.completePlotPurchase
+      purchasePlot: this.props.actions.completePlotPurchase,
+      toggleShowHeatmap: this.props.actions.toggleShowHeatmap,
+      toggleShowGrid: this.props.actions.toggleShowGrid
     };
 
     const uiGridProps: UIGridProps = {
@@ -106,6 +116,7 @@ class MainContainer extends React.Component<MainContainerProps> {
       rectToPurchase: this.props.purchase.rectToPurchase,
       plots: this.props.plots,
       plotTransactions: this.props.plotTransactions,
+      holes: this.props.holes,
       scale: this.props.scale,
       gridInfo: this.props.gridInfo,
       centerPoint: this.props.centerPoint,
@@ -114,15 +125,16 @@ class MainContainer extends React.Component<MainContainerProps> {
       dragRectCurr: this.props.dragRectCurr,
       dragRectStart: this.props.dragRectStart,
       isDraggingRect: this.props.isDraggingRect,
-      contractInfo: this.props.contractInfo
+      contractInfo: this.props.contractInfo,
+      showHeatmap: this.props.purchase.showHeatmap && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen,
+      showGrid: this.props.purchase.showGrid && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen
     };
 
     const mainControlsOverlayProps: MainControlsOverlayProps = {
       classes: {},
-      purchase: this.props.purchase,
+      purchase: Object.assign(this.props.purchase, { imageFileInfo: this.props.imageFileInfo }),
       zoomLevel: this.props.scale,
       purchaseActions,
-      imageData: this.props.imageFileInfo ? this.props.imageFileInfo.fileData : '',
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,
       togglePurchaseFlow: this.props.actions.togglePurchaseFlow,
