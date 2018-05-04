@@ -5,6 +5,7 @@
     "avoid-suicide": "error",
     "avoid-sha3": "warn",
     "compiler-fixed": false,
-    "indent": ["warn", 4]
+    "indent": ["warn", 4],
+    "max-line-length": 140
   }
 }
