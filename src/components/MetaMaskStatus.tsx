@@ -7,15 +7,13 @@ import Typography from 'material-ui/Typography/Typography';
 
 import * as Enums from '../constants/Enums';
 
-import FullPageStatus from './FullPageStatus';
-
 const styles: StyleRulesCallback = theme => ({
-  logoContainer: {
-    textAlign: 'center'
-  },
   logo: {
     width: '40%',
     height: '40%'
+  },
+  installMetamask: {
+    textAlign: 'center'
   }
 });
 
@@ -29,8 +27,10 @@ class MetaMaskStatus extends Component<MetaMaskStatusProps> {
       return null;
     } else if (this.props.metamaskState === Enums.METAMASK_STATE.UNINSTALLED) {
       return (
-      <div className={this.props.classes.logoContainer}>
-        <FullPageStatus classes={{}} message="You must have MetaMask intalled to use EthGrid.  Check it out here:" />
+      <div className={this.props.classes.installMetamask}>
+        <Typography gutterBottom variant="subheading">
+          You must have MetaMask intalled to use EthGrid.  Check it out here:
+        </Typography>
         <a href={'https://metamask.io'} target="_blank">
           <img className={this.props.classes.logo} src={'../assets/metamasklogo.png'} />
         </a>
@@ -38,9 +38,9 @@ class MetaMaskStatus extends Component<MetaMaskStatusProps> {
       );
     } else if (this.props.metamaskState === Enums.METAMASK_STATE.LOCKED) {
       return (
-      <div id="metamaskLogoContainer">
-        <FullPageStatus classes={{}} message="You must unlock MetaMask to proceed." />
-      </div>
+        <Typography gutterBottom variant="subheading">
+          You must unlock MetaMask to proceed.
+        </Typography>
       );
     }
   }

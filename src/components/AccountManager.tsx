@@ -11,57 +11,76 @@ import { Component } from 'react';
 import * as Enums from '../constants/Enums';
 import { HoleInfo as HoleInfoData, PlotInfo as PlotInfoData } from '../models';
 
-import FullPageStatus from './FullPageStatus';
 import PlotInfo from './PlotInfo';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
     paddingTop: 24,
     paddingBottom: 16
+  },
+  noTxHeader: {
+    marginTop: 8
   }
 });
 
 export interface AccountManagerProps extends WithStyles {
-  userPlots: Array<PlotInfoData>;
+  plots: Array<PlotInfoData>;
   holes: HoleInfoData;
+  plotTransactions: {[index: number]: PurchaseEventInfo};
   updatePrice: () => void;
   metamaskState: number;
+  activeAccount: string;
 }
 
 class AccountManager extends Component<AccountManagerProps> {
-  getUserContent() {
-    const plotInfos = this.props.userPlots.map((plot, index) => {
+  /**
+   * Returns an array of plots that are owned by the current user.
+   */
+  getUserFilteredPlots(): Array<PlotInfoData> {
+    return this.props.plots.filter((plot, index) => {
+      if (index != plot.zoneIndex) {
+        throw 'Unexpected malformed data in plots data.';
+      }
+      
+      if (plot.owner === this.props.activeAccount && index > 0) {
+        return plot;
+      }
+    });
+  }
+
+  getUserContent(filteredPlots) {
+    const plotInfoComponents = filteredPlots.map((plot) => {     
       return (
-        <Grid key={index} item xs={9}>
+        <Grid key={plot.zoneIndex} item xs={9}>
           <Paper>
-            <PlotInfo info={plot} holes={this.props.holes[index] || []} updatePrice={this.props.updatePrice} />
+            <PlotInfo info={plot} 
+                      holes={this.props.holes[plot.zoneIndex] || []} 
+                      updatePrice={this.props.updatePrice}
+                      purchaseInfo={this.props.plotTransactions[plot.zoneIndex]} />
           </Paper>
         </Grid>
       );
     });
 
-    if (plotInfos.length === 0) {
-      plotInfos.push(
-        <Grid key="no-data" item xs={9} >
-          <Typography variant="subheading">You don't have any owned plots. Visit the grid to purchase a plot.</Typography>
-        </Grid>
-      );
-    }
-
     return [
       (<Grid key="title" item xs={9}>
         <Typography align="center" variant="headline">My Plots</Typography>
       </Grid>),
-      plotInfos
+      plotInfoComponents
     ];
   }
 
   render() {
-    const content = this.getUserContent();
+    const filteredPlots = this.getUserFilteredPlots();
+    const plotInfoComponents = this.getUserContent(filteredPlots);
 
     return (
       <Grid container className={this.props.classes.root} justify="center" spacing={24} >
-        {content}
+        {plotInfoComponents}
+        {(filteredPlots.length == 0) ? 
+          <Typography className={this.props.classes.noTxHeader} variant="subheading">You do not own any plots on the grid. Visit the grid to purchase a plot.</Typography>
+          : null
+        }
       </Grid>
     );
   }
