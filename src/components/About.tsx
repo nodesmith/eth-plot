@@ -6,24 +6,45 @@ import ExpansionPanel, {
   ExpansionPanelSummary,
 } from 'material-ui/ExpansionPanel';
 import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
-import FAQ from './FAQ';
+import FAQGroup from './FAQGroup';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
     paddingTop: 24,
     paddingBottom: 16
+  },
+  main: {
+    padding: 20
   }
 });
 
-const questionsAndAnswers = [
-  { question: 'What is Eth Grid?', answer: 'Coolest thing since sliced bread.' },
-  { question: 'Why would I use this?', answer: 'To be part of hethstory.' },
-  { question: 'Are there fees?', answer: 'Minor, to keep the lights on.  You can interact directly with our contracts though.' }
+const faqGroups = [
+  { 
+    title: "General",
+    questions: [
+      'What is Eth Grid?',
+      'Why would I use this?'
+    ],
+    answers: [
+      'Coolest thing since sliced bread.',
+      'Because eth grid is cool.'
+    ]
+  },
+  { 
+    title: "Gameplay",
+    questions: [
+      'How do I purchase a plot?',
+      'How do I sell a plot?'
+    ],
+    answers: [
+      'Coolest thing since sliced bread.',
+      'Because eth grid is cool.'
+    ]
+  },
 ];
 
 export interface AboutProps extends WithStyles {
@@ -32,16 +53,19 @@ export interface AboutProps extends WithStyles {
 
 class About extends Component<AboutProps> {
   render() {
-    const items = questionsAndAnswers.map((qa, index) => (<FAQ {...this.props} key={index} {...qa} />));
+    const items = faqGroups.map((g, index) =>
+      <FAQGroup questions={g.questions} answers={g.answers} groupTitle={g.title} classes={{}} key={index}/> 
+    );
+
     return (
-        <Grid className={this.props.classes.root} container justify="center" spacing={24} >
-          <Grid item xs={9} >
-            <Typography align="center" variant="headline">About</Typography>
-          </Grid>
-          <Grid item xs={9} >
-            {items}
-          </Grid>
+      <Grid className={this.props.classes.root} container justify="center" spacing={24} >
+        <Grid item xs={9} >
+          <Typography align="center" variant="headline">About Eth Grid</Typography>
         </Grid>
+        <Grid item xs={9} >
+          {items}
+        </Grid>
+      </Grid>
     );
   }
 }

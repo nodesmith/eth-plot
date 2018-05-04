@@ -124,8 +124,8 @@ class OverlayNav extends Component<OverlayNavProps> {
           <Paper className={classes.otherNav}>
             {this.createNavButton('/', 'Home', (<Home />))}
             {this.createNavButton('/myplots', 'My Plots', (<Person />))}
-            {this.createNavButton('/about', 'About', (<Help />))}
             {this.createNavButton('/account', 'Transactions', transactionsIcon, () => this.clearNotifications())}
+            {this.createNavButton('/about', 'About', (<Help />))}
           </Paper>
         </div>
       </div >
