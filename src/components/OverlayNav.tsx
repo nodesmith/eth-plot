@@ -45,12 +45,14 @@ const styles: StyleRulesCallback = theme => ({
     paddingTop: 8,
     paddingBottom: 8
   },
-  otherNav: {
+  navWrappers: {
     right: padding,
     top: padding,
     width: sideIconSize,
     position: 'fixed',
     display: 'inline',
+  },
+  otherNav: {
     pointerEvents: 'all',
     backgroundColor: theme.palette.grey[200]
   }
@@ -118,15 +120,18 @@ class OverlayNav extends Component<OverlayNavProps> {
     return (
       <div className={classes.root}>
         <FloatingLogo size={logoSize} classes={{ root: classes.homeButton }} onClick={this.navigate.bind(this, '/')} />
-        <Paper  className={classes.otherNav}>
-          {this.createNavButton('/', 'Home', (<Home />))}
-          {this.createNavButton('/myplots', 'My Plots', (<Person />))}
-          {this.createNavButton('/about', 'About', (<Help />))}
-          {this.createNavButton('/account', 'Transactions', transactionsIcon, () => this.clearNotifications())}
-        </Paper>
-      </div>
+        <div className={classes.navWrappers}>
+          <Paper className={classes.otherNav}>
+            {this.createNavButton('/', 'Home', (<Home />))}
+            {this.createNavButton('/myplots', 'My Plots', (<Person />))}
+            {this.createNavButton('/about', 'About', (<Help />))}
+            {this.createNavButton('/account', 'Transactions', transactionsIcon, () => this.clearNotifications())}
+          </Paper>
+        </div>
+      </div >
     );
   }
 }
 
 export default withStyles(styles)(OverlayNav);
+  

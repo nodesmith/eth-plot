@@ -1,17 +1,16 @@
-import { Paper } from 'material-ui';
+import * as d3Palette from 'd3-scale-chromatic';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Popover from 'material-ui/Popover';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
+import { Component, SVGAttributes } from 'react';
 
 import * as ActionTypes from '../actions';
 import { DragType, MovementActions } from '../constants/Enums';
-import { ContractInfo, ImageFileInfo, PlotInfo as PlotInfoModel, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
+import { ContractInfo, HoleInfo, ImageFileInfo, PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
 
-import GridPlot from './GridPlot';
 import PlotPopover, { PlotPopoverProps } from './PlotPopover';
 import PurchasePlot from './PurchasePlot';
+
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -26,12 +25,100 @@ const styles: StyleRulesCallback = theme => ({
   },
   overlay: {
     backgroundColor: '#00000055'
+  },
+  heatmap: {
+    pointerEvents: 'none',
+    opacity: 0,
+    transition: '.5s ease'
+  },
+  heatmapShowing: {
+    opacity: .95
+  },
+  svgMap: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+  },
+  svgOverlay: {
+    cursor: 'pointer',
+    opacity: 0,
+    transition: '.5s ease',
+    fill: '#FFFFFF',
+    '&:hover': {
+      opacity: .6
+    }
   }
 });
 
+function buildSvgComponents(
+  plots: Array<PlotInfo>, plotTransactions: {[plotIndex: number]: PurchaseEventInfo}, holes: HoleInfo, key: string,
+  // tslint:disable-next-line:max-line-length
+  cb: (plot: PlotInfo, plotTransaction:  PurchaseEventInfo, hole: Array<Rect>, index: number, props: SVGAttributes<{}>) => JSX.Element | undefined)
+    : JSX.Element[] {
+  const result = new Array<JSX.Element>();
+  for (let i = 0; i < plots.length; i++) {
+    const plot = plots[i];
+    const attributes = {
+      key: `${key}_${i}`,
+      x: plot.rect.x,
+      y: plot.rect.y,
+      width: plot.rect.w,
+      height: plot.rect.h
+    };
+
+    const element = cb(plot, plotTransactions[i], holes[i], i, attributes);
+    if (element) {
+      result.push(element);
+    }
+  }
+
+  return result;
+}
+
+function buildGridSvg(scale: number): JSX.Element[] {
+  const result: JSX.Element[] = [];
+  const scaledBox = 250 * 1;
+
+  const thin = {
+    strokeWidth: `${.5 / scale}px`,
+    stroke: 'black'
+  };
+
+  const thick = {
+    strokeWidth: `${1.5 / scale}px`,
+    stroke: 'black'
+  };
+
+  // We either have 5, 10, 25, 50, 125, 250 lines to draw
+  // The higher scale is, the more lines we'll draw
+  const lineEstimate = scale * 20;
+
+  const options = [5, 10, 25, 50, 125, 250];
+  let numLines = options[0];
+  for (const option of options) {
+    if (Math.abs(lineEstimate - option) < Math.abs(lineEstimate - numLines)) {
+      numLines = option;
+    }
+  }
+
+  const jump = 250 / numLines;
+  
+  for (let i = 0; i <= 250; i += jump) {
+    const style = (i % (jump * 5) === 0) ? thick : thin;
+    const scaled = i * 1;
+    result.push((<line style={style} x1={scaled} x2={scaled} y1={0} y2={scaledBox} key={`vert_${i}`} />));
+    result.push((<line style={style} y1={scaled} y2={scaled} x1={0} x2={scaledBox} key={`hori_${i}`} />));
+  }
+
+  return result;
+}
+
 export interface UIGridProps extends WithStyles {
-  plots: Array<PlotInfoModel>;
+  plots: Array<PlotInfo>;
   plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
+  holes: HoleInfo;
   actions: {
     hoverOverPlot: ActionTypes.hoverOverPlot;
     startTransformRectToPurchase: ActionTypes.startTransformRectToPurchase;
@@ -57,6 +144,9 @@ export interface UIGridProps extends WithStyles {
   contractInfo: ContractInfo;
   centerPoint: Point;
   isDraggingGrid: boolean;
+
+  showHeatmap: boolean;
+  showGrid: boolean;
 }
 
 class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
@@ -164,14 +254,54 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
   }
 
   render() {
-    const scale = this.props.scale;
-    const plots = this.props.plots.map((plot, index) => {
-      return (<GridPlot scale={scale} plot={plot} ipfsHash={plot.data.ipfsHash} index={index} isHovered={this.props.hoveredIndex === index}
-        hoverAction={this.plotHovered.bind(this)} key={index} classes={{}}
-        clickAction={this.plotClicked.bind(this)} />);
+    const { plots, holes, plotTransactions, scale } = this.props;
+
+    // Gets the svg components for the plots
+    const plotRects = buildSvgComponents(plots, plotTransactions, holes, 'img', (plot, plotTransaction, holes, index, props) => {
+      return (<image {...props}
+        xlinkHref={plot.data.blobUrl}
+        preserveAspectRatio="none" />);
     });
 
-    const marginLeft = `calc(calc(100vw - ${this.props.gridInfo.width * scale}px) / 2)`;
+    // Gets the svg components for the overlays
+    const plotOverlayRects = buildSvgComponents(plots, plotTransactions, holes, 'overlay', (plot, plotTransaction, holes, index, props) => {
+      if (index === 0) {
+        return undefined;
+      }
+
+      return (<rect {...props}
+        className={this.props.classes.svgOverlay}
+        onClick={(event) => this.plotClicked(plot.zoneIndex, event.target as HTMLElement)}/>);
+    });
+
+
+    // Compute the heatmap range
+    let minPrice = Number.MAX_SAFE_INTEGER;
+    let maxPrice = Number.EPSILON;
+    plots.forEach((plot) => {
+      if (plot.buyoutPrice > 0) {
+        minPrice = Math.min(minPrice, plot.buyoutPrice);
+        maxPrice = Math.max(maxPrice, plot.buyoutPrice);
+      }
+    });
+
+    // Build up the heatmap, interpolating the colors from the d3Palette
+    const priceRange = maxPrice - minPrice;
+    const heatMapRects = buildSvgComponents(plots, plotTransactions, holes, 'heatmap', (plot, plotTransaction, holes, index, props) => {
+      let color = 'black';
+      if (plot.buyoutPrice > 0) {
+        const aboveMin = plot.buyoutPrice - minPrice;
+        const value = 1 - (aboveMin / priceRange);
+        color = d3Palette.interpolateRdYlGn(value);
+      }
+
+      return (<rect {...props}
+        fill={color}
+        onClick={(event) => this.plotClicked(plot.zoneIndex, event.target as HTMLElement)}/>);
+    });
+
+    // Get the svg components for the gridlines
+    const gridLines = buildGridSvg(this.props.scale);
 
     const left = `calc(50vw - ${this.props.centerPoint.x * scale}px)`;
     const top = `calc(50vh - ${this.props.centerPoint.y * scale}px)`;
@@ -181,6 +311,14 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
       left,
       top,
       position: 'fixed'
+    };
+
+    const overlayStyle: React.CSSProperties = {
+      position: 'absolute',
+      width: this.props.gridInfo.width * scale,
+      height: this.props.gridInfo.height * scale,
+      left: 0,
+      top: 0
     };
 
     let overlay: JSX.Element | undefined = undefined;
@@ -212,7 +350,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
             classes={{}}
             rect={this.props.rectToPurchase!}
             scale={scale} 
-            src={this.props.imageToPurchase.fileData}
+            src={this.props.imageToPurchase.blobUrl}
             startAction={this.onStartAction.bind(this)}
              />
         </div>);
@@ -233,10 +371,20 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
         onMouseMove={this.onMouseMove.bind(this)}
         onMouseUp={this.onDragStop.bind(this)}
         onMouseLeave={this.onDragStop.bind(this)}
+        
         onWheel={this.onWheel.bind(this)}>
 
-        <Paper style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
-          {plots}
+        <div style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
+          <svg className={classes.svgMap} viewBox="0 0 250 250">
+            {plotRects}
+            {plotOverlayRects}
+            <g key="heatmap" className={[classes.heatmap, this.props.showHeatmap ? classes.heatmapShowing : ''].join(' ')}>
+              {heatMapRects}
+            </g>
+            <g key="grids" className={[classes.heatmap, this.props.showGrid ? classes.heatmapShowing : ''].join(' ')}>
+              {gridLines}
+            </g>
+          </svg>
           <Popover
             open={Boolean(this.state.popoverTarget) && this.state.popoverIndex !== 0}
             anchorEl={this.state.popoverTarget!}
@@ -251,7 +399,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
             }}>
             {plotInfoPopover}
           </Popover>
-        </Paper>
+        </div>
         {overlay}
       </div>
     );
@@ -270,13 +418,16 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
   }
 
   onDragStop(dragEvent) {
-    this.props.actions.reportGridDragging(DragType.STOP, { x: dragEvent.clientX, y: dragEvent.clientY });
+    if (this.props.isDraggingGrid) { 
+      this.props.actions.reportGridDragging(DragType.STOP, { x: dragEvent.clientX, y: dragEvent.clientY });
+    }
   }
 
   onWheel(event: WheelEvent): void {
+    event.stopPropagation();
     const { clientX, clientY, deltaY, deltaMode } = event;
     this.props.actions.changeZoom(-deltaY / 400);
   }
 }
 
-export default withStyles(styles)(UIGrid);
+export default withStyles(styles) (UIGrid);

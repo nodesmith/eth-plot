@@ -9,7 +9,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as Enums from '../constants/Enums';
-import { PlotInfo as PlotInfoData, HoleInfo as HoleInfoData, PurchaseEventInfo } from '../models';
+import { HoleInfo as HoleInfoData, PlotInfo as PlotInfoData } from '../models';
 
 import PlotInfo from './PlotInfo';
 
