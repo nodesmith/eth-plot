@@ -7,4 +7,4 @@ dist
 /contract/build
 src/**/*.js
 src/**/*.map
-gen-src
+gen-src/**/*
