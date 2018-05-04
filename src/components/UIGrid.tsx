@@ -427,7 +427,6 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
     event.stopPropagation();
     const { clientX, clientY, deltaY, deltaMode } = event;
     this.props.actions.changeZoom(-deltaY / 400);
-    // this.reportScroll(-deltaY / 400);
   }
 }
 
