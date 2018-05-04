@@ -254,14 +254,16 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
   }
 
   render() {
-    const scale = this.props.scale;
-    const { plots, holes, plotTransactions } = this.props;
+    const { plots, holes, plotTransactions, scale } = this.props;
+
+    // Gets the svg components for the plots
     const plotRects = buildSvgComponents(plots, plotTransactions, holes, 'img', (plot, plotTransaction, holes, index, props) => {
       return (<image {...props}
         xlinkHref={plot.data.blobUrl}
         preserveAspectRatio="none" />);
     });
 
+    // Gets the svg components for the overlays
     const plotOverlayRects = buildSvgComponents(plots, plotTransactions, holes, 'overlay', (plot, plotTransaction, holes, index, props) => {
       if (index === 0) {
         return undefined;
@@ -273,9 +275,9 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
     });
 
 
+    // Compute the heatmap range
     let minPrice = Number.MAX_SAFE_INTEGER;
     let maxPrice = Number.EPSILON;
-
     plots.forEach((plot) => {
       if (plot.buyoutPrice > 0) {
         minPrice = Math.min(minPrice, plot.buyoutPrice);
@@ -283,6 +285,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
       }
     });
 
+    // Build up the heatmap, interpolating the colors from the d3Palette
     const priceRange = maxPrice - minPrice;
     const heatMapRects = buildSvgComponents(plots, plotTransactions, holes, 'heatmap', (plot, plotTransaction, holes, index, props) => {
       let color = 'black';
@@ -297,6 +300,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
         onClick={(event) => this.plotClicked(plot.zoneIndex, event.target as HTMLElement)}/>);
     });
 
+    // Get the svg components for the gridlines
     const gridLines = buildGridSvg(this.props.scale);
 
     const left = `calc(50vw - ${this.props.centerPoint.x * scale}px)`;
@@ -396,11 +400,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
             {plotInfoPopover}
           </Popover>
         </div>
-        {/* <div style={gridStyle} className={classes.heatmap} >
-          <CoordinateOverlay classes={{}} scale={this.props.scale} />
-        </div> */}
         {overlay}
-        
       </div>
     );
   }

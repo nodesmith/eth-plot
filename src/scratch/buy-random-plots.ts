@@ -25,6 +25,7 @@ const buyRandomPlots = () => {
     const x = Math.floor(Math.random() * 250);
     const y = Math.floor(Math.random() * 250);
     const w = Math.floor(Math.random() * Math.min(50, 250 - x));
+    
     const h = Math.floor(Math.random() * Math.min(50, 250 - y));
 
     const rectToPurchase = {
