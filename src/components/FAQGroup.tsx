@@ -9,7 +9,7 @@ import Typography from 'material-ui/Typography';
 
 export interface FAQGroupProps extends WithStyles {
   questions: Array<string>;
-  answers: Array<string>;
+  answers: Array<JSX.Element>;
   groupTitle: string;
 }
 

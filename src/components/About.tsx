@@ -10,6 +10,7 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
+import * as FAQAnswers from './FAQAnswers';
 import FAQGroup from './FAQGroup';
 
 const styles: StyleRulesCallback = theme => ({
@@ -24,25 +25,44 @@ const styles: StyleRulesCallback = theme => ({
 
 const faqGroups = [
   { 
-    title: "General",
+    title: "Getting Started",
     questions: [
       'What is Eth Grid?',
-      'Why would I use this?'
+      'What do I need to start using Eth Grid?',
+      'Installing Metamask and funding your wallet',
+      'Why did we build Eth Grid?'
     ],
     answers: [
-      'Coolest thing since sliced bread.',
-      'Because eth grid is cool.'
+      FAQAnswers.gettingStartedAnswer1(),
+      FAQAnswers.gettingStartedAnswer2(),
+      FAQAnswers.gettingStartedAnswer3(),
+      FAQAnswers.gettingStartedAnswer4(),
     ]
   },
   { 
-    title: "Gameplay",
+    title: "Gameplay Mechanics",
     questions: [
       'How do I purchase a plot?',
-      'How do I sell a plot?'
+      'How does selling a plot work?',
+      'How do I change the price of my plot?',
+      'Are there fees?'
     ],
     answers: [
-      'Coolest thing since sliced bread.',
-      'Because eth grid is cool.'
+      FAQAnswers.gameplayAnswer1(),
+      FAQAnswers.gameplayAnswer2(),
+      FAQAnswers.gameplayAnswer3(),
+      FAQAnswers.gameplayAnswer4(),
+    ]
+  },
+  { 
+    title: "Technical Details",
+    questions: [
+      'How does Eth Grid work?',
+      'Can I see the smart contract?'
+    ],
+    answers: [
+      FAQAnswers.techDetailsAnswer1(),
+      FAQAnswers.techDetailsAnswer2(),
     ]
   },
 ];
@@ -59,10 +79,10 @@ class About extends Component<AboutProps> {
 
     return (
       <Grid className={this.props.classes.root} container justify="center" spacing={24} >
-        <Grid item xs={9} >
+        <Grid item xs={12} >
           <Typography align="center" variant="headline">About Eth Grid</Typography>
         </Grid>
-        <Grid item xs={9} >
+        <Grid item xs={8} md={6} >
           {items}
         </Grid>
       </Grid>

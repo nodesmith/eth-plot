@@ -12,7 +12,7 @@ import Typography from 'material-ui/Typography';
 
 export interface FAQProps extends WithStyles {
   question: string;
-  answer: string;
+  answer: JSX.Element;
 }
 
 const styles: StyleRulesCallback = theme => ({
@@ -25,9 +25,13 @@ const styles: StyleRulesCallback = theme => ({
   },
   question: {
     paddingLeft: 0,
+    paddingTop: 16,
+    paddingBottom: 16
   },
   answer: {
     paddingLeft: 0,
+    paddingBottom: 40,
+    paddingTop: 0
   }
 });
 
@@ -39,9 +43,7 @@ class FAQ extends Component<FAQProps> {
         <Typography variant="subheading">{ this.props.question }</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={this.props.classes.answer}>
-        <Typography>
         { this.props.answer }
-        </Typography>
       </ExpansionPanelDetails>
     </ExpansionPanel>);
   }
