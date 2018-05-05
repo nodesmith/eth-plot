@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import ipfsApi from 'ipfs-api';
+import * as ipfsApi from 'ipfs-api';
 
 import { ActionTypes } from '../constants/ActionTypes';
 import { MovementActions, PurchaseStage } from '../constants/Enums';

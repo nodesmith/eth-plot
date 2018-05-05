@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 
 /// @title EthGrid
 /// @author nova-network
-contract EthGrid2 {
+contract EthGrid {
     struct Rect {
         uint16 x;
         uint16 y;
@@ -50,7 +50,7 @@ contract EthGrid2 {
     event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel, bool newPurchase, address indexed owner);
     event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address indexed buyer);
 
-    function EthGrid2() public payable {
+    constructor() public payable {
         admin = msg.sender;
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         

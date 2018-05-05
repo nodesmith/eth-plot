@@ -1,4 +1,4 @@
-import localforage from 'localforage';
+import * as localforage from 'localforage';
 
 if (!localforage.config({
   driver: localforage.INDEXEDDB,

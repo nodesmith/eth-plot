@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as Web3 from 'web3';
 
-import { EthGrid2 } from '../../gen-src/EthGrid2';
+import { EthGrid } from '../../gen-src/EthGrid';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
@@ -49,9 +49,9 @@ export function doneLoadingPlots() {
   };
 }
 
-export function initializeContract(contractInfo: ContractInfo): Promise<EthGrid2> {
+export function initializeContract(contractInfo: ContractInfo): Promise<EthGrid> {
   const web3 = getWeb3(contractInfo);
-  return EthGrid2.createAndValidate(web3, contractInfo.contractAddress);
+  return EthGrid.createAndValidate(web3, contractInfo.contractAddress);
 }
 
 export function determineTxStatus(tx) {
