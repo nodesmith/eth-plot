@@ -35,7 +35,7 @@ export const gettingStartedAnswer3 = () => (
     extension that serves as a digital wallet.  Once MetaMask has been installed, you will need
     to fund your wallet with Ether, the digital currency that is used to power decentralized
     applications on Ethereum - and also what will be used to purchase a plot on the grid.  You can 
-    send Ether you already own directly to your MetaMask account or purchase Ethere directly through
+    send Ether you already own directly to your MetaMask account or purchase Ether directly through
     MetaMask with their convenient Coinbase integration.
 
     <br/><br/>
@@ -128,3 +128,8 @@ export const techDetailsAnswer2 = () => (
   </Typography>
 );
 
+export const techDetailsAnswer3 = () => (
+  <Typography variant="body2">
+    Eth Grid is deployed on the test net as well, you can interact with it here: LINK TODO.
+  </Typography>
+);

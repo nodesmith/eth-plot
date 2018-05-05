@@ -58,11 +58,13 @@ const faqGroups = [
     title: "Technical Details",
     questions: [
       'How does Eth Grid work?',
-      'Can I see the smart contract?'
+      'Can I see the smart contract?',
+      'Is there a version running on the test net?'
     ],
     answers: [
       FAQAnswers.techDetailsAnswer1(),
       FAQAnswers.techDetailsAnswer2(),
+      FAQAnswers.techDetailsAnswer3(),
     ]
   },
 ];
