@@ -206,10 +206,10 @@ class App extends React.Component<AppProps> {
           <AccountManagerContainer 
             {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
         )}/>
-        <Route path="/about" component={About}/>
         <Route path="/account" render={(routeProps) => (
         <TransactionManagerContainer {...routeProps} {...this.props.account} />
         )}/>
+        <Route path="/about" component={About}/>
       </Switch>
     );
   }
@@ -227,6 +227,7 @@ class App extends React.Component<AppProps> {
 
     const mainAppStyle: React.CSSProperties = {
       position: 'absolute',
+      backgroundColor: 'white',
       top: 0,
       bottom: 0,
       left: 0,

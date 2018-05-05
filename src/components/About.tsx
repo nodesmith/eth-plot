@@ -6,24 +6,67 @@ import ExpansionPanel, {
   ExpansionPanelSummary,
 } from 'material-ui/ExpansionPanel';
 import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
-import FAQ from './FAQ';
+import * as FAQAnswers from './FAQAnswers';
+import FAQGroup from './FAQGroup';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
     paddingTop: 24,
     paddingBottom: 16
+  },
+  main: {
+    padding: 20
   }
 });
 
-const questionsAndAnswers = [
-  { question: 'What is Eth Grid?', answer: 'Coolest thing since sliced bread.' },
-  { question: 'Why would I use this?', answer: 'To be part of hethstory.' },
-  { question: 'Are there fees?', answer: 'Minor, to keep the lights on.  You can interact directly with our contracts though.' }
+const faqGroups = [
+  { 
+    title: "Getting Started",
+    questions: [
+      'What is Eth Grid?',
+      'What do I need to start using Eth Grid?',
+      'Installing Metamask and funding your wallet',
+      'Why did we build Eth Grid?'
+    ],
+    answers: [
+      FAQAnswers.gettingStartedAnswer1(),
+      FAQAnswers.gettingStartedAnswer2(),
+      FAQAnswers.gettingStartedAnswer3(),
+      FAQAnswers.gettingStartedAnswer4(),
+    ]
+  },
+  { 
+    title: "Gameplay Mechanics",
+    questions: [
+      'How do I purchase a plot?',
+      'How does selling a plot work?',
+      'How do I change the price of my plot?',
+      'Are there fees?'
+    ],
+    answers: [
+      FAQAnswers.gameplayAnswer1(),
+      FAQAnswers.gameplayAnswer2(),
+      FAQAnswers.gameplayAnswer3(),
+      FAQAnswers.gameplayAnswer4(),
+    ]
+  },
+  { 
+    title: "Technical Details",
+    questions: [
+      'How does Eth Grid work?',
+      'Can I see the smart contract?',
+      'Is there a version running on the test net?'
+    ],
+    answers: [
+      FAQAnswers.techDetailsAnswer1(),
+      FAQAnswers.techDetailsAnswer2(),
+      FAQAnswers.techDetailsAnswer3(),
+    ]
+  },
 ];
 
 export interface AboutProps extends WithStyles {
@@ -32,16 +75,19 @@ export interface AboutProps extends WithStyles {
 
 class About extends Component<AboutProps> {
   render() {
-    const items = questionsAndAnswers.map((qa, index) => (<FAQ {...this.props} key={index} {...qa} />));
+    const items = faqGroups.map((g, index) =>
+      <FAQGroup questions={g.questions} answers={g.answers} groupTitle={g.title} classes={{}} key={index}/> 
+    );
+
     return (
-        <Grid className={this.props.classes.root} container justify="center" spacing={24} >
-          <Grid item xs={9} >
-            <Typography align="center" variant="headline">About</Typography>
-          </Grid>
-          <Grid item xs={9} >
-            {items}
-          </Grid>
+      <Grid className={this.props.classes.root} container justify="center" spacing={24} >
+        <Grid item xs={12} >
+          <Typography align="center" variant="headline">About Eth Grid</Typography>
         </Grid>
+        <Grid item xs={8} md={6} >
+          {items}
+        </Grid>
+      </Grid>
     );
   }
 }

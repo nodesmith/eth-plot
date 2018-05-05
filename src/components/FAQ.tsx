@@ -10,25 +10,43 @@ import ExpansionPanel, {
 } from 'material-ui/ExpansionPanel';
 import Typography from 'material-ui/Typography';
 
-export interface FAQProps {
+export interface FAQProps extends WithStyles {
   question: string;
-  answer: string;
+  answer: JSX.Element;
 }
+
+const styles: StyleRulesCallback = theme => ({
+  wrapper: {
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '1.5px',
+    borderBottomColor: 'rgba(0,0,0,0.3)'
+  },
+  question: {
+    paddingLeft: 0,
+    paddingTop: 16,
+    paddingBottom: 16
+  },
+  answer: {
+    paddingLeft: 0,
+    paddingBottom: 40,
+    paddingTop: 0
+  }
+});
 
 class FAQ extends Component<FAQProps> {
   render() {
     return (
-    <ExpansionPanel key={this.props.question}>
-      <ExpansionPanelSummary expandIcon={<ExpandMore />}>
+    <ExpansionPanel className={this.props.classes.wrapper} key={this.props.question}>
+      <ExpansionPanelSummary className={this.props.classes.question} expandIcon={<ExpandMore />}>
         <Typography variant="subheading">{ this.props.question }</Typography>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <Typography>
+      <ExpansionPanelDetails className={this.props.classes.answer}>
         { this.props.answer }
-        </Typography>
       </ExpansionPanelDetails>
     </ExpansionPanel>);
   }
 }
 
-export default FAQ;
+export default withStyles(styles)(FAQ);
