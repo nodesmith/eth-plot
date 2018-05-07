@@ -3,6 +3,7 @@ import url from 'url';
 import * as Web3 from 'web3';
 
 import { EthGrid } from '../../gen-src/EthGrid';
+import * as Actions from '../actions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
@@ -175,18 +176,28 @@ function buildArrayFromRectangles(rects: Rect[]): Array<BigNumber> {
   return result;
 }
 
-function getCoinbase(web3: any): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    web3.eth.getCoinbase((error, coinbase) => {
-      if (error) reject(error);  
-      resolve(coinbase);
-    });
-  });
+function getCoinbase(web3: Web3): Promise<string> {
+  return Promise.resolve(web3.eth.defaultAccount!);
+
+  // return new Promise<string>((resolve, reject) => {
+  //   web3.eth.getCoinbase((error, coinbase) => {
+  //     if (error) reject(error);  
+  //     resolve(coinbase);
+  //   });
+  // });
 }
 
 // This is the actual purchase function which will be a thunk
-export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash, initialBuyout: string, changePurchaseStep) {
-  return async (dispatch) => {
+export function purchasePlot(
+  contractInfo: ContractInfo,
+  plots: Array<PlotInfo>,
+  rectToPurchase: Rect,
+  purchasePriceInWei: string,
+  url: string | undefined,
+  ipfsHash: string,
+  initialBuyout: string | undefined,
+  changePurchaseStep: Actions.changePurchaseStep) {
+  return async (dispatch): Promise<string> => {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
     const web3 = getWeb3(contractInfo);
@@ -201,12 +212,12 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
     const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
     const initialPurchasePrice = new BigNumber(initialBuyout || 0);
 
-    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url, initialPurchasePrice);
+    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialPurchasePrice);
     const gasEstimate = await tx.estimateGas();
     const txObject = {
       from: coinbase,
       gas: gasEstimate.times(2),
-      value: '10' // TODO!!
+      value: purchasePriceInWei
     };
 
     const transactionReceipt = await tx.send(txObject);
@@ -215,6 +226,8 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
     dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
     dispatch(togglePurchaseFlow());
     dispatch(changePurchaseStep(Enums.PurchaseStage.DONE));
-    dispatch(fetchPlotsFromWeb3(contractInfo));
+
+    return transactionReceipt;
+    // dispatch(fetchPlotsFromWeb3(contractInfo));
   };
 }

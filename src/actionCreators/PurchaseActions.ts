@@ -84,12 +84,14 @@ export function changeBuyoutEnabled(isEnabled): Action {
 
 // Thunk action for purchasing a plot. This requires uploading the image, submitting it to the chain, and waiting for transformations
 export function completePlotPurchase(
-  contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) {
+  contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, purchasePriceInWei: string,
+  imageData: string, website?: string, initialBuyout?: string) {
   return async (dispatch) => {
     dispatch(startPurchasePlot());
 
     const ipfsHash = await dispatch(uploadImageData(imageData));
-    return dispatch(purchasePlotFromChain(contractInfo, plots, rectToPurchase, website, ipfsHash, initialBuyout!, changePurchaseStep));
+    return dispatch(purchasePlotFromChain(
+      contractInfo, plots, rectToPurchase, website, ipfsHash, initialBuyout!, purchasePriceInWei, changePurchaseStep));
   };
 }
 
@@ -144,7 +146,7 @@ export function toggleShowGrid(show: boolean): Action {
   };
 }
 
-function changePurchaseStep(purchaseStage) {
+export function changePurchaseStep(purchaseStage) {
   return {
     type: ActionTypes.CHANGE_PURCHASE_STAGE,
     purchaseStage

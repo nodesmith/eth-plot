@@ -41,7 +41,7 @@ const buyRandomPlots = () => {
 
     const state = store.getState();
     return DataActions.purchasePlot(
-      state.data.contractInfo, state.data.plots, rectToPurchase, 'http://samm.com', 'abc123', '5512', () => {})(store.dispatch);
+      state.data.contractInfo, state.data.plots, rectToPurchase, '32', 'http://samm.com', 'abc123', '5512', () => {})(store.dispatch);
   }
 
   let buysRemaining = 10;
