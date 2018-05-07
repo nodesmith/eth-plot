@@ -15,11 +15,12 @@ import About from '../components/About';
 import FloatingLogo from '../components/FloatingLogo';
 import MetaMaskStatus from '../components/MetaMaskStatus';
 import OverlayNav, { OverlayNavProps } from '../components/OverlayNav';
-import ProgressSpinner from '../components/ProgressSpinner';
 import * as Enums from '../constants/Enums';
 import { ContractInfo } from '../models';
 import * as Reducers from '../reducers';
 import { RootState } from '../reducers';
+
+import { CircularProgress } from 'material-ui/Progress';
 
 import AccountManagerContainer from './AccountManagerContainer';
 import MainContainer, { MainContainerProps } from './MainContainer';
@@ -205,10 +206,10 @@ class App extends React.Component<AppProps> {
           <AccountManagerContainer 
             {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
         )}/>
-        <Route path="/about" component={About}/>
         <Route path="/account" render={(routeProps) => (
         <TransactionManagerContainer {...routeProps} {...this.props.account} />
         )}/>
+        <Route path="/about" component={About}/>
       </Switch>
     );
   }
@@ -226,6 +227,7 @@ class App extends React.Component<AppProps> {
 
     const mainAppStyle: React.CSSProperties = {
       position: 'absolute',
+      backgroundColor: 'white',
       top: 0,
       bottom: 0,
       left: 0,
@@ -234,17 +236,35 @@ class App extends React.Component<AppProps> {
       overflowX: 'hidden'
     };
 
+    const fullPageContainer: React.CSSProperties = {
+      width: '100%',
+      height: '100%'
+    };
+
+    const metamaskStatus: JSX.Element = (
+      <Grid container style={fullPageContainer} justify="center" alignItems="center">
+        <Grid item>
+          <MetaMaskStatus metamaskState={this.props.account.metamaskState} classes={{}} />
+        </Grid>
+      </Grid>
+    );
+
+    const spinner: JSX.Element = (
+      <Grid container style={fullPageContainer} justify="center" alignItems="center">
+        <Grid item>
+          <CircularProgress size={50} />
+        </Grid>
+      </Grid>
+    );
+
     return (
-      <div className="main-app-container" style={mainAppStyle}>
-        <main>
-          {
-            (this.shouldShowSpinner()) ?
-            <ProgressSpinner classes={{}} /> :
-              (this.props.account.metamaskState !== Enums.METAMASK_STATE.OPEN) ?
-              <MetaMaskStatus metamaskState={this.props.account.metamaskState} classes={{}} /> :
-              mainBodyContent
-          }
-        </main>
+      <div style={mainAppStyle}>
+        {
+          (this.shouldShowSpinner()) ? spinner
+           :
+            (this.props.account.metamaskState !== Enums.METAMASK_STATE.OPEN) ? metamaskStatus 
+            : mainBodyContent
+        }
         <OverlayNav {...navProps} />
       </div>
     );

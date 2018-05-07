@@ -13,8 +13,9 @@ import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
-import { PlotInfo as PlotInfoData, Rect } from '../models';
+import { PlotInfo as PlotInfoData, Rect, PurchaseEventInfo } from '../models';
 import * as PlotMath from '../data/PlotMath';
+import { formatEthValueToString } from '../data/ValueFormatters';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import TextLabel from './TextLabel';
@@ -40,6 +41,7 @@ export interface PlotInfoProps extends WithStyles {
   info: PlotInfoData;
   holes: Array<Rect>;
   updatePrice: (zoneIndex: number, newBuyoutPrice: string) => void;
+  purchaseInfo: PurchaseEventInfo;
 }
 
 interface PlotInfoState {
@@ -144,12 +146,12 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
               <TextLabel caption="Plot for Sale" value={(forSale) ? 'Yes' : 'No'} />
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Original Purchase Price" value='10 ETH' />
+              <TextLabel caption="Original Purchase Price" value={formatEthValueToString(this.props.purchaseInfo.purchasePrice.toString())} />
             </Grid>
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? `${this.props.info.buyoutPrice} wei` : 'NA'} />
+              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? formatEthValueToString(this.props.info.buyoutPrice.toString()) : 'NA'} />
             </Grid>
             <Grid item xs={6}>
               <TextLabel caption="Number of Pixels Sold" value={`${pixelStatus.soldPixelCount} of ${totalPixels}`} />
