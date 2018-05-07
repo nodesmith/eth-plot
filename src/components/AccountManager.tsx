@@ -9,7 +9,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as Enums from '../constants/Enums';
-import { HoleInfo as HoleInfoData, PlotInfo as PlotInfoData } from '../models';
+import { HoleInfo as HoleInfoData, PlotInfo as PlotInfoData, PurchaseEventInfo } from '../models';
 
 import PlotInfo from './PlotInfo';
 
@@ -38,7 +38,7 @@ class AccountManager extends Component<AccountManagerProps> {
    */
   getUserFilteredPlots(): Array<PlotInfoData> {
     return this.props.plots.filter((plot, index) => {
-      if (index != plot.zoneIndex) {
+      if (index !== plot.zoneIndex) {
         throw 'Unexpected malformed data in plots data.';
       }
       
@@ -77,7 +77,7 @@ class AccountManager extends Component<AccountManagerProps> {
     return (
       <Grid container className={this.props.classes.root} justify="center" spacing={24} >
         {plotInfoComponents}
-        {(filteredPlots.length == 0) ? 
+        {(filteredPlots.length === 0) ? 
           <Typography className={this.props.classes.noTxHeader} variant="subheading">You do not own any plots on the grid. Visit the grid to purchase a plot.</Typography>
           : null
         }

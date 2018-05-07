@@ -1,5 +1,5 @@
 declare module 'ipfs-api' {
-  export default function(host: string, port: string, config: { protocol: string }): ipfs;
+  export = function(host: string, port: string, config: { protocol: string }): ipfs;
 }
 
 declare class files {
