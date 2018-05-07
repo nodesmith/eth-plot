@@ -18,7 +18,7 @@ export interface GridState {
 }
 
 const determineInitialScale = (): number => {
-  const smallerDimension = Math.min(window.innerHeight, window.innerWidth);
+  const smallerDimension = typeof window !== 'undefined' ? Math.min(window.innerHeight, window.innerWidth) : 500;
   const initialPadding = 70;
   const targetSize = smallerDimension - (initialPadding * 2);
   return targetSize / 250; // 250 is the initial grid size

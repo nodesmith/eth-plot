@@ -36,6 +36,7 @@ declare module 'web3' {
     namespace providers {
         class HttpProvider implements Web3.Provider {
             constructor(url?: string, timeout?: number, username?: string, password?: string);
+            host: string;
             public sendAsync(
                 payload: Web3.JSONRPCRequestPayload,
                 callback: (err: Error, result: Web3.JSONRPCResponsePayload) => void,
@@ -172,6 +173,7 @@ declare module 'web3' {
         }
 
         interface Provider {
+            host: string;
             sendAsync(
                 payload: JSONRPCRequestPayload,
                 callback: (err: Error, result: JSONRPCResponsePayload) => void,

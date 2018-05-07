@@ -8,6 +8,6 @@ const finalCreateStore = compose(
   applyMiddleware(reduxThunk)
 )<RootState>(createStore) ;
 
-export function configureStore(initialState: RootState): Store<RootState> {
+export function configureStore(initialState?: RootState): Store<RootState> {
   return finalCreateStore(index, initialState);  
 }

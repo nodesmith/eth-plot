@@ -27,6 +27,7 @@
     "@types/redux-devtools-dock-monitor": "^1.1.32",
     "@types/redux-devtools-log-monitor": "^1.0.33",
     "@types/redux-logger": "^3.0.5",
+    "@types/sinon": "^4.3.1",
     "@types/webpack-env": "^1.13.5",
     "ajv": "^6.4.0",
     "autoprefixer": "^6.3.1",
@@ -94,6 +95,7 @@
     "react-router-dom": "^4.2.2",
     "redux": "^3.7.2",
     "redux-thunk": "^1.0.3",
+    "sinon": "^5.0.6",
     "typeface-roboto": "0.0.50",
     "typescript": "^2.8.1",
     "web3": "^0.20.6"

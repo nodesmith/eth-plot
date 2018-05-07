@@ -1,4 +1,5 @@
 import { BigNumber } from 'bignumber.js';
+import url from 'url';
 import * as Web3 from 'web3';
 
 import { EthGrid } from '../../gen-src/EthGrid';
@@ -15,6 +16,13 @@ import { togglePurchaseFlow } from './PurchaseActions';
 import { getWeb3 } from './Web3Actions';
 const hexy = require('hexy');
 const promisePool = require('es6-promise-pool');
+
+export function setWeb3Config(web3Config: ContractInfo) {
+  return {
+    type: ActionTypes.SET_WEB3_CONFIG,
+    web3Config
+  };
+}
 
 export function addPlot(newPlot) {
   return {
@@ -114,7 +122,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
         data: {
           url: plotInfo[6],
           ipfsHash,
-          blobUrl: URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash))
+          blobUrl: typeof URL !== 'undefined' ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash
         },
         zoneIndex: i,
         txHash: ''

@@ -1,15 +1,25 @@
 import * as localforage from 'localforage';
 
-if (!localforage.config({
-  driver: localforage.INDEXEDDB,
-  version: 1.0,
-  description: 'Cache for the grid images',
-  name: 'GridImages'
-})) {
-  throw new Error('Failed to initialize localforage');
-}
+let isInitialized = false;
+const initialize = () => {
+  if (isInitialized) {
+    return;
+  }
+
+  if (!localforage.config({
+    driver: localforage.INDEXEDDB,
+    version: 1.0,
+    description: 'Cache for the grid images',
+    name: 'GridImages'
+  })) {
+    throw new Error('Failed to initialize localforage');
+  }
+
+  isInitialized = true;
+};
 
 export async function loadFromIpfsOrCache(ipfsHash: string, ipfsHost: string = 'https://ipfs.infura.io/ipfs'): Promise<Blob> {
+  initialize();
   const cachedData = await localforage.getItem<Blob>(ipfsHash);
   if (cachedData) {
     console.log(`Got cached version of ${ipfsHash}`);
