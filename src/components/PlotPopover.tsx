@@ -8,7 +8,6 @@ import Typography from 'material-ui/Typography';
 import * as moment from 'moment';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import { formatEthValueToString } from '../data/ValueFormatters';
 import { PlotInfo, PurchaseEventInfo } from '../models/PlotInfo';
@@ -26,7 +25,7 @@ export interface PlotPopoverProps extends WithStyles {
   purchaseEventInfo: PurchaseEventInfo;
 }
 
-class PlotPopover extends Component<PlotPopoverProps> {
+class PlotPopover extends React.Component<PlotPopoverProps> {
 
   viewTransaction() {
     const viewTransactionLink = `https://etherscan.io/tx/${this.props.purchaseEventInfo.txHash}`;

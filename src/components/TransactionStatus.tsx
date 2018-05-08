@@ -6,7 +6,6 @@ import Divider from 'material-ui/Divider';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
-import { Component } from 'react';
 import * as React from 'react';
 
 import * as Enums from '../constants/Enums';
@@ -22,7 +21,7 @@ export interface TransactionStatusProps extends WithStyles {
   tx: UserTransactions;
 }
 
-class TransactionStatus extends Component<TransactionStatusProps> {
+class TransactionStatus extends React.Component<TransactionStatusProps> {
   getTxStatus() {
     let colorClass;
     let statusText;

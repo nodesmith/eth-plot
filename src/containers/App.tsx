@@ -19,7 +19,6 @@ import OverlayNav, { OverlayNavProps } from '../components/OverlayNav';
 import * as Enums from '../constants/Enums';
 import { ContractInfo } from '../models';
 import * as Reducers from '../reducers';
-import { RootState } from '../reducers';
 
 import AccountManagerContainer from './AccountManagerContainer';
 import MainContainer, { MainContainerProps } from './MainContainer';
@@ -274,7 +273,7 @@ class App extends React.Component<AppProps> {
 /**
  * Global redux state.
  */
-function mapStateToProps(state: RootState) {
+function mapStateToProps(state: Reducers.RootState) {
   // console.log(state);
   return {
     account: state.account,

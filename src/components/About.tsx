@@ -8,7 +8,6 @@ import ExpansionPanel, {
 import Grid from 'material-ui/Grid';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import * as FAQAnswers from './FAQAnswers';
 import FAQGroup from './FAQGroup';
@@ -73,7 +72,7 @@ export interface AboutProps extends WithStyles {
 
 }
 
-class About extends Component<AboutProps> {
+class About extends React.Component<AboutProps> {
   render() {
     const items = faqGroups.map((g, index) =>
       <FAQGroup questions={g.questions} answers={g.answers} groupTitle={g.title} classes={{}} key={index}/> 

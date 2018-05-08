@@ -1,6 +1,5 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import Typography from 'material-ui/Typography';
 
@@ -10,7 +9,7 @@ export interface TextLabelProps {
   urlLink?: string;
 }
 
-class TextLabel extends Component<TextLabelProps> {
+class TextLabel extends React.Component<TextLabelProps> {
   render() {
     return (
       <div>

@@ -1,7 +1,6 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import { MovementActions } from '../constants/Enums';
 import { Rect } from '../models';
@@ -16,7 +15,7 @@ export interface PurchasePlotProps extends WithStyles {
   src: string;
 }
 
-class PurchasePlot extends Component<PurchasePlotProps> {
+class PurchasePlot extends React.Component<PurchasePlotProps> {
 
   overlayMouseDown(movement, e) {
     const scale = this.props.scale;
