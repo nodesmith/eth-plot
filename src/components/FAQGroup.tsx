@@ -1,11 +1,10 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
 import FAQ from './FAQ';
-
-import Typography from 'material-ui/Typography';
 
 export interface FAQGroupProps extends WithStyles {
   questions: Array<string>;

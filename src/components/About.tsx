@@ -25,7 +25,7 @@ const styles: StyleRulesCallback = theme => ({
 
 const faqGroups = [
   { 
-    title: "Getting Started",
+    title: 'Getting Started',
     questions: [
       'What is Eth Plot?',
       'What do I need to start using Eth Plot?',
@@ -40,7 +40,7 @@ const faqGroups = [
     ]
   },
   { 
-    title: "Gameplay Mechanics",
+    title: 'Gameplay Mechanics',
     questions: [
       'How do I purchase a plot?',
       'How does selling a plot work?',
@@ -55,7 +55,7 @@ const faqGroups = [
     ]
   },
   { 
-    title: "Technical Details",
+    title: 'Technical Details',
     questions: [
       'How does Eth Plot work?',
       'Can I see the smart contract?',
