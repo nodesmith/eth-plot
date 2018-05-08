@@ -4,7 +4,6 @@ import Slide from 'material-ui/transitions/Slide';
 import Button from 'material-ui/Button';
 import Drawer from 'material-ui/Drawer';
 import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
@@ -14,7 +13,6 @@ import * as Actions from '../actions';
 import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
 
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
-import ZoomControl from './ZoomControl';
 
 const padding = 24;
 const styles: StyleRulesCallback = theme => ({
@@ -106,11 +104,6 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
       <PurchaseFlowCard {...purchaseFlowCardProps} />);
     return (
       <div className={classes.root}>
-        <Slide in={!this.props.purchase.purchaseFlowOpen} direction="up"> 
-          <div className={classes.zoom}>
-            <ZoomControl classes={{}} scale={this.props.zoomLevel} changeZoom={this.props.changeZoom}/>
-          </div>
-        </Slide>
         <Slide in={!this.props.purchase.purchaseFlowOpen} direction="up"> 
           <Button variant="fab" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />

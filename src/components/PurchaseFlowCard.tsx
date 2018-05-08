@@ -24,7 +24,8 @@ const styles: StyleRulesCallback = theme => ({
     height: '100%'
   },
   card: {
-    height: '100%'
+    height: '100%',
+    boxShadow: 'none'
   },
   contrastColor: {
     color: theme.palette.primary.contrastText
@@ -152,7 +153,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
           stepContent = (
           <div>
             <Typography variant="caption">
-              Choose an image to save into the grid forever
+              Choose an image to be shown as the background of your plot.
             </Typography>
             <ChooseImageInputBox
               onImageChanged={this.onImageChanged.bind(this)}
@@ -193,7 +194,8 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
           stepContent = (
           <div>
             <Typography variant="caption">
-              Add an optional website and initial buyout price
+              Add an optional website for your plot.  Viewers of Eth Plot will be able to see
+              what website is associated with your plot.
             </Typography>
             <WebsiteInputBox onWebsiteChanged={this.onWebsiteChanged.bind(this)} website={this.props.website}/>
             { this.getButtons({ text: 'Back', onClick: defaultBackButtonAction }, { text: 'Next', onClick: defaultNextButtonAction }) }
@@ -207,7 +209,9 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
           stepContent = (
           <div>
             <Typography variant="caption">
-              Set an optional initial buyout price
+              Set an initial buyout price of your plot.  This is the price someone
+              must pay to purchase your entire plot. You can change this later. If left disabled, 
+              your plot will not listed for sale.
             </Typography>
             <div className={this.props.classes.buyoutWrapper}>
             <BuyoutPriceInputBox
@@ -246,7 +250,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
             {makeLine('Image', imageName)}
             {makeLine('Grid Location', `x: ${rect.x} y: ${rect.y}`)}
             {makeLine('Plot Dimensions', `${rect.w}x${rect.h} (${rect.w * rect.h} units)`)}
-            {makeLine('Website', this.props.website)}
+            {makeLine('Website', this.props.website || 'None')}
             {makeLine('Buyout Price', buyoutPrice)}
             {this.getButtons({ text: 'Back', onClick: defaultBackButtonAction },
                              { text: 'Buy', onClick: this.completePurchase.bind(this) })}
@@ -282,7 +286,12 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
 
   render() {
     const { classes, purchasePriceInWei } = this.props;
-    const subheading = 'Be Part of History';
+    
+
+    const subheading = (this.props.purchasePriceInWei) 
+    ? `Plot Price: ${formatEthValueToString(this.props.purchasePriceInWei)}`
+    : 'Your plot is a unique, digital good stored on the Ethereum blockchain.';
+    
     return (<div className={classes.root}>
       <Card className={classes.card}>
         <CardHeader className={classes.cardHeader}

@@ -52,7 +52,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     super(props, context);
 
     this.state = {
-      buyoutUnits: 'wei',
+      buyoutUnits: 'eth',
       anchorEl: undefined
     };
   }
@@ -92,7 +92,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     if (!toggleEnabled) {
       return {
         state: null,
-        message: 'Buyout disabled. Go to My Plots to set a buyout price'
+        message: 'Buyout disabled. Your plot will not be listed for sale, but you can change this later in the "My Plots" page.'
       };
     }
 
@@ -166,6 +166,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
             margin="normal"
             onChange={this.buyoutPriceChanged.bind(this)}
             helperText={validation.message}
+            type="number"
           />
           <Chip
             className={classes.unitSelect}

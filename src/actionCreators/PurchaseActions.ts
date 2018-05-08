@@ -93,9 +93,9 @@ export function completePlotPurchase(
   };
 }
 
-export function cancelPlotPurchase(): Action {
+export function closePlotPurchase(): Action {
   return {
-    type: ActionTypes.CANCEL_PLOT_PURCHASE
+    type: ActionTypes.CLOSE_PLOT_PURCHASE
   };
 }
 

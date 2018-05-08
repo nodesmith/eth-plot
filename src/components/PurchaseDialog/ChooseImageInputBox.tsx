@@ -17,6 +17,9 @@ const styles: StyleRulesCallback = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
   },
+  button: {
+    marginBottom: 4
+  },
   formControl: {
     margin: theme.spacing.unit,
   },
@@ -106,7 +109,7 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes> 
     return (
       <div>
         <FormHelperText>{validationMessage}</FormHelperText>
-        <Button variant="raised" id="browse-for-image" onClick={this.browseForImage.bind(this)} > Browse...</Button >
+        <Button variant="raised" className={this.props.classes.button} id="browse-for-image" onClick={this.browseForImage.bind(this)} > Browse...</Button >
         <input
           accept={allowedFileTypes.join(',')}
           onChange={this.onFileSelected.bind(this)}

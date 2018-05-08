@@ -87,7 +87,6 @@ export function fetchAccountTransactions(contractInfo: ContractInfo, currentAddr
 async function getAuctionEvents(contract: EthGrid2, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
-  // TODO: do we need some form of paging when a single user has a ton of transactions?
   const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
   const events = await auctionEvent.get({ fromBlock: 0, toBlock: 'latest' });
 

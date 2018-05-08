@@ -112,7 +112,7 @@ class OverlayNav extends Component<OverlayNavProps> {
     };
 
     const transactionsIcon = this.props.notificationCount ?
-      (<Badge color="secondary" className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
+      (<Badge color="primary" className={this.props.classes.badge} badgeContent={this.props.notificationCount} >
         <Notifications />
       </Badge>) :
       (<Notifications />);

@@ -27,10 +27,10 @@ const faqGroups = [
   { 
     title: "Getting Started",
     questions: [
-      'What is Eth Grid?',
-      'What do I need to start using Eth Grid?',
+      'What is Eth Plot?',
+      'What do I need to start using Eth Plot?',
       'Installing Metamask and funding your wallet',
-      'Why did we build Eth Grid?'
+      'Why did we build Eth Plot?'
     ],
     answers: [
       FAQAnswers.gettingStartedAnswer1(),
@@ -57,7 +57,7 @@ const faqGroups = [
   { 
     title: "Technical Details",
     questions: [
-      'How does Eth Grid work?',
+      'How does Eth Plot work?',
       'Can I see the smart contract?',
       'Is there a version running on the test net?'
     ],
@@ -82,7 +82,7 @@ class About extends Component<AboutProps> {
     return (
       <Grid className={this.props.classes.root} container justify="center" spacing={24} >
         <Grid item xs={12} >
-          <Typography align="center" variant="headline">About Eth Grid</Typography>
+          <Typography align="center" variant="headline">About Eth Plot</Typography>
         </Grid>
         <Grid item xs={8} md={6} >
           {items}
