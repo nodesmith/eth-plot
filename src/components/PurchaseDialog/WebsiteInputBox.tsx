@@ -90,6 +90,7 @@ class WebsiteInputBox extends Component<WebsiteInputBoxPropTypes, {website:strin
       helperText={this.state.websiteValidation.message}
       onChange={this.websiteChanged.bind(this)}
       margin="normal"
+      placeholder="http://"
       value={this.props.website}
     />);
   }

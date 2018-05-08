@@ -201,12 +201,18 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
       value: '10' // TODO!!
     };
 
-    const transactionReceipt = await tx.send(txObject);
+    // Wrap this in a try catch to catch the case where the user rejects
+    // the transaction in metamask so that we can show them an error.
+    try {
+      const transactionReceipt = await tx.send(txObject);
 
-    const txStatus = determineTxStatus(transactionReceipt);
-    dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
-    dispatch(togglePurchaseFlow());
-    dispatch(changePurchaseStep(Enums.PurchaseStage.DONE));
-    dispatch(fetchPlotsFromWeb3(contractInfo));
+      const txStatus = determineTxStatus(transactionReceipt);
+      dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
+      dispatch(togglePurchaseFlow());
+      dispatch(changePurchaseStep(Enums.PurchaseStage.USER_CONFIRM));
+    } catch (e) {
+      dispatch(togglePurchaseFlow());
+      dispatch(changePurchaseStep(Enums.PurchaseStage.ERROR));
+    }
   };
 }

@@ -50,9 +50,7 @@ class TransactionStatus extends Component<TransactionStatusProps> {
   render() {
     const etherscanUrl = `https://etherscan.io/tx/${this.props.tx.txHash}`;
     const isAuction = (this.props.tx.txType === Enums.TxType.AUCTION);
-
-    // TODO, this component should contain a more info dropdown with the summary
-    // of each transaction.
+    
     const txTextComponent = (isAuction) ? 'Auction Update Transaction' : 'Purchase Transaction';
     const txStatusComponent = this.getTxStatus();
 

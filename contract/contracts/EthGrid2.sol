@@ -56,7 +56,7 @@ contract EthGrid2 {
         // Initialize the contract with a single block with the admin owns
         uint256[] memory holes; // TODO - do we need to initialize this or is it done for us?
         ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
-        data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://spacedust.io"));
+        data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://www.ethplot.com/"));
         createAuction(0, INITIAL_AUCTION_PRICE);
         balances[admin] = 0;
     }
@@ -200,8 +200,6 @@ contract EthGrid2 {
 
       return totalPrice;
     }
-
-    event PurchasePrice(uint256 price);
     
     function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (Rect memory) {
         require(purchase.length == 4);
@@ -250,7 +248,6 @@ contract EthGrid2 {
       // If we have a matching area, the sub rects are all contained within what we're purchasing, and none of them overlap,
       // we know we have a complete tiling of the rectToPurchase. Next, compute what the price should be for all this
       uint256 purchasePrice = computePurchasePrice(rectToPurchase, rects, areaIndices);
-      PurchasePrice(purchasePrice);
       
       return rectToPurchase;
     }

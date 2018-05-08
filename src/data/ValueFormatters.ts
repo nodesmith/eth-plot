@@ -19,7 +19,7 @@ export function formatEthValue(ammountInWei: string | Decimal): FormattedValue {
     };
   }
 
-  const value = new Decimal(ammountInWei);
+   const value = new Decimal(ammountInWei);
 
   if (value.lessThan(new Decimal('1.0e6'))) {
     return {
