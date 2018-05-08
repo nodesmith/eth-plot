@@ -58,7 +58,7 @@ contract EthGrid is Ownable{
         // Initialize the contract with a single block with the admin owns
         uint256[] memory holes; // TODO - do we need to initialize this or is it done for us?
         ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
-        data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://spacedust.io"));
+        data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://www.ethplot.com/"));
         createAuction(0, INITIAL_AUCTION_PRICE);
     }
 
