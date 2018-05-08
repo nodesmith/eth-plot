@@ -5,7 +5,7 @@ import Button from 'material-ui/Button';
 import Card, { CardActions, CardContent, CardHeader, CardMedia } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
-import moment from 'moment';
+import * as moment from 'moment';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';

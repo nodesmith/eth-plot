@@ -1,11 +1,14 @@
 import * as React from 'react';
 
+import * as Actions from '../actions';
 import AccountManager from '../components/AccountManager';
-import { ContractInfo, PlotInfo, HoleInfo, PurchaseEventInfo } from '../models';
+import { ContractInfo, HoleInfo, PlotInfo, PurchaseEventInfo } from '../models';
 
 export interface AccountManagerContainerProps {
   metamaskState: number;
-  actions: any; // TODO
+  actions: {
+    updateAuction: Actions.updateAuction
+  };
   contractInfo: ContractInfo;
   activeAccount: string;
   plots: Array<PlotInfo>;
@@ -16,7 +19,7 @@ export interface AccountManagerContainerProps {
 class AccountManagerContainer extends React.Component<AccountManagerContainerProps> {
   updatePrice(zoneIndex, buyoutPrice) {
     this.props.actions.updateAuction(
-      this.props.contractInfo, zoneIndex, buyoutPrice);    
+      this.props.contractInfo, zoneIndex, buyoutPrice, this.props.activeAccount);
   }
 
   render() {

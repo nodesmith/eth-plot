@@ -85,6 +85,8 @@ export interface PurchaseFlowCardProps extends WithStyles {
 
   showHeatmap: boolean;
   showGrid : boolean;
+
+  activeAccount: string;
 }
 
 class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
@@ -114,10 +116,10 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
   }
 
   completePurchase() {
-    const { contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPriceInWei, buyoutEnabled } = this.props;
+    const { purchasePriceInWei, contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPriceInWei, buyoutEnabled, activeAccount } = this.props;
     const initialBuyout = buyoutEnabled ? buyoutPriceInWei : '';
 
-    this.props.purchasePlot(contractInfo, plots, rectToPurchase!, imageFileInfo!.blobUrl, website, initialBuyout);
+    this.props.purchasePlot(contractInfo, plots, rectToPurchase!, purchasePriceInWei, imageFileInfo!.blobUrl, website, initialBuyout, activeAccount);
   }
 
   getButtons(backButtonProps, nextButtonProps) {

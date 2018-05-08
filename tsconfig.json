@@ -3,7 +3,7 @@
       "outDir": "./lib/",        // path to output directory
       "sourceMap": true,          // allow sourcemap support
       "strictNullChecks": true,   // enable strict null checks as a best practice
-      "module": "es6",            // specify module code generation
+      "module": "commonjs",            // specify module code generation
       "jsx": "react",             // use typescript to transpile jsx to js
       "target": "es2015",            // specify ECMAScript target version
       "allowJs": false,             // allow a partial TypeScript and JavaScript codebase
@@ -15,6 +15,7 @@
       "./types/**/*.d.ts",
       "./gen-src/**/*.ts",
       "./src/**/*.ts",
-      "./src/**/*.tsx"
+      "./src/**/*.tsx",
+      "./truffle-tests/**/*.ts"
   ]
 }

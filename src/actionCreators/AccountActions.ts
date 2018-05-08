@@ -3,7 +3,7 @@ import { Dispatch } from 'react-redux';
 import * as Web3 from 'web3';
 
 import { DecodedLogEntry } from '../../gen-src/typechain-runtime';
-import { EthGrid2, EthGrid2EventTypes } from '../../gen-src/EthGrid2';
+import { EthGrid, EthGridEventTypes } from '../../gen-src/EthGrid';
 import * as DataActions from '../actionCreators/DataActions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
@@ -84,7 +84,7 @@ export function fetchAccountTransactions(contractInfo: ContractInfo, currentAddr
   };
 }
 
-async function getAuctionEvents(contract: EthGrid2, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
   const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
@@ -102,7 +102,7 @@ async function getAuctionEvents(contract: EthGrid2, currentAddress: string, disp
   });
 }
 
-async function getPurchaseEvents(contract: EthGrid2, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+async function getPurchaseEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
 
   const purchaseEvent = contract.PlotPurchasedEvent({ });
 
@@ -135,7 +135,7 @@ async function getPurchaseEvents(contract: EthGrid2, currentAddress: string, dis
 }
 
 function auctionTransactionHandler(
-  tx: DecodedLogEntry<EthGrid2EventTypes.AuctionUpdatedEventArgs>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void { 
+  tx: DecodedLogEntry<EthGridEventTypes.AuctionUpdatedEventArgs>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void { 
   // Since the auction update is called for new purchases as well as an actual update
   // to an existing price, we use this flag to determine if we should show this transaction
   // from a UI standpoint as an "update price" transaction.

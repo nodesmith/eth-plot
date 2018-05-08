@@ -45,5 +45,4 @@ const rootReducer = combineReducers<RootState>({
   purchaseDialog: purchaseDialogReducer
 });
 
-
 export default rootReducer;

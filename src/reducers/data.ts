@@ -1,5 +1,4 @@
 import { BigNumber } from 'bignumber.js';
-import * as jsCookie from 'js-cookie';
 import * as red from 'redux';
 import * as Web3 from 'web3';
 
@@ -7,12 +6,9 @@ import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as PlotMath from '../data/PlotMath';
+import * as Web3Config from '../data/Web3Config';
 import { ContractInfo, HoleInfo, PlotInfo, PurchaseEventInfo, Rect } from '../models';
 
-
-type web3ConfigType = { contractAddress: string, web3Provider: string };
-const web3Config = <web3ConfigType>jsCookie.getJSON('web3Config')!;
-const { contractAddress, web3Provider } = web3Config;
 
 export interface DataState {
   isFetchingPlots: boolean;
@@ -28,26 +24,35 @@ export interface DataState {
   purchaseInfo?: PurchaseInfo;
 }
 
-const initialState: DataState = {
-  isFetchingPlots: false,
-  numberOfPlots: 0,
-  plots: [],
-  plotTransactions: {
-    0: { purchaseIndex: 0, purchasePrice: '0', blockNumber: 0, txHash: '' } // Initialize the background block
-  },
-  holes: {},
-  gridInfo: {
-    height: 250,
-    width: 250
-  },
-  contractInfo: {
-    contractAddress,
-    web3Provider
-  },
-  purchaseInfo: undefined,
+
+const getInitialState = () => {
+  const contractInfo = Web3Config.getWeb3Config();
+  
+  const initialState: DataState = {
+    isFetchingPlots: true,
+    numberOfPlots: 0,
+    plots: [],
+    plotTransactions: {
+      0: { purchaseIndex: 0, purchasePrice: '0', blockNumber: 0, txHash: '' } // Initialize the background block
+    },
+    holes: {},
+    gridInfo: {
+      height: 250,
+      width: 250
+    },
+    contractInfo,
+    purchaseInfo: undefined,
+  };
+
+  return initialState;
 };
 
-export function dataReducer(state: DataState = initialState, action: Action): DataState {
+export function dataReducer(state: DataState, action: Action): DataState {
+  if (!state) {
+    // tslint:disable-next-line:no-parameter-reassignment
+    state = getInitialState();
+  }
+
   switch (action.type) {
     case ActionTypes.ADD_PLOT: {
       const newHoles = computeNewHoles(action.newPlot.rect, state.holes, state.plots);
@@ -97,6 +102,9 @@ export function dataReducer(state: DataState = initialState, action: Action): Da
       }
 
       return Object.assign({}, state, { plotTransactions });
+    }
+    case ActionTypes.SET_WEB3_CONFIG: {
+      return Object.assign({}, state, { contractInfo: action.web3Config });
     }
     default:
       return state;

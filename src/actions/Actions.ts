@@ -18,14 +18,15 @@ export type listPlots = () => void;
 export type plotListed = (txHash: string, zoneIndex: number) => void;
 export type doneLoadingPlots = () => void;
 export type fetchPlotsFromWeb3 = (contractInfo: ContractInfo) => void;
-export type updateAuction = (contractInfo: ContractInfo, zoneIndex: number, newPrice: string) => void;
+export type updateAuction = (contractInfo: ContractInfo, zoneIndex: number, newPrice: string, activeAccount: string) => void;
 export type purchasePlot = 
   (contractInfo: ContractInfo,
    plots: Array<PlotInfo>,
    rectToPurchase: Rect,
    url: string,
    ipfsHash: string,
-   changePurchaseStep: (stage: Enums.PurchaseStage) => void) => void;
+   changePurchaseStep: (stage: Enums.PurchaseStage) => void,
+   activeAccount: string) => void;
 export type loadBlockInfo = (contractInfo: ContractInfo, blockNumber: number) => void;
 
 // Grid Actions
@@ -53,7 +54,13 @@ export type changePlotBuyout = (buyoutPriceInWei: string) => void;
 export type changeBuyoutEnabled = (isEnabled: boolean) => void;
 export type completePlotPurchase = 
   (contractInfo: ContractInfo, 
-   plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) => void;
+   plots: Array<PlotInfo>,
+   rectToPurchase: Rect,
+   purchasePriceInWei: string,
+   imageData: string,
+   website: string | undefined,
+   initialBuyout: string | undefined,
+   activeAccount: string) => void;
 export type closePlotPurchase = () => void;
 export type startPurchasePlot = () => void;
 export type changePurchaseStep = (purchaseStage: Enums.PurchaseStage) => void;

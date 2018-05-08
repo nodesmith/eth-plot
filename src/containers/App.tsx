@@ -1,5 +1,6 @@
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
+import { CircularProgress } from 'material-ui/Progress';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Route, RouteComponentProps, Switch } from 'react-router-dom';
@@ -19,8 +20,6 @@ import * as Enums from '../constants/Enums';
 import { ContractInfo } from '../models';
 import * as Reducers from '../reducers';
 import { RootState } from '../reducers';
-
-import { CircularProgress } from 'material-ui/Progress';
 
 import AccountManagerContainer from './AccountManagerContainer';
 import MainContainer, { MainContainerProps } from './MainContainer';
@@ -189,6 +188,7 @@ class App extends React.Component<AppProps> {
       dragRectCurr: this.props.grid.dragRectCurr,
       dragRectStart: this.props.grid.dragRectStart,
       isDraggingRect: this.props.grid.isDraggingRect,
+      activeAccount: this.props.account.activeAccount,
       purchaseDialog: {
         closePlotPurchase: actions.closePlotPurchase,
         purchaseStage: this.props.purchaseDialog.purchaseStage,
