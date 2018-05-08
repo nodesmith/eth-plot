@@ -118,11 +118,10 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
 
   render() {
     const plotURL = (this.props.info.data.url) ? this.props.info.data.url : 'None';
-    const forSale = (this.props.info.buyoutPrice > 0);
+    const forSale = (this.props.info.buyoutPricePerPixelInWei > 0);
 
     const pixelStatus = this.computePixelStatus();
     const totalPixels = this.props.info.rect.w * this.props.info.rect.h;
-    const buyoutPricePerPixel = this.props.info.buyoutPrice / totalPixels;
 
     return (
       <Grid className={this.props.classes.root} container spacing={8}>
@@ -152,14 +151,14 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? formatEthValueToString(buyoutPricePerPixel.toString()) : 'NA'} />
+              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? formatEthValueToString(this.props.info.buyoutPricePerPixelInWei.toString()) : 'NA'} />
             </Grid>
             <Grid item xs={6}>
               <TextLabel caption="Number of Pixels Sold" value={`${pixelStatus.soldPixelCount} of ${totalPixels}`} />
             </Grid>
           </Grid>
           <Divider className={this.props.classes.divider} light />
-          <BuyoutPriceInputBox          
+          <BuyoutPriceInputBox
             onBuyoutChanged={this.onBuyoutChanged.bind(this)}
             onToggleChanged={this.onToggleChanged.bind(this)}
             rectToPurchase={this.props.info.rect}

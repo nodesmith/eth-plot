@@ -25,6 +25,8 @@ export type purchasePlot =
    rectToPurchase: Rect,
    url: string,
    ipfsHash: string,
+   initialBuyoutInWei: string, 
+   initialPurchasePriceInWei: string,
    changePurchaseStep: (stage: Enums.PurchaseStage) => void) => void;
 export type loadBlockInfo = (contractInfo: ContractInfo, blockNumber: number) => void;
 
@@ -53,7 +55,7 @@ export type changePlotBuyout = (buyoutPriceInWei: string) => void;
 export type changeBuyoutEnabled = (isEnabled: boolean) => void;
 export type completePlotPurchase = 
   (contractInfo: ContractInfo, 
-   plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, website?: string, initialBuyout?: string) => void;
+   plots: Array<PlotInfo>, rectToPurchase: Rect, imageData: string, initialPurchasePriceInWei: string, website?: string, initialBuyout?: string) => void;
 export type closePlotPurchase = () => void;
 export type startPurchasePlot = () => void;
 export type changePurchaseStep = (purchaseStage: Enums.PurchaseStage) => void;

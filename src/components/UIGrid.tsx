@@ -279,9 +279,9 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
     let minPrice = Number.MAX_SAFE_INTEGER;
     let maxPrice = Number.EPSILON;
     plots.forEach((plot) => {
-      if (plot.buyoutPrice > 0) {
-        minPrice = Math.min(minPrice, plot.buyoutPrice);
-        maxPrice = Math.max(maxPrice, plot.buyoutPrice);
+      if (plot.buyoutPricePerPixelInWei > 0) {
+        minPrice = Math.min(minPrice, plot.buyoutPricePerPixelInWei);
+        maxPrice = Math.max(maxPrice, plot.buyoutPricePerPixelInWei);
       }
     });
 
@@ -289,8 +289,8 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
     const priceRange = maxPrice - minPrice;
     const heatMapRects = buildSvgComponents(plots, plotTransactions, holes, 'heatmap', (plot, plotTransaction, holes, index, props) => {
       let color = 'black';
-      if (plot.buyoutPrice > 0) {
-        const aboveMin = plot.buyoutPrice - minPrice;
+      if (plot.buyoutPricePerPixelInWei > 0) {
+        const aboveMin = plot.buyoutPricePerPixelInWei - minPrice;
         const value = 1 - (aboveMin / priceRange);
         color = d3Palette.interpolateRdYlGn(value);
       }
