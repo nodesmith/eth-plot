@@ -155,7 +155,6 @@ contract EthGrid is Ownable{
 
     function distributePurchaseFunds(Rect memory rectToPurchase, Rect[] memory rects, uint256[] memory areaIndices) private returns (uint256) {
         uint256 remainingBalance = msg.value;
-        // uint256 remainingBalance = 4000000;
         uint256 areaIndicesIndex = 0;
 
         // Walk the ownership array backwards. Do funny checks for incrementing and decrementing indices becaues uints will wrap
