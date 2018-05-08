@@ -110,7 +110,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
           y2: 0
         },
         owner: plotInfo[4],
-        buyoutPrice: plotInfo[5].toNumber(), // TODO
+        buyoutPricePerPixelInWei: plotInfo[5].mul(1e9).toNumber(), // Numbers are stored in contract in GWei
         data: {
           url: plotInfo[6],
           ipfsHash,
@@ -177,7 +177,7 @@ function getCoinbase(web3: any): Promise<string> {
 }
 
 // This is the actual purchase function which will be a thunk
-export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash, initialBuyout: string, changePurchaseStep) {
+export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash, initialBuyoutInWei: string, initialPurchasePriceInWei: string, changePurchaseStep) {
   return async (dispatch) => {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
@@ -191,9 +191,11 @@ export function purchasePlot(contractInfo, plots, rectToPurchase, url, ipfsHash,
     const purchase = buildArrayFromRectangles([rectToPurchase]);
     const purchasedAreas = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
     const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
-    const initialPurchasePrice = new BigNumber(initialBuyout || 0);
+    const totalInitialPurchasePrice = new BigNumber(initialPurchasePriceInWei);
+    const initialBuyoutInWeiBn = new BigNumber(initialBuyoutInWei || 0);
+    const initialBuyoutPriceInGweiPerPixel = initialBuyoutInWeiBn.div(1e9).div(rectToPurchase.w * rectToPurchase.h);
 
-    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url, initialPurchasePrice);
+    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url, totalInitialPurchasePrice, initialBuyoutPriceInGweiPerPixel);
     const gasEstimate = await tx.estimateGas();
     const txObject = {
       from: coinbase,

@@ -100,7 +100,7 @@ contract EthGrid2 {
       AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
     }
 
-    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
+    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice, uint256 initialBuyoutPriceInGweiPerPixel) public payable returns (uint256) {
       Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
       
       // TODO - Require the funds to make sense and pay everyone out
@@ -120,7 +120,7 @@ contract EthGrid2 {
       ZoneData memory newData = ZoneData(ipfsHash, url);
       data.push(newData);
 
-      updateAuction(ownership.length - 1, initialPurchasePrice, true);
+      updateAuction(ownership.length - 1, initialBuyoutPriceInGweiPerPixel, true);
       PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
 
       return ownership.length - 1;

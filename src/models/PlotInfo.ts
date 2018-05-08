@@ -9,7 +9,7 @@ export interface PlotInfo {
   };
   zoneIndex: number;
   txHash: string;
-  buyoutPrice: number; // TODO
+  buyoutPricePerPixelInWei: number; // TODO
   owner: string;
 }
 

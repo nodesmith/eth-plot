@@ -36,8 +36,8 @@ class PlotPopover extends Component<PlotPopoverProps> {
   render() {
     const { classes } = this.props;
 
-    const buyoutPriceMessage = this.props.plot.buyoutPrice > 0 ?
-      `${formatEthValueToString(this.props.plot.buyoutPrice.toString())}  per pixel` :
+    const buyoutPriceMessage = this.props.plot.buyoutPricePerPixelInWei > 0 ?
+      `${formatEthValueToString(this.props.plot.buyoutPricePerPixelInWei.toString())}  per pixel` :
       'Not for sale';
 
     let title: JSX.Element | string = 'No Website Provided';

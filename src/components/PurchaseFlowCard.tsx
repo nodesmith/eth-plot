@@ -114,10 +114,10 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
   }
 
   completePurchase() {
-    const { contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPriceInWei, buyoutEnabled } = this.props;
+    const { contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPriceInWei, buyoutEnabled, purchasePriceInWei } = this.props;
     const initialBuyout = buyoutEnabled ? buyoutPriceInWei : '';
 
-    this.props.purchasePlot(contractInfo, plots, rectToPurchase!, imageFileInfo!.blobUrl, website, initialBuyout);
+    this.props.purchasePlot(contractInfo, plots, rectToPurchase!, imageFileInfo!.blobUrl, purchasePriceInWei, website, initialBuyout);
   }
 
   getButtons(backButtonProps, nextButtonProps) {
@@ -217,7 +217,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
             <BuyoutPriceInputBox
               onBuyoutChanged={this.onBuyoutChanged.bind(this)}
               onToggleChanged={this.onBuyoutEnabledChanged.bind(this)}
-              rectToPurchase={{ x: 0, y: 0, w: 10, h:10 }}
+              rectToPurchase={this.props.rectToPurchase!}
               purchasePrice={this.props.purchasePriceInWei}
               buyoutPriceInWei={this.props.buyoutPriceInWei}
               toggleEnabled={this.props.buyoutEnabled}
