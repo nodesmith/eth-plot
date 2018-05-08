@@ -32,7 +32,6 @@ contract EthGrid is Ownable{
     uint public feeInThousandsOfPercent;
     ZoneOwnership[] public ownership;
     ZoneData[] public data;
-    mapping(address => uint256) public balances;
     
     // Maps zone ID to auction price. If price is 0, no auction is 
     // available for that zone. Price is gwei per pixel.
@@ -202,7 +201,7 @@ contract EthGrid is Ownable{
 
             if (owedToSeller > 0) {
                 // Update the balances and emit an event to indicate the chunks of this plot which were sold
-                balances[ownership[ownershipIndex].owner] = SafeMath.add(balances[ownership[ownershipIndex].owner], owedToSeller);
+                address(ownership[ownershipIndex].owner).transfer(owedToSeller);
                 PlotSectionSold(ownershipIndex, owedToSeller, msg.sender, ownership[ownershipIndex].owner);
             }
         }
@@ -262,7 +261,6 @@ contract EthGrid is Ownable{
         // If we have a matching area, the sub rects are all contained within what we're purchasing, and none of them overlap,
         // we know we have a complete tiling of the rectToPurchase. Next, compute what the price should be for all this
         uint256 remainingFunds = distributePurchaseFunds(rectToPurchase, rects, areaIndices);
-        uint256 purchasePrice = SafeMath.add(remainingFunds, msg.value);
         
         return rectToPurchase;
     }

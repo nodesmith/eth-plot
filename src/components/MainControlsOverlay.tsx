@@ -82,6 +82,7 @@ export interface MainControlsOverlayProps extends WithStyles {
   contractInfo: ContractInfo;
   plots: Array<PlotInfo>;
   togglePurchaseFlow: () => void;
+  activeAccount: string;
 }
 
 class MainControlsOverlay extends Component<MainControlsOverlayProps> {
@@ -97,6 +98,7 @@ class MainControlsOverlay extends Component<MainControlsOverlayProps> {
       onClose: () => this.toggleDrawer(),
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,
+      activeAccount: this.props.activeAccount,
       classes: {},
       ...this.props.purchase,
       ...this.props.purchaseActions

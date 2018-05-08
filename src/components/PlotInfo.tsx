@@ -8,15 +8,15 @@ import ExpansionPanel, {
 } from 'material-ui/ExpansionPanel';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
-import PlotPreviewCard from './PlotPreviewCard';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
-import { PlotInfo as PlotInfoData, Rect, PurchaseEventInfo } from '../models';
 import * as PlotMath from '../data/PlotMath';
 import { formatEthValueToString } from '../data/ValueFormatters';
+import { PlotInfo as PlotInfoData, PurchaseEventInfo, Rect } from '../models';
 
+import PlotPreviewCard from './PlotPreviewCard';
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import TextLabel from './TextLabel';
 
@@ -85,13 +85,13 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
    * The entry is true if the pixel has been sold and false otherwise.
    */
   computePixelStatus(): PixelStatus {
-    let pixelStatus: Array<boolean> = [];
+    const pixelStatus: Array<boolean> = [];
     let soldPixelCount = 0;
 
-    let startingX = this.props.info.rect.x;
-    let startingY = this.props.info.rect.y;
-    let endingX = startingX + this.props.info.rect.w;
-    let endingY = startingY + this.props.info.rect.h;
+    const startingX = this.props.info.rect.x;
+    const startingY = this.props.info.rect.y;
+    const endingX = startingX + this.props.info.rect.w;
+    const endingY = startingY + this.props.info.rect.h;
 
     for (let x = startingX; x < endingX; x++) {
       for (let y = startingY; y < endingY; y++) {
@@ -112,7 +112,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
     // pixels for this plot.  This wrapper can be passed down to child components. 
     return {
       soldPixels: pixelStatus,
-      soldPixelCount: soldPixelCount
+      soldPixelCount
     };
   }
 
@@ -138,7 +138,10 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
               <TextLabel caption="Plot url" value={plotURL} urlLink={this.props.info.data.url}/>
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Purchase Transaction" value="0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a" urlLink="https://etherscan.io/tx/0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a"/>
+              <TextLabel 
+                caption="Purchase Transaction"
+                value="0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a"
+                urlLink="https://etherscan.io/tx/0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a"/>
             </Grid>
           </Grid>
           <Grid container spacing={8}>

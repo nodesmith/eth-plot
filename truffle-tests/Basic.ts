@@ -64,8 +64,8 @@ contract('EthGrid', (accounts: string[]) => {
 
     const sellerAccount = accounts[0];
     const buyerAccount = accounts[4];
-    const oldBuyerBalance = await getBalance(buyerAccount);
-    const sellerContractBalanceOld = new BigNumber(await ethGrid.balances(sellerAccount));
+    const buyerBalanceOld = await getBalance(buyerAccount);
+    const sellerBalanceOld = await getBalance(sellerAccount);
 
     web3.eth.defaultAccount = buyerAccount;
 
@@ -74,11 +74,11 @@ contract('EthGrid', (accounts: string[]) => {
       state.data.plots,
       rectToPurchase,
       purchaseInfo.purchasePrice,
-      // purchaseInfo.purchasePrice,
       purchaseUrl,
       ipfsHash,
       buyoutPrice.toString(),
-      changePurchaseStep);
+      changePurchaseStep,
+      buyerAccount);
 
     // Make the purchase
     const transactionHash = await purchaseAction(store.dispatch);
@@ -91,16 +91,16 @@ contract('EthGrid', (accounts: string[]) => {
     assert.equal(loadedPlots[1].owner, accounts[4]);
 
     // Look up some transaction info and make sure that the buyer's balance has decreased as expected
-    const newBuyerBalance = await getBalance(buyerAccount);
-    const balanceDifference = oldBuyerBalance.sub(newBuyerBalance);
+    const buyerBalanceNew = await getBalance(buyerAccount);
+    const balanceDifference = buyerBalanceOld.sub(buyerBalanceNew);
     const blockInfo = <Web3.BlockWithoutTransactionData>(await promisify(web3.eth.getBlock, ['latest']));
     assert.equal(transactionHash, blockInfo.transactions[0]);
     const expectedDifference = new BigNumber(blockInfo.gasUsed).plus(new BigNumber(purchaseInfo.purchasePrice));
     assert.equal(expectedDifference.toString(), balanceDifference.toString());
 
-    const sellerContractBalanceNew = new BigNumber(await ethGrid.balances(sellerAccount));
-    const sellerContractBalanceDifference = sellerContractBalanceNew.minus(sellerContractBalanceOld);
-    assert.equal(purchaseInfo.purchasePrice, sellerContractBalanceDifference.toString());
+    const sellerBalanceNew =  await getBalance(sellerAccount);
+    const sellerBalanceDifference = sellerBalanceNew.minus(sellerBalanceOld);
+    assert.equal(purchaseInfo.purchasePrice, sellerBalanceDifference.toString());
 
     // Finally, check that we got the sold event we're expecting
     const purchaseEvents = await ethGrid.PlotSectionSoldEvent({}).get({});

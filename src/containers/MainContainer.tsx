@@ -83,6 +83,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     purchaseStage: number;
     isShowing: boolean;
   };
+  activeAccount: string;
 }
 
 class MainContainer extends React.Component<MainContainerProps> {
@@ -138,7 +139,8 @@ class MainContainer extends React.Component<MainContainerProps> {
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,
       togglePurchaseFlow: this.props.actions.togglePurchaseFlow,
-      changeZoom: this.props.actions.changeZoom
+      changeZoom: this.props.actions.changeZoom,
+      activeAccount: this.props.activeAccount
     };
 
     return (

@@ -140,22 +140,22 @@ export function fetchPlotsFromWeb3(contractInfo) {
 }
 
 // thunk for updating price of plot
-export function updateAuction(contractInfo, zoneIndex, newPrice) {
+export function updateAuction(contractInfo: ContractInfo, zoneIndex: number, newPrice: string, activeAccount: string) {
   return async (dispatch) => {
     const web3 = getWeb3(contractInfo);
-    const coinbase = await getCoinbase(web3);
   
     const contract = await initializeContract(contractInfo);
 
-    const tx = contract.updateAuctionTx(zoneIndex, newPrice, false);
-    const gasEstimate = await tx.estimateGas();
+    const price = new BigNumber(newPrice);
+    const tx = contract.updateAuctionTx(zoneIndex, price, false);
+    const gasEstimate = await tx.estimateGas({});
 
     const txObject = {
-      from: coinbase,
+      from: activeAccount,
       gas: gasEstimate.times(2)
     };
 
-    const transactionReceipt = await contract.updateAuctionTx(zoneIndex, newPrice, false).send(txObject);
+    const transactionReceipt = await contract.updateAuctionTx(zoneIndex, price, false).send(txObject);
 
     const txStatus = determineTxStatus(transactionReceipt);
     dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.AUCTION, txStatus, Number.MAX_SAFE_INTEGER, true));
@@ -176,17 +176,6 @@ function buildArrayFromRectangles(rects: Rect[]): Array<BigNumber> {
   return result;
 }
 
-function getCoinbase(web3: Web3): Promise<string> {
-  return Promise.resolve(web3.eth.defaultAccount!);
-
-  // return new Promise<string>((resolve, reject) => {
-  //   web3.eth.getCoinbase((error, coinbase) => {
-  //     if (error) reject(error);  
-  //     resolve(coinbase);
-  //   });
-  // });
-}
-
 // This is the actual purchase function which will be a thunk
 export function purchasePlot(
   contractInfo: ContractInfo,
@@ -196,7 +185,8 @@ export function purchasePlot(
   url: string | undefined,
   ipfsHash: string,
   initialBuyout: string | undefined,
-  changePurchaseStep: Actions.changePurchaseStep) {
+  changePurchaseStep: Actions.changePurchaseStep,
+  activeAccount: string) {
   return async (dispatch): Promise<string> => {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
 
@@ -204,7 +194,6 @@ export function purchasePlot(
 
     dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_UNLOCK));
 
-    const coinbase = await getCoinbase(web3);
     const contract = await initializeContract(contractInfo);
 
     const purchase = buildArrayFromRectangles([rectToPurchase]);
@@ -215,7 +204,7 @@ export function purchasePlot(
     const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialPurchasePrice);
     const gasEstimate = await tx.estimateGas({ value: purchasePriceInWei });
     const txObject = {
-      from: coinbase,
+      from: activeAccount,
       gas: gasEstimate.times(2),
       value: purchasePriceInWei
     };
