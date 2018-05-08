@@ -120,10 +120,7 @@ contract EthGrid2 {
       ZoneData memory newData = ZoneData(ipfsHash, url);
       data.push(newData);
 
-      if (initialBuyoutPriceInGweiPerPixel > 0) {
-        updateAuction(ownership.length - 1, initialBuyoutPriceInGweiPerPixel, true);
-      }
-
+      updateAuction(ownership.length - 1, initialBuyoutPriceInGweiPerPixel, true);
       PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
 
       return ownership.length - 1;
