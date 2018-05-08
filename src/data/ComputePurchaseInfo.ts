@@ -36,7 +36,7 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
         purchasedChunkAreaIndices.push(i);
 
         // Add up the price of these chunks we are purchasing
-        const plotBuyout = new Decimal(currentPlot.buyoutPrice).mul(chunkOverlap.w * chunkOverlap.h);
+        const plotBuyout = new Decimal(currentPlot.buyoutPricePerPixelInWei).mul(chunkOverlap.w * chunkOverlap.h);
         purchasePrice = purchasePrice.add(plotBuyout);
 
         // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is

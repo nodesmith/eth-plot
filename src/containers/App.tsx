@@ -76,7 +76,7 @@ class App extends React.Component<AppProps> {
       () => {
         this.checkMetamaskStatus(this.props.data.contractInfo);
       },
-      1000);
+      10000000);
   }
 
   checkMetamaskStatus(contractInfo: ContractInfo) {
