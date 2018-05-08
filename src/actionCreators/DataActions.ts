@@ -1,5 +1,4 @@
 import { BigNumber } from 'bignumber.js';
-import url from 'url';
 import * as Web3 from 'web3';
 
 import { EthGrid } from '../../gen-src/EthGrid';
@@ -217,6 +216,5 @@ export function purchasePlot(
     dispatch(changePurchaseStep(Enums.PurchaseStage.DONE));
 
     return transactionReceipt;
-    // dispatch(fetchPlotsFromWeb3(contractInfo));
   };
 }

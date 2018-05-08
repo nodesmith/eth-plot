@@ -67,8 +67,6 @@ contract('EthGrid', (accounts: string[]) => {
     const buyerBalanceOld = await getBalance(buyerAccount);
     const sellerBalanceOld = await getBalance(sellerAccount);
 
-    web3.eth.defaultAccount = buyerAccount;
-
     const purchaseAction = DataActions.purchasePlot(
       state.data.contractInfo,
       state.data.plots,
