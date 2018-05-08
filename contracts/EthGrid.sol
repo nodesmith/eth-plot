@@ -51,6 +51,7 @@ contract EthGrid is Ownable{
     //----------------------Events---------------------//
     event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel, bool newPurchase, address indexed owner);
     event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address indexed buyer);
+    event PlotSectionSold(uint256 zoneId, uint256 totalPrice, address indexed buyer, address indexed seller);
 
     constructor() public payable {
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
@@ -104,8 +105,6 @@ contract EthGrid is Ownable{
     function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
         Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices, 0);
         
-        // TODO - Require the funds to make sense and pay everyone out
-
         // Add the new ownership to the array
         uint256[] memory holes;
         ZoneOwnership memory newZone = ZoneOwnership(msg.sender, rectToPurchase.x, rectToPurchase.y, rectToPurchase.w, rectToPurchase.h, holes);
@@ -165,6 +164,8 @@ contract EthGrid is Ownable{
             Rect memory currentOwnershipRect = Rect(
                 ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
+            uint256 owedToSeller = 0;
+
             // Keep looping through while we are declaring that we want this area
             while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
                 // This is a zone the caller has declared they were going to buy
@@ -190,12 +191,19 @@ contract EthGrid is Ownable{
                     require(!doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
                 }
 
+
                 // Finally, add the price of this rect to the totalPrice computation
                 uint256 sectionPrice =  _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
                 remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
-                balances[ownership[ownershipIndex].owner] = SafeMath.add(balances[ownership[ownershipIndex].owner], sectionPrice);
+                owedToSeller = SafeMath.add(owedToSeller, sectionPrice);
 
                 areaIndicesIndex++;
+            }
+
+            if (owedToSeller > 0) {
+                // Update the balances and emit an event to indicate the chunks of this plot which were sold
+                balances[ownership[ownershipIndex].owner] = SafeMath.add(balances[ownership[ownershipIndex].owner], owedToSeller);
+                PlotSectionSold(ownershipIndex, owedToSeller, msg.sender, ownership[ownershipIndex].owner);
             }
         }
 
@@ -255,7 +263,6 @@ contract EthGrid is Ownable{
         // we know we have a complete tiling of the rectToPurchase. Next, compute what the price should be for all this
         uint256 remainingFunds = distributePurchaseFunds(rectToPurchase, rects, areaIndices);
         uint256 purchasePrice = SafeMath.add(remainingFunds, msg.value);
-        // PurchasePrice(purchasePrice);
         
         return rectToPurchase;
     }

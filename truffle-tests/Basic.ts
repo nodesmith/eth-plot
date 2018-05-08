@@ -101,5 +101,13 @@ contract('EthGrid', (accounts: string[]) => {
     const sellerContractBalanceNew = new BigNumber(await ethGrid.balances(sellerAccount));
     const sellerContractBalanceDifference = sellerContractBalanceNew.minus(sellerContractBalanceOld);
     assert.equal(purchaseInfo.purchasePrice, sellerContractBalanceDifference.toString());
+
+    // Finally, check that we got the sold event we're expecting
+    const purchaseEvents = await ethGrid.PlotSectionSoldEvent({}).get({});
+    assert.equal(1, purchaseEvents.length);
+    assert.equal(buyerAccount, purchaseEvents[0].args.buyer);
+    assert.equal(sellerAccount, purchaseEvents[0].args.seller);
+    assert.equal(purchaseInfo.purchasePrice, purchaseEvents[0].args.totalPrice.toString());
+    assert.equal(0, purchaseEvents[0].args.zoneId);
   });
 });
