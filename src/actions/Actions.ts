@@ -61,7 +61,7 @@ export type completePlotPurchase =
    website: string | undefined,
    initialBuyout: string | undefined,
    activeAccount: string) => void;
-export type cancelPlotPurchase = () => void;
+export type closePlotPurchase = () => void;
 export type startPurchasePlot = () => void;
 export type changePurchaseStep = (purchaseStage: Enums.PurchaseStage) => void;
 export type toggleShowHeatmap = (show: boolean) => void;
@@ -105,7 +105,7 @@ export interface AllActions {
   changePlotBuyout: changePlotBuyout;
   changeBuyoutEnabled: changeBuyoutEnabled;
   completePlotPurchase: completePlotPurchase;
-  cancelPlotPurchase: cancelPlotPurchase;
+  closePlotPurchase: closePlotPurchase;
   startPurchasePlot: startPurchasePlot;
   changePurchaseStep: changePurchaseStep;
   toggleShowHeatmap: toggleShowHeatmap;

@@ -76,7 +76,7 @@ class App extends React.Component<AppProps> {
       () => {
         this.checkMetamaskStatus(this.props.data.contractInfo);
       },
-      1000000); // TODO Toggle back on
+      1000);
   }
 
   checkMetamaskStatus(contractInfo: ContractInfo) {
@@ -190,7 +190,7 @@ class App extends React.Component<AppProps> {
       isDraggingRect: this.props.grid.isDraggingRect,
       activeAccount: this.props.account.activeAccount,
       purchaseDialog: {
-        cancelPlotPurchase: actions.cancelPlotPurchase,
+        closePlotPurchase: actions.closePlotPurchase,
         purchaseStage: this.props.purchaseDialog.purchaseStage,
         isShowing: this.props.purchaseDialog.isShowing
       }
@@ -227,7 +227,7 @@ class App extends React.Component<AppProps> {
 
     const mainAppStyle: React.CSSProperties = {
       position: 'absolute',
-      backgroundColor: 'white',
+      backgroundColor: 'rgba(252, 252, 252, 1)',
       top: 0,
       bottom: 0,
       left: 0,

@@ -21,11 +21,11 @@ export enum MovementActions {
 export enum PurchaseStage {
   NOT_STARTED= -1,
   UPLOADING_TO_IPFS= 0,
-  SAVING_TO_CLOUD= 1,
-  WAITING_FOR_UNLOCK= 2,
-  SUBMITTING_TO_BLOCKCHAIN= 3,
-  WAITING_FOR_CONFIRMATIONS= 4,
-  DONE= 5
+  WAITING_FOR_UNLOCK= 1,
+  SUBMITTING_TO_BLOCKCHAIN= 2,
+  USER_CONFIRM= 3,
+  DONE= 4,
+  ERROR= 5,
 }
 
 export enum TxType {

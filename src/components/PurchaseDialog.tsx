@@ -9,14 +9,15 @@ import { Component } from 'react';
 
 import { PurchaseStage } from '../constants/Enums';
 
+// The stages here are used to calculate the progress bar, so this 
+// list does not account for every corresponding stage in the PurchaseStage Enum,
+// but only the set of stages that have a visual representation in the purchase dialog.
 const stages = [
   PurchaseStage.NOT_STARTED,
   PurchaseStage.UPLOADING_TO_IPFS,
-  PurchaseStage.SAVING_TO_CLOUD,
   PurchaseStage.WAITING_FOR_UNLOCK,
   PurchaseStage.SUBMITTING_TO_BLOCKCHAIN,
-  PurchaseStage.WAITING_FOR_CONFIRMATIONS,
-  PurchaseStage.DONE];
+  PurchaseStage.USER_CONFIRM];
 
 const styles: StyleRulesCallback = theme => ({
 });
@@ -24,13 +25,13 @@ const styles: StyleRulesCallback = theme => ({
 export interface PurchaseDialogProps extends WithStyles {
   isShowing: boolean;
   purchaseStage: number;
-  cancelPlotPurchase: () => void;
+  closePlotPurchase: () => void;
 }
 
 
 class PurchaseDialog extends Component<PurchaseDialogProps> {
-  handleCancel() {
-    this.props.cancelPlotPurchase();
+  handleClose() {
+    this.props.closePlotPurchase();
   }
 
   getMessage(purchaseStage) {
@@ -38,15 +39,15 @@ class PurchaseDialog extends Component<PurchaseDialogProps> {
       case PurchaseStage.NOT_STARTED:
         return 'Starting Purchase Process';
       case PurchaseStage.UPLOADING_TO_IPFS:
-        return (<span>Uploading image data to <a target="_blank" href="">IPFS</a></span>);
-      case PurchaseStage.SAVING_TO_CLOUD:
-        return (<span>Saving to <a target="_blank" href="">AWS</a></span>);
+        return (<span>Uploading image data to <a target="_blank" href="https://ipfs.io/">IPFS</a></span>);
       case PurchaseStage.WAITING_FOR_UNLOCK:
-        return 'Waiting for wallet to unlock';
+        return 'Waiting for user to sign transaction in MetaMask';
       case PurchaseStage.SUBMITTING_TO_BLOCKCHAIN:
         return 'Submitting transaction to the Ethereum network';
-      case PurchaseStage.WAITING_FOR_CONFIRMATIONS:
-        return 'Waiting for confirmations';
+      case PurchaseStage.USER_CONFIRM:
+        return 'Your purchase transaction has been submitted to the Ethereum network.  Your plot will be visible on the grid once the transaction has been mined.  You can check the status of your transaction in the "My Transactions" page.';
+      case PurchaseStage.ERROR:
+        return 'The transaction was rejected or an unexpected error has occurred.  Your purchase transaction was not submitted to the network. ';
       default:
         return null;
     }
@@ -58,27 +59,33 @@ class PurchaseDialog extends Component<PurchaseDialogProps> {
       return null;
     }
 
-    const currentStageIndex = stages.indexOf(purchaseStage);
+    const currentStageIndex = stages.indexOf(purchaseStage) || 0;
     const progressPercentage = (currentStageIndex / (stages.length - 1));
     const progress = Math.round(progressPercentage * 100);
     const bufferProgress = Math.min(100, progress + 7);
 
     const message = this.getMessage(purchaseStage);
 
+    const purchaseCompleteOrErrored = (purchaseStage === PurchaseStage.USER_CONFIRM || purchaseStage === PurchaseStage.ERROR);
+
     return (
       <Dialog disableBackdropClick={true} fullWidth maxWidth="xs" aria-labelledby="dialog-title" open={true}>
         <DialogTitle id="dialog-title">Purchasing Plot</DialogTitle>
         <DialogContent>
-          <LinearProgress variant="buffer" value={progress} valueBuffer={bufferProgress} />
+          {(purchaseStage !== PurchaseStage.ERROR) ?
+            (<LinearProgress variant="buffer" value={progress} valueBuffer={bufferProgress} />)
+          : null}
           <br />
           <Typography variant="subheading" align="left">
             {message}
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.handleCancel.bind(this)}>
-            Cancel
-          </Button>
+          {(purchaseCompleteOrErrored) ?
+           (<Button onClick={this.handleClose.bind(this)}>
+              Okay
+            </Button>)
+          : null}
         </DialogActions>
       </Dialog>
     );
