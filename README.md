@@ -24,3 +24,10 @@ To run with truffle:
 - Open another new terminal window to buy some plots with dummy data
 - `npm run-script buy-random-plots` (It might crash a few times but just keep running it)
 - Reload the browser and things should work
+
+Running Unit tests:
+
+- Get ganache running as directed above
+- Run `tsc watch` either from a command prompt or from Visual Studio Code
+- Without the debugger from the console, `truffle test --network ganache`
+- With the debugger in VS Code, `F5`
