@@ -91,7 +91,7 @@ export function completePlotPurchase(
 
     const ipfsHash = await dispatch(uploadImageData(imageData));
     return dispatch(purchasePlotFromChain(
-      contractInfo, plots, rectToPurchase, website, ipfsHash, initialBuyout!, purchasePriceInWei, changePurchaseStep));
+      contractInfo, plots, rectToPurchase, purchasePriceInWei, website, ipfsHash, initialBuyout!, changePurchaseStep));
   };
 }
 

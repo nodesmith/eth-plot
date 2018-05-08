@@ -213,7 +213,7 @@ export function purchasePlot(
     const initialPurchasePrice = new BigNumber(initialBuyout || 0);
 
     const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialPurchasePrice);
-    const gasEstimate = await tx.estimateGas();
+    const gasEstimate = await tx.estimateGas({ value: purchasePriceInWei });
     const txObject = {
       from: coinbase,
       gas: gasEstimate.times(2),

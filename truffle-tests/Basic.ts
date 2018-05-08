@@ -65,14 +65,16 @@ contract('EthGrid', (accounts: string[]) => {
     const sellerAccount = accounts[0];
     const buyerAccount = accounts[4];
     const oldBuyerBalance = await getBalance(buyerAccount);
-    const oldSellerBalance = await getBalance(sellerAccount);
-    web3.eth.defaultAccount = accounts[4];
+    const sellerContractBalanceOld = new BigNumber(await ethGrid.balances(sellerAccount));
+
+    web3.eth.defaultAccount = buyerAccount;
 
     const purchaseAction = DataActions.purchasePlot(
       state.data.contractInfo,
       state.data.plots,
       rectToPurchase,
       purchaseInfo.purchasePrice,
+      // purchaseInfo.purchasePrice,
       purchaseUrl,
       ipfsHash,
       buyoutPrice.toString(),
@@ -88,15 +90,16 @@ contract('EthGrid', (accounts: string[]) => {
     assert.deepEqual(loadedPlots[1].rect, rectToPurchase);
     assert.equal(loadedPlots[1].owner, accounts[4]);
 
-    // Look up some transaction info and make sure that balances have been updated appropriately
+    // Look up some transaction info and make sure that the buyer's balance has decreased as expected
     const newBuyerBalance = await getBalance(buyerAccount);
-    const newSellerBalance = await getBalance(sellerAccount);
     const balanceDifference = oldBuyerBalance.sub(newBuyerBalance);
     const blockInfo = <Web3.BlockWithoutTransactionData>(await promisify(web3.eth.getBlock, ['latest']));
     assert.equal(transactionHash, blockInfo.transactions[0]);
     const expectedDifference = new BigNumber(blockInfo.gasUsed).plus(new BigNumber(purchaseInfo.purchasePrice));
     assert.equal(expectedDifference.toString(), balanceDifference.toString());
 
-    assert.equal(purchaseInfo.purchasePrice, newSellerBalance.minus(oldSellerBalance).toString());
+    const sellerContractBalanceNew = new BigNumber(await ethGrid.balances(sellerAccount));
+    const sellerContractBalanceDifference = sellerContractBalanceNew.minus(sellerContractBalanceOld);
+    assert.equal(purchaseInfo.purchasePrice, sellerContractBalanceDifference.toString());
   });
 });

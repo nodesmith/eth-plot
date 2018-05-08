@@ -11,7 +11,9 @@
         "cwd": "${workspaceFolder}",
         "program": "${workspaceFolder}/node_modules/truffle-core/cli.js",
         "args": [
-            "test"
+            "test",
+            "--network",
+            "ganache"
         ]
     },
     {

@@ -57,9 +57,9 @@ export class DeferredTransactionWrapper<T extends ITxParams> {
     ) as string;
   }
 
-  estimateGas(): Promise<BigNumber> {
+  estimateGas(params: T): Promise<BigNumber> {
     const method = this.parentContract.rawWeb3Contract[this.methodName].estimateGas;
-    return promisify(method, this.methodArgs).then(gasString => new BigNumber(gasString));
+    return promisify(method, [...this.methodArgs, params]).then(gasString => new BigNumber(gasString));
   }
 }
 

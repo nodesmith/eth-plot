@@ -9,3 +9,4 @@ src/**/*.js
 src/**/*.map
 gen-src/**/*
 build
+bin

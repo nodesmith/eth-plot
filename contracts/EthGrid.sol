@@ -1,9 +1,12 @@
 pragma solidity ^0.4.23;
 
+import '../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol';
+import '../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol';
+
 
 /// @title EthGrid
 /// @author nova-network
-contract EthGrid {
+contract EthGrid is Ownable{
     struct Rect {
         uint16 x;
         uint16 y;
@@ -27,7 +30,6 @@ contract EthGrid {
 
     //----------------------State---------------------//
     uint public feeInThousandsOfPercent;
-    address public admin;
     ZoneOwnership[] public ownership;
     ZoneData[] public data;
     mapping(address => uint256) public balances;
@@ -51,15 +53,13 @@ contract EthGrid {
     event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address indexed buyer);
 
     constructor() public payable {
-        admin = msg.sender;
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         
         // Initialize the contract with a single block with the admin owns
         uint256[] memory holes; // TODO - do we need to initialize this or is it done for us?
-        ownership.push(ZoneOwnership(admin, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
+        ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
         data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://spacedust.io"));
         createAuction(0, INITIAL_AUCTION_PRICE);
-        balances[admin] = 0;
     }
 
     //----------------------Public Functions---------------------//
@@ -102,7 +102,7 @@ contract EthGrid {
     }
 
     function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
-        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
+        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices, 0);
         
         // TODO - Require the funds to make sense and pay everyone out
 
@@ -155,8 +155,9 @@ contract EthGrid {
         return result;
     }
 
-    function computePurchasePrice(Rect memory rectToPurchase, Rect[] memory rects, uint256[] memory areaIndices) private constant returns (uint256) {
-        uint256 totalPrice = 0;
+    function distributePurchaseFunds(Rect memory rectToPurchase, Rect[] memory rects, uint256[] memory areaIndices) private returns (uint256) {
+        uint256 remainingBalance = msg.value;
+        // uint256 remainingBalance = 4000000;
         uint256 areaIndicesIndex = 0;
 
         // Walk the ownership array backwards. Do funny checks for incrementing and decrementing indices becaues uints will wrap
@@ -190,7 +191,9 @@ contract EthGrid {
                 }
 
                 // Finally, add the price of this rect to the totalPrice computation
-                totalPrice += _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
+                uint256 sectionPrice =  _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
+                remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
+                balances[ownership[ownershipIndex].owner] = SafeMath.add(balances[ownership[ownershipIndex].owner], sectionPrice);
 
                 areaIndicesIndex++;
             }
@@ -199,12 +202,12 @@ contract EthGrid {
         // This means we checked every area index
         require(areaIndicesIndex == areaIndices.length);
 
-        return totalPrice;
+        return remainingBalance;
     }
 
     event PurchasePrice(uint256 price);
     
-    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (Rect memory) {
+    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, uint256 msgBalance) private returns (Rect memory) {
         require(purchase.length == 4);
         Rect memory rectToPurchase = Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         
@@ -250,8 +253,9 @@ contract EthGrid {
 
         // If we have a matching area, the sub rects are all contained within what we're purchasing, and none of them overlap,
         // we know we have a complete tiling of the rectToPurchase. Next, compute what the price should be for all this
-        uint256 purchasePrice = computePurchasePrice(rectToPurchase, rects, areaIndices);
-        PurchasePrice(purchasePrice);
+        uint256 remainingFunds = distributePurchaseFunds(rectToPurchase, rects, areaIndices);
+        uint256 purchasePrice = SafeMath.add(remainingFunds, msg.value);
+        // PurchasePrice(purchasePrice);
         
         return rectToPurchase;
     }
@@ -264,6 +268,6 @@ contract EthGrid {
         uint256 auctionPricePerPixel = tokenIdToAuction[auctionedZoneId];
         require(auctionPricePerPixel > 0);
 
-        return rectToPurchase.w * rectToPurchase.h * auctionPricePerPixel;
+        return SafeMath.mul(SafeMath.mul(rectToPurchase.w, rectToPurchase.h), auctionPricePerPixel);
     }
 }
