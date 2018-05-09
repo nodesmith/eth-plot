@@ -38,12 +38,6 @@ export function loadPlots() {
   };
 }
 
-export function listPlot() {
-  return {
-    type: ActionTypes.LIST_PLOT
-  };
-}
-
 export function plotListed(txHash, zoneIndex) {
   return {
     type: ActionTypes.PLOT_LISTED,

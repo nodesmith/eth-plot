@@ -14,7 +14,6 @@ export type fetchAccountTransactions = (contractInfo: ContractInfo, currentAddre
 // Data Actions
 export type addPlot = (newPlot: PlotInfo) => void;
 export type loadPlots = () => void;
-export type listPlots = () => void;
 export type plotListed = (txHash: string, zoneIndex: number) => void;
 export type doneLoadingPlots = () => void;
 export type fetchPlotsFromWeb3 = (contractInfo: ContractInfo) => void;
@@ -78,7 +77,6 @@ export interface AllActions {
   fetchAccountTransactions: fetchAccountTransactions;
   addPlot: addPlot;
   loadPlots: loadPlots;
-  listPlots: listPlots;
   plotListed: plotListed;
   doneLoadingPlots: doneLoadingPlots;
   fetchPlotsFromWeb3: fetchPlotsFromWeb3;

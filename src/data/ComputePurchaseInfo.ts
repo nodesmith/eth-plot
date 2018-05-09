@@ -25,11 +25,14 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
     for (let j = 0; j < remainingChunksToPurchase.length; j++) {
       const chunkToPurchase = remainingChunksToPurchase[j];
       if (PlotMath.doRectanglesOverlap(currentPlot.rect, chunkToPurchase)) {
+
         // Look at the overlap between the chunk we're trying to purchase, and the ownership plot we have
         const chunkOverlap = PlotMath.computeRectOverlap(currentPlot.rect, chunkToPurchase);
 
         const newHole = chunkOverlap;
-        // Next, subtract out all of the holes which this ownerhip may have (TODO)
+
+        // Note: we don't need to subtract any holes here because we're walking the plots array backwards. Any chunks which still need to be
+        // purchased must have missed the ownership of the layers above
 
         // Add the new holes to the purchaseChunks and keep track of their index
         purchasedChunks.push(newHole);
