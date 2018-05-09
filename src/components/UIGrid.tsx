@@ -297,10 +297,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
       let color = 'black';
       if (buyoutPricePerPixelInWeiBN.greaterThan(0)) {
         const aboveMin = buyoutPricePerPixelInWeiBN.minus(minPrice);
-        console.log(`abovemin: ${aboveMin.toString()}`)
         const value = new BigNumber(1).minus(aboveMin.div(priceRange));
-        console.log(`value: ${value.toString()}`)
-
         color = d3Palette.interpolateRdYlGn(value.toNumber());
       }
 
