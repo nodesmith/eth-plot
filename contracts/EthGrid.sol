@@ -1,12 +1,12 @@
 pragma solidity ^0.4.23;
 
-import '../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol';
-import '../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol';
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 /// @title EthGrid
 /// @author nova-network
-contract EthGrid is Ownable{
+contract EthGrid is Ownable {
     struct Rect {
         uint16 x;
         uint16 y;
@@ -56,7 +56,7 @@ contract EthGrid is Ownable{
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         
         // Initialize the contract with a single block with the admin owns
-        uint256[] memory holes; // TODO - do we need to initialize this or is it done for us?
+        uint256[] memory holes;
         ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
         data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://www.ethplot.com/"));
         createAuction(0, INITIAL_AUCTION_PRICE);
@@ -98,11 +98,11 @@ contract EthGrid is Ownable{
         require(msg.sender == ownership[zoneIndex].owner);
 
         tokenIdToAuction[zoneIndex] = newPriceInGweiPerPixel;
-        AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
+        emit AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
     }
 
     function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
-        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices, 0);
+        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
         
         // Add the new ownership to the array
         uint256[] memory holes;
@@ -120,7 +120,7 @@ contract EthGrid is Ownable{
         data.push(newData);
 
         updateAuction(ownership.length - 1, initialPurchasePrice, true);
-        PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
+        emit PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
 
         return ownership.length - 1;
     }
@@ -201,7 +201,7 @@ contract EthGrid is Ownable{
             if (owedToSeller > 0) {
                 // Update the balances and emit an event to indicate the chunks of this plot which were sold
                 address(ownership[ownershipIndex].owner).transfer(owedToSeller);
-                PlotSectionSold(ownershipIndex, owedToSeller, msg.sender, ownership[ownershipIndex].owner);
+                emit PlotSectionSold(ownershipIndex, owedToSeller, msg.sender, ownership[ownershipIndex].owner);
             }
         }
 
@@ -213,7 +213,7 @@ contract EthGrid is Ownable{
 
     event PurchasePrice(uint256 price);
     
-    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, uint256 msgBalance) private returns (Rect memory) {
+    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (Rect memory) {
         require(purchase.length == 4);
         Rect memory rectToPurchase = Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         
@@ -259,7 +259,7 @@ contract EthGrid is Ownable{
 
         // If we have a matching area, the sub rects are all contained within what we're purchasing, and none of them overlap,
         // we know we have a complete tiling of the rectToPurchase. Next, compute what the price should be for all this
-        uint256 remainingFunds = distributePurchaseFunds(rectToPurchase, rects, areaIndices);
+        distributePurchaseFunds(rectToPurchase, rects, areaIndices);
         
         return rectToPurchase;
     }
@@ -268,7 +268,6 @@ contract EthGrid is Ownable{
     // This returns the total price of the purchase that is attributed by that zone.  
     function _getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
         // Check that this auction zone exists in the auction mapping with a price.
-        // TODO - Make sure this section is actually for sale
         uint256 auctionPricePerPixel = tokenIdToAuction[auctionedZoneId];
         require(auctionPricePerPixel > 0);
 
