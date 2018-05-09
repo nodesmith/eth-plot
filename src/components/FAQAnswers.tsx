@@ -1,5 +1,5 @@
-import * as React from 'react';
 import Typography from 'material-ui/Typography';
+import * as React from 'react';
 
 export const gettingStartedAnswer1 = () => (
   <Typography variant="body2">
@@ -24,7 +24,11 @@ export const gettingStartedAnswer2 = () => (
     <ul>
       <li><Typography variant="body2">A computer or laptop with one of the following browsers: Chrome, Firefox, or Brave.</Typography></li>
       <li><Typography variant="body2">MetaMask, which is a digital wallet extension that allows you to interact with DApps.</Typography></li>
-      <li><Typography variant="body2">Ether, which is the currency used to run decentralized applications on Ethereum.  Purchasing a plot will require spending ether.</Typography></li>
+      <li>
+        <Typography variant="body2">
+          Ether, which is the currency used to run decentralized applications on Ethereum.  Purchasing a plot will require spending ether.
+        </Typography>
+      </li>
     </ul>
   </div>
 );
@@ -69,9 +73,19 @@ export const gameplayAnswer1 = () => (
     </Typography>
     <ol>
       <li><Typography variant="body2">Choose the image you want to use for your plot.</Typography></li>
-      <li><Typography variant="body2">Position and size the image by dragging it around on the Eth Plot window.  A heatmap will be displayed to help you find the cheapest locations.</Typography></li>
+      <li>
+        <Typography variant="body2">
+          Position and size the image by dragging it around on the Eth Plot window.  
+          A heatmap will be displayed to help you find the cheapest locations.
+        </Typography>
+      </li>
       <li><Typography variant="body2">You can optionally enter a website to associated with your plot.</Typography></li>
-      <li><Typography variant="body2">You can optionally buyout price for your plot.  If you set a buyout price, other users will be able to purchase part or all of your plot - placing their image over your own.</Typography></li>
+      <li>
+        <Typography variant="body2">
+          You can optionally buyout price for your plot.  If you set a buyout price, 
+          other users will be able to purchase part or all of your plot - placing their image over your own.
+        </Typography>
+      </li>
       <li><Typography variant="body2">Review the information and submit a transaction via MetaMask to finalize the purchase.</Typography></li>
     </ol>
   </div>

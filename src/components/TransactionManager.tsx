@@ -54,7 +54,7 @@ class TransactionManager extends Component<TransactionManagerProps> {
     return (
       <Grid container className={this.props.classes.root} justify="center" spacing={0} >
         {content}
-        {(this.props.userTransactions.length == 0) ? 
+        {(this.props.userTransactions.length === 0) ? 
           <Typography variant="subheading">There are no Eth Grid transactions associated with this account.</Typography>
           : null
         }

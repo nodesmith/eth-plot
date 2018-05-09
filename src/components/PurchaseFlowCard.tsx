@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import Close from 'material-ui-icons/Close';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -119,7 +120,8 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
     const { purchasePriceInWei, contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPriceInWei, buyoutEnabled, activeAccount } = this.props;
     const initialBuyoutPerPixelInWei = buyoutEnabled ? buyoutPriceInWei : '';
 
-    this.props.purchasePlot(contractInfo, plots, rectToPurchase!, purchasePriceInWei, imageFileInfo!.blobUrl, website, initialBuyoutPerPixelInWei, activeAccount);
+    this.props.purchasePlot(
+      contractInfo, plots, rectToPurchase!, purchasePriceInWei, imageFileInfo!.blobUrl, website, initialBuyoutPerPixelInWei, activeAccount);
   }
 
   getButtons(backButtonProps, nextButtonProps) {
@@ -208,6 +210,10 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
       case 3:
         {
           stepHeader = 'Set a buyout price (optional)';
+
+          const suggestedStarterPriceBN = new BigNumber(this.props.purchasePriceInWei || '0').mul(2);
+          const suggestedStarterPriceInEth = suggestedStarterPriceBN.div(10e17).toString();
+          
           stepContent = (
           <div>
             <Typography variant="caption">
@@ -221,11 +227,11 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
               onToggleChanged={this.onBuyoutEnabledChanged.bind(this)}
               rectToPurchase={this.props.rectToPurchase!}
               purchasePrice={this.props.purchasePriceInWei}
-              buyoutPriceInWei={this.props.buyoutPriceInWei}
+              buyoutPriceInWei={this.props.buyoutPriceInWei || suggestedStarterPriceBN.toString()}
               toggleEnabled={this.props.buyoutEnabled}
               toggleText={'Enable Buyout'}
               title={'Buyout Price'}
-              initialValue={{ units: 'wei', ammountInWei: 500 }}
+              initialPriceInEth={suggestedStarterPriceInEth}
               buyoutVisible={true}
               />
             </div>

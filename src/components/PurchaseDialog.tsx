@@ -45,7 +45,9 @@ class PurchaseDialog extends Component<PurchaseDialogProps> {
       case PurchaseStage.SUBMITTING_TO_BLOCKCHAIN:
         return 'Submitting transaction to the Ethereum network';
       case PurchaseStage.USER_CONFIRM:
-        return 'Your purchase transaction has been submitted to the Ethereum network.  Your plot will be visible on the grid once the transaction has been mined.  You can check the status of your transaction in the "My Transactions" page.';
+        return `Your purchase transaction has been submitted to the Ethereum network.  
+                Your plot will be visible on the grid once the transaction has been mined.  
+                You can check the status of your transaction in the "My Transactions" page.`;
       case PurchaseStage.ERROR:
         return 'The transaction was rejected or an unexpected error has occurred.  Your purchase transaction was not submitted to the network. ';
       default:

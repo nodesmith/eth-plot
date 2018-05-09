@@ -1,9 +1,9 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import Grid from 'material-ui/Grid';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
 
-import Grid from 'material-ui/Grid';
 import { PixelStatus } from './PlotInfo';
 
 export interface PlotPreviewCardProps extends WithStyles {
@@ -54,11 +54,11 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
   }
   
   showGrid() {
-    this.setState({ showGrid: true});
+    this.setState({ showGrid: true });
   }
 
   hideGrid() {
-    this.setState({ showGrid: false});
+    this.setState({ showGrid: false });
   }
 
   getGridSvgElements(): Array<JSX.Element> {    
@@ -67,20 +67,20 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
     const pixelWidth = this.imageRef.clientWidth / pixelsPerRow;  
     const pixelHeight = this.imageRef.clientHeight / pixelsPerColumn;  
 
-    let gridElements = new Array<JSX.Element>();
+    const gridElements = new Array<JSX.Element>();
 
     for (let i = 0; i < pixelsPerRow; i++) {
       for (let j = 0; j < pixelsPerColumn; j++) {
-        const pixelIsSold = this.props.pixelStatus.soldPixels[i*pixelsPerColumn + j];
+        const pixelIsSold = this.props.pixelStatus.soldPixels[i * pixelsPerColumn + j];
         const pixelClass = (pixelIsSold) ? this.props.classes.soldPixelColor : this.props.classes.unsoldPixelColor;
 
         gridElements.push(
-          <rect x={i*pixelWidth}
-                y={j*pixelHeight} 
+          <rect x={i * pixelWidth}
+                y={j * pixelHeight} 
                 width={pixelWidth} 
                 height={pixelHeight} 
                 className={pixelClass}
-                key={i*pixelsPerColumn + j} />
+                key={i * pixelsPerColumn + j} />
         );
       }
     }
@@ -94,10 +94,10 @@ class PlotPreviewCard extends Component<PlotPreviewCardProps, PlotPreviewCardSta
       gridElements = this.getGridSvgElements();
     }
     
-    let hasSoldPixels = this.props.pixelStatus.soldPixelCount > 0;
-    let caption = "The darker pixels are pixels that have already been sold.";
+    const hasSoldPixels = this.props.pixelStatus.soldPixelCount > 0;
+    let caption = 'The darker pixels are pixels that have already been sold.';
     if (!hasSoldPixels) {
-      caption = "No portion of this plot has been sold.";
+      caption = 'No portion of this plot has been sold.';
     }
 
     return (

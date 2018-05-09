@@ -78,7 +78,11 @@ class AccountManager extends Component<AccountManagerProps> {
       <Grid container className={this.props.classes.root} justify="center" spacing={24} >
         {plotInfoComponents}
         {(filteredPlots.length === 0) ? 
-          <Typography className={this.props.classes.noTxHeader} variant="subheading">You do not own any plots on the grid. Visit the grid to purchase a plot.</Typography>
+          <Typography 
+            className={this.props.classes.noTxHeader} 
+            variant="subheading">
+            You do not own any plots on the grid. Visit the grid to purchase a plot.
+          </Typography>
           : null
         }
       </Grid>

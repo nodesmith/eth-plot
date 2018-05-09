@@ -27,6 +27,8 @@ const styles: StyleRulesCallback = theme => ({
   },
   button: {
     marginRight: theme.spacing.unit,
+    marginTop: theme.spacing.unit,
+    pointerEvents: 'auto', // This allows captions on disabled buttons
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -60,7 +62,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      newBuyoutPrice: '0',
+      newBuyoutPrice: '',
       toggleEnabled: false,
       auctionVisible: false
     };
@@ -125,6 +127,16 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
     const pixelStatus = this.computePixelStatus();
     const totalPixels = this.props.info.rect.w * this.props.info.rect.h;
 
+    const cancelSaleDisabled = buyoutPricePerPixelInWeiBN.equals(0);
+    let updateBuyoutDisabled = true;
+    if (this.state.newBuyoutPrice) {
+      const newBuyoutPriceBN = new BigNumber(this.state.newBuyoutPrice);
+      updateBuyoutDisabled = newBuyoutPriceBN.lessThanOrEqualTo(0);
+    }
+
+    const cancelSaleButtonCaption = (cancelSaleDisabled) ? 'This plot isn\'t for sale, there is nothing to cancel.' : '';
+    const updateBuyoutButtonCaption = (updateBuyoutDisabled) ? 'A buyout must be above 1 wei in order to update.' : '';
+
     return (
       <Grid className={this.props.classes.root} container spacing={8}>
         <Grid item xs={12} sm={6} >
@@ -169,13 +181,32 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
             rectToPurchase={this.props.info.rect}
             buyoutPriceInWei={this.state.newBuyoutPrice}
             toggleEnabled={this.state.toggleEnabled}
-            toggleText={'Edit Buyout'}
+            toggleText={'Update Buyout'}
             title={'Buyout Price'}
-            initialValue={{ units: 'wei', ammountInWei: 500 }}
+            initialPriceInEth={this.state.newBuyoutPrice}
             buyoutVisible={this.state.auctionVisible}
           />
           {this.state.toggleEnabled ? (
-            <Button variant="raised" color="primary" className={this.props.classes.button} onClick={this.updatePrice.bind(this)}>Update Buyout</Button>
+            <div>
+              <Button 
+                variant="raised" 
+                color="primary" 
+                className={this.props.classes.button} 
+                onClick={this.updatePrice.bind(this)}
+                disabled={updateBuyoutDisabled}
+                title={updateBuyoutButtonCaption}>
+                Update Buyout
+              </Button>
+              <Button 
+                variant="raised" 
+                color="primary" 
+                className={this.props.classes.button} 
+                onClick={this.updatePrice.bind(this)}
+                disabled={cancelSaleDisabled}
+                title={cancelSaleButtonCaption}>
+                Cancel Plot Sale
+              </Button>
+            </div>
            ) : null }
         </Grid>
       </Grid>
