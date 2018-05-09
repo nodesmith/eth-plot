@@ -45,6 +45,7 @@ export interface BuyoutPriceInputBoxProps extends WithStyles {
 interface BuyoutPriceInputBoxState {
   buyoutUnits: string;
   anchorEl?: HTMLElement;
+  currentInput: string;
 }
 
 class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, BuyoutPriceInputBoxState> {
@@ -53,11 +54,17 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
 
     this.state = {
       buyoutUnits: 'eth',
-      anchorEl: undefined
+      anchorEl: undefined,
+      // The state of the input is tracked separately instead of being based solely on the props.
+      // This allows us to keep the props in sync with the true value in wei (i.e. "0 wei") while 
+      // still displaying exactly what the user types "0.0"
+      currentInput: ''
     };
   }
 
   buyoutPriceChanged(event) {
+    this.setState({ currentInput: event.target.value });
+
     const units = this.state.buyoutUnits;
     let newPriceInWei = '';
 
@@ -73,11 +80,39 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     this.props.onBuyoutChanged(buyoutChangedMessage);
   }
 
-  buyoutUnitChanged(event, buyoutUnits) {
-    this.setState({
-      buyoutUnits
-    });
+  buyoutUnitChanged(event, newBuyoutUnits) {
+    let buyoutString;
+    const currentBuyout = new Decimal(this.state.currentInput);
+    
+    if (this.state.buyoutUnits === newBuyoutUnits) {
+      buyoutString = this.state.currentInput;
+    } else {
+      switch(newBuyoutUnits) {
+        case 'eth': 
+          buyoutString = (this.state.buyoutUnits === 'gwei') 
+                           ? currentBuyout.div(10e8).toFixed()   // Converting from gwei to eth
+                           : currentBuyout.div(10e17).toFixed(); // Converting from wei to eth
+          break;
+        case 'gwei':
+          buyoutString = (this.state.buyoutUnits === 'eth') 
+                           ? currentBuyout.mul(10e8).toFixed()  // Converting from eth to gwei
+                           : currentBuyout.div(10e8).toFixed(); // Converting from wei to gwei
+          break;
+        case 'wei':
+          buyoutString = (this.state.buyoutUnits === 'eth') 
+                           ? currentBuyout.mul(10e17).toFixed() // Converting from eth to wei
+                           : currentBuyout.mul(10e8).toFixed(); // Converting from gwei to wei
+          break;
+        default:
+          throw 'Unknown buyout units type.';
+      }
+    }
 
+    this.setState({
+      buyoutUnits: newBuyoutUnits,
+      currentInput: buyoutString,
+    });
+    
     this.handleUnitsMenuClosed();
   }
 
@@ -141,11 +176,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     const { buyoutPriceInWei, toggleEnabled, classes } = this.props;
     const { anchorEl, buyoutUnits } = this.state;
 
-    const buyoutMultiplier = buyoutUnits === 'eth' ? -18 : buyoutUnits === 'gwei' ? -9 : 0;
-    const buyoutString = buyoutPriceInWei.length > 0 ? new Decimal(buyoutPriceInWei + `e${buyoutMultiplier}`).toFixed() : '';
-
     const validation = this.validateBuyout(buyoutPriceInWei, toggleEnabled);
-
     const currencies = ['wei', 'gwei', 'eth'];
 
     return (<div>
@@ -161,12 +192,13 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
             id="name"
             label="Buyout Price"
             disabled={!toggleEnabled}
-            value={buyoutString}
+            value={this.state.currentInput}
             className={classes.numberInput}
             margin="normal"
             onChange={this.buyoutPriceChanged.bind(this)}
             helperText={validation.message}
             type="number"
+            autoComplete="off"
           />
           <Chip
             className={classes.unitSelect}
