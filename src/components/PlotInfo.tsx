@@ -83,6 +83,10 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
     this.props.updatePrice(this.props.info.zoneIndex, this.state.newBuyoutPrice);    
   }
 
+  cancelSale() {
+    this.props.updatePrice(this.props.info.zoneIndex, "0");    
+  }
+
   /**
    * Computes an array with a single entry for each pixel in this plot.
    * The entry is true if the pixel has been sold and false otherwise.
@@ -201,7 +205,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
                 variant="raised" 
                 color="primary" 
                 className={this.props.classes.button} 
-                onClick={this.updatePrice.bind(this)}
+                onClick={this.cancelSale.bind(this)}
                 disabled={cancelSaleDisabled}
                 title={cancelSaleButtonCaption}>
                 Cancel Plot Sale
