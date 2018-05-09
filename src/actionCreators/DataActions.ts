@@ -198,7 +198,7 @@ export function purchasePlot(
     const purchase = buildArrayFromRectangles([rectToPurchase]);
     const purchasedAreas = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
     const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
-    const initialPurchasePrice = new BigNumber(purchasePriceInWei || 0);
+    const initialPurchasePrice = new BigNumber(purchasePriceInWei);
     const initialBuyoutInWeiBN = new BigNumber(initialBuyoutPerPixelInWei || 0);
     const initialBuyoutPerPixelInWeiBN = initialBuyoutInWeiBN.div(rectToPurchase.w * rectToPurchase.h);
 

@@ -278,7 +278,7 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
 
     // Compute the heatmap range
     let minPrice = new BigNumber(Number.MAX_SAFE_INTEGER);
-    let maxPrice = new BigNumber(0.00000000001);
+    let maxPrice = new BigNumber(1);
 
     plots.forEach((plot) => {
       const buyoutPricePerPixelInWeiBN = new BigNumber(plot.buyoutPricePerPixelInWei);
@@ -297,7 +297,10 @@ class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefine
       let color = 'black';
       if (buyoutPricePerPixelInWeiBN.greaterThan(0)) {
         const aboveMin = buyoutPricePerPixelInWeiBN.minus(minPrice);
+        console.log(`abovemin: ${aboveMin.toString()}`)
         const value = new BigNumber(1).minus(aboveMin.div(priceRange));
+        console.log(`value: ${value.toString()}`)
+
         color = d3Palette.interpolateRdYlGn(value.toNumber());
       }
 
