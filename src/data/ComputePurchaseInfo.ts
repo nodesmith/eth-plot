@@ -1,4 +1,4 @@
-import { Decimal } from 'decimal.js';
+import { BigNumber } from 'bignumber.js';
 
 import { PlotInfo, Rect } from '../models';
 
@@ -14,7 +14,7 @@ export interface PurchaseInfo {
 export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>): PurchaseInfo {
   const purchasedChunks = new Array<Rect>();
   const purchasedChunkAreaIndices = new Array<number>();
-  let purchasePrice = new Decimal(0);
+  let purchasePrice = new BigNumber(0);
 
   // We'll need to walk the ownership array backwards and see who we need to buy chunks from
   let remainingChunksToPurchase = [rectToPurchase];
@@ -36,7 +36,7 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
         purchasedChunkAreaIndices.push(i);
 
         // Add up the price of these chunks we are purchasing
-        const plotBuyout = new Decimal(currentPlot.buyoutPrice).mul(chunkOverlap.w * chunkOverlap.h);
+        const plotBuyout = new BigNumber(currentPlot.buyoutPricePerPixelInWei).mul(chunkOverlap.w * chunkOverlap.h);
         purchasePrice = purchasePrice.add(plotBuyout);
 
         // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is
