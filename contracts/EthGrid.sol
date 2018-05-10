@@ -34,7 +34,7 @@ contract EthGrid is Ownable {
     //----------------------Constants---------------------//
     uint16 constant private GRID_WIDTH = 250;
     uint16 constant private GRID_HEIGHT = 250;
-    uint56 constant private INITIAL_AUCTION_PRICE = 1000;
+    uint56 constant private INITIAL_AUCTION_PRICE = 1000000;
     uint56 constant private INITIAL_FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Initial fee is 1%
 
     // This is the maximum area of a single purchase block. This needs to be limited for the
@@ -64,15 +64,11 @@ contract EthGrid is Ownable {
         uint256[] areaIndices,
         string ipfsHash,
         string url,
-        uint256 initialPurchasePrice,
         uint256 initialBuyoutPriceInWeiPerPixel) external payable {
 
-        // Geometry.Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
-        validatePurchases(purchase, purchasedAreas, areaIndices);
+        uint256 initialPurchasePrice = validatePurchases(purchase, purchasedAreas, areaIndices);
 
         // Add the new ownership to the array
-       //  uint256[] memory holes;
-        // ZoneOwnership memory newZone = ZoneOwnership(msg.sender, rectToPurchase.x, rectToPurchase.y, rectToPurchase.w, rectToPurchase.h, holes);
         ZoneOwnership memory newZone = ZoneOwnership({
             owner: msg.sender,
             x: purchase[0],
@@ -190,7 +186,7 @@ contract EthGrid is Ownable {
         return remainingBalance;
     }
 
-    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (Geometry.Rect memory) {
+    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
         require(purchase.length == 4);
         Geometry.Rect memory rectToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         
@@ -238,11 +234,13 @@ contract EthGrid is Ownable {
         // If we have a matching area, the sub rects are all contained within what we're purchasing, and none of them overlap,
         // we know we have a complete tiling of the rectToPurchase. Next, compute what the price should be for all this
         uint256 remainingBalance = distributePurchaseFunds(rectToPurchase, rects, areaIndices);
+        uint256 purchasePrice = SafeMath.sub(msg.value, remainingBalance);
 
         // The remainingBalance after distributing funds to sellers should greater than or equal to the fee we charge
-
+        uint256 requiredFee = SafeMath.div(SafeMath.mul(purchasePrice, feeInThousandsOfPercent), (1000 * 100));
+        require(remainingBalance >= requiredFee);
         
-        return rectToPurchase;
+        return purchasePrice;
     }
 
     // Given a rect to purchase, and the ID of the zone that is part of the purchase,

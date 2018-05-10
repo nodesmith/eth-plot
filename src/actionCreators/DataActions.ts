@@ -197,12 +197,11 @@ export function purchasePlot(
     const purchase = buildArrayFromRectangles([rectToPurchase]);
     const purchasedAreas = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
     const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
-    const initialPurchasePrice = new BigNumber(purchasePriceInWei);
     const initialBuyoutInWeiBN = new BigNumber(initialBuyoutPerPixelInWei || 0);
     const initialBuyoutPerPixelInWeiBN = initialBuyoutInWeiBN.div(rectToPurchase.w * rectToPurchase.h);
 
     const tx = contract.purchaseAreaWithDataTx(
-      purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialPurchasePrice, initialBuyoutPerPixelInWeiBN);
+      purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialBuyoutPerPixelInWeiBN);
     const gasEstimate = await tx.estimateGas({ value: purchasePriceInWei });
     const txObject = {
       from: activeAccount,
