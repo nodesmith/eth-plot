@@ -77,7 +77,8 @@ export function fetchAccountTransactions(contractInfo: ContractInfo, currentAddr
 
     await Promise.all([
       getAuctionEvents(contract, currentAddress, dispatch),
-      getPurchaseEvents(contract, currentAddress, dispatch)
+      getPurchaseEvents(contract, currentAddress, dispatch),
+      getSaleEvents(contract, currentAddress, dispatch)
     ]);
 
     dispatch(doneLoadingTransactions());
@@ -130,6 +131,23 @@ async function getPurchaseEvents(contract: EthGrid, currentAddress: string, disp
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {
     if (!err) {
       genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
+    }
+  });
+}
+
+//   PlotSectionSold(uint256 zoneId, uint256 totalPrice, address indexed buyer, address indexed seller);
+async function getSaleEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+  const saleEvent = contract.PlotSectionSoldEvent({ seller: currentAddress });
+  const events = await saleEvent.get({ fromBlock: 0, toBlock: 'latest' });
+
+  events.forEach(tx => {
+    genericTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
+  });
+
+  // We really should return this in some way since we need to stop listening to it
+  saleEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, event) => {
+    if (!err) {
+      genericTransactionHandler(event, true, Enums.TxType.SALE, dispatch);
     }
   });
 }

@@ -198,9 +198,6 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
                   initialPriceInEth={this.state.newBuyoutPrice}
                   buyoutVisible={this.state.auctionVisible}
                 />
-                {this.state.toggleEnabled ? (
-                  <Button variant="raised" color="primary" className={this.props.classes.button} onClick={this.updatePrice.bind(this)}>Update Buyout</Button>
-                ) : null }
               </div>
            : null /* isPlotSold */ }
           { this.state.toggleEnabled ? (
