@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import ExpandMore from 'material-ui-icons/ExpandMore';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -26,6 +27,8 @@ const styles: StyleRulesCallback = theme => ({
   },
   button: {
     marginRight: theme.spacing.unit,
+    marginTop: theme.spacing.unit,
+    pointerEvents: 'auto', // This allows captions on disabled buttons
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -42,6 +45,7 @@ export interface PlotInfoProps extends WithStyles {
   holes: Array<Rect>;
   updatePrice: (zoneIndex: number, newBuyoutPrice: string) => void;
   purchaseInfo: PurchaseEventInfo;
+  isPlotSold: boolean;
 }
 
 interface PlotInfoState {
@@ -59,7 +63,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      newBuyoutPrice: '0',
+      newBuyoutPrice: '',
       toggleEnabled: false,
       auctionVisible: false
     };
@@ -78,6 +82,10 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
 
   updatePrice() {
     this.props.updatePrice(this.props.info.zoneIndex, this.state.newBuyoutPrice);    
+  }
+
+  cancelSale() {
+    this.props.updatePrice(this.props.info.zoneIndex, "0");    
   }
 
   /**
@@ -118,10 +126,26 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
 
   render() {
     const plotURL = (this.props.info.data.url) ? this.props.info.data.url : 'None';
-    const forSale = (this.props.info.buyoutPrice > 0);
+    const buyoutPricePerPixelInWeiBN = new BigNumber(this.props.info.buyoutPricePerPixelInWei);
+    const forSale = buyoutPricePerPixelInWeiBN.greaterThan(0);
 
     const pixelStatus = this.computePixelStatus();
     const totalPixels = this.props.info.rect.w * this.props.info.rect.h;
+
+    let forSaleText = (forSale) ? 'Yes' : 'No';
+    if (this.props.isPlotSold) forSaleText = 'NA';
+
+    const pixelSoldCountText = (this.props.isPlotSold) ? 'All' : `${pixelStatus.soldPixelCount} of ${totalPixels}`;
+
+    const cancelSaleDisabled = buyoutPricePerPixelInWeiBN.equals(0);
+    let updateBuyoutDisabled = true;
+    if (this.state.newBuyoutPrice) {
+      const newBuyoutPriceBN = new BigNumber(this.state.newBuyoutPrice);
+      updateBuyoutDisabled = newBuyoutPriceBN.lessThanOrEqualTo(0);
+    }
+
+    const cancelSaleButtonCaption = (cancelSaleDisabled) ? 'This plot isn\'t for sale, there is nothing to cancel.' : '';
+    const updateBuyoutButtonCaption = (updateBuyoutDisabled) ? 'A buyout must be above 1 wei in order to update.' : '';
 
     return (
       <Grid className={this.props.classes.root} container spacing={8}>
@@ -146,7 +170,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Plot for Sale" value={(forSale) ? 'Yes' : 'No'} />
+              <TextLabel caption="Plot for Sale" value={forSaleText} />
             </Grid>
             <Grid item xs={6}>
               <TextLabel caption="Original Purchase Price" value={formatEthValueToString(this.props.purchaseInfo.purchasePrice.toString())} />
@@ -154,26 +178,52 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? formatEthValueToString(this.props.info.buyoutPrice.toString()) : 'NA'} />
+              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? formatEthValueToString(this.props.info.buyoutPricePerPixelInWei) : 'NA'} />
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Number of Pixels Sold" value={`${pixelStatus.soldPixelCount} of ${totalPixels}`} />
+              <TextLabel caption="Number of Pixels Sold" value={pixelSoldCountText} />
             </Grid>
           </Grid>
-          <Divider className={this.props.classes.divider} light />
-          <BuyoutPriceInputBox
-            onBuyoutChanged={this.onBuyoutChanged.bind(this)}
-            onToggleChanged={this.onToggleChanged.bind(this)}
-            rectToPurchase={this.props.info.rect}
-            buyoutPriceInWei={this.state.newBuyoutPrice}
-            toggleEnabled={this.state.toggleEnabled}
-            toggleText={'Edit Buyout'}
-            title={'Buyout Price'}
-            initialValue={{ units: 'wei', ammountInWei: 500 }}
-            buyoutVisible={this.state.auctionVisible}
-          />
-          {this.state.toggleEnabled ? (
-            <Button variant="raised" color="primary" className={this.props.classes.button} onClick={this.updatePrice.bind(this)}>Update Buyout</Button>
+            {(!this.props.isPlotSold) ? 
+              <div>
+                <Divider className={this.props.classes.divider} light />
+                <BuyoutPriceInputBox
+                  onBuyoutChanged={this.onBuyoutChanged.bind(this)}
+                  onToggleChanged={this.onToggleChanged.bind(this)}
+                  rectToPurchase={this.props.info.rect}
+                  buyoutPriceInWei={this.state.newBuyoutPrice}
+                  toggleEnabled={this.state.toggleEnabled}
+                  toggleText={'Edit Buyout'}
+                  title={'Buyout Price'}
+                  initialPriceInEth={this.state.newBuyoutPrice}
+                  buyoutVisible={this.state.auctionVisible}
+                />
+                {this.state.toggleEnabled ? (
+                  <Button variant="raised" color="primary" className={this.props.classes.button} onClick={this.updatePrice.bind(this)}>Update Buyout</Button>
+                ) : null }
+              </div>
+           : null /* isPlotSold */ }
+          { this.state.toggleEnabled ? (
+            <div>
+              <Button 
+                variant="raised" 
+                color="primary" 
+                className={this.props.classes.button} 
+                onClick={this.updatePrice.bind(this)}
+                disabled={updateBuyoutDisabled}
+                title={updateBuyoutButtonCaption}>
+                Update Buyout
+              </Button>
+              <Button 
+                variant="raised" 
+                color="primary" 
+                className={this.props.classes.button} 
+                onClick={this.cancelSale.bind(this)}
+                disabled={cancelSaleDisabled}
+                title={cancelSaleButtonCaption}>
+                Cancel Plot Sale
+              </Button>
+            </div>
            ) : null }
         </Grid>
       </Grid>

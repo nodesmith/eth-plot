@@ -22,8 +22,10 @@ export type purchasePlot =
   (contractInfo: ContractInfo,
    plots: Array<PlotInfo>,
    rectToPurchase: Rect,
+   purchasePriceInWei: string,
    url: string,
    ipfsHash: string,
+   initialBuyoutPerPixelInWei: string | undefined,
    changePurchaseStep: (stage: Enums.PurchaseStage) => void,
    activeAccount: string) => void;
 export type loadBlockInfo = (contractInfo: ContractInfo, blockNumber: number) => void;
@@ -58,7 +60,7 @@ export type completePlotPurchase =
    purchasePriceInWei: string,
    imageData: string,
    website: string | undefined,
-   initialBuyout: string | undefined,
+   initialBuyoutPerPixelInWei: string | undefined,
    activeAccount: string) => void;
 export type closePlotPurchase = () => void;
 export type startPurchasePlot = () => void;

@@ -1,4 +1,5 @@
 import MoreVert from '@material-ui/icons/MoreVert';
+import { BigNumber } from 'bignumber.js';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import Button from 'material-ui/Button';
@@ -35,8 +36,9 @@ class PlotPopover extends React.Component<PlotPopoverProps> {
   render() {
     const { classes } = this.props;
 
-    const buyoutPriceMessage = this.props.plot.buyoutPrice > 0 ?
-      `${formatEthValueToString(this.props.plot.buyoutPrice.toString())}  per pixel` :
+    const buyoutPricePerPixelInWeiBN = new BigNumber(this.props.plot.buyoutPricePerPixelInWei);
+    const buyoutPriceMessage = buyoutPricePerPixelInWeiBN.greaterThan(0) ?
+      `${formatEthValueToString(this.props.plot.buyoutPricePerPixelInWei.toString())}  per pixel` :
       'Not for sale';
 
     let title: JSX.Element | string = 'No Website Provided';
