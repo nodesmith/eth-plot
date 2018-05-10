@@ -54,19 +54,54 @@ contract EthGrid is Ownable {
         uint256[] memory holes;
         ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
         data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://www.ethplot.com/"));
-        createAuction(0, INITIAL_AUCTION_PRICE);
+        this.updateAuction(0, INITIAL_AUCTION_PRICE, false);
     }
 
-    //----------------------Public Functions---------------------//
-    function createAuction(uint256 zoneIndex, uint256 pricePerPixelInWei) public {
-        require(zoneIndex >= 0);
+
+    //----------------------External Functions---------------------//
+    // Can also be used to cancel an existing auction by sending 0 as new price.
+    function updateAuction(uint256 zoneIndex, uint256 newPriceInWeiPerPixel, bool newPurchase) external {
+        require(zoneIndex > 0);
         require(zoneIndex < ownership.length);
         require(msg.sender == ownership[zoneIndex].owner);
-        require(pricePerPixelInWei > 0);
 
-        tokenIdToAuction[zoneIndex] = pricePerPixelInWei;
+        tokenIdToAuction[zoneIndex] = newPriceInWeiPerPixel;
+        emit AuctionUpdated(zoneIndex, newPriceInWeiPerPixel, newPurchase, msg.sender);
     }
 
+    function purchaseAreaWithData(
+        uint16[] purchase,
+        uint16[] purchasedAreas,
+        uint256[] areaIndices,
+        string ipfsHash,
+        string url,
+        uint256 initialPurchasePrice,
+        uint256 initialBuyoutPriceInWeiPerPixel) external payable {
+
+        // Geometry.Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
+        validatePurchases(purchase, purchasedAreas, areaIndices);
+
+        // Add the new ownership to the array
+        uint256[] memory holes;
+        // ZoneOwnership memory newZone = ZoneOwnership(msg.sender, rectToPurchase.x, rectToPurchase.y, rectToPurchase.w, rectToPurchase.h, holes);
+        ownership.push(ZoneOwnership(msg.sender, purchase[0], purchase[1], purchase[2], purchase[3], holes));
+
+        // Now that purchase is completed, update zones that have new holes due to this purchase
+        uint256 i = 0;
+        for (i = 0; i < areaIndices.length; i++) {
+            ownership[areaIndices[i]].holes.push(ownership.length - 1);
+        }
+
+        // Take in the input data for the actual grid!
+        // ZoneData memory newData = ZoneData(ipfsHash, url);
+        data.push(ZoneData(ipfsHash, url));
+
+        // Set an initial purchase price for the new plot as specified and emit a purchased event
+        this.updateAuction(ownership.length - 1, initialBuyoutPriceInWeiPerPixel, true);
+        emit PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
+    }
+
+    //----------------------Public View Functions---------------------//
     function getPlot(uint256 zoneIndex) public view returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
         uint256 price = tokenIdToAuction[zoneIndex];
         ZoneData memory zoneData = data[zoneIndex];
@@ -84,47 +119,6 @@ contract EthGrid is Ownable {
 
     function ownershipLength() public view returns (uint256) {
         return ownership.length;
-    }
-    
-    // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
-    function updateAuction(uint256 zoneIndex, uint256 newPriceInWeiPerPixel, bool newPurchase) public {
-        require(zoneIndex > 0);
-        require(zoneIndex < ownership.length);
-        require(msg.sender == ownership[zoneIndex].owner);
-
-        tokenIdToAuction[zoneIndex] = newPriceInWeiPerPixel;
-        emit AuctionUpdated(zoneIndex, newPriceInWeiPerPixel, newPurchase, msg.sender);
-    }
-
-    function purchaseAreaWithData(
-        uint16[] purchase,
-        uint16[] purchasedAreas,
-        uint256[] areaIndices,
-        string ipfsHash,
-        string url,
-        uint256 initialPurchasePrice,
-        uint256 initialBuyoutPriceInWeiPerPixel) public payable returns (uint256) {
-        Geometry.Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
-
-        // Add the new ownership to the array
-        uint256[] memory holes;
-        ZoneOwnership memory newZone = ZoneOwnership(msg.sender, rectToPurchase.x, rectToPurchase.y, rectToPurchase.w, rectToPurchase.h, holes);
-        ownership.push(newZone);
-
-        // Now that purchase is completed, update zones that have new holes due to this purchase
-        uint256 i = 0;
-        for (i = 0; i < areaIndices.length; i++) {
-            ownership[areaIndices[i]].holes.push(ownership.length - 1);
-        }
-
-        // Take in the input data for the actual grid!
-        ZoneData memory newData = ZoneData(ipfsHash, url);
-        data.push(newData);
-
-        updateAuction(ownership.length - 1, initialBuyoutPriceInWeiPerPixel, true);
-        emit PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
-
-        return ownership.length - 1;
     }
     
     //----------------------Private Functions---------------------//
@@ -190,8 +184,6 @@ contract EthGrid is Ownable {
         return remainingBalance;
     }
 
-    event PurchasePrice(uint256 price);
-    
     function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (Geometry.Rect memory) {
         require(purchase.length == 4);
         Geometry.Rect memory rectToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
@@ -219,7 +211,7 @@ contract EthGrid is Ownable {
             rects[i] = rect;
 
             // Compute the area of this rect and add it to the total area
-            totalArea += rect.w * rect.h;
+            totalArea = SafeMath.add(totalArea, SafeMath.mul(rect.w,rect.h));
 
             // Verify that this rectangle is within the bounds of the area we are trying to purchase
             require(rect.x >= rectToPurchase.x);
@@ -239,7 +231,10 @@ contract EthGrid is Ownable {
 
         // If we have a matching area, the sub rects are all contained within what we're purchasing, and none of them overlap,
         // we know we have a complete tiling of the rectToPurchase. Next, compute what the price should be for all this
-        distributePurchaseFunds(rectToPurchase, rects, areaIndices);
+        uint256 remainingBalance = distributePurchaseFunds(rectToPurchase, rects, areaIndices);
+
+        // The remainingBalance after distributing funds to sellers should greater than or equal to the fee we charge
+
         
         return rectToPurchase;
     }

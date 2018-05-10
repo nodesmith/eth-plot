@@ -147,7 +147,7 @@ class AccountManager extends React.Component<AccountManagerProps, AccountManager
           variant="subheading">
           You do not own any plots on the grid. Visit the grid to purchase a plot.
         </Typography>
-        : null }
+        : plotInfoComponents }
       </Grid>
     );
   }
