@@ -94,7 +94,7 @@ const initialState: PurchaseState = {
   imageFileInfo: undefined,
   imageDimensions: { w: -1, h:-1 },
   website: '',
-  buyoutPriceInWei: '328742394234',
+  buyoutPriceInWei: '0',
   buyoutEnabled: true,
   allowedFileTypes,
   imageValidation: validateImageFile(),

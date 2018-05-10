@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import * as d3Palette from 'd3-scale-chromatic';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Popover from 'material-ui/Popover';
@@ -275,23 +276,28 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
 
 
     // Compute the heatmap range
-    let minPrice = Number.MAX_SAFE_INTEGER;
-    let maxPrice = Number.EPSILON;
+    let minPrice = new BigNumber(Number.MAX_SAFE_INTEGER);
+    let maxPrice = new BigNumber(1);
+
     plots.forEach((plot) => {
-      if (plot.buyoutPrice > 0) {
-        minPrice = Math.min(minPrice, plot.buyoutPrice);
-        maxPrice = Math.max(maxPrice, plot.buyoutPrice);
+      const buyoutPricePerPixelInWeiBN = new BigNumber(plot.buyoutPricePerPixelInWei);
+
+      if (buyoutPricePerPixelInWeiBN.greaterThan(0)) {
+        minPrice = BigNumber.min(minPrice, buyoutPricePerPixelInWeiBN);
+        maxPrice = BigNumber.max(maxPrice, buyoutPricePerPixelInWeiBN);
       }
     });
 
     // Build up the heatmap, interpolating the colors from the d3Palette
-    const priceRange = maxPrice - minPrice;
+    const priceRange = maxPrice.minus(minPrice);
     const heatMapRects = buildSvgComponents(plots, plotTransactions, holes, 'heatmap', (plot, plotTransaction, holes, index, props) => {
+      const buyoutPricePerPixelInWeiBN = new BigNumber(plot.buyoutPricePerPixelInWei);
+
       let color = 'black';
-      if (plot.buyoutPrice > 0) {
-        const aboveMin = plot.buyoutPrice - minPrice;
-        const value = 1 - (aboveMin / priceRange);
-        color = d3Palette.interpolateRdYlGn(value);
+      if (buyoutPricePerPixelInWeiBN.greaterThan(0)) {
+        const aboveMin = buyoutPricePerPixelInWeiBN.minus(minPrice);
+        const value = new BigNumber(1).minus(aboveMin.div(priceRange));
+        color = d3Palette.interpolateRdYlGn(value.toNumber());
       }
 
       return (<rect {...props}

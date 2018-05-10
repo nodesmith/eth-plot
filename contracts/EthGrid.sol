@@ -34,7 +34,7 @@ contract EthGrid is Ownable {
     ZoneData[] public data;
     
     // Maps zone ID to auction price. If price is 0, no auction is 
-    // available for that zone. Price is gwei per pixel.
+    // available for that zone. Price is Wei per pixel.
     mapping (uint256 => uint256) public tokenIdToAuction;
     
     //----------------------Constants---------------------//
@@ -48,7 +48,7 @@ contract EthGrid is Ownable {
     uint16 constant private MAXIMUM_PURCHASE_AREA = 1000;
     
     //----------------------Events---------------------//
-    event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel, bool newPurchase, address indexed owner);
+    event AuctionUpdated(uint256 tokenId, uint256 newPriceInWeiPerPixel, bool newPurchase, address indexed owner);
     event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address indexed buyer);
     event PlotSectionSold(uint256 zoneId, uint256 totalPrice, address indexed buyer, address indexed seller);
 
@@ -63,13 +63,13 @@ contract EthGrid is Ownable {
     }
 
     //----------------------Public Functions---------------------//
-    function createAuction(uint256 zoneIndex, uint256 pricePerPixelInGwei) public {
+    function createAuction(uint256 zoneIndex, uint256 pricePerPixelInWei) public {
         require(zoneIndex >= 0);
         require(zoneIndex < ownership.length);
         require(msg.sender == ownership[zoneIndex].owner);
-        require(pricePerPixelInGwei > 0);
+        require(pricePerPixelInWei > 0);
 
-        tokenIdToAuction[zoneIndex] = pricePerPixelInGwei;
+        tokenIdToAuction[zoneIndex] = pricePerPixelInWei;
     }
 
     function getPlot(uint256 zoneIndex) public constant returns (uint16, uint16, uint16, uint16, address, uint256, string, bytes) {
@@ -92,18 +92,18 @@ contract EthGrid is Ownable {
     }
     
     // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
-    function updateAuction(uint256 zoneIndex, uint256 newPriceInGweiPerPixel, bool newPurchase) public {
+    function updateAuction(uint256 zoneIndex, uint256 newPriceInWeiPerPixel, bool newPurchase) public {
         require(zoneIndex > 0);
         require(zoneIndex < ownership.length);
         require(msg.sender == ownership[zoneIndex].owner);
 
-        tokenIdToAuction[zoneIndex] = newPriceInGweiPerPixel;
-        emit AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
+        tokenIdToAuction[zoneIndex] = newPriceInWeiPerPixel;
+        emit AuctionUpdated(zoneIndex, newPriceInWeiPerPixel, newPurchase, msg.sender);
     }
 
-    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
-        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
-        
+    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice, uint256 initialBuyoutPriceInWeiPerPixel) public payable returns (uint256) {
+        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices, 0);
+
         // Add the new ownership to the array
         uint256[] memory holes;
         ZoneOwnership memory newZone = ZoneOwnership(msg.sender, rectToPurchase.x, rectToPurchase.y, rectToPurchase.w, rectToPurchase.h, holes);
@@ -119,7 +119,7 @@ contract EthGrid is Ownable {
         ZoneData memory newData = ZoneData(ipfsHash, url);
         data.push(newData);
 
-        updateAuction(ownership.length - 1, initialPurchasePrice, true);
+        updateAuction(ownership.length - 1, initialBuyoutPriceInWeiPerPixel, true);
         emit PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
 
         return ownership.length - 1;

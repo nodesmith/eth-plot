@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import ExpandMore from 'material-ui-icons/ExpandMore';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
@@ -118,7 +119,8 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
 
   render() {
     const plotURL = (this.props.info.data.url) ? this.props.info.data.url : 'None';
-    const forSale = (this.props.info.buyoutPrice > 0);
+    const buyoutPricePerPixelInWeiBN = new BigNumber(this.props.info.buyoutPricePerPixelInWei);
+    const forSale = buyoutPricePerPixelInWeiBN.greaterThan(0);
 
     const pixelStatus = this.computePixelStatus();
     const totalPixels = this.props.info.rect.w * this.props.info.rect.h;
@@ -154,7 +156,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? formatEthValueToString(this.props.info.buyoutPrice.toString()) : 'NA'} />
+              <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? formatEthValueToString(this.props.info.buyoutPricePerPixelInWei) : 'NA'} />
             </Grid>
             <Grid item xs={6}>
               <TextLabel caption="Number of Pixels Sold" value={`${pixelStatus.soldPixelCount} of ${totalPixels}`} />

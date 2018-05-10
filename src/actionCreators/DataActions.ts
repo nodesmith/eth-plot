@@ -114,7 +114,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
           y2: 0
         },
         owner: plotInfo[4],
-        buyoutPrice: plotInfo[5].toNumber(), // TODO
+        buyoutPricePerPixelInWei: plotInfo[5].toString(),
         data: {
           url: plotInfo[6],
           ipfsHash,
@@ -179,7 +179,7 @@ export function purchasePlot(
   purchasePriceInWei: string,
   url: string | undefined,
   ipfsHash: string,
-  initialBuyout: string | undefined,
+  initialBuyoutPerPixelInWei: string | undefined,
   changePurchaseStep: Actions.changePurchaseStep,
   activeAccount: string) {
   return async (dispatch): Promise<string> => {
@@ -194,9 +194,11 @@ export function purchasePlot(
     const purchase = buildArrayFromRectangles([rectToPurchase]);
     const purchasedAreas = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
     const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
-    const initialPurchasePrice = new BigNumber(initialBuyout || 0);
+    const initialPurchasePrice = new BigNumber(purchasePriceInWei);
+    const initialBuyoutInWeiBN = new BigNumber(initialBuyoutPerPixelInWei || 0);
+    const initialBuyoutPerPixelInWeiBN = initialBuyoutInWeiBN.div(rectToPurchase.w * rectToPurchase.h);
 
-    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialPurchasePrice);
+    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialPurchasePrice, initialBuyoutPerPixelInWeiBN);
     const gasEstimate = await tx.estimateGas({ value: purchasePriceInWei });
     const txObject = {
       from: activeAccount,

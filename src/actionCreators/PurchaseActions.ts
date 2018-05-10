@@ -85,13 +85,13 @@ export function changeBuyoutEnabled(isEnabled): Action {
 // Thunk action for purchasing a plot. This requires uploading the image, submitting it to the chain, and waiting for transformations
 export function completePlotPurchase(
   contractInfo: ContractInfo, plots: Array<PlotInfo>, rectToPurchase: Rect, purchasePriceInWei: string,
-  imageData: string, website: string | undefined, initialBuyout: string | undefined, activeAccount: string) {
+  imageData: string, website: string | undefined, initialBuyoutPerPixelInWei: string | undefined, activeAccount: string) {
   return async (dispatch) => {
     dispatch(startPurchasePlot());
 
     const ipfsHash = await dispatch(uploadImageData(imageData));
     return dispatch(purchasePlotFromChain(
-      contractInfo, plots, rectToPurchase, purchasePriceInWei, website, ipfsHash, initialBuyout!, changePurchaseStep, activeAccount));
+      contractInfo, plots, rectToPurchase, purchasePriceInWei, website, ipfsHash, initialBuyoutPerPixelInWei!, changePurchaseStep, activeAccount));
   };
 }
 
