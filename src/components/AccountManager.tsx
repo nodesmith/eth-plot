@@ -41,7 +41,7 @@ interface AccountManagerState {
   showUnsoldPlots: boolean;
 }
 
-class AccountManager extends Component<AccountManagerProps, AccountManagerState> {
+class AccountManager extends React.Component<AccountManagerProps, AccountManagerState> {
   constructor(props, context) {
     super(props, context);
     this.state = {
