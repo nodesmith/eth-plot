@@ -198,7 +198,8 @@ export function purchasePlot(
     const initialBuyoutInWeiBN = new BigNumber(initialBuyoutPerPixelInWei || 0);
     const initialBuyoutPerPixelInWeiBN = initialBuyoutInWeiBN.div(rectToPurchase.w * rectToPurchase.h);
 
-    const tx = contract.purchaseAreaWithDataTx(purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialPurchasePrice, initialBuyoutPerPixelInWeiBN);
+    const tx = contract.purchaseAreaWithDataTx(
+      purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialPurchasePrice, initialBuyoutPerPixelInWeiBN);
     const gasEstimate = await tx.estimateGas({ value: purchasePriceInWei });
     const txObject = {
       from: activeAccount,
