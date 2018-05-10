@@ -43,6 +43,7 @@ export interface PlotInfoProps extends WithStyles {
   holes: Array<Rect>;
   updatePrice: (zoneIndex: number, newBuyoutPrice: string) => void;
   purchaseInfo: PurchaseEventInfo;
+  isPlotSold: boolean;
 }
 
 interface PlotInfoState {
@@ -125,6 +126,11 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
     const pixelStatus = this.computePixelStatus();
     const totalPixels = this.props.info.rect.w * this.props.info.rect.h;
 
+    let forSaleText = (forSale) ? 'Yes' : 'No';
+    if (this.props.isPlotSold) forSaleText = 'NA';
+
+    const pixelSoldCountText = (this.props.isPlotSold) ? 'All' : `${pixelStatus.soldPixelCount} of ${totalPixels}`;
+
     return (
       <Grid className={this.props.classes.root} container spacing={8}>
         <Grid item xs={12} sm={6} >
@@ -148,7 +154,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
           </Grid>
           <Grid container spacing={8}>
             <Grid item xs={6}>
-              <TextLabel caption="Plot for Sale" value={(forSale) ? 'Yes' : 'No'} />
+              <TextLabel caption="Plot for Sale" value={forSaleText} />
             </Grid>
             <Grid item xs={6}>
               <TextLabel caption="Original Purchase Price" value={formatEthValueToString(this.props.purchaseInfo.purchasePrice.toString())} />
@@ -159,24 +165,28 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
               <TextLabel caption="Buyout Price Per Pixel" value={(forSale) ? formatEthValueToString(this.props.info.buyoutPricePerPixelInWei) : 'NA'} />
             </Grid>
             <Grid item xs={6}>
-              <TextLabel caption="Number of Pixels Sold" value={`${pixelStatus.soldPixelCount} of ${totalPixels}`} />
+              <TextLabel caption="Number of Pixels Sold" value={pixelSoldCountText} />
             </Grid>
           </Grid>
-          <Divider className={this.props.classes.divider} light />
-          <BuyoutPriceInputBox
-            onBuyoutChanged={this.onBuyoutChanged.bind(this)}
-            onToggleChanged={this.onToggleChanged.bind(this)}
-            rectToPurchase={this.props.info.rect}
-            buyoutPriceInWei={this.state.newBuyoutPrice}
-            toggleEnabled={this.state.toggleEnabled}
-            toggleText={'Edit Buyout'}
-            title={'Buyout Price'}
-            initialValue={{ units: 'wei', ammountInWei: 500 }}
-            buyoutVisible={this.state.auctionVisible}
-          />
-          {this.state.toggleEnabled ? (
-            <Button variant="raised" color="primary" className={this.props.classes.button} onClick={this.updatePrice.bind(this)}>Update Buyout</Button>
-           ) : null }
+            {(!this.props.isPlotSold) ? 
+              <div>
+                <Divider className={this.props.classes.divider} light />
+                <BuyoutPriceInputBox
+                  onBuyoutChanged={this.onBuyoutChanged.bind(this)}
+                  onToggleChanged={this.onToggleChanged.bind(this)}
+                  rectToPurchase={this.props.info.rect}
+                  buyoutPriceInWei={this.state.newBuyoutPrice}
+                  toggleEnabled={this.state.toggleEnabled}
+                  toggleText={'Edit Buyout'}
+                  title={'Buyout Price'}
+                  initialValue={{ units: 'wei', ammountInWei: 500 }}
+                  buyoutVisible={this.state.auctionVisible}
+                />
+                {this.state.toggleEnabled ? (
+                  <Button variant="raised" color="primary" className={this.props.classes.button} onClick={this.updatePrice.bind(this)}>Update Buyout</Button>
+                ) : null }
+              </div>
+           : null /* isPlotSold */ }
         </Grid>
       </Grid>
     );
