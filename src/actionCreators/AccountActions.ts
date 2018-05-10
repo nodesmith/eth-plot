@@ -89,32 +89,21 @@ async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispa
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
   const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
-  const events = await auctionEvent.get({ fromBlock: 0, toBlock: 'latest' });
-
-  events.forEach(tx => {
-    auctionTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
-  });
 
   // We really should return this in some way since we need to stop listening to it
-  auctionEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, event) => {
+  auctionEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, tx) => {
     if (!err) {
-      auctionTransactionHandler(event, true, Enums.TxType.AUCTION, dispatch);
+      genericTransactionHandler(tx, true, Enums.TxType.AUCTION, dispatch);
     }
   });
 }
 
 async function getPurchaseEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
 
-  const purchaseEvent = contract.PlotPurchasedEvent({ });
+  const purchaseEvent = contract.PlotPurchasedEvent({ buyer: currentAddress });
 
   // Get's historical purchase transactions for loading user's transaction list
   const events = await purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' });
-  events.forEach(tx => {
-    if (tx.args.buyer === currentAddress) {
-      genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
-    }
-  });
-
 
   const purchaseEventInfo: PurchaseEventInfo[] = events.map(tx => {
     return  { 
@@ -128,21 +117,15 @@ async function getPurchaseEvents(contract: EthGrid, currentAddress: string, disp
   dispatch(addPurchaseEventTransactions(purchaseEventInfo));
 
   // Listens to incoming purchase transactions
-  purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {
+  purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, tx) => {
     if (!err) {
-      genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
+      genericTransactionHandler(tx, true, Enums.TxType.PURCHASE, dispatch);
     }
   });
 }
 
-//   PlotSectionSold(uint256 zoneId, uint256 totalPrice, address indexed buyer, address indexed seller);
 async function getSaleEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
   const saleEvent = contract.PlotSectionSoldEvent({ seller: currentAddress });
-  const events = await saleEvent.get({ fromBlock: 0, toBlock: 'latest' });
-
-  events.forEach(tx => {
-    genericTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
-  });
 
   // We really should return this in some way since we need to stop listening to it
   saleEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, event) => {
@@ -150,16 +133,6 @@ async function getSaleEvents(contract: EthGrid, currentAddress: string, dispatch
       genericTransactionHandler(event, true, Enums.TxType.SALE, dispatch);
     }
   });
-}
-
-function auctionTransactionHandler(
-  tx: DecodedLogEntry<EthGridEventTypes.AuctionUpdatedEventArgs>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void { 
-  // Since the auction update is called for new purchases as well as an actual update
-  // to an existing price, we use this flag to determine if we should show this transaction
-  // from a UI standpoint as an "update price" transaction.
-  if (!tx.args.newPurchase) {
-    genericTransactionHandler(tx, isNew, txType, dispatch);
-  }
 }
 
 function genericTransactionHandler(tx: DecodedLogEntry<{}>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void {

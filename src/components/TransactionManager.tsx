@@ -7,7 +7,7 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import * as Enums from '../constants/Enums';
-import { UserTransactions } from '../models';
+import { UserTransaction } from '../models';
 
 import PlotInfo from './PlotInfo';
 import TransactionStatus from './TransactionStatus';
@@ -23,7 +23,7 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 export interface TransactionManagerProps extends WithStyles {
-  userTransactions: Array<UserTransactions>;
+  userTransactions: Array<UserTransaction>;
   metamaskState: number;
 }
 

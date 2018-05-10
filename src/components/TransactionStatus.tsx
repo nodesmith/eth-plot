@@ -1,5 +1,6 @@
 import AddCircle from 'material-ui-icons/AddCircle';
 import AttachMoney from 'material-ui-icons/AttachMoney';
+import SwapHoriz from 'material-ui-icons/SwapHoriz';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import Divider from 'material-ui/Divider';
@@ -9,20 +10,23 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import * as Enums from '../constants/Enums';
-import { UserTransactions } from '../models';
+import { UserTransaction } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
     padding: 16
+  },
+  headerText: {
+    paddingBottom: 4
   }
 });
 
 export interface TransactionStatusProps extends WithStyles {
-  tx: UserTransactions;
+  tx: UserTransaction;
 }
 
 class TransactionStatus extends React.Component<TransactionStatusProps> {
-  getTxStatus() {
+  getTxStatusComponent(): JSX.Element {
     let colorClass;
     let statusText;
     
@@ -48,25 +52,40 @@ class TransactionStatus extends React.Component<TransactionStatusProps> {
 
   render() {
     const etherscanUrl = `https://etherscan.io/tx/${this.props.tx.txHash}`;
-    const isAuction = (this.props.tx.txType === Enums.TxType.AUCTION);
-    
-    const txTextComponent = (isAuction) ? 'Auction Update Transaction' : 'Purchase Transaction';
-    const txStatusComponent = this.getTxStatus();
+    const txStatusComponent = this.getTxStatusComponent();
+
+    let txText: string;
+    let txIcon: JSX.Element;
+
+    switch (this.props.tx.txType) {
+      case Enums.TxType.AUCTION:
+        txText = 'You change the price of your plot';
+        txIcon = <SwapHoriz />;
+        break;
+      case Enums.TxType.PURCHASE:
+        txText = 'You bought a plot';
+        txIcon = <AddCircle />;
+        break;
+      case Enums.TxType.SALE:
+        txText = 'Someone bought a portion of your plot';
+        txIcon = <AttachMoney />;
+        break;
+      default:
+        throw `Unknown transaction type: ${this.props.tx.txType}`;
+    }
 
     return (
       <Grid className={this.props.classes.root} container alignItems="center" >
         <Grid item xs>
           <Avatar>
-            {(isAuction) ?
-            (<AttachMoney />) :
-            (<AddCircle />)}
+            { txIcon }
           </Avatar>
         </Grid>
         
         <Grid item xs={6} sm={8} md={10} >
           <Grid container spacing={8} wrap="nowrap">
             <Grid item xs={12} zeroMinWidth>
-              <Typography>{txTextComponent}</Typography>
+              <Typography className={this.props.classes.headerText}>{txText}</Typography>
               <Typography noWrap><a href={etherscanUrl}>{this.props.tx.txHash}</a></Typography>
             </Grid>
           </Grid>
