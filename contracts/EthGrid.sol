@@ -73,7 +73,7 @@ contract EthGrid is Ownable {
         tokenIdToAuction[zoneIndex] = pricePerPixelInGwei;
     }
 
-    function getPlot(uint256 zoneIndex) public constant returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
+    function getPlot(uint256 zoneIndex) public view returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
         uint256 price = tokenIdToAuction[zoneIndex];
         ZoneData memory zoneData = data[zoneIndex];
 
@@ -88,7 +88,7 @@ contract EthGrid is Ownable {
             zoneData.ipfsHash);
     }
 
-    function ownershipLength() public constant returns (uint256) {
+    function ownershipLength() public view returns (uint256) {
         return ownership.length;
     }
     
@@ -102,7 +102,13 @@ contract EthGrid is Ownable {
         emit AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
     }
 
-    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, string ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
+    function purchaseAreaWithData(
+        uint16[] purchase,
+        uint16[] purchasedAreas,
+        uint256[] areaIndices,
+        string ipfsHash,
+        string url,
+        uint256 initialPurchasePrice) public payable returns (uint256) {
         Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
         
         // Add the new ownership to the array
@@ -128,11 +134,7 @@ contract EthGrid is Ownable {
     
     //----------------------Private Functions---------------------//
     function doRectanglesOverlap(Rect memory a, Rect memory b) private pure returns (bool) {
-        return 
-            a.x < b.x + b.w &&
-            a.x + a.w > b.x &&
-            a.y < b.y + b.h &&
-            a.y + a.h > b.y;
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
     }
 
     // It is assumed that we will have called doRectanglesOverlap before calling this method and we will know they overlap
@@ -159,7 +161,10 @@ contract EthGrid is Ownable {
         uint256 areaIndicesIndex = 0;
 
         // Walk the ownership array backwards. Do funny checks for incrementing and decrementing indices becaues uints will wrap
-        for (uint256 ownershipIndex = ownership.length - 1; areaIndicesIndex < areaIndices.length && ownershipIndex < ownership.length; ownershipIndex--) {
+        for (uint256 ownershipIndex = ownership.length - 1;
+             areaIndicesIndex < areaIndices.length && ownershipIndex < ownership.length;
+             ownershipIndex--) {
+
             Rect memory currentOwnershipRect = Rect(
                 ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
@@ -192,7 +197,7 @@ contract EthGrid is Ownable {
 
 
                 // Finally, add the price of this rect to the totalPrice computation
-                uint256 sectionPrice =  _getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
+                uint256 sectionPrice = getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
                 remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
                 owedToSeller = SafeMath.add(owedToSeller, sectionPrice);
 
@@ -236,7 +241,8 @@ contract EthGrid is Ownable {
         uint256 j = 0;
         for (i = 0; i < areaIndices.length; i++) {
             // Define the rectangle and add it to our collection of them
-            Rect memory rect = Rect(purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
+            Rect memory rect = Rect(
+                purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
             rects[i] = rect;
 
             // Compute the area of this rect and add it to the total area
@@ -267,7 +273,7 @@ contract EthGrid is Ownable {
 
     // Given a rect to purchase, and the ID of the zone that is part of the purchase,
     // This returns the total price of the purchase that is attributed by that zone.  
-    function _getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
+    function getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
         // Check that this auction zone exists in the auction mapping with a price.
         uint256 auctionPricePerPixel = tokenIdToAuction[auctionedZoneId];
         require(auctionPricePerPixel > 0);
