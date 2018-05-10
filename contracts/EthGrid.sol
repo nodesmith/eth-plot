@@ -51,24 +51,13 @@ contract EthGrid is Ownable {
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         
         // Initialize the contract with a single block with the admin owns
-        uint256[] memory holes;
-        ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, holes));
+        ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, new uint256[](0)));
         data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://www.ethplot.com/"));
-        this.updateAuction(0, INITIAL_AUCTION_PRICE, false);
+        updateAuction(0, INITIAL_AUCTION_PRICE, false);
     }
 
 
     //----------------------External Functions---------------------//
-    // Can also be used to cancel an existing auction by sending 0 as new price.
-    function updateAuction(uint256 zoneIndex, uint256 newPriceInWeiPerPixel, bool newPurchase) external {
-        require(zoneIndex > 0);
-        require(zoneIndex < ownership.length);
-        require(msg.sender == ownership[zoneIndex].owner);
-
-        tokenIdToAuction[zoneIndex] = newPriceInWeiPerPixel;
-        emit AuctionUpdated(zoneIndex, newPriceInWeiPerPixel, newPurchase, msg.sender);
-    }
-
     function purchaseAreaWithData(
         uint16[] purchase,
         uint16[] purchasedAreas,
@@ -82,9 +71,17 @@ contract EthGrid is Ownable {
         validatePurchases(purchase, purchasedAreas, areaIndices);
 
         // Add the new ownership to the array
-        uint256[] memory holes;
+       //  uint256[] memory holes;
         // ZoneOwnership memory newZone = ZoneOwnership(msg.sender, rectToPurchase.x, rectToPurchase.y, rectToPurchase.w, rectToPurchase.h, holes);
-        ownership.push(ZoneOwnership(msg.sender, purchase[0], purchase[1], purchase[2], purchase[3], holes));
+        ZoneOwnership memory newZone = ZoneOwnership({
+            owner: msg.sender,
+            x: purchase[0],
+            y: purchase[1],
+            w: purchase[2],
+            h: purchase[3],
+            holes: new uint256[](0)
+        });
+        ownership.push(newZone);
 
         // Now that purchase is completed, update zones that have new holes due to this purchase
         uint256 i = 0;
@@ -97,8 +94,17 @@ contract EthGrid is Ownable {
         data.push(ZoneData(ipfsHash, url));
 
         // Set an initial purchase price for the new plot as specified and emit a purchased event
-        this.updateAuction(ownership.length - 1, initialBuyoutPriceInWeiPerPixel, true);
+        updateAuction(ownership.length - 1, initialBuyoutPriceInWeiPerPixel, true);
         emit PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
+    }
+
+    // Can also be used to cancel an existing auction by sending 0 as new price.
+    function updateAuction(uint256 zoneIndex, uint256 newPriceInWeiPerPixel, bool newPurchase) public {
+        require(zoneIndex < ownership.length);
+        require(msg.sender == ownership[zoneIndex].owner);
+
+        tokenIdToAuction[zoneIndex] = newPriceInWeiPerPixel;
+        emit AuctionUpdated(zoneIndex, newPriceInWeiPerPixel, newPurchase, msg.sender);
     }
 
     //----------------------Public View Functions---------------------//
