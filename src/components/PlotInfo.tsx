@@ -27,6 +27,8 @@ const styles: StyleRulesCallback = theme => ({
   },
   button: {
     marginRight: theme.spacing.unit,
+    marginTop: theme.spacing.unit,
+    pointerEvents: 'auto', // This allows captions on disabled buttons
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -61,7 +63,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      newBuyoutPrice: '0',
+      newBuyoutPrice: '',
       toggleEnabled: false,
       auctionVisible: false
     };
@@ -80,6 +82,10 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
 
   updatePrice() {
     this.props.updatePrice(this.props.info.zoneIndex, this.state.newBuyoutPrice);    
+  }
+
+  cancelSale() {
+    this.props.updatePrice(this.props.info.zoneIndex, "0");    
   }
 
   /**
@@ -131,6 +137,16 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
 
     const pixelSoldCountText = (this.props.isPlotSold) ? 'All' : `${pixelStatus.soldPixelCount} of ${totalPixels}`;
 
+    const cancelSaleDisabled = buyoutPricePerPixelInWeiBN.equals(0);
+    let updateBuyoutDisabled = true;
+    if (this.state.newBuyoutPrice) {
+      const newBuyoutPriceBN = new BigNumber(this.state.newBuyoutPrice);
+      updateBuyoutDisabled = newBuyoutPriceBN.lessThanOrEqualTo(0);
+    }
+
+    const cancelSaleButtonCaption = (cancelSaleDisabled) ? 'This plot isn\'t for sale, there is nothing to cancel.' : '';
+    const updateBuyoutButtonCaption = (updateBuyoutDisabled) ? 'A buyout must be above 1 wei in order to update.' : '';
+
     return (
       <Grid className={this.props.classes.root} container spacing={8}>
         <Grid item xs={12} sm={6} >
@@ -179,7 +195,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
                   toggleEnabled={this.state.toggleEnabled}
                   toggleText={'Edit Buyout'}
                   title={'Buyout Price'}
-                  initialValue={{ units: 'wei', ammountInWei: 500 }}
+                  initialPriceInEth={this.state.newBuyoutPrice}
                   buyoutVisible={this.state.auctionVisible}
                 />
                 {this.state.toggleEnabled ? (
@@ -187,6 +203,28 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
                 ) : null }
               </div>
            : null /* isPlotSold */ }
+          { this.state.toggleEnabled ? (
+            <div>
+              <Button 
+                variant="raised" 
+                color="primary" 
+                className={this.props.classes.button} 
+                onClick={this.updatePrice.bind(this)}
+                disabled={updateBuyoutDisabled}
+                title={updateBuyoutButtonCaption}>
+                Update Buyout
+              </Button>
+              <Button 
+                variant="raised" 
+                color="primary" 
+                className={this.props.classes.button} 
+                onClick={this.cancelSale.bind(this)}
+                disabled={cancelSaleDisabled}
+                title={cancelSaleButtonCaption}>
+                Cancel Plot Sale
+              </Button>
+            </div>
+           ) : null }
         </Grid>
       </Grid>
     );

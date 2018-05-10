@@ -9,7 +9,6 @@ import Switch from 'material-ui/Switch';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import * as Enums from '../constants/Enums';
 import { HoleInfo as HoleInfoData, PlotInfo as PlotInfoData, PurchaseEventInfo } from '../models';
@@ -143,11 +142,12 @@ class AccountManager extends Component<AccountManagerProps, AccountManagerState>
           <Typography align="center" variant="headline">My Plots</Typography>
         </Grid>,
         {(filteredPlots.length === 0) ? 
-          <Typography className={this.props.classes.noTxHeader} variant="subheading">
-            You do not own any plots on the grid. Visit the grid to purchase a plot.
-          </Typography>
-          : plotInfoComponents
-        }
+        <Typography 
+          className={this.props.classes.noTxHeader} 
+          variant="subheading">
+          You do not own any plots on the grid. Visit the grid to purchase a plot.
+        </Typography>
+        : null }
       </Grid>
     );
   }

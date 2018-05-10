@@ -1,7 +1,6 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import ExpandMore from 'material-ui-icons/ExpandMore';
 import ExpansionPanel, {
@@ -35,7 +34,7 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
-class FAQ extends Component<FAQProps> {
+class FAQ extends React.Component<FAQProps> {
   render() {
     return (
     <ExpansionPanel className={this.props.classes.wrapper} key={this.props.question}>

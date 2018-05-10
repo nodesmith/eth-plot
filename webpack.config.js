@@ -40,7 +40,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Aion Grid'
+      title: 'Eth Plot'
     }),
     new HtmlWebpackIncludeAssetsPlugin({ assets: ['main.css'], append: false }),
     new ForkTsCheckerWebpackPlugin(),

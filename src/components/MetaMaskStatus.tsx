@@ -1,7 +1,6 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import Typography from 'material-ui/Typography/Typography';
 
@@ -21,7 +20,7 @@ export interface MetaMaskStatusProps extends WithStyles {
   metamaskState: Enums.METAMASK_STATE;
 }
 
-class MetaMaskStatus extends Component<MetaMaskStatusProps> {
+class MetaMaskStatus extends React.Component<MetaMaskStatusProps> {
   render() {
     if (this.props.metamaskState === Enums.METAMASK_STATE.OPEN) {
       return null;

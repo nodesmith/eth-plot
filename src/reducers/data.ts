@@ -69,9 +69,6 @@ export function dataReducer(state: DataState, action: Action): DataState {
       return Object.assign({}, state, { isFetchingPlots: true, plots: [], newHoles: {} });
     case ActionTypes.LOAD_PLOTS_DONE:
       return Object.assign({}, state, { isFetchingPlots: false });
-    case ActionTypes.LIST_PLOT:
-      // TODO
-      return state;
     case ActionTypes.PLOT_LISTED: {
       const newState = Object.assign({}, state);
       newState.plots[action.zoneIndex].txHash = action.txHash;
@@ -124,9 +121,11 @@ function computeNewHoles(rectToAdd: Rect, currentHoles: HoleInfo, plots: Array<P
     for (let remainingAreaIndex = 0; remainingAreaIndex < remainingAreas.length; remainingAreaIndex++) {
       const currentRemainingArea = remainingAreas[remainingAreaIndex];
       if (PlotMath.doRectanglesOverlap(currentPlot.rect, currentRemainingArea)) {
+
         // These two rects overlap. This overlap will be divided into two parts:
         // 1. The parts which are newly aquired and 2. the parts which already are covered by holes
-        // Interestingly, we actually should never have this happen since the holes should already be accounted for 
+        // Interestingly, we actually should never have this happen since the holes should already have been
+        // accounted for in previous iterations of this loop
         const overlap = PlotMath.computeRectOverlap(currentPlot.rect, currentRemainingArea);
 
         // Next, add the overlap to the holes for this plotIndex
@@ -144,7 +143,7 @@ function computeNewHoles(rectToAdd: Rect, currentHoles: HoleInfo, plots: Array<P
         // Append the leftovers
         remainingAreas = remainingAreas.concat(leftoverArea);
 
-        // Subtract 1 so we don't miss the next remainingArea
+        // Subtract 1 so we don't miss the next remainingArea now that we've deleted this one
         remainingAreaIndex--;
       }
     }

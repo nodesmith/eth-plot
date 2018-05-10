@@ -3,7 +3,6 @@ import * as d3Palette from 'd3-scale-chromatic';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Popover from 'material-ui/Popover';
 import * as React from 'react';
-import { Component, SVGAttributes } from 'react';
 
 import * as ActionTypes from '../actions';
 import { DragType, MovementActions } from '../constants/Enums';
@@ -56,7 +55,7 @@ const styles: StyleRulesCallback = theme => ({
 function buildSvgComponents(
   plots: Array<PlotInfo>, plotTransactions: {[plotIndex: number]: PurchaseEventInfo}, holes: HoleInfo, key: string,
   // tslint:disable-next-line:max-line-length
-  cb: (plot: PlotInfo, plotTransaction:  PurchaseEventInfo, hole: Array<Rect>, index: number, props: SVGAttributes<{}>) => JSX.Element | undefined)
+  cb: (plot: PlotInfo, plotTransaction:  PurchaseEventInfo, hole: Array<Rect>, index: number, props: React.SVGAttributes<{}>) => JSX.Element | undefined)
     : JSX.Element[] {
   const result = new Array<JSX.Element>();
   for (let i = 0; i < plots.length; i++) {
@@ -150,7 +149,7 @@ export interface UIGridProps extends WithStyles {
   showGrid: boolean;
 }
 
-class UIGrid extends Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
+class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
   constructor(props: UIGridProps, context?: any) {
     super(props, context);
 

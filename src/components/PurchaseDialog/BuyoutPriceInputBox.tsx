@@ -40,6 +40,7 @@ export interface BuyoutPriceInputBoxProps extends WithStyles {
   buyoutVisible: boolean;
   toggleText: string;
   purchasePrice: string; // Should be a serialized Decimal.js of wei
+  initialPriceInEth?: string;
 }
 
 interface BuyoutPriceInputBoxState {
@@ -51,6 +52,7 @@ interface BuyoutPriceInputBoxState {
 class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, BuyoutPriceInputBoxState> {
   constructor(props, context) {
     super(props, context);
+    const initialPriceString = props.initialPriceInEth || '';
 
     this.state = {
       buyoutUnits: 'eth',
@@ -58,7 +60,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
       // The state of the input is tracked separately instead of being based solely on the props.
       // This allows us to keep the props in sync with the true value in wei (i.e. "0 wei") while 
       // still displaying exactly what the user types "0.0"
-      currentInput: ''
+      currentInput: initialPriceString
     };
   }
 
@@ -81,13 +83,14 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
   }
 
   buyoutUnitChanged(event, newBuyoutUnits) {
-    let buyoutString;
-    const currentBuyout = new Decimal(this.state.currentInput);
+    let buyoutString: string = this.state.currentInput;
     
     if (this.state.buyoutUnits === newBuyoutUnits) {
       buyoutString = this.state.currentInput;
-    } else {
-      switch(newBuyoutUnits) {
+    } else if (this.state.currentInput) {
+      const currentBuyout = new Decimal(this.state.currentInput);
+
+      switch (newBuyoutUnits) {
         case 'eth': 
           buyoutString = (this.state.buyoutUnits === 'gwei') 
                            ? currentBuyout.div(10e8).toFixed()   // Converting from gwei to eth
@@ -133,13 +136,12 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
 
     const price = new Decimal(buyoutPriceInWei);
 
-    if (price.lessThanOrEqualTo(0)) {
+    if (price.lessThan(1)) {
       return {
         state: 'error',
-        message: 'Buyout price must be more than 0'
+        message: 'Buyout price must be more than 1 wei'
       };
     }
-
 
     if (this.props.purchasePrice) {
       const purchasePrice = new Decimal(this.props.purchasePrice);
