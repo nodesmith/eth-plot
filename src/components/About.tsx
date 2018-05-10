@@ -8,7 +8,6 @@ import ExpansionPanel, {
 import Grid from 'material-ui/Grid';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import * as FAQAnswers from './FAQAnswers';
 import FAQGroup from './FAQGroup';
@@ -25,7 +24,7 @@ const styles: StyleRulesCallback = theme => ({
 
 const faqGroups = [
   { 
-    title: "Getting Started",
+    title: 'Getting Started',
     questions: [
       'What is Eth Plot?',
       'What do I need to start using Eth Plot?',
@@ -40,7 +39,7 @@ const faqGroups = [
     ]
   },
   { 
-    title: "Gameplay Mechanics",
+    title: 'Gameplay Mechanics',
     questions: [
       'How do I purchase a plot?',
       'How does selling a plot work?',
@@ -55,7 +54,7 @@ const faqGroups = [
     ]
   },
   { 
-    title: "Technical Details",
+    title: 'Technical Details',
     questions: [
       'How does Eth Plot work?',
       'Can I see the smart contract?',
@@ -73,7 +72,7 @@ export interface AboutProps extends WithStyles {
 
 }
 
-class About extends Component<AboutProps> {
+class About extends React.Component<AboutProps> {
   render() {
     const items = faqGroups.map((g, index) =>
       <FAQGroup questions={g.questions} answers={g.answers} groupTitle={g.title} classes={{}} key={index}/> 

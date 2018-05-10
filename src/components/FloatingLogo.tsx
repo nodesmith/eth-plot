@@ -1,7 +1,6 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import ButtonBase from 'material-ui/ButtonBase';
 import Paper from 'material-ui/Paper';
@@ -20,7 +19,7 @@ export interface FloatingLogoProps extends WithStyles {
 }
 
 
-class FloatingLogo extends Component<FloatingLogoProps> {
+class FloatingLogo extends React.Component<FloatingLogoProps> {
 
   render() {
     const sizeStyle: React.CSSProperties = {

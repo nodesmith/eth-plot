@@ -19,7 +19,6 @@ import OverlayNav, { OverlayNavProps } from '../components/OverlayNav';
 import * as Enums from '../constants/Enums';
 import { ContractInfo } from '../models';
 import * as Reducers from '../reducers';
-import { RootState } from '../reducers';
 
 import AccountManagerContainer from './AccountManagerContainer';
 import MainContainer, { MainContainerProps } from './MainContainer';
@@ -79,17 +78,24 @@ class App extends React.Component<AppProps> {
       10000000);
   }
 
+  updateMetamaskState(newState: Enums.METAMASK_STATE): void {
+    // Only emit this action if the state isn't known already or it's changed
+    if (!this.props.account.metamaskStateKnown || this.props.account.metamaskState !== newState) {
+      this.props.actions.updateMetamaskState(newState);
+    }
+  }
+
   checkMetamaskStatus(contractInfo: ContractInfo) {
     const web3 = getWeb3(contractInfo);
 
     if (!web3 || !web3.isConnected()) {
-      this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
+      this.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       return;
     }
 
     web3.eth.getAccounts((err, accounts) => {
       if (accounts && accounts.length > 0) {
-        this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
+        this.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
 
         if (accounts[0] !== this.props.account.activeAccount) {
           // The only time we ever want to load data from the chain history
@@ -100,7 +106,7 @@ class App extends React.Component<AppProps> {
           this.appDataBootstrap(accounts[0]);
         }
       } else {
-        this.props.actions.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
+        this.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
       }
     });
   }
@@ -274,7 +280,7 @@ class App extends React.Component<AppProps> {
 /**
  * Global redux state.
  */
-function mapStateToProps(state: RootState) {
+function mapStateToProps(state: Reducers.RootState) {
   // console.log(state);
   return {
     account: state.account,

@@ -13,7 +13,7 @@
         "no-else-after-return": false,
         "ter-arrow-parens": false,
         "object-shorthand-properties-first": false,
-        "no-duplicate-imports": false, // TODO - reenable
+        "no-duplicate-imports": true,
         "ordered-imports": [
             true,
             {

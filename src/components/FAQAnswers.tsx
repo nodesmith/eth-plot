@@ -1,5 +1,7 @@
-import * as React from 'react';
 import Typography from 'material-ui/Typography';
+import * as React from 'react';
+
+// tslint:disable:max-line-length
 
 export const gettingStartedAnswer1 = () => (
   <Typography variant="body2">

@@ -1,6 +1,5 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
@@ -24,7 +23,7 @@ interface WebsiteValidation {
 }
 
 
-class WebsiteInputBox extends Component<WebsiteInputBoxPropTypes, {website:string, websiteValidation: WebsiteValidation}> {
+class WebsiteInputBox extends React.Component<WebsiteInputBoxPropTypes, {website:string, websiteValidation: WebsiteValidation}> {
   constructor(props, context) {
     super(props, context);
 
