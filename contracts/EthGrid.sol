@@ -1,5 +1,6 @@
 pragma solidity ^0.4.23;
 
+import "./Geometry.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
@@ -7,13 +8,6 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 /// @title EthGrid
 /// @author spacedust
 contract EthGrid is Ownable {
-    struct Rect {
-        uint16 x;
-        uint16 y;
-        uint16 w;
-        uint16 h;
-    }
-    
     struct ZoneOwnership {
         address owner;
         uint16 x;
@@ -110,7 +104,7 @@ contract EthGrid is Ownable {
         string url,
         uint256 initialPurchasePrice,
         uint256 initialBuyoutPriceInWeiPerPixel) public payable returns (uint256) {
-        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
+        Geometry.Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
 
         // Add the new ownership to the array
         uint256[] memory holes;
@@ -134,30 +128,8 @@ contract EthGrid is Ownable {
     }
     
     //----------------------Private Functions---------------------//
-    function doRectanglesOverlap(Rect memory a, Rect memory b) private pure returns (bool) {
-        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
-    }
-
-    // It is assumed that we will have called doRectanglesOverlap before calling this method and we will know they overlap
-    function computeRectOverlap(Rect memory a, Rect memory b) private pure returns (Rect memory) {
-        Rect memory result = Rect(0, 0, 0, 0);
-
-        // Take the greater of the x and y values;
-        result.x = a.x > b.x ? a.x : b.x;
-        result.y = a.y > b.y ? a.y : b.y;
-
-        // Take the lesser of the x2 and y2 values
-        uint16 resultX2 = a.x + a.w < b.x + b.w ? a.x + a.w : b.x + b.w;
-        uint16 resultY2 = a.y + a.h < b.y + b.h ? a.y + a.h : b.y + b.h;
-
-        // Set our width and height here
-        result.w = resultX2 - result.x;
-        result.h = resultY2 - result.y;
-
-        return result;
-    }
-
-    function distributePurchaseFunds(Rect memory rectToPurchase, Rect[] memory rects, uint256[] memory areaIndices) private returns (uint256) {
+    function distributePurchaseFunds(
+        Geometry.Rect memory rectToPurchase, Geometry.Rect[] memory rects, uint256[] memory areaIndices) private returns (uint256) {
         uint256 remainingBalance = msg.value;
         uint256 areaIndicesIndex = 0;
 
@@ -166,7 +138,7 @@ contract EthGrid is Ownable {
              areaIndicesIndex < areaIndices.length && ownershipIndex < ownership.length;
              ownershipIndex--) {
 
-            Rect memory currentOwnershipRect = Rect(
+            Geometry.Rect memory currentOwnershipRect = Geometry.Rect(
                 ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
             uint256 owedToSeller = 0;
@@ -175,8 +147,8 @@ contract EthGrid is Ownable {
             while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
                 // This is a zone the caller has declared they were going to buy
                 // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
-                require(doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
-                Rect memory overlap = computeRectOverlap(rectToPurchase, currentOwnershipRect);
+                require(Geometry.doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
+                Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
 
                 // Verify that this overlap between these two is within the overlapped area of the rect to purhcase and this ownership zone
                 require(rects[areaIndicesIndex].x >= overlap.x);
@@ -187,13 +159,13 @@ contract EthGrid is Ownable {
                 // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
                 for (uint256 holeIndex = 0; holeIndex < ownership[ownershipIndex].holes.length; holeIndex++) {
                     ZoneOwnership memory holeOwnership = ownership[ownership[ownershipIndex].holes[holeIndex]];
-                    Rect memory holeRect = Rect(
+                    Geometry.Rect memory holeRect = Geometry.Rect(
                         holeOwnership.x,
                         holeOwnership.y,
                         holeOwnership.w,
                         holeOwnership.h);
 
-                    require(!doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
+                    require(!Geometry.doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
                 }
 
 
@@ -220,9 +192,9 @@ contract EthGrid is Ownable {
 
     event PurchasePrice(uint256 price);
     
-    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (Rect memory) {
+    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (Geometry.Rect memory) {
         require(purchase.length == 4);
-        Rect memory rectToPurchase = Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
+        Geometry.Rect memory rectToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         
         require(rectToPurchase.x < GRID_WIDTH && rectToPurchase.x >= 0);
         require(rectToPurchase.y < GRID_HEIGHT && rectToPurchase.y >= 0);
@@ -235,14 +207,14 @@ contract EthGrid is Ownable {
         require(purchasedAreas.length % 4 == 0);
         require(purchasedAreas.length / 4 == areaIndices.length);
 
-        Rect[] memory rects = new Rect[](areaIndices.length);
+        Geometry.Rect[] memory rects = new Geometry.Rect[](areaIndices.length);
 
         uint256 totalArea = 0;
         uint256 i = 0;
         uint256 j = 0;
         for (i = 0; i < areaIndices.length; i++) {
             // Define the rectangle and add it to our collection of them
-            Rect memory rect = Rect(
+            Geometry.Rect memory rect = Geometry.Rect(
                 purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
             rects[i] = rect;
 
@@ -261,7 +233,7 @@ contract EthGrid is Ownable {
         // Next, make sure all of these do not overlap
         for (i = 0; i < rects.length; i++) {
             for (j = i + 1; j < rects.length; j++) {
-                require(!doRectanglesOverlap(rects[i], rects[j]));
+                require(!Geometry.doRectanglesOverlap(rects[i], rects[j]));
             }
         }
 
@@ -274,7 +246,7 @@ contract EthGrid is Ownable {
 
     // Given a rect to purchase, and the ID of the zone that is part of the purchase,
     // This returns the total price of the purchase that is attributed by that zone.  
-    function getPriceOfAuctionedZone(Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
+    function getPriceOfAuctionedZone(Geometry.Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
         // Check that this auction zone exists in the auction mapping with a price.
         uint256 auctionPricePerPixel = tokenIdToAuction[auctionedZoneId];
         require(auctionPricePerPixel > 0);

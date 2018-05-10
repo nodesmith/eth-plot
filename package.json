@@ -14,7 +14,7 @@
     "lint:fix": "./node_modules/.bin/tslint --force --fix --project tsconfig.json",
     "solint": "node_modules/.bin/solhint contracts/**/*.sol",
     "tsdev": "node_modules/.bin/webpack-dev-server --port 3000 --hot --inline --mode development -d",
-    "gen": "./node_modules/.bin/typechain --force --outDir ./gen-src ./build/contracts/*.json"
+    "gen": "truffle compile && ./node_modules/.bin/typechain --force --outDir ./gen-src ./build/contracts/*.json"
   },
   "devDependencies": {
     "@spacedust/typechain": "^0.2.7",

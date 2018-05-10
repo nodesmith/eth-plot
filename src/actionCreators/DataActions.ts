@@ -105,7 +105,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
     for (let i = 0; i < ownershipLength; i++) {
       const plotInfo = await contract.getPlot(i);
 
-      const ipfsHash = web3.toUtf8(plotInfo[7]);
+      const ipfsHash = plotInfo[7];
 
       const plot: PlotInfo = {
         rect: {
