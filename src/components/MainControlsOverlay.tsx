@@ -7,7 +7,6 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import * as Actions from '../actions';
 import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
@@ -83,7 +82,7 @@ export interface MainControlsOverlayProps extends WithStyles {
   activeAccount: string;
 }
 
-class MainControlsOverlay extends Component<MainControlsOverlayProps> {
+class MainControlsOverlay extends React.Component<MainControlsOverlayProps> {
 
   toggleDrawer() {
     this.props.togglePurchaseFlow();

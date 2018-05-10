@@ -2,7 +2,6 @@ import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import FAQ from './FAQ';
 
@@ -25,7 +24,7 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
-class FAQGroup extends Component<FAQGroupProps> {
+class FAQGroup extends React.Component<FAQGroupProps> {
   render() {
     if (this.props.questions.length !== this.props.answers.length) {
       throw 'FAQGroup requires same number of questions as answers.';

@@ -6,7 +6,6 @@ import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import * as Enums from '../constants/Enums';
 import { HoleInfo as HoleInfoData, PlotInfo as PlotInfoData, PurchaseEventInfo } from '../models';
@@ -32,7 +31,7 @@ export interface AccountManagerProps extends WithStyles {
   activeAccount: string;
 }
 
-class AccountManager extends Component<AccountManagerProps> {
+class AccountManager extends React.Component<AccountManagerProps> {
   /**
    * Returns an array of plots that are owned by the current user.
    */
@@ -78,13 +77,12 @@ class AccountManager extends Component<AccountManagerProps> {
       <Grid container className={this.props.classes.root} justify="center" spacing={24} >
         {plotInfoComponents}
         {(filteredPlots.length === 0) ? 
-          <Typography 
-            className={this.props.classes.noTxHeader} 
-            variant="subheading">
-            You do not own any plots on the grid. Visit the grid to purchase a plot.
-          </Typography>
-          : null
-        }
+        <Typography 
+          className={this.props.classes.noTxHeader} 
+          variant="subheading">
+          You do not own any plots on the grid. Visit the grid to purchase a plot.
+        </Typography>
+        : null }
       </Grid>
     );
   }

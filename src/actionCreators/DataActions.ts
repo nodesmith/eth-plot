@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as Web3 from 'web3';
 
+import { promisify, DecodedLogEntry } from '../../gen-src/typechain-runtime';
 import { EthGrid } from '../../gen-src/EthGrid';
 import * as Actions from '../actions';
 import { ActionTypes } from '../constants/ActionTypes';
@@ -37,12 +38,6 @@ export function loadPlots() {
   };
 }
 
-export function listPlot() {
-  return {
-    type: ActionTypes.LIST_PLOT
-  };
-}
-
 export function plotListed(txHash, zoneIndex) {
   return {
     type: ActionTypes.PLOT_LISTED,
@@ -62,9 +57,10 @@ export function initializeContract(contractInfo: ContractInfo): Promise<EthGrid>
   return EthGrid.createAndValidate(web3, contractInfo.contractAddress);
 }
 
-export function determineTxStatus(tx) {
-  // TODO couldn't find docs here for other types, this is fragile, doesn't have FAILED type yet.
-  if (tx.type === 'mined') {
+export function determineTxStatus(tx: DecodedLogEntry<{}>) {
+  // https://github.com/ethereum/wiki/wiki/JavaScript-API#contract-events Says that blockNumber and blockHash
+  // will be null when the transaction is stil pending
+  if (tx.blockNumber !== null) {
     return Enums.TxStatus.SUCCESS;
   } else {
     return Enums.TxStatus.PENDING;
@@ -154,9 +150,9 @@ export function updateAuction(contractInfo: ContractInfo, zoneIndex: number, new
       gas: gasEstimate.times(2)
     };
 
-    const transactionReceipt = await contract.updateAuctionTx(zoneIndex, price, false).send(txObject);
+    const transactionReceipt = await tx.send(txObject);
 
-    const txStatus = determineTxStatus(transactionReceipt);
+    const txStatus = Enums.TxStatus.PENDING;
     dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.AUCTION, txStatus, Number.MAX_SAFE_INTEGER, true));
     return transactionReceipt;
   };
@@ -216,7 +212,7 @@ export function purchasePlot(
     try {
       const transactionReceipt = await tx.send(txObject);
 
-      const txStatus = determineTxStatus(transactionReceipt);
+      const txStatus = Enums.TxStatus.PENDING;
       dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
       dispatch(togglePurchaseFlow());
       dispatch(changePurchaseStep(Enums.PurchaseStage.USER_CONFIRM));

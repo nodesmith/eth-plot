@@ -5,7 +5,6 @@ import { LinearProgress } from 'material-ui/Progress';
 import Typography from 'material-ui/Typography/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import { PurchaseStage } from '../constants/Enums';
 
@@ -29,7 +28,7 @@ export interface PurchaseDialogProps extends WithStyles {
 }
 
 
-class PurchaseDialog extends Component<PurchaseDialogProps> {
+class PurchaseDialog extends React.Component<PurchaseDialogProps> {
   handleClose() {
     this.props.closePlotPurchase();
   }

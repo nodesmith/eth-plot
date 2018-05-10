@@ -5,7 +5,6 @@ import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import * as Enums from '../constants/Enums';
 import { UserTransactions } from '../models';
@@ -28,7 +27,7 @@ export interface TransactionManagerProps extends WithStyles {
   metamaskState: number;
 }
 
-class TransactionManager extends Component<TransactionManagerProps> {
+class TransactionManager extends React.Component<TransactionManagerProps> {
   getUserContent() {
     const pendingTransactions = this.props.userTransactions.map((tx, index) => {
       return (

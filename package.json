@@ -17,7 +17,7 @@
     "gen": "./node_modules/.bin/typechain --force --outDir ./gen-src ./build/contracts/*.json"
   },
   "devDependencies": {
-    "@spacedust/typechain": "^0.2.6",
+    "@spacedust/typechain": "^0.2.7",
     "@types/chai": "^4.1.3",
     "@types/d3-scale-chromatic": "^1.2.0",
     "@types/mocha": "^5.2.0",

@@ -3,7 +3,6 @@ import Checkbox from 'material-ui/Checkbox';
 import { FormControlLabel, FormGroup } from 'material-ui/Form';
 import Typography from 'material-ui/Typography';
 import * as React from 'react';
-import { Component } from 'react';
 
 import { formatEthValueToString } from '../../data/ValueFormatters';
 
@@ -29,7 +28,7 @@ export interface PlaceImageInputProps extends WithStyles {
   toggleShowGrid: (show: boolean) => void;
 }
 
-class PlaceImageInput extends Component<PlaceImageInputProps> {
+class PlaceImageInput extends React.Component<PlaceImageInputProps> {
   render() {
     const { classes, currentPrice } = this.props;
     const currentPriceDescription = currentPrice ? formatEthValueToString(this.props.currentPrice) : 'No Image Selected';

@@ -1,6 +1,8 @@
 import Typography from 'material-ui/Typography';
 import * as React from 'react';
 
+// tslint:disable:max-line-length
+
 export const gettingStartedAnswer1 = () => (
   <Typography variant="body2">
       Eth Plot is a pure decentralized game built on <a href="https://www.ethereum.org/">Ethereum.</a> With 

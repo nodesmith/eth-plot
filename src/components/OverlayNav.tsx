@@ -14,7 +14,6 @@ import Tooltip from 'material-ui/Tooltip';
 import Typography from 'material-ui/Typography';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { Component } from 'react';
 
 import * as Actions from '../actions';
 import { ContractInfo, PlotInfo, Rect } from '../models';
@@ -65,7 +64,7 @@ export interface OverlayNavProps extends WithStyles {
   currentPath: string;
 }
 
-class OverlayNav extends Component<OverlayNavProps> {
+class OverlayNav extends React.Component<OverlayNavProps> {
   clearNotifications() {
     this.props.clearNotifications();
   }
