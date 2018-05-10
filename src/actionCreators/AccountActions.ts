@@ -76,33 +76,33 @@ export function fetchAccountTransactions(contractInfo: ContractInfo, currentAddr
     const contract = await DataActions.initializeContract(contractInfo);
 
     await Promise.all([
-      getAuctionEvents(contract, currentAddress, dispatch),
-      getPurchaseEvents(contract, currentAddress, dispatch)
+      getAuctionEvents(contract, currentAddress, dispatch, newWeb3),
+      getPurchaseEvents(contract, currentAddress, dispatch, newWeb3)
     ]);
 
     dispatch(doneLoadingTransactions());
   };
 }
 
-async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
   const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
   const events = await auctionEvent.get({ fromBlock: 0, toBlock: 'latest' });
 
   events.forEach(tx => {
-    auctionTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch);
+    auctionTransactionHandler(tx, false, Enums.TxType.AUCTION, dispatch, web3);
   });
 
   // We really should return this in some way since we need to stop listening to it
   auctionEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, event) => {
     if (!err) {
-      auctionTransactionHandler(event, true, Enums.TxType.AUCTION, dispatch);
+      auctionTransactionHandler(event, true, Enums.TxType.AUCTION, dispatch, web3);
     }
   });
 }
 
-async function getPurchaseEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+async function getPurchaseEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
 
   const purchaseEvent = contract.PlotPurchasedEvent({ });
 
@@ -110,7 +110,7 @@ async function getPurchaseEvents(contract: EthGrid, currentAddress: string, disp
   const events = await purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' });
   events.forEach(tx => {
     if (tx.args.buyer === currentAddress) {
-      genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch);
+      genericTransactionHandler(tx, false, Enums.TxType.PURCHASE, dispatch, web3);
     }
   });
 
@@ -129,22 +129,22 @@ async function getPurchaseEvents(contract: EthGrid, currentAddress: string, disp
   // Listens to incoming purchase transactions
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {
     if (!err) {
-      genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
+      genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch, web3);
     }
   });
 }
 
-function auctionTransactionHandler(
-  tx: DecodedLogEntry<EthGridEventTypes.AuctionUpdatedEventArgs>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void { 
+const auctionTransactionHandler = async (
+  tx: DecodedLogEntry<EthGridEventTypes.AuctionUpdatedEventArgs>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>, web3: Web3) => { 
   // Since the auction update is called for new purchases as well as an actual update
   // to an existing price, we use this flag to determine if we should show this transaction
   // from a UI standpoint as an "update price" transaction.
   if (!tx.args.newPurchase) {
-    genericTransactionHandler(tx, isNew, txType, dispatch);
+    await genericTransactionHandler(tx, isNew, txType, dispatch, web3);
   }
-}
+};
 
-function genericTransactionHandler(tx: DecodedLogEntry<{}>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void {
-  const txStatus = DataActions.determineTxStatus(tx);
+const genericTransactionHandler = async (tx: DecodedLogEntry<{}>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>, web3: Web3): Promise<void> => {
+  const txStatus = await DataActions.determineTxStatus(tx, web3);
   dispatch(addTransaction(tx.transactionHash, txType, txStatus, tx.blockNumber!, false));
-}
+};

@@ -4,5 +4,7 @@
       "src/**/*.map": true
   },
   "tslint.autoFixOnSave": true,
-  "solidity.linter": "solhint"
+  "solidity.linter": "solium",
+  "solidity.validationDelay": 500,
+  "solidity.compileUsingLocalVersion": "${workspaceFolder}/node_modules/.bin/solcjs"
 }

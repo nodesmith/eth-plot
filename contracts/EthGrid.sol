@@ -5,7 +5,7 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 /// @title EthGrid
-/// @author nova-network
+/// @author spacedust
 contract EthGrid is Ownable {
     struct Rect {
         uint16 x;
@@ -24,7 +24,7 @@ contract EthGrid is Ownable {
     }
 
     struct ZoneData {
-        bytes ipfsHash;
+        string ipfsHash;
         string url;
     }
 
@@ -46,13 +46,14 @@ contract EthGrid is Ownable {
     // This is the maximum area of a single purchase block. This needs to be limited for the
     // algorithm which figures out payment to function
     uint16 constant private MAXIMUM_PURCHASE_AREA = 1000;
-    
+      
     //----------------------Events---------------------//
     event AuctionUpdated(uint256 tokenId, uint256 newPriceInGweiPerPixel, bool newPurchase, address indexed owner);
     event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address indexed buyer);
     event PlotSectionSold(uint256 zoneId, uint256 totalPrice, address indexed buyer, address indexed seller);
 
     constructor() public payable {
+
         feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
         
         // Initialize the contract with a single block with the admin owns
@@ -72,7 +73,7 @@ contract EthGrid is Ownable {
         tokenIdToAuction[zoneIndex] = pricePerPixelInGwei;
     }
 
-    function getPlot(uint256 zoneIndex) public constant returns (uint16, uint16, uint16, uint16, address, uint256, string, bytes) {
+    function getPlot(uint256 zoneIndex) public constant returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
         uint256 price = tokenIdToAuction[zoneIndex];
         ZoneData memory zoneData = data[zoneIndex];
 
@@ -101,7 +102,7 @@ contract EthGrid is Ownable {
         emit AuctionUpdated(zoneIndex, newPriceInGweiPerPixel, newPurchase, msg.sender);
     }
 
-    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
+    function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, string ipfsHash, string url, uint256 initialPurchasePrice) public payable returns (uint256) {
         Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
         
         // Add the new ownership to the array

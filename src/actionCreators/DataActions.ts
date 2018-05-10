@@ -57,15 +57,18 @@ export function initializeContract(contractInfo: ContractInfo): Promise<EthGrid>
   return EthGrid.createAndValidate(web3, contractInfo.contractAddress);
 }
 
-export function determineTxStatus(tx: DecodedLogEntry<{}>) {
+export const determineTxStatus = async (tx: DecodedLogEntry<{}>, web3: Web3): Promise<Enums.TxStatus> => {
   // https://github.com/ethereum/wiki/wiki/JavaScript-API#contract-events Says that blockNumber and blockHash
   // will be null when the transaction is stil pending
   if (tx.blockNumber !== null) {
-    return Enums.TxStatus.SUCCESS;
+    // Grab the transaction receipt and see if it succeeded or failed. 0x1 indicates it succeeded
+    // https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactionreceipt
+    const txInfo: Web3.TransactionReceipt = await promisify(web3.eth.getTransactionReceipt, [tx.transactionHash]);
+    return new BigNumber(txInfo.status!).equals(new BigNumber('0x1')) ? Enums.TxStatus.SUCCESS : Enums.TxStatus.FAILED;
   } else {
     return Enums.TxStatus.PENDING;
   }
-}
+};
 
 export function loadBlockInfo(contractInfo: ContractInfo, blockNumber: number) {
   return async (dispatch) => {
