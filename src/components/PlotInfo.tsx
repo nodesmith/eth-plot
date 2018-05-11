@@ -62,8 +62,16 @@ export interface PixelStatus {
 class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   constructor(props, context) {
     super(props, context);
+
+    let initialBuyoutPrice = this.props.purchaseInfo.purchasePrice;
+    const buyoutPriceBN = new BigNumber(this.props.info.buyoutPricePerPixelInWei); 
+    if (buyoutPriceBN.greaterThan(0)) {
+      // A buyout has already been set by this user, so use that as starter buyout.
+      initialBuyoutPrice = buyoutPriceBN.mul(this.props.info.rect.w).mul(this.props.info.rect.h).toFixed(6);
+    }
+
     this.state = {
-      newBuyoutPrice: '',
+      newBuyoutPrice: initialBuyoutPrice,
       toggleEnabled: false,
       auctionVisible: false
     };
@@ -85,7 +93,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   }
 
   cancelSale() {
-    this.props.updatePrice(this.props.info.zoneIndex, "0");    
+    this.props.updatePrice(this.props.info.zoneIndex, '0');    
   }
 
   /**
@@ -195,8 +203,8 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
                   toggleEnabled={this.state.toggleEnabled}
                   toggleText={'Edit Buyout'}
                   title={'Buyout Price'}
-                  initialPriceInEth={this.state.newBuyoutPrice}
                   buyoutVisible={this.state.auctionVisible}
+                  plotPartiallySold={true}
                 />
               </div>
            : null /* isPlotSold */ }

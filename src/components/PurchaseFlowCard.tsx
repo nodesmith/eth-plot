@@ -210,9 +210,6 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
       case 3:
         {
           stepHeader = 'Set a buyout price (optional)';
-
-          const suggestedStarterPriceBN = new BigNumber(this.props.purchasePriceInWei || '0').mul(2);
-          const suggestedStarterPriceInEth = suggestedStarterPriceBN.div(10e17).toString();
           
           stepContent = (
           <div>
@@ -227,11 +224,11 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
               onToggleChanged={this.onBuyoutEnabledChanged.bind(this)}
               rectToPurchase={this.props.rectToPurchase!}
               purchasePrice={this.props.purchasePriceInWei}
-              buyoutPriceInWei={this.props.buyoutPriceInWei || suggestedStarterPriceBN.toString()}
+              buyoutPriceInWei={this.props.buyoutPriceInWei}
               toggleEnabled={this.props.buyoutEnabled}
               toggleText={'Enable Buyout'}
               title={'Buyout Price'}
-              initialPriceInEth={suggestedStarterPriceInEth}
+              plotPartiallySold={false}
               buyoutVisible={true}
               />
             </div>
@@ -250,7 +247,8 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
         );
           stepHeader = 'Review and purchase';
           const rect = this.props.rectToPurchase!;
-          const buyoutPrice = this.props.buyoutEnabled ? formatEthValueToString(this.props.buyoutPriceInWei) : 'Not Enabled';
+          const buyoutPrice = (this.props.buyoutEnabled && this.props.buyoutPriceInWei) ?
+                                formatEthValueToString(this.props.buyoutPriceInWei) : 'Not Enabled';
           const imageName = this.props.imageValidation.state === InputValidationState.SUCCESS ? this.props.imageFileInfo!.fileName : '';
           stepContent = (
           <div>

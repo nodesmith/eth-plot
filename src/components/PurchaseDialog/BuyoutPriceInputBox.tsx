@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import { Decimal } from 'decimal.js';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
@@ -39,6 +40,7 @@ export interface BuyoutPriceInputBoxProps extends WithStyles {
   onToggleChanged: (checked: boolean) => void;
   buyoutVisible: boolean;
   toggleText: string;
+  plotPartiallySold: boolean;
   purchasePrice: string; // Should be a serialized Decimal.js of wei
   initialPriceInEth?: string;
 }
@@ -52,7 +54,13 @@ interface BuyoutPriceInputBoxState {
 class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, BuyoutPriceInputBoxState> {
   constructor(props, context) {
     super(props, context);
-    const initialPriceString = props.initialPriceInEth || '';
+
+    if (!props.buyoutPriceInWei) {
+      // In next project, we should use PropTypes Instead
+      throw 'Buyout price must be set before using BuyoutPriceInputBox';
+    }
+
+    const initialPriceString = new BigNumber(props.buyoutPriceInWei).div(10e17).toFixed(6);
 
     this.state = {
       buyoutUnits: 'eth',
@@ -156,9 +164,17 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     const area = this.props.rectToPurchase.w * this.props.rectToPurchase.h;
     const buyoutPerUnit = price.div(area);
     const buyoutPrice = formatEthValue(buyoutPerUnit);
+
+    let plotPartiallySoldMessage = '';
+    if (this.props.plotPartiallySold) {
+      plotPartiallySoldMessage = `. Please note that since this plot has been partially sold, you will
+                                  not receive the full amount entered above when this plot is sold, but rather the
+                                  per pixel price multiplied by the number of unsold pixels.`;
+    }
+
     return {
       state: 'success',
-      message: `You will receive ${buyoutPrice.value} ${buyoutPrice.unit} per unit`
+      message: `You will receive ${buyoutPrice.value} ${buyoutPrice.unit} per pixel${plotPartiallySoldMessage}`
     };
   }
 

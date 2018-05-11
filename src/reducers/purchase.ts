@@ -1,3 +1,5 @@
+import { BigNumber } from 'bignumber.js';
+
 import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
@@ -73,7 +75,7 @@ export interface PurchaseState {
   imageFileInfo?: ImageFileInfo;
   imageDimensions: {w: number, h:number };
   website: string;
-  buyoutPriceInWei: string;
+  buyoutPriceInWei?: string;
   buyoutEnabled: boolean;
   allowedFileTypes: string[];
   imageValidation: InputValidation;
@@ -94,7 +96,7 @@ const initialState: PurchaseState = {
   imageFileInfo: undefined,
   imageDimensions: { w: -1, h:-1 },
   website: '',
-  buyoutPriceInWei: '0',
+  buyoutPriceInWei: undefined,
   buyoutEnabled: true,
   allowedFileTypes,
   imageValidation: validateImageFile(),
@@ -137,10 +139,19 @@ function validateImageFile(imageFileInfo?: ImageFileInfo): InputValidation {
 
 function completePurchaseStep(state: PurchaseState, index: number): PurchaseState {
   const nextStep = index + 1;
+
+  let suggestedBuyout = state.buyoutPriceInWei;
+  if (!suggestedBuyout && nextStep === 2) {
+    // We just completed the position/size step, and a buyout has neer been set,
+    // so now we can set a buyout price suggestion
+    suggestedBuyout = new BigNumber(state.purchasePriceInWei).mul(2).toString();
+  }
+
   const completedSteps = Object.assign({}, state.completedSteps, { [index]: true });
   return Object.assign({}, state, {
     completedSteps,
-    activeStep: nextStep
+    activeStep: nextStep,
+    buyoutPriceInWei: suggestedBuyout
   });
 }
 
