@@ -141,6 +141,7 @@ class AccountManager extends React.Component<AccountManagerProps, AccountManager
         <Grid key="title" item xs={9}>
           <Typography align="center" variant="headline">My Plots</Typography>
         </Grid>,
+        {plotInfoComponents},
         {(filteredPlots.length === 0) ? 
         <Typography 
           className={this.props.classes.noTxHeader} 

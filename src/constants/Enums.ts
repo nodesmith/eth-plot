@@ -31,6 +31,7 @@ export enum PurchaseStage {
 export enum TxType {
   PURCHASE= 0,
   AUCTION= 1,
+  SALE= 2,
 }
 
 export enum TxStatus {
