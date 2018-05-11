@@ -85,7 +85,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   }
 
   cancelSale() {
-    this.props.updatePrice(this.props.info.zoneIndex, "0");    
+    this.props.updatePrice(this.props.info.zoneIndex, '0');    
   }
 
   /**
