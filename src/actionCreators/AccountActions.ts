@@ -26,11 +26,11 @@ export function updateActiveAccount(newActiveAccount: string): Action {
   };
 }
 
-export function addPurchaseEventTransactions(
-  purchaseTransactions: PurchaseEventInfo[]): Action {
+export function addPurchaseEventTransaction(
+  purchaseTransaction: PurchaseEventInfo): Action {
   return {
-    type: ActionTypes.ADD_PURCHASE_TRANSACTIONS,
-    purchaseTransactions
+    type: ActionTypes.ADD_PURCHASE_TRANSACTION,
+    purchaseTransaction
   };
 }
 
@@ -100,26 +100,23 @@ async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispa
 
 async function getPurchaseEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
 
-  const purchaseEvent = contract.PlotPurchasedEvent({ buyer: currentAddress });
-
-  // Get's historical purchase transactions for loading user's transaction list
-  const events = await purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' });
-
-  const purchaseEventInfo: PurchaseEventInfo[] = events.map(tx => {
-    return  { 
-      purchaseIndex: (<BigNumber>tx.args.newZoneId).toNumber(),
-      purchasePrice: tx.args.totalPrice.toString(),
-      blockNumber: tx.blockNumber!,
-      txHash: tx.transactionHash
-    };
-  });
-
-  dispatch(addPurchaseEventTransactions(purchaseEventInfo));
+  const purchaseEvent = contract.PlotPurchasedEvent({});
 
   // Listens to incoming purchase transactions
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, tx) => {
     if (!err) {
-      genericTransactionHandler(tx, true, Enums.TxType.PURCHASE, dispatch);
+      const newPurchaseEventInfo: PurchaseEventInfo = { 
+        purchaseIndex: (<BigNumber>tx.args.newZoneId).toNumber(),
+        purchasePrice: tx.args.totalPrice.toString(),
+        blockNumber: tx.blockNumber!,
+        txHash: tx.transactionHash
+      };
+
+      dispatch(addPurchaseEventTransaction(newPurchaseEventInfo));
+
+      if (tx.args.buyer === currentAddress) {
+        genericTransactionHandler(tx, true, Enums.TxType.PURCHASE, dispatch);
+      }
     }
   });
 }
