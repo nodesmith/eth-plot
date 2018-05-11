@@ -86,7 +86,6 @@ contract EthGrid is Ownable {
         }
 
         // Take in the input data for the actual grid!
-        // ZoneData memory newData = ZoneData(ipfsHash, url);
         data.push(ZoneData(ipfsHash, url));
 
         // Set an initial purchase price for the new plot as specified and emit a purchased event
@@ -101,6 +100,10 @@ contract EthGrid is Ownable {
 
         tokenIdToAuction[zoneIndex] = newPriceInWeiPerPixel;
         emit AuctionUpdated(zoneIndex, newPriceInWeiPerPixel, newPurchase, msg.sender);
+    }
+
+    function withdraw() onlyOwner public {
+        owner.transfer(address(this).balance);
     }
 
     //----------------------Public View Functions---------------------//

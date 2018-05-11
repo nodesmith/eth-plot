@@ -105,6 +105,14 @@ contract('EthGrid', (accounts: string[]) => {
     const contractBalanceDifference = contractBalanceNew.minus(contractBalanceOld);
     assert.equal(purchaseInfo.feePrice, contractBalanceDifference.toString());
 
+    // Check that the owner can withdraw the funds
+    const ownerAddress = await ethGrid.owner;
+    const ownerBalanceOld = await getBalance(ownerAddress);
+    const withdrawGasCost = await ethGrid.withdrawTx().estimateGas({ from: ownerAddress, gas: STANDARD_GAS });
+    await ethGrid.withdrawTx().send({ from: ownerAddress, gas: STANDARD_GAS });
+    const ownerBalanceNew = await getBalance(ownerAddress);
+    assert.equal(new BigNumber(purchaseInfo.feePrice).minus(withdrawGasCost).toString(), ownerBalanceNew.minus(ownerBalanceOld).toString());
+
     // Finally, check that we got the sold event we're expecting
     const purchaseEvents = await ethGrid.PlotSectionSoldEvent({}).get({});
     assert.equal(1, purchaseEvents.length);
