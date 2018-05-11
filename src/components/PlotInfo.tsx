@@ -89,7 +89,9 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   }
 
   updatePrice() {
-    this.props.updatePrice(this.props.info.zoneIndex, this.state.newBuyoutPrice);    
+    const newBuyoutPriceBN = new BigNumber(this.state.newBuyoutPrice); 
+    const newBuyoutPerPixelInWei = newBuyoutPriceBN.div(this.props.info.rect.w * this.props.info.rect.h);
+    this.props.updatePrice(this.props.info.zoneIndex, newBuyoutPerPixelInWei.toString());    
   }
 
   cancelSale() {
