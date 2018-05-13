@@ -77,7 +77,7 @@ export function fetchAccountTransactions(contractInfo: ContractInfo, currentAddr
 
     await Promise.all([
       getAuctionEvents(contract, currentAddress, dispatch),
-      getPurchaseEvents(contract, currentAddress, dispatch),
+      getPurchaseEvents(contract, contractInfo, currentAddress, dispatch),
       getSaleEvents(contract, currentAddress, dispatch)
     ]);
 
@@ -103,7 +103,7 @@ async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispa
   });
 }
 
-async function getPurchaseEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+async function getPurchaseEvents(contract: EthGrid, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
 
   const purchaseEvent = contract.PlotPurchasedEvent({ });
 
@@ -130,7 +130,7 @@ async function getPurchaseEvents(contract: EthGrid, currentAddress: string, disp
   // Listens to incoming purchase transactions
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {
     if (!err) {
-      // data.args.newZoneId
+      DataActions.addPlotToGrid(contract, data.args.newZoneId, contractInfo, dispatch);
       genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
     }
   });

@@ -101,7 +101,7 @@ export function fetchPlotsFromWeb3(contractInfo) {
     const ownershipLength = ownershipLengthBn.toNumber();
 
     for (let i = 0; i < ownershipLength; i++) {
-      addPlotToGrid(contract, i, contractInfo, dispatch);
+      await addPlotToGrid(contract, i, contractInfo, dispatch);
     }
 
     dispatch(doneLoadingPlots());
