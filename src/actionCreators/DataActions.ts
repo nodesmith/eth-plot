@@ -1,4 +1,5 @@
 import { BigNumber } from 'bignumber.js';
+import { Dispatch } from 'react-redux';
 import * as Web3 from 'web3';
 
 import { promisify, DecodedLogEntry } from '../../gen-src/typechain-runtime';
@@ -100,38 +101,43 @@ export function fetchPlotsFromWeb3(contractInfo) {
     const ownershipLength = ownershipLengthBn.toNumber();
 
     for (let i = 0; i < ownershipLength; i++) {
-      const plotInfo = await contract.getPlot(i);
-
-      const ipfsHash = web3.toUtf8(plotInfo[7]);
-
-      const plot: PlotInfo = {
-        rect: {
-          x: plotInfo[0].toNumber(),
-          y: plotInfo[1].toNumber(),
-          w: plotInfo[2].toNumber(),
-          h: plotInfo[3].toNumber(),
-          x2: 0,
-          y2: 0
-        },
-        owner: plotInfo[4],
-        buyoutPricePerPixelInWei: plotInfo[5].toString(),
-        data: {
-          url: plotInfo[6],
-          ipfsHash,
-          blobUrl: typeof URL !== 'undefined' ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash
-        },
-        zoneIndex: i,
-        txHash: ''
-      };
-
-      plot.rect.x2 = plot.rect.x + plot.rect.w;
-      plot.rect.y2 = plot.rect.y + plot.rect.h;
-
-      dispatch(addPlot(plot)); 
+      addPlotToGrid(contract, i, contractInfo, dispatch);
     }
 
     dispatch(doneLoadingPlots());
   };
+}
+
+export async function addPlotToGrid(contract: EthGrid, plotIndex: number, contractInfo: ContractInfo, dispatch: Dispatch<{}>) {
+  const web3 = getWeb3(contractInfo);
+  const plotInfo = await contract.getPlot(plotIndex);
+
+  const ipfsHash = web3.toUtf8(plotInfo[7]);
+
+  const plot: PlotInfo = {
+    rect: {
+      x: plotInfo[0].toNumber(),
+      y: plotInfo[1].toNumber(),
+      w: plotInfo[2].toNumber(),
+      h: plotInfo[3].toNumber(),
+      x2: 0,
+      y2: 0
+    },
+    owner: plotInfo[4],
+    buyoutPricePerPixelInWei: plotInfo[5].toString(),
+    data: {
+      url: plotInfo[6],
+      ipfsHash,
+      blobUrl: typeof URL !== 'undefined' ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash
+    },
+    zoneIndex: plotIndex,
+    txHash: ''
+  };
+
+  plot.rect.x2 = plot.rect.x + plot.rect.w;
+  plot.rect.y2 = plot.rect.y + plot.rect.h;
+
+  dispatch(addPlot(plot)); 
 }
 
 // thunk for updating price of plot

@@ -130,6 +130,7 @@ async function getPurchaseEvents(contract: EthGrid, currentAddress: string, disp
   // Listens to incoming purchase transactions
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {
     if (!err) {
+      // data.args.newZoneId
       genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
     }
   });
