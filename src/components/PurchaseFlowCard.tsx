@@ -117,7 +117,8 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
   }
 
   completePurchase() {
-    const { purchasePriceInWei, contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPricePerPixelInWei, buyoutEnabled, activeAccount } = this.props;
+    const { purchasePriceInWei, contractInfo, plots, rectToPurchase, imageFileInfo,
+              website, buyoutPricePerPixelInWei, buyoutEnabled, activeAccount } = this.props;
     const initialBuyoutPerPixelInWei = buyoutEnabled ? buyoutPricePerPixelInWei : '';
 
     this.props.purchasePlot(
