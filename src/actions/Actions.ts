@@ -51,7 +51,7 @@ export type stopTransformRectToPurchase = () => void;
 export type completePurchaseStep = (index: number, wasSkipped: boolean) => void;
 export type goToPurchaseStep = (index: number) => void;
 export type changePlotWebsite = (website: string, websiteValidation) => void;
-export type changePlotBuyout = (buyoutPriceInWei: string) => void;
+export type changePlotBuyout = (buyoutPricePerPixelInWei: string) => void;
 export type changeBuyoutEnabled = (isEnabled: boolean) => void;
 export type completePlotPurchase = 
   (contractInfo: ContractInfo, 

@@ -1,13 +1,13 @@
 import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
-import { UserTransactions } from '../models';
+import { UserTransaction } from '../models';
 
 export interface AccountState {
   metamaskStateKnown: boolean;
   metamaskState: Enums.METAMASK_STATE;
   activeAccount: string;
-  userTransactions: { [hash: string]: UserTransactions };
+  userTransactions: { [hash: string]: UserTransaction[] };
   notificationCount: number;
   isFetchingTransactions: boolean;
 }
@@ -36,14 +36,19 @@ export function accountReducer(state: AccountState = initialState, action: Actio
       return Object.assign({}, state, { activeAccount: action.newActiveAccount });
     case ActionTypes.ADD_TRANSACTION:
       const userTransactionsCopy = Object.assign({}, state.userTransactions);
-      userTransactionsCopy[action.txHash] = { 
+
+      if (!userTransactionsCopy[action.txHash]) {
+        userTransactionsCopy[action.txHash] = [];
+      }
+      
+      userTransactionsCopy[action.txHash].push({ 
         txType: action.txType,
         txStatus: action.txStatus,
         blockNumber: action.blockNumber,
         txHash: action.txHash
-      };
+      });
 
-    // Only queue a notification if this isn't being read from onChain
+      // Only queue a notification if this isn't being read from onChain
       const newNotificationCount = (action.isNew) ? state.notificationCount + 1 : state.notificationCount;
     
       return Object.assign({}, state, { 

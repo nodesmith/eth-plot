@@ -1,3 +1,5 @@
+import { BigNumber } from 'bignumber.js';
+
 import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
@@ -73,7 +75,7 @@ export interface PurchaseState {
   imageFileInfo?: ImageFileInfo;
   imageDimensions: {w: number, h:number };
   website: string;
-  buyoutPriceInWei: string;
+  buyoutPricePerPixelInWei?: string;
   buyoutEnabled: boolean;
   allowedFileTypes: string[];
   imageValidation: InputValidation;
@@ -94,7 +96,7 @@ const initialState: PurchaseState = {
   imageFileInfo: undefined,
   imageDimensions: { w: -1, h:-1 },
   website: '',
-  buyoutPriceInWei: '0',
+  buyoutPricePerPixelInWei: undefined,
   buyoutEnabled: true,
   allowedFileTypes,
   imageValidation: validateImageFile(),
@@ -137,10 +139,25 @@ function validateImageFile(imageFileInfo?: ImageFileInfo): InputValidation {
 
 function completePurchaseStep(state: PurchaseState, index: number): PurchaseState {
   const nextStep = index + 1;
+
+  let suggestedBuyoutPerPixel = state.buyoutPricePerPixelInWei;
+  if (!suggestedBuyoutPerPixel && nextStep === 2) {
+    if (!state.rectToPurchase) {
+      throw 'Expected purchase rectangle to be defined at this stage';
+    }
+
+    const rectArea = state.rectToPurchase.w * state.rectToPurchase.h;
+
+    // We just completed the position/size step, and a buyout has neer been set,
+    // so now we can set a buyout price suggestion (x2 purchase price)
+    suggestedBuyoutPerPixel = new BigNumber(state.purchasePriceInWei).div(rectArea).mul(2).toString();
+  }
+
   const completedSteps = Object.assign({}, state.completedSteps, { [index]: true });
   return Object.assign({}, state, {
     completedSteps,
-    activeStep: nextStep
+    activeStep: nextStep,
+    buyoutPricePerPixelInWei: suggestedBuyoutPerPixel
   });
 }
 
@@ -236,7 +253,7 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
       });
     case ActionTypes.CHANGE_PLOT_BUYOUT:
       return Object.assign({}, state, {
-        buyoutPriceInWei: action.buyoutPriceInWei
+        buyoutPricePerPixelInWei: action.buyoutPricePerPixelInWei
       });
     case ActionTypes.CHANGE_BUYOUT_ENABLED:
       return Object.assign({}, state, {

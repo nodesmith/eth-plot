@@ -172,7 +172,7 @@ class App extends React.Component<AppProps> {
 
         imageDimensions: purchase.imageDimensions,
         website: purchase.website,
-        buyoutPriceInWei: purchase.buyoutPriceInWei,
+        buyoutPricePerPixelInWei: purchase.buyoutPricePerPixelInWei,
         buyoutEnabled: purchase.buyoutEnabled,
         purchaseFlowOpen: purchase.purchaseFlowOpen,
         currentTransform: purchase.currentTransform,
