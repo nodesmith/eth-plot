@@ -6,6 +6,11 @@ import { MovementActions } from '../constants/Enums';
 import { Rect } from '../models';
 
 const styles: StyleRulesCallback = theme => ({
+  wrapper: {
+    position: 'absolute',
+    pointerEvents: 'auto',
+    userDrag: 'none'
+  }
 });
 
 export interface PurchasePlotProps extends WithStyles {
@@ -53,10 +58,7 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
       top: rect.y * scale,
       left: rect.x * scale,
       width: rect.w * scale,
-      height: rect.h * scale,
-      position: 'absolute',
-      pointerEvents: 'auto',
-      userDrag: 'none'
+      height: rect.h * scale
     };
 
     const handleWidth = 10;
@@ -134,7 +136,7 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
     });
 
     return (
-      <div draggable={false} style={wrapperStyle}>
+      <div className={this.props.classes.wrapper} draggable={false} style={wrapperStyle}>
         {controls}
       </div>
     );

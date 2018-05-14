@@ -6,13 +6,14 @@
   "scripts": {
     "clean": "node_modules/.bin/rimraf bin && node_modules/.bin/rimraf build && node_modules/.bin/rimraf bin dist && node_modules/.bin/rimraf gen-src && node_modules/.bin/rimraf lib",
     "build:webpack": "cross-env NODE_ENV=production webpack --mode production --progress --profile --colors",
-    "build": "npm run gen && tsc && npm run lint && npm run build:webpack --progress --profile --colors",
+    "build": "npm run clean && npm run gen && tsc && npm run lint && npm run test && npm run build:webpack --progress --profile --colors",
     "dev": "NODE_ENV=development npm start",
     "start": "node_modules/.bin/webpack-dev-server --port 3000 --hot --inline --mode development -d",
     "lint": "npm run lint:typescript && npm run lint:solidity",
     "lint:typescript": "./node_modules/.bin/tslint --force --project tsconfig.json",
     "lint:solidity": "./node_modules/.bin/solium -d ./contracts",
-    "gen": "truffle compile && ./node_modules/.bin/typechain --force --outDir ./gen-src ./build/contracts/*.json"
+    "gen": "node_modules/.bin/truffle compile && ./node_modules/.bin/typechain --force --outDir ./gen-src ./build/contracts/*.json",
+    "test": "node_modules/.bin/truffle test"
   },
   "devDependencies": {
     "@spacedust/typechain": "^0.2.7",
