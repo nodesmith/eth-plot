@@ -1,4 +1,6 @@
-##eth-grid
+## eth-grid
+
+[![Build Status](https://travis-ci.com/space-dust-blockchain/eth-grid.svg?token=w3NzMnRtreD5ymzPaywx&branch=master)](https://travis-ci.com/space-dust-blockchain/eth-grid)
 
 To run:
 
