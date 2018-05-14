@@ -66,6 +66,7 @@ contract('EthGrid', (accounts: string[]) => {
     const buyerAccount = accounts[4];
     const buyerBalanceOld = await getBalance(buyerAccount);
     const sellerBalanceOld = await getBalance(sellerAccount);
+    const contractBalanceOld = await getBalance(ethGrid.address);
 
     const purchaseAction = DataActions.purchasePlot(
       state.data.contractInfo,
@@ -98,14 +99,26 @@ contract('EthGrid', (accounts: string[]) => {
 
     const sellerBalanceNew =  await getBalance(sellerAccount);
     const sellerBalanceDifference = sellerBalanceNew.minus(sellerBalanceOld);
-    assert.equal(purchaseInfo.purchasePrice, sellerBalanceDifference.toString());
+    assert.equal(purchaseInfo.plotPrice, sellerBalanceDifference.toString());
+
+    const contractBalanceNew = await getBalance(ethGrid.address);
+    const contractBalanceDifference = contractBalanceNew.minus(contractBalanceOld);
+    assert.equal(purchaseInfo.feePrice, contractBalanceDifference.toString());
+
+    // Check that the owner can withdraw the funds
+    const ownerAddress = await ethGrid.owner;
+    const ownerBalanceOld = await getBalance(ownerAddress);
+    const withdrawGasCost = await ethGrid.withdrawTx().estimateGas({ from: ownerAddress, gas: STANDARD_GAS });
+    await ethGrid.withdrawTx().send({ from: ownerAddress, gas: STANDARD_GAS });
+    const ownerBalanceNew = await getBalance(ownerAddress);
+    assert.equal(new BigNumber(purchaseInfo.feePrice).minus(withdrawGasCost).toString(), ownerBalanceNew.minus(ownerBalanceOld).toString());
 
     // Finally, check that we got the sold event we're expecting
     const purchaseEvents = await ethGrid.PlotSectionSoldEvent({}).get({});
     assert.equal(1, purchaseEvents.length);
     assert.equal(buyerAccount, purchaseEvents[0].args.buyer);
     assert.equal(sellerAccount, purchaseEvents[0].args.seller);
-    assert.equal(purchaseInfo.purchasePrice, purchaseEvents[0].args.totalPrice.toString());
+    assert.equal(purchaseInfo.plotPrice, purchaseEvents[0].args.totalPrice.toString());
     assert.equal(0, purchaseEvents[0].args.zoneId);
   });
 });
