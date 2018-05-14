@@ -65,7 +65,7 @@ contract EthGrid is Ownable {
         string ipfsHash,
         string url,
         uint256 initialBuyoutPriceInWeiPerPixel) external payable {
-
+        
         uint256 initialPurchasePrice = validatePurchases(purchase, purchasedAreas, areaIndices);
 
         // Add the new ownership to the array

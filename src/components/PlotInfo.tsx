@@ -43,13 +43,13 @@ const styles: StyleRulesCallback = theme => ({
 export interface PlotInfoProps extends WithStyles {
   info: PlotInfoData;
   holes: Array<Rect>;
-  updatePrice: (zoneIndex: number, newBuyoutPrice: string) => void;
+  updatePrice: (zoneIndex: number, newBuyoutPricePerPixel: string) => void;
   purchaseInfo: PurchaseEventInfo;
   isPlotSold: boolean;
 }
 
 interface PlotInfoState {
-  newBuyoutPrice: string;
+  newBuyoutPricePerPixel: string;
   toggleEnabled: boolean;
   auctionVisible: boolean;
 }
@@ -62,15 +62,25 @@ export interface PixelStatus {
 class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   constructor(props, context) {
     super(props, context);
+
+    const purchasePriceBN = new BigNumber(this.props.purchaseInfo.purchasePrice);
+    let initialBuyoutPrice = purchasePriceBN.div(this.props.info.rect.w).div(this.props.info.rect.h).toFixed(6);
+    
+    const buyoutPriceBN = new BigNumber(this.props.info.buyoutPricePerPixelInWei); 
+    if (buyoutPriceBN.greaterThan(0)) {
+      // A buyout has already been set by this user, so use that as starter buyout.
+      initialBuyoutPrice = buyoutPriceBN.toFixed(6);
+    }
+
     this.state = {
-      newBuyoutPrice: '',
+      newBuyoutPricePerPixel: initialBuyoutPrice,
       toggleEnabled: false,
       auctionVisible: false
     };
   }
   
   onBuyoutChanged(buyoutChangedMessage) {
-    this.setState({ newBuyoutPrice: buyoutChangedMessage.value });
+    this.setState({ newBuyoutPricePerPixel: buyoutChangedMessage.value });
   }
 
   onToggleChanged() {
@@ -81,11 +91,12 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
   }
 
   updatePrice() {
-    this.props.updatePrice(this.props.info.zoneIndex, this.state.newBuyoutPrice);    
+    const newBuyoutPricePerPixelBN = new BigNumber(this.state.newBuyoutPricePerPixel); 
+    this.props.updatePrice(this.props.info.zoneIndex, newBuyoutPricePerPixelBN.toString());    
   }
 
   cancelSale() {
-    this.props.updatePrice(this.props.info.zoneIndex, "0");    
+    this.props.updatePrice(this.props.info.zoneIndex, '0');    
   }
 
   /**
@@ -139,9 +150,9 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
 
     const cancelSaleDisabled = buyoutPricePerPixelInWeiBN.equals(0);
     let updateBuyoutDisabled = true;
-    if (this.state.newBuyoutPrice) {
-      const newBuyoutPriceBN = new BigNumber(this.state.newBuyoutPrice);
-      updateBuyoutDisabled = newBuyoutPriceBN.lessThanOrEqualTo(0);
+    if (this.state.newBuyoutPricePerPixel) {
+      const newBuyoutPricePerPixelBN = new BigNumber(this.state.newBuyoutPricePerPixel);
+      updateBuyoutDisabled = newBuyoutPricePerPixelBN.lessThanOrEqualTo(0);
     }
 
     const cancelSaleButtonCaption = (cancelSaleDisabled) ? 'This plot isn\'t for sale, there is nothing to cancel.' : '';
@@ -191,11 +202,10 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
                   onBuyoutChanged={this.onBuyoutChanged.bind(this)}
                   onToggleChanged={this.onToggleChanged.bind(this)}
                   rectToPurchase={this.props.info.rect}
-                  buyoutPriceInWei={this.state.newBuyoutPrice}
+                  buyoutPricePerPixelInWei={this.state.newBuyoutPricePerPixel}
                   toggleEnabled={this.state.toggleEnabled}
                   toggleText={'Edit Buyout'}
                   title={'Buyout Price'}
-                  initialPriceInEth={this.state.newBuyoutPrice}
                   buyoutVisible={this.state.auctionVisible}
                 />
               </div>
