@@ -58,7 +58,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
       w: number;
     }
     website: string;
-    buyoutPricePerPixelInWei: string;
+    buyoutPricePerPixelInWei?: string;
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
     imageValidation: InputValidation;

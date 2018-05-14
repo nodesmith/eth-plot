@@ -75,7 +75,7 @@ export interface PurchaseFlowCardProps extends WithStyles {
     w: number;
   };
   website: string;
-  buyoutPricePerPixelInWei: string;
+  buyoutPricePerPixelInWei?: string;
   buyoutEnabled: boolean;
 
   allowedFileTypes: string[];

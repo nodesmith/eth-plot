@@ -104,7 +104,7 @@ async function getPurchaseEvents(contract: EthGrid, contractInfo: ContractInfo, 
   // Listens to incoming purchase transactions
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, tx) => {
     if (!err) {
-      DataActions.addPlotToGrid(contract, new BigNumber(data.args.newZoneId).toNumber(), contractInfo, dispatch);
+      // DataActions.addPlotToGrid(contract, new BigNumber(tx.args.newZoneId).toNumber(), contractInfo, dispatch);
       
       const newPurchaseEventInfo: PurchaseEventInfo = { 
         purchaseIndex: (<BigNumber>tx.args.newZoneId).toNumber(),
@@ -116,7 +116,7 @@ async function getPurchaseEvents(contract: EthGrid, contractInfo: ContractInfo, 
       dispatch(addPurchaseEventTransaction(newPurchaseEventInfo));
 
       if (tx.args.buyer === currentAddress) {
-        genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch, web3);
+        genericTransactionHandler(tx, true, Enums.TxType.PURCHASE, dispatch, web3);
       }
     }
   });

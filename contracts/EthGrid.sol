@@ -53,7 +53,7 @@ contract EthGrid is Ownable {
         // Initialize the contract with a single block with the admin owns
         ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, new uint256[](0)));
         data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://www.ethplot.com/"));
-        updateAuction(0, INITIAL_AUCTION_PRICE, false);
+        setAuctionPrice(0, INITIAL_AUCTION_PRICE);
     }
 
 
@@ -100,7 +100,7 @@ contract EthGrid is Ownable {
     }
 
     function setAuctionPrice(uint256 zoneIndex, uint256 newPriceInWeiPerPixel) private {
-        require(zoneIndex > 0);
+        require(zoneIndex >= 0);
         require(zoneIndex < ownership.length);
         require(msg.sender == ownership[zoneIndex].owner);
 
