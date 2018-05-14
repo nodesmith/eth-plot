@@ -76,16 +76,16 @@ export function fetchAccountTransactions(contractInfo: ContractInfo, currentAddr
     const contract = await DataActions.initializeContract(contractInfo);
 
     await Promise.all([
-      getAuctionEvents(contract, currentAddress, dispatch),
-      getPurchaseEvents(contract, currentAddress, dispatch),
-      getSaleEvents(contract, currentAddress, dispatch)
+      getAuctionEvents(contract, currentAddress, dispatch, newWeb3),
+      getPurchaseEvents(contract, currentAddress, dispatch, newWeb3),
+      getSaleEvents(contract, currentAddress, dispatch, newWeb3)
     ]);
 
     dispatch(doneLoadingTransactions());
   };
 }
 
-async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
   const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
@@ -93,14 +93,13 @@ async function getAuctionEvents(contract: EthGrid, currentAddress: string, dispa
   // We really should return this in some way since we need to stop listening to it
   auctionEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, tx) => {
     if (!err) {
-      genericTransactionHandler(tx, true, Enums.TxType.AUCTION, dispatch);
+      genericTransactionHandler(tx, true, Enums.TxType.AUCTION, dispatch, web3);
     }
   });
 }
 
-async function getPurchaseEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
-
-  const purchaseEvent = contract.PlotPurchasedEvent({});
+async function getPurchaseEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
+  const purchaseEvent = contract.PlotPurchasedEvent({ });
 
   // Listens to incoming purchase transactions
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, tx) => {
@@ -115,24 +114,24 @@ async function getPurchaseEvents(contract: EthGrid, currentAddress: string, disp
       dispatch(addPurchaseEventTransaction(newPurchaseEventInfo));
 
       if (tx.args.buyer === currentAddress) {
-        genericTransactionHandler(tx, true, Enums.TxType.PURCHASE, dispatch);
+        genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch, web3);
       }
     }
   });
 }
 
-async function getSaleEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>): Promise<void> {
+async function getSaleEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
   const saleEvent = contract.PlotSectionSoldEvent({ seller: currentAddress });
 
   // We really should return this in some way since we need to stop listening to it
   saleEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, event) => {
     if (!err) {
-      genericTransactionHandler(event, true, Enums.TxType.SALE, dispatch);
+      genericTransactionHandler(event, true, Enums.TxType.SALE, dispatch, web3);
     }
   });
 }
 
-function genericTransactionHandler(tx: DecodedLogEntry<{}>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>): void {
-  const txStatus = DataActions.determineTxStatus(tx);
+const genericTransactionHandler = async (tx: DecodedLogEntry<{}>, isNew: boolean, txType: Enums.TxType, dispatch: Dispatch<{}>, web3: Web3): Promise<void> => {
+  const txStatus = await DataActions.determineTxStatus(tx, web3);
   dispatch(addTransaction(tx.transactionHash, txType, txStatus, tx.blockNumber!, false));
-}
+};

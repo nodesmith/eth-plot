@@ -8,6 +8,8 @@ export interface PurchaseInfo {
   chunksToPurchase: Array<Rect>;
   chunksToPurchaseAreaIndices: Array<number>;
   purchasePrice: string;
+  plotPrice: string;
+  feePrice: string;
 }
 
 // Computes what chunks are needed to be purchased for a particular region
@@ -66,9 +68,15 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
     throw 'AHHHHH, something went wrong';
   }
 
+  // Finally, compute the fee we are charging the user. Right now this is fixed at 1% and computed by multiplying by 1000, then dividing by 
+  const feePrice = purchasePrice.mul(1000).div(1000 * 100);
+  const totalPrice = purchasePrice.add(feePrice);
+
   return {
     chunksToPurchase: purchasedChunks,
     chunksToPurchaseAreaIndices: purchasedChunkAreaIndices,
-    purchasePrice: purchasePrice.toFixed()
+    purchasePrice: totalPrice.toFixed(0),
+    plotPrice: purchasePrice.toFixed(0),
+    feePrice: feePrice.toFixed(0)
   };
 }

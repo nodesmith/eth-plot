@@ -68,10 +68,10 @@ export function changePlotWebsite(website: string, websiteValidation): Action {
   };
 }
 
-export function changePlotBuyout(buyoutPriceInWei: string): Action {
+export function changePlotBuyout(buyoutPricePerPixelInWei: string): Action {
   return {
     type: ActionTypes.CHANGE_PLOT_BUYOUT,
-    buyoutPriceInWei
+    buyoutPricePerPixelInWei
   };
 }
 
