@@ -1,3 +1,4 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
@@ -39,10 +40,13 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js', '.json']
   },
   plugins: [
+    new CopyWebpackPlugin([
+      { from: 'public', to: './'}
+    ]),
     new HtmlWebpackPlugin({
       title: 'Eth Plot'
     }),
-    new HtmlWebpackIncludeAssetsPlugin({ assets: ['main.css'], append: false }),
+    new HtmlWebpackIncludeAssetsPlugin({ assets: ['main.css', 'config.js'], append: false }),
     new ForkTsCheckerWebpackPlugin(),
     new FaviconsWebpackPlugin('./public/favicon.png')],
   devServer: {
@@ -50,5 +54,6 @@ module.exports = {
     headers: { 
       "Set-Cookie": `web3Config=${JSON.stringify(web3Config)};`
     }
-  }
+  },
+  performance: { hints: false }
 };

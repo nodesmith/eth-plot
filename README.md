@@ -1,4 +1,6 @@
-##eth-grid
+## eth-grid
+
+[![Build Status](https://travis-ci.com/space-dust-blockchain/eth-grid.svg?token=w3NzMnRtreD5ymzPaywx&branch=master)](https://travis-ci.com/space-dust-blockchain/eth-grid)
 
 To run:
 
@@ -7,23 +9,10 @@ To run:
 - `npm start`
 - open localhost:3000
 
-To run with ganache
-- `npm install -g ganache-cli`
-- `ganache-cli -i samm-test -d`
-- `truffle migrate --network ganache --reset`
+To run contract via local testnet (Ganache):
 
-To run with truffle:
-
-- Do everything above
-- Open a new terminal window
-- `cd contract`
-- `truffle develop`
-- In the truffle develop console which pops up, run the following
-- `truffle migrate`
-- `EthGrid.deployed().then(contract => contract.address)`. Note the address which is returned and copy that into ./src/reducers/data.js for contractAddress
-- Open another new terminal window to buy some plots with dummy data
-- `npm run-script buy-random-plots` (It might crash a few times but just keep running it)
-- Reload the browser and things should work
+- In one terminal window: `npm run start:ganache`
+- In another terminal window: `npm run deploy:truffle`
 
 Running Unit tests:
 
@@ -31,3 +20,7 @@ Running Unit tests:
 - Run `tsc watch` either from a command prompt or from Visual Studio Code
 - Without the debugger from the console, `truffle test --network ganache`
 - With the debugger in VS Code, `F5`
+
+To Build:
+
+- `npm run build` - This will clean the project, compile the contracts, compile the Typescript, lint, run tests, then bundle everything into the dist folder
