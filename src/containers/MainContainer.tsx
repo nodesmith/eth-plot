@@ -130,7 +130,9 @@ class MainContainer extends React.Component<MainContainerProps> {
       isDraggingRect: this.props.isDraggingRect,
       contractInfo: this.props.contractInfo,
       showHeatmap: this.props.purchase.showHeatmap && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen,
-      showGrid: this.props.purchase.showGrid && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen
+      showGrid: this.props.purchase.showGrid && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen,
+      lowPlotPrice: this.props.lowPlotPrice || '0',
+      highPlotPrice: this.props.highPlotPrice || '0',
     };
 
     const mainControlsOverlayProps: MainControlsOverlayProps = {
