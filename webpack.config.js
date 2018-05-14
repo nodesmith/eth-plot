@@ -46,7 +46,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'Eth Plot'
     }),
-    new HtmlWebpackIncludeAssetsPlugin({ assets: ['main.css'], append: false }),
+    new HtmlWebpackIncludeAssetsPlugin({ assets: ['main.css', 'config.js'], append: false }),
     new ForkTsCheckerWebpackPlugin(),
     new FaviconsWebpackPlugin('./public/favicon.png')],
   devServer: {
