@@ -54,5 +54,6 @@ module.exports = {
     headers: { 
       "Set-Cookie": `web3Config=${JSON.stringify(web3Config)};`
     }
-  }
+  },
+  performance: { hints: false }
 };
