@@ -34,13 +34,12 @@ const styles: StyleRulesCallback = theme => ({
 export interface BuyoutPriceInputBoxProps extends WithStyles {
   rectToPurchase: Rect;
   title: string;
-  buyoutPriceInWei: string;
+  buyoutPricePerPixelInWei: string;
   toggleEnabled: boolean;
   onBuyoutChanged: (message:{value: string}) => void;
   onToggleChanged: (checked: boolean) => void;
   buyoutVisible: boolean;
   toggleText: string;
-  plotPartiallySold: boolean;
   purchasePrice: string; // Should be a serialized Decimal.js of wei
   initialPriceInEth?: string;
 }
@@ -55,12 +54,12 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
   constructor(props, context) {
     super(props, context);
 
-    if (!props.buyoutPriceInWei) {
+    if (!props.buyoutPricePerPixelInWei) {
       // In next project, we should use PropTypes Instead
       throw 'Buyout price must be set before using BuyoutPriceInputBox';
     }
 
-    const initialPriceString = new BigNumber(props.buyoutPriceInWei).div(10e17).toFixed(6);
+    const initialPriceString = new BigNumber(props.buyoutPricePerPixelInWei).div(10e17).toFixed(6);
 
     this.state = {
       buyoutUnits: 'eth',
@@ -76,15 +75,15 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     this.setState({ currentInput: event.target.value });
 
     const units = this.state.buyoutUnits;
-    let newPriceInWei = '';
+    let newPriceInWeiPerPixel = '';
 
     if (event.target.value.length > 0) {
       const mulitplier = units === 'wei' ? 0 : units === 'gwei' ? 9 : 18;
-      newPriceInWei = new Decimal(event.target.value + `e${mulitplier}`).toFixed();
+      newPriceInWeiPerPixel = new Decimal(event.target.value + `e${mulitplier}`).toFixed();
     }
 
     const buyoutChangedMessage = {
-      value: newPriceInWei
+      value: newPriceInWeiPerPixel
     };
 
     this.props.onBuyoutChanged(buyoutChangedMessage);
@@ -127,11 +126,12 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     this.handleUnitsMenuClosed();
   }
 
-  validateBuyout(buyoutPriceInWei, toggleEnabled) {
-    if (!buyoutPriceInWei || buyoutPriceInWei.length === 0) {
+  validateBuyout(buyoutPricePerPixelInWei, toggleEnabled) {
+    if (!buyoutPricePerPixelInWei || buyoutPricePerPixelInWei.length === 0) {
       return {
         state: null,
-        message: 'The price you will receive if your full plot is purchased'
+        message: `The price per pixel you are willing to sell your plot for.  In total you will receive this number
+                  multipled by the area of your plot.`
       };
     }
 
@@ -142,7 +142,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
       };
     }
 
-    const price = new Decimal(buyoutPriceInWei);
+    const price = new Decimal(buyoutPricePerPixelInWei);
 
     if (price.lessThan(1)) {
       return {
@@ -152,8 +152,9 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     }
 
     if (this.props.purchasePrice) {
-      const purchasePrice = new Decimal(this.props.purchasePrice);
-      if (price.lessThan(purchasePrice)) {
+      const area = this.props.rectToPurchase.w * this.props.rectToPurchase.h;
+      const purchasePricePerPixel = new Decimal(this.props.purchasePrice).div(area);
+      if (price.lessThan(purchasePricePerPixel)) {
         return {
           state: 'warning',
           message: 'Your buyout price is less than your purchase price'
@@ -162,19 +163,13 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
     }
 
     const area = this.props.rectToPurchase.w * this.props.rectToPurchase.h;
-    const buyoutPerUnit = price.div(area);
-    const buyoutPrice = formatEthValue(buyoutPerUnit);
-
-    let plotPartiallySoldMessage = '';
-    if (this.props.plotPartiallySold) {
-      plotPartiallySoldMessage = `. Please note that since this plot has been partially sold, you will
-                                  not receive the full amount entered above when this plot is sold, but rather the
-                                  per pixel price multiplied by the number of unsold pixels.`;
-    }
+    const totalBuyout = price.mul(area);
+    const buyoutPrice = formatEthValue(totalBuyout);
 
     return {
       state: 'success',
-      message: `You will receive ${buyoutPrice.value} ${buyoutPrice.unit} per pixel${plotPartiallySoldMessage}`
+      message: `You will receive a total of ${buyoutPrice.value} ${buyoutPrice.unit}
+                if all pixels in your plot are sold.`
     };
   }
 
@@ -191,10 +186,10 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
   }
   
   render() {
-    const { buyoutPriceInWei, toggleEnabled, classes } = this.props;
+    const { buyoutPricePerPixelInWei, toggleEnabled, classes } = this.props;
     const { anchorEl, buyoutUnits } = this.state;
 
-    const validation = this.validateBuyout(buyoutPriceInWei, toggleEnabled);
+    const validation = this.validateBuyout(buyoutPricePerPixelInWei, toggleEnabled);
     const currencies = ['wei', 'gwei', 'eth'];
 
     return (<div>
@@ -208,7 +203,7 @@ class BuyoutPriceInputBox extends React.Component<BuyoutPriceInputBoxProps, Buyo
         <div>
           <TextField
             id="name"
-            label="Buyout Price"
+            label="Buyout Price Per Pixel"
             disabled={!toggleEnabled}
             value={this.state.currentInput}
             className={classes.numberInput}

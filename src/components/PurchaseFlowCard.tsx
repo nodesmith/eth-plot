@@ -75,7 +75,7 @@ export interface PurchaseFlowCardProps extends WithStyles {
     w: number;
   };
   website: string;
-  buyoutPriceInWei: string;
+  buyoutPricePerPixelInWei: string;
   buyoutEnabled: boolean;
 
   allowedFileTypes: string[];
@@ -117,8 +117,8 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
   }
 
   completePurchase() {
-    const { purchasePriceInWei, contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPriceInWei, buyoutEnabled, activeAccount } = this.props;
-    const initialBuyoutPerPixelInWei = buyoutEnabled ? buyoutPriceInWei : '';
+    const { purchasePriceInWei, contractInfo, plots, rectToPurchase, imageFileInfo, website, buyoutPricePerPixelInWei, buyoutEnabled, activeAccount } = this.props;
+    const initialBuyoutPerPixelInWei = buyoutEnabled ? buyoutPricePerPixelInWei : '';
 
     this.props.purchasePlot(
       contractInfo, plots, rectToPurchase!, purchasePriceInWei, imageFileInfo!.blobUrl, website, initialBuyoutPerPixelInWei, activeAccount);
@@ -224,11 +224,10 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
               onToggleChanged={this.onBuyoutEnabledChanged.bind(this)}
               rectToPurchase={this.props.rectToPurchase!}
               purchasePrice={this.props.purchasePriceInWei}
-              buyoutPriceInWei={this.props.buyoutPriceInWei}
+              buyoutPricePerPixelInWei={this.props.buyoutPricePerPixelInWei}
               toggleEnabled={this.props.buyoutEnabled}
               toggleText={'Enable Buyout'}
               title={'Buyout Price'}
-              plotPartiallySold={false}
               buyoutVisible={true}
               />
             </div>
@@ -247,8 +246,13 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
         );
           stepHeader = 'Review and purchase';
           const rect = this.props.rectToPurchase!;
-          const buyoutPrice = (this.props.buyoutEnabled && this.props.buyoutPriceInWei) ?
-                                formatEthValueToString(this.props.buyoutPriceInWei) : 'Not Enabled';
+          const buyoutPricePerPixel = (this.props.buyoutEnabled && this.props.buyoutPricePerPixelInWei) ?
+                                        formatEthValueToString(this.props.buyoutPricePerPixelInWei) : 'Not Enabled';
+          
+          const buyoutPriceTotal = (this.props.buyoutEnabled && this.props.buyoutPricePerPixelInWei) ?
+                                     formatEthValueToString(new BigNumber(this.props.buyoutPricePerPixelInWei)
+                                     .mul(this.props.rectToPurchase!.w).mul(this.props.rectToPurchase!.h).toString()) : 'Not Enabled';
+
           const imageName = this.props.imageValidation.state === InputValidationState.SUCCESS ? this.props.imageFileInfo!.fileName : '';
           stepContent = (
           <div>
@@ -257,7 +261,8 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
             {makeLine('Grid Location', `x: ${rect.x} y: ${rect.y}`)}
             {makeLine('Plot Dimensions', `${rect.w}x${rect.h} (${rect.w * rect.h} units)`)}
             {makeLine('Website', this.props.website || 'None')}
-            {makeLine('Buyout Price', buyoutPrice)}
+            {makeLine('Buyout Price Per Pixel', buyoutPricePerPixel)}
+            {makeLine('Buyout Price Total', buyoutPriceTotal)}
             {this.getButtons({ text: 'Back', onClick: defaultBackButtonAction },
                              { text: 'Buy', onClick: this.completePurchase.bind(this) })}
           </div>

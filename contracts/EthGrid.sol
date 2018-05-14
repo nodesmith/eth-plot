@@ -102,7 +102,7 @@ contract EthGrid is Ownable {
     }
 
     function purchaseAreaWithData(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices, bytes ipfsHash, string url, uint256 initialPurchasePrice, uint256 initialBuyoutPriceInWeiPerPixel) public payable returns (uint256) {
-        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices, 0);
+        Rect memory rectToPurchase = validatePurchases(purchase, purchasedAreas, areaIndices);
 
         // Add the new ownership to the array
         uint256[] memory holes;
