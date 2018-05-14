@@ -21,4 +21,4 @@ deploy:
   acl: public_read
   on:
     repo: space-dust-blockchain/eth-grid
-    branch: sdesmond/ci
+    branch: master
