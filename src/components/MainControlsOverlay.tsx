@@ -88,6 +88,9 @@ export interface MainControlsOverlayProps extends WithStyles {
   plots: Array<PlotInfo>;
   togglePurchaseFlow: () => void;
   activeAccount: string;
+  showHeatmap: boolean;
+  lowPlotPrice: string;
+  highPlotPrice: string;
 }
 
 class MainControlsOverlay extends React.Component<MainControlsOverlayProps> {
@@ -118,9 +121,9 @@ class MainControlsOverlay extends React.Component<MainControlsOverlayProps> {
             <ShoppingCart />
           </Button>
         </Slide>
-        <Slide in={this.props.purchase.showHeatmap} direction="up">
+        <Slide in={this.props.showHeatmap} direction="up">
           <div className={classes.heatmapLegend} >
-           <HeatMapLegend minPrice={'5'} maxPrice={'50'} classes={{}}/>
+           <HeatMapLegend minPrice={this.props.lowPlotPrice} maxPrice={this.props.highPlotPrice} classes={{}}/>
           </div>
         </Slide>
         <Drawer classes={{

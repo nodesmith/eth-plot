@@ -84,6 +84,8 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
     isShowing: boolean;
   };
   activeAccount: string;
+  lowPlotPrice: string | undefined;
+  highPlotPrice: string | undefined;
 }
 
 class MainContainer extends React.Component<MainContainerProps> {
@@ -140,7 +142,10 @@ class MainContainer extends React.Component<MainContainerProps> {
       plots: this.props.plots,
       togglePurchaseFlow: this.props.actions.togglePurchaseFlow,
       changeZoom: this.props.actions.changeZoom,
-      activeAccount: this.props.activeAccount
+      activeAccount: this.props.activeAccount,
+      showHeatmap: this.props.purchase.showHeatmap && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen,
+      lowPlotPrice: this.props.lowPlotPrice || '0',
+      highPlotPrice: this.props.highPlotPrice || '0',
     };
 
     return (

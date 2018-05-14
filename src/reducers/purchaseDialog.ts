@@ -28,6 +28,9 @@ export function purchaseDialogReducer(state: PurchaseDialogState = initialState,
       return Object.assign({}, state, {
         isShowing: false
       });
+    case ActionTypes.RESET_PURCHASE_FLOW: {
+      return initialState;
+    }
     default:
       return state;
   }

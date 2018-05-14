@@ -1,13 +1,14 @@
+import { BigNumber } from 'bignumber.js';
+import * as d3Palette from 'd3-scale-chromatic';
 import { Paper, Typography } from 'material-ui';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
-import { BigNumber } from 'bignumber.js';
-import * as d3Palette from 'd3-scale-chromatic';
+import { formatEthValueToString } from '../data/ValueFormatters';
 
 
-const colors = d3Palette.schemeRdYlGn[11].slice(0, 11);
+const colors = d3Palette.schemeRdYlGn[11].slice(0, 11).reverse();
 const styles: StyleRulesCallback = theme => ({
   root: {
     padding: theme.spacing.unit,
@@ -42,8 +43,8 @@ class HeatMapLegend extends React.Component<HeatMapLegendProps> {
     // const value = new BigNumber(1).minus(aboveMin.div(priceRange));
     // const color = d3Palette.schemeRdYlGn[11];
 
-    const minLabel = this.props.minPrice;
-    const maxLabel = this.props.maxPrice;
+    const minLabel = formatEthValueToString(this.props.minPrice);
+    const maxLabel = formatEthValueToString(this.props.maxPrice);
 
     return (
       <Paper className={classes.root}>

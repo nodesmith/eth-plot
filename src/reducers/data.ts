@@ -22,6 +22,8 @@ export interface DataState {
   };
   contractInfo: ContractInfo;
   purchaseInfo?: PurchaseInfo;
+  lowPlotPrice?: string;
+  highPlotPrice?: string;
 }
 
 
@@ -42,6 +44,8 @@ const getInitialState = () => {
     },
     contractInfo,
     purchaseInfo: undefined,
+    lowPlotPrice: undefined,
+    highPlotPrice: undefined
   };
 
   return initialState;
@@ -55,11 +59,27 @@ export function dataReducer(state: DataState, action: Action): DataState {
 
   switch (action.type) {
     case ActionTypes.ADD_PLOT: {
+      const plot: PlotInfo = action.newPlot;
+      const buyoutPrice = new BigNumber(plot.buyoutPricePerPixelInWei || 0);
+      let { lowPlotPrice, highPlotPrice } = state;
+
+      if (buyoutPrice.greaterThan(0)) {
+        if (!lowPlotPrice || buyoutPrice.lessThan(new BigNumber(lowPlotPrice))) {
+          lowPlotPrice = plot.buyoutPricePerPixelInWei;
+        }
+
+        if (!highPlotPrice || buyoutPrice.greaterThan(new BigNumber(highPlotPrice))) {
+          highPlotPrice = plot.buyoutPricePerPixelInWei;
+        }
+      }
+
       const newHoles = computeNewHoles(action.newPlot.rect, state.holes, state.plots);
 
       const newState = Object.assign({}, state, {
         numberOfPlots: state.numberOfPlots + 1,
-        holes: newHoles
+        holes: newHoles,
+        lowPlotPrice,
+        highPlotPrice
       });
 
       newState.plots.push(action.newPlot);
@@ -98,6 +118,9 @@ export function dataReducer(state: DataState, action: Action): DataState {
     }
     case ActionTypes.SET_WEB3_CONFIG: {
       return Object.assign({}, state, { contractInfo: action.web3Config });
+    }
+    case ActionTypes.RESET_PURCHASE_FLOW: {
+      return Object.assign({}, state, { purchaseInfo: getInitialState().purchaseInfo });
     }
     default:
       return state;
