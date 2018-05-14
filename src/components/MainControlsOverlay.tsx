@@ -58,7 +58,7 @@ export interface MainControlsOverlayProps extends WithStyles {
       w: number;
     }
     website: string;
-    buyoutPriceInWei: string;
+    buyoutPricePerPixelInWei?: string;
     buyoutEnabled: boolean;
     purchaseFlowOpen: boolean;
     imageValidation: InputValidation;

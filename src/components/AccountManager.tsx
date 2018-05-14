@@ -140,15 +140,15 @@ class AccountManager extends React.Component<AccountManagerProps, AccountManager
       <Grid container className={this.props.classes.root} justify="center" spacing={24} >
         <Grid key="title" item xs={9}>
           <Typography align="center" variant="headline">My Plots</Typography>
-        </Grid>,
-        {plotInfoComponents},
+        </Grid>
+        {plotInfoComponents}
         {(filteredPlots.length === 0) ? 
         <Typography 
           className={this.props.classes.noTxHeader} 
           variant="subheading">
           You do not own any plots on the grid. Visit the grid to purchase a plot.
         </Typography>
-        : plotInfoComponents }
+        : null }
       </Grid>
     );
   }

@@ -1,11 +1,11 @@
 import * as React from 'react';
 
 import TransactionManager from '../components/TransactionManager';
-import { UserTransactions } from '../models';
+import { UserTransaction } from '../models';
 
 export interface TransactionManagerContainerProps {
   metamaskState: number;
-  userTransactions: { [hash: string]: UserTransactions };
+  userTransactions: { [hash: string]: UserTransaction[] };
 }
 
 class TransactionManagerContainer extends React.Component<TransactionManagerContainerProps> {
@@ -18,8 +18,17 @@ class TransactionManagerContainer extends React.Component<TransactionManagerCont
       else return -1;
     };
 
-    const transactionArray = Object.values(this.props.userTransactions);
-    const sortedTransactions = transactionArray.concat().sort(comparator);
+    // Because there can be multiple transactions for each txHash 
+    // (the case where a user buys a plot or plots from themeselves), we flatten
+    // the each list into one flat transactions list.
+    const flattenedTransactions: UserTransaction[] = [];
+    Object.values(this.props.userTransactions).forEach((transactions: UserTransaction[]) => {
+      transactions.forEach((tx: UserTransaction) => {
+        flattenedTransactions.push(tx);
+      });
+    });
+    
+    const sortedTransactions = flattenedTransactions.concat().sort(comparator);
 
     return (
       <TransactionManager 

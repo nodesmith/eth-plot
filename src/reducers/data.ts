@@ -78,16 +78,12 @@ export function dataReducer(state: DataState, action: Action): DataState {
       const purchaseInfo = computePurchaseInfo(action.rectToPurchase, state.plots);
       return Object.assign({}, state, { purchaseInfo });
     }
-    case ActionTypes.ADD_PURCHASE_TRANSACTIONS: {
-      const purchaseTransactionInfo: PurchaseEventInfo[] = action.purchaseTransactions;
-      const plotTransactions = purchaseTransactionInfo.reduce(
-        (result, curr) => {
-          result[curr.purchaseIndex] = curr;
-          return result;
-        },
-        {});
+    case ActionTypes.ADD_PURCHASE_TRANSACTION: {
+      const newPurchaseTransactionInfo: PurchaseEventInfo = action.purchaseTransaction;
+      const plotTransactionsCopy = Object.assign({}, state.plotTransactions);
+      plotTransactionsCopy[newPurchaseTransactionInfo.purchaseIndex] = newPurchaseTransactionInfo;
 
-      return Object.assign({}, state, { plotTransactions });
+      return Object.assign({}, state, { plotTransactions: plotTransactionsCopy });
     }
     case ActionTypes.ADD_BLOCK_INFO: {
       const blockInfo: Web3.BlockWithoutTransactionData = action.blockInfo;
