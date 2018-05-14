@@ -1,16 +1,23 @@
 language: node_js
-
 node_js:
-  - 8
-
+- 8
 install:
-  - npm install
-
+- npm install
 script:
-  - npm run build
-
-# This will save some of our travis build runs in the trial
+- npm run build
 branches:
   only:
   - master
   - sdesmond/ci
+deploy:
+  provider: s3
+  access_key_id: AKIAIZTYH6H5WSIV6ZZA
+  secret_access_key:
+    secure: x0ZXRDUOCKxxYAGqGqWEoaUb3hcThpt+nirFy2Hzknsb+TJlN5xyvAzWGii/9CTa9t0Yt6E+YyygXL8KcljTeUzJUvDdNEerzr5s7zT04NCpllEbI366yW5yxcjWCMYjA0STHyvwZT7dShGJpG8jK552uTHFcxG6AmanCHwvbTCkUETp3Y707H0PC4KK2dUUjMs7d99bl/L/3dOp7ZD/PpYlKeJXfFt7vCqDIsNLURXXpokI1zsmVL9E0NbkuSP21nOZ+aUpQHmysy8Ejhk0uTRSovvtEmnDr9erFTVuZ2VOuM1OGcMgy6CmYmdHBSA7ZCSeo0MitfWrFEFvrt7MEFifTUsMqMqC0F6atw2a4KkndyPl79G/2oRtL2bsCasbRscbZS2AMEJYDoQ+M1zhmFE2FO4zGHLjkUg167d+aRwTmtg1Z3ZoL4MesWro7q0HumDKfxPPE6Ov+H2t2Hlt74darLnUL5qIFdKzAHQEC8XYlikfFljBkbtY3Kef/FEmsjumYEigRTpLV0mVIjYRAI5Yl+IzyZ0c2S3ed4bY+mbxeth3uzhCXj+zU378sJjMAhbQeyEgnAJsA/NMSus6mlWVGOVkBEiXbS/jDBHoA4UhddDYlXiCr+OUFHb/4nN8HLw4C1QXnYIMaDtAEq3XeKGuIBXkUg347IBWU+SZjv4=
+  bucket: ethplot.com
+  region: us-west-2
+  local-dir: dist
+  acl: public_read
+  on:
+    repo: space-dust-blockchain/eth-grid
+    branch: sdesmond/ci
