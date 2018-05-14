@@ -60,7 +60,7 @@
     "redux-devtools-log-monitor": "^1.0.2",
     "redux-logger": "^3.0.6",
     "rimraf": "^2.4.3",
-    "solhint": "^1.1.10",
+    "solium": "^1.1.7",
     "source-map-loader": "^0.2.3",
     "style-loader": "^0.13.0",
     "truffle": "^4.1.8",
