@@ -1,7 +1,7 @@
 
 import { Rect } from './Rect';
 export * from './Rect';
-export * from './UserTransactions';
+export * from './UserTransaction';
 export * from './PlotInfo';
 export * from './Contract';
 export * from './ImageFileInfo';
