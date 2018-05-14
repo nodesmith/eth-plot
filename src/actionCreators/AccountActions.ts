@@ -130,7 +130,7 @@ async function getPurchaseEvents(contract: EthGrid, contractInfo: ContractInfo, 
   // Listens to incoming purchase transactions
   purchaseEvent.watch({ fromBlock: 0, toBlock: 'latest' }, (err, data) => {
     if (!err) {
-      DataActions.addPlotToGrid(contract, data.args.newZoneId, contractInfo, dispatch);
+      DataActions.addPlotToGrid(contract, new BigNumber(data.args.newZoneId).toNumber(), contractInfo, dispatch);
       genericTransactionHandler(data, true, Enums.TxType.PURCHASE, dispatch);
     }
   });
