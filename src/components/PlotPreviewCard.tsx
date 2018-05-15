@@ -2,13 +2,12 @@ import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import * as React from 'react';
 
-import { PixelStatus } from './PlotInfo';
+import { Rect } from '../models';
 
 export interface PlotPreviewCardProps extends WithStyles {
   blobUrl: string;
-  w: number;
-  h: number;
-  pixelStatus: PixelStatus;
+  rect: Rect;
+  holes: Array<Rect>;
 }
 
 interface PlotPreviewCardState {
@@ -32,9 +31,6 @@ const styles: StyleRulesCallback = theme => ({
     width: '100%',
     height: '100%',
     maxWidth: 300,
-  },
-  unsoldPixelColor: {
-    fill: 'rgba(255,255,255,0.3)'
   },
   soldPixelColor: {
     fill: 'rgba(0,0,0,0.3)'
@@ -60,28 +56,24 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
   }
 
   getGridSvgElements(): Array<JSX.Element> {    
-    const pixelsPerRow = this.props.w;
-    const pixelsPerColumn = this.props.h;
-    const pixelWidth = this.imageRef.clientWidth / pixelsPerRow;  
-    const pixelHeight = this.imageRef.clientHeight / pixelsPerColumn;  
+    const pixelWidth = this.imageRef.clientWidth / this.props.rect.w;  
+    const pixelHeight = this.imageRef.clientHeight / this.props.rect.h;  
 
     const gridElements = new Array<JSX.Element>();
+       
+    this.props.holes.forEach((hole: Rect, index: number) => {
+      const holeX = (hole.x - this.props.rect.x) * pixelWidth;
+      const holeY = (hole.y - this.props.rect.y) * pixelHeight;
 
-    for (let i = 0; i < pixelsPerRow; i++) {
-      for (let j = 0; j < pixelsPerColumn; j++) {
-        const pixelIsSold = this.props.pixelStatus.soldPixels[i * pixelsPerColumn + j];
-        const pixelClass = (pixelIsSold) ? this.props.classes.soldPixelColor : this.props.classes.unsoldPixelColor;
-
-        gridElements.push(
-          <rect x={i * pixelWidth}
-                y={j * pixelHeight} 
-                width={pixelWidth} 
-                height={pixelHeight} 
-                className={pixelClass}
-                key={i * pixelsPerColumn + j} />
-        );
-      }
-    }
+      gridElements.push(
+        <rect x={holeX}
+              y={holeY} 
+              width={hole.w * pixelWidth} 
+              height={hole.h * pixelHeight} 
+              className={this.props.classes.soldPixelColor}
+              key={index} />
+      );
+    });
 
     return gridElements;
   }
@@ -92,7 +84,7 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
       gridElements = this.getGridSvgElements();
     }
     
-    const hasSoldPixels = this.props.pixelStatus.soldPixelCount > 0;
+    const hasSoldPixels = this.props.holes.length > 0;
     let caption = 'The darker pixels are pixels that have already been sold.';
     if (!hasSoldPixels) {
       caption = 'No portion of this plot has been sold.';

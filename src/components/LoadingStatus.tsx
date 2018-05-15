@@ -28,7 +28,7 @@ class LoadingStatus extends React.Component<LoadingStatusProps> {
     const { classes } = this.props;
 
     const progressProps: LinearProgressProps = {
-      classes: { root: this.props.classes.progressRoot },
+      classes: { root: classes.progressRoot },
       variant: 'buffer',
       value: this.props.progress,
       valueBuffer: this.props.progress + 5

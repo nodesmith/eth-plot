@@ -5,7 +5,6 @@ import Divider from 'material-ui/Divider';
 import Grid from 'material-ui/Grid';
 import * as React from 'react';
 
-import * as PlotMath from '../data/PlotMath';
 import { formatEthValueToString } from '../data/ValueFormatters';
 import { PlotInfo as PlotInfoData, PurchaseEventInfo, Rect } from '../models';
 
@@ -44,11 +43,6 @@ interface PlotInfoState {
   newBuyoutPricePerPixel: string;
   toggleEnabled: boolean;
   auctionVisible: boolean;
-}
-
-export interface PixelStatus {
-  soldPixels: Array<boolean>; 
-  soldPixelCount: number;
 }
 
 class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
@@ -91,54 +85,22 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
     this.props.updatePrice(this.props.info.zoneIndex, '0');    
   }
 
-  /**
-   * Computes an array with a single entry for each pixel in this plot.
-   * The entry is true if the pixel has been sold and false otherwise.
-   */
-  computePixelStatus(): PixelStatus {
-    const pixelStatus: Array<boolean> = [];
-    let soldPixelCount = 0;
-
-    const startingX = this.props.info.rect.x;
-    const startingY = this.props.info.rect.y;
-    const endingX = startingX + this.props.info.rect.w;
-    const endingY = startingY + this.props.info.rect.h;
-
-    for (let x = startingX; x < endingX; x++) {
-      for (let y = startingY; y < endingY; y++) {
-        let pixelSold = false;
-
-        this.props.holes.forEach(hole => {
-          if (PlotMath.pixelInsideRectangle(hole, x, y)) {
-            pixelSold = true;
-            soldPixelCount++;
-          }
-        });
-  
-        pixelStatus.push(pixelSold);
-      }
-    }
-
-    // Return in a wrapped interace that also includes the total number of sold
-    // pixels for this plot.  This wrapper can be passed down to child components. 
-    return {
-      soldPixels: pixelStatus,
-      soldPixelCount
-    };
-  }
-
   render() {
     const plotURL = (this.props.info.data.url) ? this.props.info.data.url : 'None';
     const buyoutPricePerPixelInWeiBN = new BigNumber(this.props.info.buyoutPricePerPixelInWei);
     const forSale = buyoutPricePerPixelInWeiBN.greaterThan(0);
 
-    const pixelStatus = this.computePixelStatus();
+    let soldPixelCount = 0;
+    this.props.holes.forEach((hole: Rect) => {
+      soldPixelCount += (hole.w) * (hole.h);
+    });
+    
     const totalPixels = this.props.info.rect.w * this.props.info.rect.h;
 
     let forSaleText = (forSale) ? 'Yes' : 'No';
     if (this.props.isPlotSold) forSaleText = 'NA';
 
-    const pixelSoldCountText = (this.props.isPlotSold) ? 'All' : `${pixelStatus.soldPixelCount} of ${totalPixels}`;
+    const pixelSoldCountText = (this.props.isPlotSold) ? 'All' : `${soldPixelCount} of ${totalPixels}`;
 
     const cancelSaleDisabled = buyoutPricePerPixelInWeiBN.equals(0);
     let updateBuyoutDisabled = true;
@@ -154,9 +116,8 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
       <Grid className={this.props.classes.root} container spacing={8}>
         <Grid item xs={12} sm={6} >
           <PlotPreviewCard blobUrl={this.props.info.data.blobUrl} 
-                           w={this.props.info.rect.w}
-                           h={this.props.info.rect.h}
-                           pixelStatus={pixelStatus}
+                           rect={this.props.info.rect}
+                           holes={this.props.holes}
                            classes={{}} />
         </Grid>
         <Grid item xs={12} sm={6}>
