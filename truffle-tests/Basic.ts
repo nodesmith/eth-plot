@@ -96,6 +96,7 @@ contract('EthGrid', (accounts: string[]) => {
     await timeout(1000); // wait for dispatch events to repopulate store
 
     const loadedPlots = store.getState().data.plots;
+    assert.equal(loadedPlots.length, 2);
     assert.deepEqual(loadedPlots[1].rect, rectToPurchase);
     assert.equal(loadedPlots[1].owner, accounts[4]);
 

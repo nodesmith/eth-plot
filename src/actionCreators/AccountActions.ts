@@ -18,7 +18,7 @@ type UnregisterFn = () => Promise<void>;
 let unregisterFn: UnregisterFn;
 
 export async function unregisterEventListners() {
-  await unregisterFn;
+  await unregisterFn();
 }
 
 export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
@@ -99,9 +99,9 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
     ]);
 
     unregisterFn = async () => {
-      await unregisterPromises[0];
-      await unregisterPromises[1];
-      await unregisterPromises[2];
+      await unregisterPromises[0]();
+      await unregisterPromises[1]();
+      await unregisterPromises[2]();
     };
 
     dispatch(doneLoadingTransactions());
