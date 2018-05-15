@@ -37,7 +37,7 @@ export function accountReducer(state: AccountState = initialState, action: Actio
     case ActionTypes.ADD_TRANSACTION:
       const userTransactionsCopy = Object.assign({}, state.userTransactions);
       
-      userTransactionsCopy[action.uniqueEventHash]= { 
+      userTransactionsCopy[action.uniqueEventHash] = { 
         txType: action.txType,
         txStatus: action.txStatus,
         blockNumber: action.blockNumber,

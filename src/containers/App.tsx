@@ -124,6 +124,9 @@ class App extends React.Component<AppProps> {
 
   componentWillUnmount() {
     window.clearInterval(this.accountInterval);
+
+    // Clears all the web3 event listeners
+    AccountActions.unregisterEventListners();
   }
 
   clearNotifications() {

@@ -136,8 +136,8 @@ export function updateAuction(contractInfo: ContractInfo, zoneIndex: number, new
 
     const txStatus = Enums.TxStatus.PENDING;
     const uniqueEventHash = AccountActions.computeUniqueEventHash(Enums.TxType.AUCTION, transactionReceipt);
-    dispatch(AccountActions.addTransaction(uniqueEventHash, transactionReceipt, Enums.TxType.AUCTION, 
-                                            txStatus, Number.MAX_SAFE_INTEGER, true));
+    dispatch(AccountActions.addTransaction(
+      uniqueEventHash, transactionReceipt, Enums.TxType.AUCTION, txStatus, Number.MAX_SAFE_INTEGER, true));
     return transactionReceipt;
   };
 }
@@ -202,8 +202,8 @@ export function purchasePlot(
 
       const txStatus = Enums.TxStatus.PENDING;
       const uniqueEventHash = AccountActions.computeUniqueEventHash(Enums.TxType.PURCHASE, transactionReceipt);
-      dispatch(AccountActions.addTransaction(uniqueEventHash, transactionReceipt, 
-                                              Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
+      dispatch(AccountActions.addTransaction(
+        uniqueEventHash, transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
       dispatch(togglePurchaseFlow());
       dispatch(changePurchaseStep(Enums.PurchaseStage.USER_CONFIRM));
       dispatch(resetPurchaseFlow());

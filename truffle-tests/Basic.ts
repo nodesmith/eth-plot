@@ -7,8 +7,8 @@ import * as Web3 from 'web3';
 
 import { promisify } from '../gen-src/typechain-runtime';
 import { EthGrid } from '../gen-src/EthGrid';
-import * as DataActions from '../src/actionCreators/DataActions';
 import * as AccountActions from '../src/actionCreators/AccountActions';
+import * as DataActions from '../src/actionCreators/DataActions';
 import { changePurchaseStep } from '../src/actionCreators/PurchaseActions';
 import { computePurchaseInfo } from '../src/data/ComputePurchaseInfo';
 import { Rect } from '../src/models';
@@ -46,6 +46,10 @@ contract('EthGrid', (accounts: string[]) => {
 
     const provider = web3.currentProvider.host;
     store = await initializeStoreAndLoadPlots(ethGrid.address, provider, accounts[0]);
+  });
+
+  after(async () => {
+    await AccountActions.unregisterEventListners();
   });
 
   it('Contract initialized as expected', async () => {
@@ -87,6 +91,7 @@ contract('EthGrid', (accounts: string[]) => {
     await AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, buyerAccount)(store.dispatch);
 
     const loadedPlots = store.getState().data.plots;
+    assert.equal(loadedPlots.length, 2);
     assert.deepEqual(loadedPlots[1].rect, rectToPurchase);
     assert.equal(loadedPlots[1].owner, accounts[4]);
 

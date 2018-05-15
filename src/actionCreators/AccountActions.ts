@@ -12,6 +12,15 @@ import { ContractInfo, PurchaseEventInfo } from '../models';
 import { Action } from './EthGridAction';
 import { getWeb3 } from './Web3Actions';
 
+type UnregisterFn = () => Promise<void>;
+
+// Global list of unregister function, used to stop listening for events
+let unregisterFn: UnregisterFn;
+
+export async function unregisterEventListners() {
+  await unregisterFn;
+}
+
 export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
   return {
     type: ActionTypes.UPDATE_METAMASK_STATE,
@@ -82,18 +91,24 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
 
     const newWeb3 = getWeb3(contractInfo);
     const contract = await DataActions.initializeContract(contractInfo);
-
-    await Promise.all([
+   
+    const unregisterPromises = await Promise.all([
       loadAndWatchAuctionEvents(contract, currentAddress, dispatch, newWeb3),
       loadAndWatchPurchaseEvents(contract, contractInfo, currentAddress, dispatch, newWeb3),
       loadAndWatchSaleEvents(contract, currentAddress, dispatch, newWeb3)
     ]);
 
+    unregisterFn = async () => {
+      await unregisterPromises[0];
+      await unregisterPromises[1];
+      await unregisterPromises[2];
+    };
+
     dispatch(doneLoadingTransactions());
   };
 }
 
-async function loadAndWatchAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
+async function loadAndWatchAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
   const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
@@ -106,14 +121,21 @@ async function loadAndWatchAuctionEvents(contract: EthGrid, currentAddress: stri
   });
   
   // We really should return this in some way since we need to stop listening to it
-  auctionEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
+  return auctionEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
     if (!err) {
       genericTransactionHandler(tx, (<BigNumber>tx.args.tokenId).toNumber(), Enums.TxType.AUCTION, dispatch, web3);
     }
   });
 }
 
-export async function loadAndWatchPurchaseEvents(contract: EthGrid, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
+export async function loadAndWatchPurchaseEvents(
+  contract: EthGrid,
+  contractInfo: ContractInfo,
+  currentAddress: string,
+  dispatch: Dispatch<{}>,
+  web3: Web3)
+  : Promise<UnregisterFn> {
+  
   const purchaseEvent = contract.PlotPurchasedEvent({ });
 
   // Manually add the first plot
@@ -127,7 +149,7 @@ export async function loadAndWatchPurchaseEvents(contract: EthGrid, contractInfo
   });
 
   // Listens to incoming purchase transactions
-  var x = purchaseEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
+  return purchaseEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
     if (!err) {
       handleNewPurchaseEvent(tx, contract, contractInfo, currentAddress, dispatch, web3);
     }
@@ -152,7 +174,7 @@ function handleNewPurchaseEvent(tx: any, contract: EthGrid, contractInfo: Contra
   }
 }
 
-async function loadAndWatchSaleEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
+async function loadAndWatchSaleEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
   const saleEvent = contract.PlotSectionSoldEvent({ seller: currentAddress });
 
   const saleEvents = await saleEvent.get({ fromBlock: 0, toBlock: 'latest' });
@@ -163,14 +185,20 @@ async function loadAndWatchSaleEvents(contract: EthGrid, currentAddress: string,
   });
 
   // We really should return this in some way since we need to stop listening to it
-  saleEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
+  return saleEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
     if (!err) {
       genericTransactionHandler(tx, (<BigNumber>tx.args.zoneId).toNumber(), Enums.TxType.SALE, dispatch, web3);
     }
   });
 }
 
-const genericTransactionHandler = async (tx: DecodedLogEntry<{}>, zoneIndex: number, txType: Enums.TxType, dispatch: Dispatch<{}>, web3: Web3): Promise<void> => {
+const genericTransactionHandler = async (
+  tx: DecodedLogEntry<{}>,
+  zoneIndex: number,
+  txType: Enums.TxType,
+  dispatch: Dispatch<{}>,
+  web3: Web3)
+  : Promise<void> => {
   const txStatus = await DataActions.determineTxStatus(tx, web3);
   const uniqueEventHash = this.computeUniqueEventHash(txType, tx.transactionHash, zoneIndex);
   dispatch(addTransaction(uniqueEventHash, tx.transactionHash, txType, txStatus, tx.blockNumber!, false));

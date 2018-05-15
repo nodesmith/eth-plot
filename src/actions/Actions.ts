@@ -5,8 +5,8 @@ import { ContractInfo, ImageFileInfo, PlotInfo, Point, Rect, RectDelta } from '.
 // Account Actions
 export type updateMetamaskState = (newState: Enums.METAMASK_STATE) => void;
 export type updateActiveAccount = (newActiveAccount: string) => void;
-export type addTransaction = (uniqueEventHash: string, txHash: string, txType: Enums.TxType,
-                                txStatus: Enums.TxStatus, blockNumber: number, isNew: boolean) => void;
+export type addTransaction =
+  (uniqueEventHash: string, txHash: string, txType: Enums.TxType, txStatus: Enums.TxStatus, blockNumber: number, isNew: boolean) => void;
 export type clearNotificationCount = () => void;
 export type loadTransactions = () => void;
 export type doneLoadingTransactions = () => void;
