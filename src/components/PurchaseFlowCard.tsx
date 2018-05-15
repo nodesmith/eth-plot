@@ -12,7 +12,7 @@ import * as React from 'react';
 import * as Actions from '../actions';
 import { InputValidationState } from '../constants/Enums';
 import { formatEthValueToString } from '../data/ValueFormatters';
-import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
+import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Point, Rect } from '../models';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
@@ -88,12 +88,14 @@ export interface PurchaseFlowCardProps extends WithStyles {
   showGrid : boolean;
 
   activeAccount: string;
+  scale: number;
+  centerPoint: Point;
 }
 
 class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
 
   onImageChanged(imageFileInfo) {
-    this.props.onImageSelected(imageFileInfo, this.props.plots);
+    this.props.onImageSelected(imageFileInfo, this.props.plots, this.props.scale, this.props.centerPoint);
   }
 
   goToStep(index) {
@@ -304,7 +306,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
     ? `Plot Price: ${formatEthValueToString(this.props.purchasePriceInWei)}`
     : 'Your plot is a unique, digital good stored on the Ethereum blockchain.';
 
-    if(this.props.purchasePriceInWei === '0') {
+    if (this.props.purchasePriceInWei === '0') {
       subheading = 'Invalid placement';
     }
     

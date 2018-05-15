@@ -44,7 +44,10 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
       cursor: 'move',
       backgroundImage: `url(${this.props.src})`,
       backgroundRepeat: 'no-repeat',
-      backgroundSize: '100% 100%'
+      backgroundSize: '100% 100%',
+      borderWidth: 2,
+      borderColor: 'white',
+      borderStyle: 'dashed'
     };
 
     const wrapperStyle: React.CSSProperties = {

@@ -9,7 +9,7 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import * as Actions from '../actions';
-import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
+import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Point, Rect } from '../models';
 
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
 
@@ -80,6 +80,8 @@ export interface MainControlsOverlayProps extends WithStyles {
   plots: Array<PlotInfo>;
   togglePurchaseFlow: () => void;
   activeAccount: string;
+  scale: number;
+  centerPoint: Point;
 }
 
 class MainControlsOverlay extends React.Component<MainControlsOverlayProps> {
@@ -96,6 +98,8 @@ class MainControlsOverlay extends React.Component<MainControlsOverlayProps> {
       contractInfo: this.props.contractInfo,
       plots: this.props.plots,
       activeAccount: this.props.activeAccount,
+      scale: this.props.scale,
+      centerPoint: this.props.centerPoint,
       classes: {},
       ...this.props.purchase,
       ...this.props.purchaseActions

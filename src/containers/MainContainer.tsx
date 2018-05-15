@@ -140,7 +140,9 @@ class MainContainer extends React.Component<MainContainerProps> {
       plots: this.props.plots,
       togglePurchaseFlow: this.props.actions.togglePurchaseFlow,
       changeZoom: this.props.actions.changeZoom,
-      activeAccount: this.props.activeAccount
+      activeAccount: this.props.activeAccount,
+      scale: this.props.scale,
+      centerPoint: this.props.centerPoint,
     };
 
     return (
