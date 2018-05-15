@@ -74,13 +74,13 @@ export function dataReducer(state: DataState, action: Action): DataState {
       const newHoles = computeNewHoles(action.newPlot.rect, state.holes, state.plots);
 
       const newState = Object.assign({}, state, {
-        numberOfPlots: state.numberOfPlots + 1,
         holes: newHoles,
         lowPlotPrice,
         highPlotPrice
       });
 
       newState.plots.push(action.newPlot);
+      newState.numberOfPlots = newState.numberOfPlots < newState.plots.length ? newState.plots.length : newState.numberOfPlots;
       return newState;
     }
     case ActionTypes.PLOT_LISTED: {
@@ -118,6 +118,9 @@ export function dataReducer(state: DataState, action: Action): DataState {
     }
     case ActionTypes.CLEAR_PLOTS: {
       return Object.assign({}, state, { plots: [] });
+    }
+    case ActionTypes.REPORT_NUMBER_OF_PLOTS: {
+      return Object.assign({}, state, { numberOfPlots: action.numberOfPlots });
     }
     default:
       return state;

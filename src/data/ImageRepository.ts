@@ -34,7 +34,8 @@ export async function loadFromIpfsOrCache(ipfsHash: string, ipfsHost: string = '
   initialize();
   const cachedData = await localforage.getItem<Blob>(ipfsHash);
 
-  await new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+  const delay = 2000 + (Math.random() * 3000);
+  // await new Promise((resolve, reject) => setTimeout(() => resolve(), delay));
 
   if (cachedData) {
     console.log(`Got cached version of ${ipfsHash}`);

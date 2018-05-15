@@ -1,3 +1,4 @@
+import { Typography } from 'material-ui';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import { CircularProgress } from 'material-ui/Progress';
@@ -14,6 +15,7 @@ import * as PurchaseActions from '../actionCreators/PurchaseActions';
 import { getWeb3, isUsingMetamask } from '../actionCreators/Web3Actions';
 import About from '../components/About';
 import FloatingLogo from '../components/FloatingLogo';
+import LoadingStatus from '../components/LoadingStatus';
 import MetaMaskStatus from '../components/MetaMaskStatus';
 import OverlayNav, { OverlayNavProps } from '../components/OverlayNav';
 import * as Enums from '../constants/Enums';
@@ -257,13 +259,19 @@ class App extends React.Component<AppProps> {
       </Grid>
     );
 
+    const numberOfPlots = this.props.data.numberOfPlots;
+    const loadingMessage = numberOfPlots === 0 ? 
+      'Loading Ethereum Contract' :
+      `Loaded ${this.props.data.plots.length}/${this.props.data.numberOfPlots} Plots`;
+
+    const totalProgressStages = this.props.data.numberOfPlots + 1; // Add 1 for the initial contract fetching
+    const progressAmount = (numberOfPlots === 0 ? 0 : 1) + this.props.data.plots.length;
+
     const spinner: JSX.Element = (
-      <Grid container style={fullPageContainer} justify="center" alignItems="center">
-        <Grid item>
-          <CircularProgress size={50} />
-        </Grid>
-      </Grid>
-    );
+      <LoadingStatus classes={{}}
+      message={loadingMessage}
+      progress={100 * progressAmount / totalProgressStages}
+      />);
 
     return (
       <div style={mainAppStyle}>
