@@ -3,14 +3,12 @@ import { combineReducers } from 'redux';
 import { accountReducer, AccountState } from './account';
 import { dataReducer, DataState } from './data';
 import { gridReducer, GridState } from './grid';
-import { imageToPurchaseReducer, ImageToPurchaseState } from './imageToPurchase';
 import { purchaseReducer, PurchaseState } from './purchase';
 import { purchaseDialogReducer, PurchaseDialogState } from './purchaseDialog';
 
 export * from './account';
 export * from './data';
 export * from './grid';
-export * from './imageToPurchase';
 export * from './purchase';
 export * from './purchaseDialog';
 
@@ -19,7 +17,6 @@ export interface RootState {
   data: DataState;
   grid: GridState;
   purchase: PurchaseState;
-  imageToPurchase: ImageToPurchaseState;
   purchaseDialog: PurchaseDialogState;
 }
 
@@ -41,7 +38,6 @@ const rootReducer = combineReducers<RootState>({
   data: dataReducer,
   grid: gridReducer,
   purchase: purchaseReducer,
-  imageToPurchase: imageToPurchaseReducer,
   purchaseDialog: purchaseDialogReducer
 });
 
