@@ -43,6 +43,13 @@ export function addPurchaseEventTransaction(
   };
 }
 
+export function reportNumberOfPlots(numberOfPlots: number): Action {
+  return {
+    type: ActionTypes.REPORT_NUMBER_OF_PLOTS,
+    numberOfPlots
+  };
+}
+
 /**
  * This action adds a new transaction to the list of transactions of the user.
  * This can either be a newly created transaction, or a previous transaction that
@@ -91,6 +98,9 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
 
     const newWeb3 = getWeb3(contractInfo);
     const contract = await DataActions.initializeContract(contractInfo);
+
+    const numberOfPlots = await contract.ownershipLength;
+    dispatch(reportNumberOfPlots(numberOfPlots.toNumber()));
    
     const unregisterPromises = await Promise.all([
       loadAndWatchAuctionEvents(contract, currentAddress, dispatch, newWeb3),
@@ -143,10 +153,12 @@ export async function loadAndWatchPurchaseEvents(
 
   const purchaseEvents = await purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' });
   let latestBlock = 0;
-  purchaseEvents.forEach(tx => {
-    handleNewPurchaseEvent(tx, contract, contractInfo, currentAddress, dispatch, web3);
+  const purchaseEventPromises = purchaseEvents.map(tx => {
     latestBlock = Math.max(latestBlock, tx.blockNumber!);
+    return handleNewPurchaseEvent(tx, contract, contractInfo, currentAddress, dispatch, web3);
   });
+
+  await Promise.all(purchaseEventPromises);
 
   // Listens to incoming purchase transactions
   return purchaseEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
@@ -156,8 +168,10 @@ export async function loadAndWatchPurchaseEvents(
   });
 }
 
-function handleNewPurchaseEvent(tx: any, contract: EthGrid, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3) {
-  DataActions.addPlotToGrid(contract, new BigNumber(tx.args.newZoneId).toNumber(), dispatch);
+async function handleNewPurchaseEvent(
+  tx: any, contract: EthGrid, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
+
+  await DataActions.addPlotToGrid(contract, new BigNumber(tx.args.newZoneId).toNumber(), dispatch);
   const newZoneId = (<BigNumber>tx.args.newZoneId).toNumber();
   
   const newPurchaseEventInfo: PurchaseEventInfo = { 
@@ -170,7 +184,7 @@ function handleNewPurchaseEvent(tx: any, contract: EthGrid, contractInfo: Contra
   dispatch(addPurchaseEventTransaction(newPurchaseEventInfo));
 
   if (tx.args.buyer === currentAddress) {
-    genericTransactionHandler(tx, newZoneId, Enums.TxType.PURCHASE, dispatch, web3);
+    await genericTransactionHandler(tx, newZoneId, Enums.TxType.PURCHASE, dispatch, web3);
   }
 }
 

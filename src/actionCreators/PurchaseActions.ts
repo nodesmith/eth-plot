@@ -154,3 +154,10 @@ export function changePurchaseStep(purchaseStage) {
     purchaseStage
   };
 }
+
+export function showSnackbarMessage(message: string): Action {
+  return {
+    type: ActionTypes.SHOW_SNACKBAR_MESSAGE,
+    message
+  };
+}

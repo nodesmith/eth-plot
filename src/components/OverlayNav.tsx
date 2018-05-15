@@ -2,7 +2,7 @@ import Help from '@material-ui/icons/Help';
 import Home from '@material-ui/icons/Home';
 import Notifications from '@material-ui/icons/Notifications';
 import Person from '@material-ui/icons/Person';
-import { Badge } from 'material-ui';
+import { Badge, Snackbar, SnackbarContent } from 'material-ui';
 import ShoppingCart from 'material-ui-icons/ShoppingCart';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Button, { ButtonProps } from 'material-ui/Button';
@@ -54,6 +54,11 @@ const styles: StyleRulesCallback = theme => ({
   otherNav: {
     pointerEvents: 'all',
     backgroundColor: theme.palette.grey[200]
+  },
+  snackbarMessage: {
+    textAlign: 'center',
+    padding: `${theme.spacing.unit}px 0`,
+    width: '100%'
   }
 });
 
@@ -62,9 +67,18 @@ export interface OverlayNavProps extends WithStyles {
   clearNotifications: () => void;
   doNavigation: (route: string) => void;
   currentPath: string;
+  snackbarMessage: string;
 }
 
-class OverlayNav extends React.Component<OverlayNavProps> {
+class OverlayNav extends React.Component<OverlayNavProps, {snackbarOpen: boolean}> {
+  constructor(props, context) {
+    super(props, context);
+
+    this.state = {
+      snackbarOpen: false
+    };
+  }
+
   clearNotifications() {
     this.props.clearNotifications();
   }
@@ -101,6 +115,13 @@ class OverlayNav extends React.Component<OverlayNavProps> {
     </Tooltip>);
   }
 
+  componentDidUpdate(prevProps: OverlayNavProps) {
+    if (this.props.snackbarMessage !== prevProps.snackbarMessage) {
+      const validMessage = !!this.props.snackbarMessage;
+      this.setState({ snackbarOpen: validMessage });
+    }
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -127,6 +148,16 @@ class OverlayNav extends React.Component<OverlayNavProps> {
             {this.createNavButton('/about', 'About', (<Help />))}
           </Paper>
         </div>
+        <Snackbar
+          anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+          autoHideDuration={5000}
+          open={this.state.snackbarOpen}
+          onClose={() => this.setState({ snackbarOpen: false })}
+        >
+          <SnackbarContent classes={{ message: this.props.classes.snackbarMessage }}
+            message={(<span>{this.props.snackbarMessage}</span>)}>
+          </SnackbarContent>
+        </Snackbar>
       </div >
     );
   }
