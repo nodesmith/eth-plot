@@ -1,4 +1,3 @@
-import { Typography } from 'material-ui';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import { CircularProgress } from 'material-ui/Progress';
