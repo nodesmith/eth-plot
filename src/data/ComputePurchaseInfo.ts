@@ -22,6 +22,13 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
   const purchasedChunkAreaIndices = new Array<number>();
   let purchasePrice = new BigNumber(0);
 
+  if (rectToPurchase.w * rectToPurchase.h > 1000) {
+    return {
+      isValid: false,
+      errorMessage: `Plots cannot be greater than 1000 pixels`
+    };
+  }
+
   // We'll need to walk the ownership array backwards and see who we need to buy chunks from
   let remainingChunksToPurchase = [rectToPurchase];
   let i = plots.length - 1;

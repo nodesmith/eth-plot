@@ -226,7 +226,8 @@ class App extends React.Component<AppProps> {
       notificationCount: this.props.account.notificationCount,
       clearNotifications: this.clearNotifications.bind(this),
       doNavigation: to => this.doNavigation(to),
-      currentPath: this.props.history.location.pathname
+      currentPath: this.props.history.location.pathname,
+      snackbarMessage: this.props.purchase.snackbarMessage
     };
 
     const mainBodyContent = this.getMainBodyContent();

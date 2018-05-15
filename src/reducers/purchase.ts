@@ -89,6 +89,7 @@ export interface PurchaseState {
   imageValidation: InputValidation;
   showHeatmap: boolean;
   showGrid : boolean;
+  snackbarMessage: string;
 }
 
 const initialState: PurchaseState = {
@@ -109,7 +110,8 @@ const initialState: PurchaseState = {
   allowedFileTypes,
   imageValidation: validateImageFile(),
   showHeatmap: true,
-  showGrid: true
+  showGrid: true,
+  snackbarMessage: ''
 };
 
 
@@ -202,7 +204,8 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
           initialRectToPurchaseDeltas: [],
           currentTransform: null,
           imageFileInfo: action.imageFileInfo,
-          purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0'
+          purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0',
+          snackbarMessage: purchaseInfo.isValid ? '' : purchaseInfo.errorMessage
         });
 
         if (imageValidation.state === Enums.InputValidationState.SUCCESS) {
@@ -247,7 +250,8 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
       return Object.assign({}, state, {
         rectToPurchase,
         initialRectToPurchaseDeltas: rectDeltas,
-        purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0'
+        purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0',
+        snackbarMessage: purchaseInfo.isValid ? '' : purchaseInfo.errorMessage
       });
     }
     case ActionTypes.COMPLETE_PURCHASE_STEP:
@@ -278,6 +282,9 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
       });
     case ActionTypes.RESET_PURCHASE_FLOW: {
       return initialState;
+    }
+    case ActionTypes.SHOW_SNACKBAR_MESSAGE: {
+      return Object.assign({}, state, { snackbarMessage: action.message });
     }
     default:
       return state;
