@@ -52,7 +52,7 @@ contract EthGrid is Ownable {
         
         // Initialize the contract with a single block with the admin owns
         ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, new uint256[](0)));
-        data.push(ZoneData("Qmagwcphv3AYUaFx1ZXLqinDGwNRPGfs32Pvi7Vjjybd2d/img.svg", "http://www.ethplot.com/"));
+        data.push(ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "http://www.ethplot.com/"));
         setAuctionPrice(0, INITIAL_AUCTION_PRICE);
     }
 
@@ -107,12 +107,18 @@ contract EthGrid is Ownable {
         tokenIdToAuction[zoneIndex] = newPriceInWeiPerPixel;
     }
     
-    function withdraw() onlyOwner public {
-        owner.transfer(address(this).balance);
+    function withdraw(address transferTo) onlyOwner external {
+        // Prevent https://consensys.github.io/smart-contract-best-practices/known_attacks/#transaction-ordering-dependence-tod-front-running
+        require(transferTo == owner);
+
+        uint256 currentBalance = address(this).balance;
+        owner.transfer(currentBalance);
     }
 
     //----------------------Public View Functions---------------------//
     function getPlot(uint256 zoneIndex) public view returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
+        require(zoneIndex < ownership.length);
+
         uint256 price = tokenIdToAuction[zoneIndex];
         ZoneData memory zoneData = data[zoneIndex];
 

@@ -5,11 +5,15 @@ import { PlotInfo, Rect } from '../models';
 import * as PlotMath from './PlotMath';
 
 export interface PurchaseInfo {
-  chunksToPurchase: Array<Rect>;
-  chunksToPurchaseAreaIndices: Array<number>;
-  purchasePrice: string;
-  plotPrice: string;
-  feePrice: string;
+  purchaseData?: {
+    chunksToPurchase: Array<Rect>;
+    chunksToPurchaseAreaIndices: Array<number>;
+    purchasePrice: string;
+    plotPrice: string;
+    feePrice: string;
+  };
+  isValid: boolean;
+  errorMessage?: string;
 }
 
 // Computes what chunks are needed to be purchased for a particular region
@@ -42,6 +46,12 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
 
         // Add up the price of these chunks we are purchasing
         const plotBuyout = new BigNumber(currentPlot.buyoutPricePerPixelInWei).mul(chunkOverlap.w * chunkOverlap.h);
+        if (plotBuyout.equals(0)) {
+          return {
+            isValid: false,
+            errorMessage: `One of the plots is not for sale`
+          };
+        }
         purchasePrice = purchasePrice.add(plotBuyout);
 
         // Final step is to delete this chunkToPurchase (since it's accounted for) and add whatever is
@@ -73,10 +83,13 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
   const totalPrice = purchasePrice.add(feePrice);
 
   return {
-    chunksToPurchase: purchasedChunks,
-    chunksToPurchaseAreaIndices: purchasedChunkAreaIndices,
-    purchasePrice: totalPrice.toFixed(0),
-    plotPrice: purchasePrice.toFixed(0),
-    feePrice: feePrice.toFixed(0)
+    purchaseData: {
+      chunksToPurchase: purchasedChunks,
+      chunksToPurchaseAreaIndices: purchasedChunkAreaIndices,
+      purchasePrice: totalPrice.toFixed(0),
+      plotPrice: purchasePrice.toFixed(0),
+      feePrice: feePrice.toFixed(0)
+    },
+    isValid: true
   };
 }

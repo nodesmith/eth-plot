@@ -192,6 +192,11 @@ export function purchasePlot(
   activeAccount: string) {
   return async (dispatch): Promise<string> => {
     const purchaseInfo = computePurchaseInfo(rectToPurchase, plots);
+    if (!purchaseInfo.isValid) {
+      throw new Error(purchaseInfo.errorMessage);
+    }
+    
+    const purchaseData = purchaseInfo.purchaseData!;
 
     const web3 = getWeb3(contractInfo);
 
@@ -200,8 +205,8 @@ export function purchasePlot(
     const contract = await initializeContract(contractInfo);
 
     const purchase = buildArrayFromRectangles([rectToPurchase]);
-    const purchasedAreas = buildArrayFromRectangles(purchaseInfo.chunksToPurchase);
-    const purchasedAreaIndices = purchaseInfo.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
+    const purchasedAreas = buildArrayFromRectangles(purchaseData.chunksToPurchase);
+    const purchasedAreaIndices = purchaseData.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
     const initialPurchasePrice = new BigNumber(purchasePriceInWei);
     const initialBuyoutPerPixelInWeiBN = new BigNumber(initialBuyoutPerPixelInWei || 0);
 

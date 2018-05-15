@@ -31,7 +31,11 @@ export interface PlaceImageInputProps extends WithStyles {
 class PlaceImageInput extends React.Component<PlaceImageInputProps> {
   render() {
     const { classes, currentPrice } = this.props;
-    const currentPriceDescription = currentPrice ? formatEthValueToString(this.props.currentPrice) : 'No Image Selected';
+    let currentPriceDescription = currentPrice ? formatEthValueToString(this.props.currentPrice) : 'No Image Selected';
+    if (this.props.currentPrice === '0') {
+      currentPriceDescription = 'Invalid placement';
+    }
+    
     return (
       <div className={classes.root}>
         <Typography className={classes.showLabel} variant="body2">

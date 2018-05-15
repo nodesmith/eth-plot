@@ -18,7 +18,7 @@ const styles: StyleRulesCallback = theme => ({
     width: '100%',
     height: '100%',
     overflow: 'scroll',
-    userSelect: 'none'
+    userSelect: 'none',
   },
   dragging: {
     cursor: 'grabbing'
@@ -49,6 +49,11 @@ const styles: StyleRulesCallback = theme => ({
     '&:hover': {
       opacity: .6
     }
+  },
+  mainGrid: {
+    border: theme.palette.grey['600'],
+    borderWidth: 2,
+    borderStyle: 'solid'
   }
 });
 
@@ -369,7 +374,7 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
         
         onWheel={this.onWheel.bind(this)}>
 
-        <div style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
+        <div className={classes.mainGrid} style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
           <svg className={classes.svgMap} viewBox="0 0 250 250">
             {plotRects}
             {plotOverlayRects}
