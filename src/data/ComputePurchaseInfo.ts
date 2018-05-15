@@ -65,7 +65,10 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
 
         // Do a simple assertion that we never have overlapping remainingChunksToPurchase
         if (PlotMath.doAnyOverlap(remainingChunksToPurchase)) {
-          throw 'Invalid remaining chunks to purchase';
+          return {
+            isValid: false,
+            errorMessage: `Invalid state detected`
+          };
         }
       }
 
@@ -75,7 +78,10 @@ export function computePurchaseInfo(rectToPurchase: Rect, plots: Array<PlotInfo>
   }
 
   if (remainingChunksToPurchase.length > 0) {
-    throw 'AHHHHH, something went wrong';
+    return {
+      isValid: false,
+      errorMessage: `Invalid state detected`
+    };
   }
 
   // Finally, compute the fee we are charging the user. Right now this is fixed at 1% and computed by multiplying by 1000, then dividing by 
