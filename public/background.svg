@@ -1,31 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-  <g transform="matrix(1, 0, 0, 1, 500.549072, 501.097992)">
-    <rect width="1000" height="1000" style="fill: rgb(0, 70, 81);" x="-500.549" y="-501.098"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="-0.549" y="-500.001"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="99.451" y="-500.001"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="199.451" y="-501.098"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="299.451" y="-500.001"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="399.451" y="-500.001"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="-500.549" y="-500.001"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="-400.549" y="-500.001"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="-300.549" y="-501.098"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="-200.549" y="-500.001"/>
-    <rect width="50" height="998.903" style="fill: rgb(0, 191, 236);" x="-100.549" y="-500.001"/>
-  </g>
-  <g transform="matrix(0, 1, -1, 0, 1000.274536, 501.372498)" style="opacity: 0.51;">
-    <rect width="1000" height="1000" style="fill: rgb(0, 70, 81);" y="0.275" x="-501.372"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" y="1.371" x="-1.372"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" x="98.628" y="1.371"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" x="198.628" y="0.275"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" x="298.628" y="1.371"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" x="398.628" y="1.371"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" y="1.371" x="-501.372"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" x="-401.372" y="1.371"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" x="-301.372" y="0.275"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" x="-201.372" y="1.371"/>
-    <rect width="50" height="998.904" style="fill: rgb(0, 191, 236);" x="-101.372" y="1.371"/>
-  </g>
-  <rect width="1000" height="1000" style="fill: rgb(255, 255, 255); mix-blend-mode: screen; opacity: 0.7;"/>
   <rect width="1000" height="1000" style="fill: rgb(197, 208, 207); paint-order: stroke; stroke-width: 5;"/>
 </svg>
