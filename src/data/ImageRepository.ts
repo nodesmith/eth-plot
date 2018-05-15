@@ -33,6 +33,9 @@ async function getUnavailableImage(): Promise<Blob> {
 export async function loadFromIpfsOrCache(ipfsHash: string, ipfsHost: string = 'https://ipfs.infura.io/ipfs'): Promise<Blob> {
   initialize();
   const cachedData = await localforage.getItem<Blob>(ipfsHash);
+
+  await new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+
   if (cachedData) {
     console.log(`Got cached version of ${ipfsHash}`);
     return cachedData;
