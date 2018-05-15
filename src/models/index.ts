@@ -1,5 +1,3 @@
-
-import { Rect } from './Rect';
 export * from './Rect';
 export * from './UserTransaction';
 export * from './PlotInfo';

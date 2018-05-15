@@ -3,7 +3,6 @@ import Button from 'material-ui/Button/Button';
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
 import { LinearProgress } from 'material-ui/Progress';
 import Typography from 'material-ui/Typography/Typography';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import { PurchaseStage } from '../constants/Enums';
@@ -55,7 +54,7 @@ class PurchaseDialog extends React.Component<PurchaseDialogProps> {
   }
 
   render() {
-    const { classes, isShowing, purchaseStage } = this.props;
+    const { isShowing, purchaseStage } = this.props;
     if (!isShowing) {
       return null;
     }

@@ -1,9 +1,7 @@
 import { applyMiddleware, compose, createStore, Middleware, Store, StoreEnhancerStoreCreator } from 'redux';
-import { createLogger } from 'redux-logger';
 import * as reduxThunk from 'redux-thunk';
 
-import DevTools from '../containers/DevTools';
-import reducers, { RootState } from '../reducers';
+import { RootState } from '../reducers';
 import index from '../reducers/index';
 
 const finalCreateStore = compose(

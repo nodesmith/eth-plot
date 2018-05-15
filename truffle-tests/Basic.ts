@@ -1,8 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { assert } from 'chai';
-import { beforeEach } from 'mocha';
 import { Store } from 'redux';
-import * as sinon from 'sinon';
 import * as Web3 from 'web3';
 
 import { promisify } from '../gen-src/typechain-runtime';

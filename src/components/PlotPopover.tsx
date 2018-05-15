@@ -3,11 +3,10 @@ import { BigNumber } from 'bignumber.js';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
 import Button from 'material-ui/Button';
-import Card, { CardActions, CardContent, CardHeader, CardMedia } from 'material-ui/Card';
+import Card, { CardActions, CardContent, CardHeader } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
 import * as moment from 'moment';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import { formatEthValueToString } from '../data/ValueFormatters';

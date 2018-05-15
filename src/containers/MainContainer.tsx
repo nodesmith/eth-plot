@@ -1,18 +1,23 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 import * as Actions from '../actions';
 import MainControlsOverlay, { MainControlsOverlayProps } from '../components/MainControlsOverlay';
-import PurchaseDialog, { PurchaseDialogProps } from '../components/PurchaseDialog';
+import PurchaseDialog from '../components/PurchaseDialog';
 import UIGrid, { UIGridProps } from '../components/UIGrid';
-import * as Enums from '../constants/Enums';
-import { 
-  ContractInfo, GridInfo, HoleInfo, ImageFileInfo, InputValidation,
-  PlotInfo, Point, PurchaseEventInfo, Rect, RectTransform } from '../models';
+import {
+  ContractInfo,
+  GridInfo,
+  HoleInfo,
+  ImageFileInfo,
+  InputValidation,
+  PlotInfo,
+  Point,
+  PurchaseEventInfo,
+  Rect,
+  RectTransform,
+} from '../models';
 
 const styles: StyleRulesCallback = theme => ({
   root: {

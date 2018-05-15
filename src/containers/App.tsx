@@ -1,7 +1,4 @@
-import { Typography } from 'material-ui';
-import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import { CircularProgress } from 'material-ui/Progress';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Route, RouteComponentProps, Switch } from 'react-router-dom';
@@ -12,9 +9,8 @@ import * as AccountActions from '../actionCreators/AccountActions';
 import * as DataActions from '../actionCreators/DataActions';
 import * as GridActions from '../actionCreators/GridActions';
 import * as PurchaseActions from '../actionCreators/PurchaseActions';
-import { getWeb3, isUsingMetamask } from '../actionCreators/Web3Actions';
+import { getWeb3 } from '../actionCreators/Web3Actions';
 import About from '../components/About';
-import FloatingLogo from '../components/FloatingLogo';
 import LoadingStatus from '../components/LoadingStatus';
 import MetaMaskStatus from '../components/MetaMaskStatus';
 import OverlayNav, { OverlayNavProps } from '../components/OverlayNav';
@@ -23,20 +19,8 @@ import { ContractInfo } from '../models';
 import * as Reducers from '../reducers';
 
 import AccountManagerContainer from './AccountManagerContainer';
-import MainContainer, { MainContainerProps } from './MainContainer';
+import MainContainer from './MainContainer';
 import TransactionManagerContainer from './TransactionManagerContainer';
-
-interface AppDataProps {
-  account: Reducers.AccountState;
-  data: Reducers.DataState;
-  grid: Reducers.GridState;
-  purchase: Reducers.PurchaseState;
-  purchaseDialog: Reducers.PurchaseDialogState;
-}
-
-interface AppActionProps {
-  actions: AllActions;
-} 
 
 export interface AppProps extends RouteComponentProps<any> {
   account: Reducers.AccountState;
@@ -46,9 +30,6 @@ export interface AppProps extends RouteComponentProps<any> {
   purchaseDialog: Reducers.PurchaseDialogState;
   actions: AllActions;
 }
-
-// export type AppProps = AppDataProps & AppActionProps extends;
-
 
 /**
  * It is common practice to have a 'Root' container/component require our main App (this one).

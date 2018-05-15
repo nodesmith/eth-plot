@@ -190,7 +190,6 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
     // tslint:disable-next-line:one-variable-per-declaration
     let top = 0, left = 0, bottom = 0, right = 0;
 
-    const rect = Object.assign({}, this.props.rectToPurchase);
     switch (this.props.currentTransform.transformAction) {
       case MovementActions.DRAG:
         left = right = deltaX;
@@ -313,14 +312,6 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
       position: 'fixed'
     };
 
-    const overlayStyle: React.CSSProperties = {
-      position: 'absolute',
-      width: this.props.gridInfo.width * scale,
-      height: this.props.gridInfo.height * scale,
-      left: 0,
-      top: 0
-    };
-
     let overlay: JSX.Element | undefined = undefined;
     if (this.props.inPurchaseMode && this.props.imageToPurchase) {
       overlay = (
@@ -405,7 +396,7 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
 
   onWheel(event: WheelEvent): void {
     event.stopPropagation();
-    const { clientX, clientY, deltaY, deltaMode } = event;
+    const { deltaY } = event;
     this.props.actions.changeZoom(-deltaY / 400);
   }
 }

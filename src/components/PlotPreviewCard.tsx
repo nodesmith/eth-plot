@@ -1,6 +1,5 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import { PixelStatus } from './PlotInfo';

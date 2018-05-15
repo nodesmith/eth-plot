@@ -1,9 +1,7 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import * as PropTypes from 'prop-types';
-import * as React from 'react';
-
 import ButtonBase from 'material-ui/ButtonBase';
 import Paper from 'material-ui/Paper';
+import * as React from 'react';
 
 const styles: StyleRulesCallback = theme => ({
   root: {}, // Intentionally Empty
