@@ -216,31 +216,32 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
       return Object.assign({}, state, {
         currentTransform: null
       });
-    case ActionTypes.TRANSFORM_RECT_TO_PURCHASE:
-      {
-        const previousDeltaIndex = state.initialRectToPurchaseDeltas.length - 1;
-        const previousDelta = state.initialRectToPurchaseDeltas[previousDeltaIndex];
-        if (deltasEqual(action.delta, previousDelta)) {
-          console.log('deltas equal');
-          return state;
-        }
+    case ActionTypes.TRANSFORM_RECT_TO_PURCHASE: {
+      const previousDeltaIndex = state.initialRectToPurchaseDeltas.length - 1;
+      const previousDelta = state.initialRectToPurchaseDeltas[previousDeltaIndex];
+      if (deltasEqual(action.delta, previousDelta)) {
+        return state;
+      }
 
       // Clone the array
-        const rectDeltas = state.initialRectToPurchaseDeltas.slice(0);
-        rectDeltas[previousDeltaIndex] = action.delta;
+      const rectDeltas = state.initialRectToPurchaseDeltas.slice(0);
+      rectDeltas[previousDeltaIndex] = action.delta;
 
       // Apply all the deltas to get our new rect
-        const rectToPurchase = rectDeltas.reduce((rect, delta) => addDelta(rect, delta), state.initialRectToPurchase!);
-
-      // Recompute how much this will cost
-        const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
-
-        return Object.assign({}, state, {
-          rectToPurchase,
-          initialRectToPurchaseDeltas: rectDeltas,
-          purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0'
-        });
+      const rectToPurchase = rectDeltas.reduce((rect, delta) => addDelta(rect, delta), state.initialRectToPurchase!);
+      if (rectToPurchase.x < 0 || rectToPurchase.y < 0 || rectToPurchase.x2 > 250 || rectToPurchase.y2 > 250 || rectToPurchase.w < 1 || rectToPurchase.h < 1) {
+        return state;
       }
+
+        // Recompute how much this will cost
+      const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
+
+      return Object.assign({}, state, {
+        rectToPurchase,
+        initialRectToPurchaseDeltas: rectDeltas,
+        purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0'
+      });
+    }
     case ActionTypes.COMPLETE_PURCHASE_STEP:
       return completePurchaseStep(state, action.index);
     case ActionTypes.GO_TO_PURCHASE_STEP:

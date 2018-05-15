@@ -8,8 +8,7 @@ import { Rect } from '../models';
 const styles: StyleRulesCallback = theme => ({
   wrapper: {
     position: 'absolute',
-    pointerEvents: 'auto',
-    userDrag: 'none'
+    pointerEvents: 'auto'
   }
 });
 
@@ -21,8 +20,9 @@ export interface PurchasePlotProps extends WithStyles {
 }
 
 class PurchasePlot extends React.Component<PurchasePlotProps> {
+  onDragStart(movement, e) {
+    e.preventDefault();
 
-  overlayMouseDown(movement, e) {
     const scale = this.props.scale;
     const x = (e.clientX - e.target.parentElement.parentElement.getBoundingClientRect().x) / scale;
     const y = (e.clientY - e.target.parentElement.parentElement.getBoundingClientRect().y) / scale;
@@ -30,13 +30,6 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
     e.stopPropagation();
 
     this.props.startAction(x, y, movement);
-  }
-
-  overlayMouseMove(movement, e) {
-
-  }
-
-  overlayMouseUp(e) {
   }
 
   render() {
@@ -126,12 +119,11 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
 
     const controls = controlItems.map((item) => {
       return (<div
+        draggable={true}
         key={item.movement}
         style={item.style} 
         className={item.className}
-        onMouseDown={this.overlayMouseDown.bind(this, item.movement)}
-        onMouseMove={this.overlayMouseMove.bind(this, item.movement)}
-        onMouseUp={this.overlayMouseUp.bind(this, item.movement)}
+        onDragStart={this.onDragStart.bind(this, item.movement)}
       ></div>);
     });
 

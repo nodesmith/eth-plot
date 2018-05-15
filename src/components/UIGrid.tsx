@@ -323,26 +323,6 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
 
     let overlay: JSX.Element | undefined = undefined;
     if (this.props.inPurchaseMode && this.props.imageToPurchase) {
-
-      let purchasePlotRect: Rect | undefined;
-      if (this.props.dragRectCurr && this.props.dragRectStart) {
-        purchasePlotRect = {
-          x: Math.min(this.props.dragRectCurr.x, this.props.dragRectStart.x),
-          y: Math.min(this.props.dragRectCurr.y, this.props.dragRectStart.y),
-          w: Math.abs(this.props.dragRectCurr.x - this.props.dragRectStart.x),
-          h: Math.abs(this.props.dragRectCurr.y - this.props.dragRectStart.y),
-          x2: 0,
-          y2: 0
-        };
-
-        purchasePlotRect.x2 = purchasePlotRect.x + purchasePlotRect.w;
-        purchasePlotRect.y2 = purchasePlotRect.y + purchasePlotRect.h;
-
-        if (!this.props.isDraggingRect && purchasePlotRect.w === 0 && purchasePlotRect.h === 0) {
-          purchasePlotRect = undefined;
-        }
-      }
-
       overlay = (
         <div className={this.props.classes.overlay}
           style={gridStyle} onMouseMove={this.overlayMouseMove.bind(this)} onMouseUp={this.overlayMouseUp.bind(this)}>
