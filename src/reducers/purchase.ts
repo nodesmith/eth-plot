@@ -194,7 +194,7 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
           initialRectToPurchaseDeltas: [],
           currentTransform: null,
           imageFileInfo: action.imageFileInfo,
-          purchasePriceInWei: purchaseInfo.purchasePrice
+          purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0'
         });
 
         if (imageValidation.state === Enums.InputValidationState.SUCCESS) {
@@ -238,7 +238,7 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
         return Object.assign({}, state, {
           rectToPurchase,
           initialRectToPurchaseDeltas: rectDeltas,
-          purchasePriceInWei: purchaseInfo.purchasePrice
+          purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0'
         });
       }
     case ActionTypes.COMPLETE_PURCHASE_STEP:
