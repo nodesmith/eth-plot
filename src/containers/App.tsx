@@ -30,7 +30,6 @@ interface AppDataProps {
   grid: Reducers.GridState;
   purchase: Reducers.PurchaseState;
   purchaseDialog: Reducers.PurchaseDialogState;
-  imageToPurchase: Reducers.ImageToPurchaseState;
 }
 
 interface AppActionProps {
@@ -43,7 +42,6 @@ export interface AppProps extends RouteComponentProps<any> {
   grid: Reducers.GridState;
   purchase: Reducers.PurchaseState;
   purchaseDialog: Reducers.PurchaseDialogState;
-  imageToPurchase: Reducers.ImageToPurchaseState;
   actions: AllActions;
 }
 
@@ -181,7 +179,7 @@ class App extends React.Component<AppProps> {
         showHeatmap: purchase.showHeatmap,
         showGrid: purchase.showGrid
       },
-      imageFileInfo: this.props.imageToPurchase.imageFileInfo,
+      imageFileInfo: this.props.purchase.imageFileInfo,
       plots: this.props.data.plots,
       plotTransactions: this.props.data.plotTransactions,
       holes: this.props.data.holes,
@@ -199,7 +197,9 @@ class App extends React.Component<AppProps> {
         closePlotPurchase: actions.closePlotPurchase,
         purchaseStage: this.props.purchaseDialog.purchaseStage,
         isShowing: this.props.purchaseDialog.isShowing
-      }
+      },
+      lowPlotPrice: this.props.data.lowPlotPrice,
+      highPlotPrice: this.props.data.highPlotPrice,
     };
 
 
@@ -287,7 +287,6 @@ function mapStateToProps(state: Reducers.RootState) {
     data: state.data,
     grid: state.grid,
     purchase: state.purchase,
-    imageToPurchase: state.imageToPurchase,
     purchaseDialog: state.purchaseDialog
   };
 }

@@ -11,6 +11,7 @@ import * as React from 'react';
 import * as Actions from '../actions';
 import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
 
+import HeatMapLegend from './HeatMapLegend';
 import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
 
 const padding = 24;
@@ -23,13 +24,6 @@ const styles: StyleRulesCallback = theme => ({
     top: 0,
     pointerEvents: 'none'
   },
-  zoom: {
-    left: padding,
-    bottom: padding,
-    position: 'fixed',
-    display: 'inline',
-    pointerEvents: 'all',
-  },
   purchase: {
     right: padding,
     bottom: padding,
@@ -39,6 +33,13 @@ const styles: StyleRulesCallback = theme => ({
   drawer: {
     width: 400,
     pointerEvents: 'all'
+  },
+  heatmapLegend: {
+    left: padding,
+    bottom: padding,
+    position: 'fixed',
+    display: 'inline',
+    pointerEvents: 'all',
   }
 });
 
@@ -80,6 +81,9 @@ export interface MainControlsOverlayProps extends WithStyles {
   plots: Array<PlotInfo>;
   togglePurchaseFlow: () => void;
   activeAccount: string;
+  showHeatmap: boolean;
+  lowPlotPrice: string;
+  highPlotPrice: string;
 }
 
 class MainControlsOverlay extends React.Component<MainControlsOverlayProps> {
@@ -109,6 +113,11 @@ class MainControlsOverlay extends React.Component<MainControlsOverlayProps> {
           <Button variant="fab" aria-label="buy plot" className={classes.purchase} onClick={() => this.toggleDrawer()}>
             <ShoppingCart />
           </Button>
+        </Slide>
+        <Slide in={this.props.showHeatmap} direction="up">
+          <div className={classes.heatmapLegend} >
+           <HeatMapLegend minPrice={this.props.lowPlotPrice} maxPrice={this.props.highPlotPrice} classes={{}}/>
+          </div>
         </Slide>
         <Drawer classes={{
           paper: classes.drawer

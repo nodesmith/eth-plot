@@ -147,6 +147,8 @@ export interface UIGridProps extends WithStyles {
 
   showHeatmap: boolean;
   showGrid: boolean;
+  lowPlotPrice: string;
+  highPlotPrice: string;
 }
 
 class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
@@ -274,21 +276,9 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
         onClick={(event) => this.plotClicked(plot.zoneIndex, event.target as HTMLElement)}/>);
     });
 
-
-    // Compute the heatmap range
-    let minPrice = new BigNumber(Number.MAX_SAFE_INTEGER);
-    let maxPrice = new BigNumber(1);
-
-    plots.forEach((plot) => {
-      const buyoutPricePerPixelInWeiBN = new BigNumber(plot.buyoutPricePerPixelInWei);
-
-      if (buyoutPricePerPixelInWeiBN.greaterThan(0)) {
-        minPrice = BigNumber.min(minPrice, buyoutPricePerPixelInWeiBN);
-        maxPrice = BigNumber.max(maxPrice, buyoutPricePerPixelInWeiBN);
-      }
-    });
-
     // Build up the heatmap, interpolating the colors from the d3Palette
+    const minPrice = new BigNumber(this.props.lowPlotPrice);
+    const maxPrice = new BigNumber(this.props.highPlotPrice);
     const priceRange = maxPrice.minus(minPrice);
     const heatMapRects = buildSvgComponents(plots, plotTransactions, holes, 'heatmap', (plot, plotTransaction, holes, index, props) => {
       const buyoutPricePerPixelInWeiBN = new BigNumber(plot.buyoutPricePerPixelInWei);

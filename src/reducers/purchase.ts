@@ -267,6 +267,9 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
       return Object.assign({}, state, {
         showGrid: action.show
       });
+    case ActionTypes.RESET_PURCHASE_FLOW: {
+      return initialState;
+    }
     default:
       return state;
   }
