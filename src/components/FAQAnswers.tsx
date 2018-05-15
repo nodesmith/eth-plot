@@ -121,7 +121,7 @@ export const gameplayAnswer3 = () => (
 
 export const gameplayAnswer4 = () => (
   <Typography variant="body2">
-    There is a small fee when purchasing a plot through the Eth Plot UI (just 2%).  The UI is provided as a conenvience
+    There is a small fee when purchasing a plot through the Eth Plot UI (just 1%).  The UI is provided as a conenvience
     to users, but any user is more than welcome to interact directly with the Eth Plot smart contract and 
     avoid the fees entirely.  
   </Typography>

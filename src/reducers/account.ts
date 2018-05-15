@@ -7,9 +7,9 @@ export interface AccountState {
   metamaskStateKnown: boolean;
   metamaskState: Enums.METAMASK_STATE;
   activeAccount: string;
-  userTransactions: { [hash: string]: UserTransaction[] };
+  userTransactions: { [hash: string]: UserTransaction };
   notificationCount: number;
-  isFetchingTransactions: boolean;
+  isLoadingData: boolean;
 }
 
 const initialState: AccountState = {
@@ -18,7 +18,7 @@ const initialState: AccountState = {
   activeAccount: '',
   userTransactions: {},
   notificationCount: 0,
-  isFetchingTransactions: false
+  isLoadingData: false
 };
 
 export function accountReducer(state: AccountState = initialState, action: Action): AccountState {
@@ -36,17 +36,13 @@ export function accountReducer(state: AccountState = initialState, action: Actio
       return Object.assign({}, state, { activeAccount: action.newActiveAccount });
     case ActionTypes.ADD_TRANSACTION:
       const userTransactionsCopy = Object.assign({}, state.userTransactions);
-
-      if (!userTransactionsCopy[action.txHash]) {
-        userTransactionsCopy[action.txHash] = [];
-      }
       
-      userTransactionsCopy[action.txHash].push({ 
+      userTransactionsCopy[action.uniqueEventHash] = { 
         txType: action.txType,
         txStatus: action.txStatus,
         blockNumber: action.blockNumber,
         txHash: action.txHash
-      });
+      };
 
       // Only queue a notification if this isn't being read from onChain
       const newNotificationCount = (action.isNew) ? state.notificationCount + 1 : state.notificationCount;
@@ -58,9 +54,9 @@ export function accountReducer(state: AccountState = initialState, action: Actio
     case ActionTypes.CLEAR_NOTIFICATION_COUNT:
       return Object.assign({}, state, { notificationCount: 0 });
     case ActionTypes.LOAD_TRANSACTIONS:
-      return Object.assign({}, state, { isFetchingTransactions: true, userTransactions: {} });
+      return Object.assign({}, state, { isLoadingData: true, userTransactions: {} });
     case ActionTypes.LOAD_TRANSACTIONS_DONE:
-      return Object.assign({}, state, { isFetchingTransactions: false });
+      return Object.assign({}, state, { isLoadingData: false });
     default:
       return state;
   }

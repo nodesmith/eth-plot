@@ -7,6 +7,7 @@ import * as Web3 from 'web3';
 
 import { promisify } from '../gen-src/typechain-runtime';
 import { EthGrid } from '../gen-src/EthGrid';
+import * as AccountActions from '../src/actionCreators/AccountActions';
 import * as DataActions from '../src/actionCreators/DataActions';
 import { changePurchaseStep } from '../src/actionCreators/PurchaseActions';
 import { computePurchaseInfo } from '../src/data/ComputePurchaseInfo';
@@ -21,11 +22,15 @@ const web3: Web3 = (global as any).web3;
 const ethGridContract = artifacts.require<EthGrid>('./EthGrid.sol');
 const STANDARD_GAS = '2000000';
 
-const initializeStoreAndLoadPlots = async (contractAddress: string, web3Provider: string): Promise<Store<RootState>> => {
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+const initializeStoreAndLoadPlots = async (contractAddress: string, web3Provider: string, currentAddress: string): Promise<Store<RootState>> => {
   const store = configureStore();
   store.dispatch(DataActions.setWeb3Config({ contractAddress, web3Provider }));
   
-  const loadDataThunk = DataActions.fetchPlotsFromWeb3(store.getState().data.contractInfo);
+  const loadDataThunk = AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, currentAddress);
   await loadDataThunk(store.dispatch);
 
   return store;
@@ -44,7 +49,11 @@ contract('EthGrid', (accounts: string[]) => {
     ethGrid = await EthGrid.createAndValidate(web3, deployed.address);
 
     const provider = web3.currentProvider.host;
-    store = await initializeStoreAndLoadPlots(ethGrid.address, provider);
+    store = await initializeStoreAndLoadPlots(ethGrid.address, provider, accounts[0]);
+  });
+
+  afterEach(async () => {
+    await AccountActions.unregisterEventListners();
   });
 
   it('Contract initialized as expected', async () => {
@@ -83,7 +92,9 @@ contract('EthGrid', (accounts: string[]) => {
     const transactionHash = await purchaseAction(store.dispatch);
 
     // Reload the data and make sure that we have the right number of plots and right owners
-    await DataActions.fetchPlotsFromWeb3(store.getState().data.contractInfo)(store.dispatch);
+    await AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, buyerAccount)(store.dispatch);
+    await timeout(1000); // wait for dispatch events to repopulate store
+
     const loadedPlots = store.getState().data.plots;
     assert.equal(loadedPlots.length, 2);
     assert.deepEqual(loadedPlots[1].rect, rectToPurchase);
