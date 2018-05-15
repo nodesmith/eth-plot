@@ -5,7 +5,7 @@ import { UserTransaction } from '../models';
 
 export interface TransactionManagerContainerProps {
   metamaskState: number;
-  userTransactions: { [hash: string]: UserTransaction[] };
+  userTransactions: { [hash: string]: UserTransaction };
 }
 
 class TransactionManagerContainer extends React.Component<TransactionManagerContainerProps> {
@@ -18,18 +18,9 @@ class TransactionManagerContainer extends React.Component<TransactionManagerCont
       else return -1;
     };
 
-    // Because there can be multiple transactions for each txHash 
-    // (the case where a user buys a plot or plots from themeselves), we flatten
-    // the each list into one flat transactions list.
-    const flattenedTransactions: UserTransaction[] = [];
-    Object.values(this.props.userTransactions).forEach((transactions: UserTransaction[]) => {
-      transactions.forEach((tx: UserTransaction) => {
-        flattenedTransactions.push(tx);
-      });
-    });
+    const transactionArray = Object.values(this.props.userTransactions);
+    const sortedTransactions = transactionArray.concat().sort(comparator);
     
-    const sortedTransactions = flattenedTransactions.concat().sort(comparator);
-
     return (
       <TransactionManager 
         metamaskState={this.props.metamaskState}

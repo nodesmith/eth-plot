@@ -112,15 +112,13 @@ class App extends React.Component<AppProps> {
   // Fetches all data needed for application - this happens when the app
   // first loads and also when metamask state changes
   appDataBootstrap(activeAccount: string) {  
-    this.props.actions.fetchPlotsFromWeb3(this.props.data.contractInfo);
-    this.props.actions.fetchAccountTransactions(this.props.data.contractInfo, activeAccount);
+    this.props.actions.loadAndWatchEvents(this.props.data.contractInfo, activeAccount);
   }
 
   // Returns true if we have finished loading all the data we need to and 
   // know the current user's metamask state.
   shouldShowSpinner() {
-    return (this.props.data.isFetchingPlots ||
-            this.props.account.isFetchingTransactions ||
+    return (this.props.account.isLoadingData ||
             !this.props.account.metamaskStateKnown);
   }
 

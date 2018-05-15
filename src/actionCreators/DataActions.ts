@@ -33,12 +33,6 @@ export function addPlot(newPlot) {
   };
 }
 
-export function loadPlots() {
-  return {
-    type: ActionTypes.LOAD_PLOTS
-  };
-}
-
 export function plotListed(txHash, zoneIndex) {
   return {
     type: ActionTypes.PLOT_LISTED,
@@ -47,9 +41,9 @@ export function plotListed(txHash, zoneIndex) {
   };
 }
 
-export function doneLoadingPlots() {
+export function clearPlots() {
   return {
-    type: ActionTypes.LOAD_PLOTS_DONE
+    type: ActionTypes.CLEAR_PLOTS
   };
 }
 
@@ -91,27 +85,7 @@ export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Actio
   };
 }
 
-// This is gonna be a thunk action!
-export function fetchPlotsFromWeb3(contractInfo) {
-  const web3 = getWeb3(contractInfo);
-  return async (dispatch) => {
-    dispatch(loadPlots());
-
-    // We need to get a handle to the actual instance of our running contract and figure out the current ownership info
-    const contract = await initializeContract(contractInfo);
-
-    const ownershipLengthBn: BigNumber = await contract.ownershipLength;
-    const ownershipLength = ownershipLengthBn.toNumber();
-
-    for (let i = 0; i < ownershipLength; i++) {
-      await addPlotToGrid(contract, i, contractInfo, dispatch);
-    }
-
-    dispatch(doneLoadingPlots());
-  };
-}
-
-export async function addPlotToGrid(contract: EthGrid, plotIndex: number, contractInfo: ContractInfo, dispatch: Dispatch<{}>) {
+export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispatch: Dispatch<{}>) {
   const plotInfo = await contract.getPlot(plotIndex);
 
   const ipfsHash = plotInfo[7];
@@ -161,7 +135,9 @@ export function updateAuction(contractInfo: ContractInfo, zoneIndex: number, new
     const transactionReceipt = await tx.send(txObject);
 
     const txStatus = Enums.TxStatus.PENDING;
-    dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.AUCTION, txStatus, Number.MAX_SAFE_INTEGER, true));
+    const uniqueEventHash = AccountActions.computeUniqueEventHash(Enums.TxType.AUCTION, transactionReceipt);
+    dispatch(AccountActions.addTransaction(uniqueEventHash, transactionReceipt, Enums.TxType.AUCTION, 
+                                            txStatus, Number.MAX_SAFE_INTEGER, true));
     return transactionReceipt;
   };
 }
@@ -225,7 +201,9 @@ export function purchasePlot(
       const transactionReceipt = await tx.send(txObject);
 
       const txStatus = Enums.TxStatus.PENDING;
-      dispatch(AccountActions.addTransaction(transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
+      const uniqueEventHash = AccountActions.computeUniqueEventHash(Enums.TxType.PURCHASE, transactionReceipt);
+      dispatch(AccountActions.addTransaction(uniqueEventHash, transactionReceipt, 
+                                              Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
       dispatch(togglePurchaseFlow());
       dispatch(changePurchaseStep(Enums.PurchaseStage.USER_CONFIRM));
       dispatch(resetPurchaseFlow());

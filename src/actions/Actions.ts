@@ -5,18 +5,16 @@ import { ContractInfo, ImageFileInfo, PlotInfo, Point, Rect, RectDelta } from '.
 // Account Actions
 export type updateMetamaskState = (newState: Enums.METAMASK_STATE) => void;
 export type updateActiveAccount = (newActiveAccount: string) => void;
-export type addTransaction = (txHash: string, txType: Enums.TxType, txStatus: Enums.TxStatus, blockNumber: number, isNew: boolean) => void;
+export type addTransaction = (uniqueEventHash: string, txHash: string, txType: Enums.TxType,
+                                txStatus: Enums.TxStatus, blockNumber: number, isNew: boolean) => void;
 export type clearNotificationCount = () => void;
 export type loadTransactions = () => void;
 export type doneLoadingTransactions = () => void;
-export type fetchAccountTransactions = (contractInfo: ContractInfo, currentAddress: string) => void;
+export type loadAndWatchEvents = (contractInfo: ContractInfo, currentAddress: string) => void;
 
 // Data Actions
 export type addPlot = (newPlot: PlotInfo) => void;
-export type loadPlots = () => void;
 export type plotListed = (txHash: string, zoneIndex: number) => void;
-export type doneLoadingPlots = () => void;
-export type fetchPlotsFromWeb3 = (contractInfo: ContractInfo) => void;
 export type updateAuction = (contractInfo: ContractInfo, zoneIndex: number, newPrice: string, activeAccount: string) => void;
 export type purchasePlot = 
   (contractInfo: ContractInfo,
@@ -77,12 +75,9 @@ export interface AllActions {
   clearNotificationCount: clearNotificationCount;
   loadTransactions: loadTransactions; 
   doneLoadingTransactions: doneLoadingTransactions;
-  fetchAccountTransactions: fetchAccountTransactions;
+  loadAndWatchEvents: loadAndWatchEvents;
   addPlot: addPlot;
-  loadPlots: loadPlots;
   plotListed: plotListed;
-  doneLoadingPlots: doneLoadingPlots;
-  fetchPlotsFromWeb3: fetchPlotsFromWeb3;
   updateAuction: updateAuction;
   purchasePlot: purchasePlot;
   loadBlockInfo: loadBlockInfo;

@@ -11,7 +11,6 @@ import { ContractInfo, HoleInfo, PlotInfo, PurchaseEventInfo, Rect } from '../mo
 
 
 export interface DataState {
-  isFetchingPlots: boolean;
   numberOfPlots: number;
   plots: Array<PlotInfo>;
   plotTransactions: {[plotIndex: number]: PurchaseEventInfo};
@@ -31,7 +30,6 @@ const getInitialState = () => {
   const contractInfo = Web3Config.getWeb3Config();
   
   const initialState: DataState = {
-    isFetchingPlots: true,
     numberOfPlots: 0,
     plots: [],
     plotTransactions: {
@@ -85,10 +83,6 @@ export function dataReducer(state: DataState, action: Action): DataState {
       newState.plots.push(action.newPlot);
       return newState;
     }
-    case ActionTypes.LOAD_PLOTS:
-      return Object.assign({}, state, { isFetchingPlots: true, plots: [], newHoles: {} });
-    case ActionTypes.LOAD_PLOTS_DONE:
-      return Object.assign({}, state, { isFetchingPlots: false });
     case ActionTypes.PLOT_LISTED: {
       const newState = Object.assign({}, state);
       newState.plots[action.zoneIndex].txHash = action.txHash;
@@ -121,6 +115,9 @@ export function dataReducer(state: DataState, action: Action): DataState {
     }
     case ActionTypes.RESET_PURCHASE_FLOW: {
       return Object.assign({}, state, { purchaseInfo: getInitialState().purchaseInfo });
+    }
+    case ActionTypes.CLEAR_PLOTS: {
+      return Object.assign({}, state, { plots: [] });
     }
     default:
       return state;
