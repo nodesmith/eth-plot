@@ -46,7 +46,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'Eth Plot'
     }),
-    new HtmlWebpackIncludeAssetsPlugin({ assets: ['main.css', 'config.js'], append: false }),
+    new HtmlWebpackIncludeAssetsPlugin({
+      jsExtensions: ['.js', 'js'],
+      assets: ['https://www.googletagmanager.com/gtag/js?id=UA-119302324-1', 'ga.js', 'main.css', 'config.js'],
+      append: false }),
     new ForkTsCheckerWebpackPlugin(),
     new FaviconsWebpackPlugin('./public/favicon.png')],
   devServer: {
