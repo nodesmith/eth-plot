@@ -13,7 +13,6 @@ const styles: StyleRulesCallback = theme => ({
   root: {
     padding: theme.spacing.unit,
     paddingBottom: 0
-    // width: 220
   },
   gradient: {
     stroke: theme.palette.grey['800'],
@@ -38,10 +37,6 @@ export interface HeatMapLegendProps extends WithStyles {
 class HeatMapLegend extends React.Component<HeatMapLegendProps> {
   render() {
     const { classes } = this.props;
-
-    const priceRange = new BigNumber(this.props.maxPrice).minus(new BigNumber(this.props.minPrice));
-    // const value = new BigNumber(1).minus(aboveMin.div(priceRange));
-    // const color = d3Palette.schemeRdYlGn[11];
 
     const minLabel = formatEthValueToString(this.props.minPrice);
     const maxLabel = formatEthValueToString(this.props.maxPrice);

@@ -228,7 +228,6 @@ export function purchasePlot(
     } catch (e) {
       dispatch(togglePurchaseFlow());
       dispatch(changePurchaseStep(Enums.PurchaseStage.ERROR));
-      dispatch(resetPurchaseFlow());
       return '';
     }
   };

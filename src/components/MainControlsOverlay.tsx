@@ -24,13 +24,6 @@ const styles: StyleRulesCallback = theme => ({
     top: 0,
     pointerEvents: 'none'
   },
-  zoom: {
-    left: padding,
-    bottom: padding,
-    position: 'fixed',
-    display: 'inline',
-    pointerEvents: 'all',
-  },
   purchase: {
     right: padding,
     bottom: padding,
