@@ -233,7 +233,7 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
         return state;
       }
 
-        // Recompute how much this will cost
+      // Recompute how much this will cost
       const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
 
       return Object.assign({}, state, {
