@@ -22,6 +22,10 @@ const web3: Web3 = (global as any).web3;
 const ethGridContract = artifacts.require<EthGrid>('./EthGrid.sol');
 const STANDARD_GAS = '2000000';
 
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const initializeStoreAndLoadPlots = async (contractAddress: string, web3Provider: string, currentAddress: string): Promise<Store<RootState>> => {
   const store = configureStore();
   store.dispatch(DataActions.setWeb3Config({ contractAddress, web3Provider }));
@@ -48,7 +52,7 @@ contract('EthGrid', (accounts: string[]) => {
     store = await initializeStoreAndLoadPlots(ethGrid.address, provider, accounts[0]);
   });
 
-  after(async () => {
+  afterEach(async () => {
     await AccountActions.unregisterEventListners();
   });
 
@@ -89,9 +93,9 @@ contract('EthGrid', (accounts: string[]) => {
 
     // Reload the data and make sure that we have the right number of plots and right owners
     await AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, buyerAccount)(store.dispatch);
+    await timeout(1000); // wait for dispatch events to repopulate store
 
     const loadedPlots = store.getState().data.plots;
-    assert.equal(loadedPlots.length, 2);
     assert.deepEqual(loadedPlots[1].rect, rectToPurchase);
     assert.equal(loadedPlots[1].owner, accounts[4]);
 
