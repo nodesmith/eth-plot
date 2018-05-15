@@ -57,7 +57,7 @@ contract('EthGrid', (accounts: string[]) => {
   it('Purchase a single plot', async () => {
     const state = store.getState();
     const rectToPurchase: Rect = { x: 25, y: 40, w: 12, h: 4, x2: 37, y2: 44 };
-    const purchaseInfo = computePurchaseInfo(rectToPurchase, state.data.plots);
+    const purchaseData = computePurchaseInfo(rectToPurchase, state.data.plots).purchaseData!;
     const purchaseUrl = 'https://spacedust.io/samms_test';
     const buyoutPrice = 4000;
     const ipfsHash = 'abcxyz123';
@@ -72,7 +72,7 @@ contract('EthGrid', (accounts: string[]) => {
       state.data.contractInfo,
       state.data.plots,
       rectToPurchase,
-      purchaseInfo.purchasePrice,
+      purchaseData.purchasePrice,
       purchaseUrl,
       ipfsHash,
       buyoutPrice.toString(),
@@ -94,31 +94,31 @@ contract('EthGrid', (accounts: string[]) => {
     const balanceDifference = buyerBalanceOld.sub(buyerBalanceNew);
     const blockInfo = <Web3.BlockWithoutTransactionData>(await promisify(web3.eth.getBlock, ['latest']));
     assert.equal(transactionHash, blockInfo.transactions[0]);
-    const expectedDifference = new BigNumber(blockInfo.gasUsed).plus(new BigNumber(purchaseInfo.purchasePrice));
+    const expectedDifference = new BigNumber(blockInfo.gasUsed).plus(new BigNumber(purchaseData.purchasePrice));
     assert.equal(expectedDifference.toString(), balanceDifference.toString());
 
     const sellerBalanceNew =  await getBalance(sellerAccount);
     const sellerBalanceDifference = sellerBalanceNew.minus(sellerBalanceOld);
-    assert.equal(purchaseInfo.plotPrice, sellerBalanceDifference.toString());
+    assert.equal(purchaseData.plotPrice, sellerBalanceDifference.toString());
 
     const contractBalanceNew = await getBalance(ethGrid.address);
     const contractBalanceDifference = contractBalanceNew.minus(contractBalanceOld);
-    assert.equal(purchaseInfo.feePrice, contractBalanceDifference.toString());
+    assert.equal(purchaseData.feePrice, contractBalanceDifference.toString());
 
     // Check that the owner can withdraw the funds
     const ownerAddress = await ethGrid.owner;
     const ownerBalanceOld = await getBalance(ownerAddress);
-    const withdrawGasCost = await ethGrid.withdrawTx().estimateGas({ from: ownerAddress, gas: STANDARD_GAS });
-    await ethGrid.withdrawTx().send({ from: ownerAddress, gas: STANDARD_GAS });
+    const withdrawGasCost = await ethGrid.withdrawTx(ownerAddress).estimateGas({ from: ownerAddress, gas: STANDARD_GAS });
+    await ethGrid.withdrawTx(ownerAddress).send({ from: ownerAddress, gas: STANDARD_GAS });
     const ownerBalanceNew = await getBalance(ownerAddress);
-    assert.equal(new BigNumber(purchaseInfo.feePrice).minus(withdrawGasCost).toString(), ownerBalanceNew.minus(ownerBalanceOld).toString());
+    assert.equal(new BigNumber(purchaseData.feePrice).minus(withdrawGasCost).toString(), ownerBalanceNew.minus(ownerBalanceOld).toString());
 
     // Finally, check that we got the sold event we're expecting
     const purchaseEvents = await ethGrid.PlotSectionSoldEvent({}).get({});
     assert.equal(1, purchaseEvents.length);
     assert.equal(buyerAccount, purchaseEvents[0].args.buyer);
     assert.equal(sellerAccount, purchaseEvents[0].args.seller);
-    assert.equal(purchaseInfo.plotPrice, purchaseEvents[0].args.totalPrice.toString());
+    assert.equal(purchaseData.plotPrice, purchaseEvents[0].args.totalPrice.toString());
     assert.equal(0, purchaseEvents[0].args.zoneId);
   });
 });

@@ -44,7 +44,7 @@ export type reportGridDragging = (action: Enums.DragType, location: Point) => vo
 
 // Purchase Actions
 export type togglePurchaseFlow = () => void;
-export type purchaseImageSelected = (imageFileInfo: ImageFileInfo, plots: Array<PlotInfo>) => void;
+export type purchaseImageSelected = (imageFileInfo: ImageFileInfo, plots: Array<PlotInfo>, scale: number, centerPoint: Point) => void;
 export type transformRectToPurchase = (delta: RectDelta, plots: Array<PlotInfo>) => void;
 export type startTransformRectToPurchase = (startLocation: Point, transformAction: Enums.MovementActions) => void;
 export type stopTransformRectToPurchase = () => void;

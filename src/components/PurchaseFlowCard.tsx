@@ -12,7 +12,7 @@ import * as React from 'react';
 import * as Actions from '../actions';
 import { InputValidationState } from '../constants/Enums';
 import { formatEthValueToString } from '../data/ValueFormatters';
-import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Rect } from '../models';
+import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Point, Rect } from '../models';
 
 import BuyoutPriceInputBox from './PurchaseDialog/BuyoutPriceInputBox';
 import ChooseImageInputBox from './PurchaseDialog/ChooseImageInputBox';
@@ -88,12 +88,14 @@ export interface PurchaseFlowCardProps extends WithStyles {
   showGrid : boolean;
 
   activeAccount: string;
+  scale: number;
+  centerPoint: Point;
 }
 
 class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
 
   onImageChanged(imageFileInfo) {
-    this.props.onImageSelected(imageFileInfo, this.props.plots);
+    this.props.onImageSelected(imageFileInfo, this.props.plots, this.props.scale, this.props.centerPoint);
   }
 
   goToStep(index) {
@@ -265,7 +267,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
             {makeLine('Buyout Price Per Pixel', buyoutPricePerPixel)}
             {makeLine('Buyout Price Total', buyoutPriceTotal)}
             {this.getButtons({ text: 'Back', onClick: defaultBackButtonAction },
-                             { text: 'Buy', onClick: this.completePurchase.bind(this) })}
+                             { text: 'Buy', onClick: this.completePurchase.bind(this), disabled: this.props.purchasePriceInWei === '0' })}
           </div>
         );
           break;
@@ -300,9 +302,13 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
     const { classes, purchasePriceInWei } = this.props;
     
 
-    const subheading = (this.props.purchasePriceInWei) 
+    let subheading = (this.props.purchasePriceInWei) 
     ? `Plot Price: ${formatEthValueToString(this.props.purchasePriceInWei)}`
     : 'Your plot is a unique, digital good stored on the Ethereum blockchain.';
+
+    if (this.props.purchasePriceInWei === '0') {
+      subheading = 'Invalid placement';
+    }
     
     return (<div className={classes.root}>
       <Card className={classes.card}>

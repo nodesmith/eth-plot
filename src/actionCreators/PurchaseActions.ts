@@ -15,11 +15,13 @@ export function togglePurchaseFlow(): Action {
   };
 }
 
-export function purchaseImageSelected(imageFileInfo: ImageFileInfo, plots: Array<PlotInfo>): Action {
+export function purchaseImageSelected(imageFileInfo: ImageFileInfo, plots: Array<PlotInfo>, scale: number, centerPoint: Point): Action {
   return {
     type: ActionTypes.PURCHASE_IMAGE_SELECTED,
     imageFileInfo,
-    plots
+    plots,
+    scale,
+    centerPoint
   };
 }
 

@@ -145,6 +145,8 @@ class MainContainer extends React.Component<MainContainerProps> {
       togglePurchaseFlow: this.props.actions.togglePurchaseFlow,
       changeZoom: this.props.actions.changeZoom,
       activeAccount: this.props.activeAccount,
+      scale: this.props.scale,
+      centerPoint: this.props.centerPoint,
       showHeatmap: this.props.purchase.showHeatmap && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen,
       lowPlotPrice: this.props.lowPlotPrice || '0',
       highPlotPrice: this.props.highPlotPrice || '0',

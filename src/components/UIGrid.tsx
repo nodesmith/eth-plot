@@ -18,7 +18,7 @@ const styles: StyleRulesCallback = theme => ({
     width: '100%',
     height: '100%',
     overflow: 'scroll',
-    userSelect: 'none'
+    userSelect: 'none',
   },
   dragging: {
     cursor: 'grabbing'
@@ -49,6 +49,11 @@ const styles: StyleRulesCallback = theme => ({
     '&:hover': {
       opacity: .6
     }
+  },
+  mainGrid: {
+    border: theme.palette.grey['600'],
+    borderWidth: 2,
+    borderStyle: 'solid'
   }
 });
 
@@ -318,26 +323,6 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
 
     let overlay: JSX.Element | undefined = undefined;
     if (this.props.inPurchaseMode && this.props.imageToPurchase) {
-
-      let purchasePlotRect: Rect | undefined;
-      if (this.props.dragRectCurr && this.props.dragRectStart) {
-        purchasePlotRect = {
-          x: Math.min(this.props.dragRectCurr.x, this.props.dragRectStart.x),
-          y: Math.min(this.props.dragRectCurr.y, this.props.dragRectStart.y),
-          w: Math.abs(this.props.dragRectCurr.x - this.props.dragRectStart.x),
-          h: Math.abs(this.props.dragRectCurr.y - this.props.dragRectStart.y),
-          x2: 0,
-          y2: 0
-        };
-
-        purchasePlotRect.x2 = purchasePlotRect.x + purchasePlotRect.w;
-        purchasePlotRect.y2 = purchasePlotRect.y + purchasePlotRect.h;
-
-        if (!this.props.isDraggingRect && purchasePlotRect.w === 0 && purchasePlotRect.h === 0) {
-          purchasePlotRect = undefined;
-        }
-      }
-
       overlay = (
         <div className={this.props.classes.overlay}
           style={gridStyle} onMouseMove={this.overlayMouseMove.bind(this)} onMouseUp={this.overlayMouseUp.bind(this)}>
@@ -369,7 +354,7 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
         
         onWheel={this.onWheel.bind(this)}>
 
-        <div style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
+        <div className={classes.mainGrid} style={gridStyle} onMouseOut={this.mouseOut.bind(this)}>
           <svg className={classes.svgMap} viewBox="0 0 250 250">
             {plotRects}
             {plotOverlayRects}

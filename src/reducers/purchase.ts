@@ -6,25 +6,33 @@ import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 import { createEmptyRect, ImageFileInfo, InputValidation, Point, Rect, RectDelta, RectTransform } from '../models';
 
-function determineInitialRect(imageFileInfo) {
+function determineInitialRect(imageFileInfo: ImageFileInfo, scale: number, centerPoint: Point) {
   const ratio = imageFileInfo.w / imageFileInfo.h;
-  const targetDimension = 30;
-  let w = 30;
-  let h = 30;
+  const targetDimension = Math.round(Math.min(30, 100 / scale));
+  let w = targetDimension;
+  let h = targetDimension;
   if (imageFileInfo.w > imageFileInfo.h) {
-    h = Math.round((30 / imageFileInfo.w) * imageFileInfo.h);
+    h = Math.round((targetDimension / imageFileInfo.w) * imageFileInfo.h);
   } else {
-    w = Math.round((30 / imageFileInfo.h) * imageFileInfo.w);
+    w = Math.round((targetDimension / imageFileInfo.h) * imageFileInfo.w);
+  }
+
+  let x = Math.max(0, Math.round(centerPoint.x - (w / 2)));
+  let y = Math.max(0, Math.round(centerPoint.y - (h / 2)));
+  let x2 = x + w;
+  let y2 = y + h;
+
+  if (x2 > 250) {
+    x2 = 250;
+    x = 250 - w;
+  }
+
+  if (y2 > 250) {
+    y2 = 250;
+    y = 250 - h;
   }
   
-  return {
-    w,
-    h,
-    x: 100,
-    y: 100,
-    x2: 100 + w,
-    y2: 100 + h
-  };
+  return { x, y, x2, y2, w, h };
 }
 
 function addDelta(rect: Rect, delta: RectDelta): Rect {
@@ -185,7 +193,7 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
           const completedSteps = Object.assign({}, state.completedSteps, { [1]: true });
         }
 
-        const initialRect = determineInitialRect(action.imageFileInfo);
+        const initialRect = determineInitialRect(action.imageFileInfo, action.scale, action.centerPoint);
         const purchaseInfo = computePurchaseInfo(initialRect, action.plots);
         const nextState = Object.assign({}, state, {
           imageValidation,
@@ -194,7 +202,7 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
           initialRectToPurchaseDeltas: [],
           currentTransform: null,
           imageFileInfo: action.imageFileInfo,
-          purchasePriceInWei: purchaseInfo.purchasePrice
+          purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0'
         });
 
         if (imageValidation.state === Enums.InputValidationState.SUCCESS) {
@@ -216,31 +224,32 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
       return Object.assign({}, state, {
         currentTransform: null
       });
-    case ActionTypes.TRANSFORM_RECT_TO_PURCHASE:
-      {
-        const previousDeltaIndex = state.initialRectToPurchaseDeltas.length - 1;
-        const previousDelta = state.initialRectToPurchaseDeltas[previousDeltaIndex];
-        if (deltasEqual(action.delta, previousDelta)) {
-          console.log('deltas equal');
-          return state;
-        }
+    case ActionTypes.TRANSFORM_RECT_TO_PURCHASE: {
+      const previousDeltaIndex = state.initialRectToPurchaseDeltas.length - 1;
+      const previousDelta = state.initialRectToPurchaseDeltas[previousDeltaIndex];
+      if (deltasEqual(action.delta, previousDelta)) {
+        return state;
+      }
 
       // Clone the array
-        const rectDeltas = state.initialRectToPurchaseDeltas.slice(0);
-        rectDeltas[previousDeltaIndex] = action.delta;
+      const rectDeltas = state.initialRectToPurchaseDeltas.slice(0);
+      rectDeltas[previousDeltaIndex] = action.delta;
 
       // Apply all the deltas to get our new rect
-        const rectToPurchase = rectDeltas.reduce((rect, delta) => addDelta(rect, delta), state.initialRectToPurchase!);
+      const rectToPurchase = rectDeltas.reduce((rect, delta) => addDelta(rect, delta), state.initialRectToPurchase!);
+      if (rectToPurchase.x < 0 || rectToPurchase.y < 0 || rectToPurchase.x2 > 250 || rectToPurchase.y2 > 250 || rectToPurchase.w < 1 || rectToPurchase.h < 1) {
+        return state;
+      }
 
       // Recompute how much this will cost
-        const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
+      const purchaseInfo = computePurchaseInfo(rectToPurchase, action.plots);
 
-        return Object.assign({}, state, {
-          rectToPurchase,
-          initialRectToPurchaseDeltas: rectDeltas,
-          purchasePriceInWei: purchaseInfo.purchasePrice
-        });
-      }
+      return Object.assign({}, state, {
+        rectToPurchase,
+        initialRectToPurchaseDeltas: rectDeltas,
+        purchasePriceInWei: purchaseInfo.isValid ? purchaseInfo.purchaseData!.purchasePrice : '0'
+      });
+    }
     case ActionTypes.COMPLETE_PURCHASE_STEP:
       return completePurchaseStep(state, action.index);
     case ActionTypes.GO_TO_PURCHASE_STEP:

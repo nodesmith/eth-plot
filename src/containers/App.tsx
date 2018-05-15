@@ -73,7 +73,7 @@ class App extends React.Component<AppProps> {
       () => {
         this.checkMetamaskStatus(this.props.data.contractInfo);
       },
-      10000000);
+      1000);
   }
 
   updateMetamaskState(newState: Enums.METAMASK_STATE): void {
