@@ -26,7 +26,11 @@ contract EthGrid is Ownable {
     uint public feeInThousandsOfPercent;
     ZoneOwnership[] public ownership;
     ZoneData[] public data;
-    
+
+    // Maps from the zone idea of a zone to a boolean that represents whether or not
+    // the zone image contains NSFW content. Defaults to false.
+    mapping (uint256 => bool) public imageNsfwTags;
+
     // Maps zone ID to auction price. If price is 0, no auction is 
     // available for that zone. Price is Wei per pixel.
     mapping (uint256 => uint256) public tokenIdToAuction;
@@ -115,6 +119,12 @@ contract EthGrid is Ownable {
         owner.transfer(currentBalance);
     }
 
+    function toggleImageNsfwTag(uint256 zoneIndex, bool zoneContainsNsfwContent) onlyOwner external {
+        require(zoneIndex >= 0);
+        require(zoneIndex < ownership.length);
+        imageNsfwTags[zoneIndex] = zoneContainsNsfwContent;
+    }
+
     //----------------------Public View Functions---------------------//
     function getPlot(uint256 zoneIndex) public view returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
         require(zoneIndex < ownership.length);
@@ -131,6 +141,14 @@ contract EthGrid is Ownable {
             price,
             zoneData.url,
             zoneData.ipfsHash);
+    }
+
+    // This is split into its own method because if combined with getPlot,
+    // a Stack Too Deep exception is thrown
+    function getPlotNsfwStatus(uint256 zoneIndex) public view returns (bool) {
+        require(zoneIndex < ownership.length);
+        bool containsNsfwContent = imageNsfwTags[zoneIndex] || false;
+        return (containsNsfwContent);
     }
 
     function ownershipLength() public view returns (uint256) {

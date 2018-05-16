@@ -87,6 +87,7 @@ export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Actio
 
 export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispatch: Dispatch<{}>) {
   const plotInfo = await contract.getPlot(plotIndex);
+  const isNsfw = await contract.getPlotNsfwStatus(plotIndex);
 
   const ipfsHash = plotInfo[7];
 
@@ -97,14 +98,15 @@ export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispat
       w: plotInfo[2].toNumber(),
       h: plotInfo[3].toNumber(),
       x2: 0,
-      y2: 0
+      y2: 0,
     },
     owner: plotInfo[4],
     buyoutPricePerPixelInWei: plotInfo[5].toString(),
     data: {
       url: plotInfo[6],
       ipfsHash,
-      blobUrl: typeof URL !== 'undefined' ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash
+      nsfw: false,
+      blobUrl: typeof URL !== 'undefined' ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash,
     },
     zoneIndex: plotIndex,
     txHash: ''

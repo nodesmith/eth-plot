@@ -127,6 +127,7 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
           <PlotPreviewCard blobUrl={this.props.info.data.blobUrl} 
                            rect={this.props.info.rect}
                            holes={this.props.holes}
+                           isNsfwImage={this.props.info.data.nsfw}
                            classes={{}} />
         </Grid>
         <Grid item xs={12} sm={6}>

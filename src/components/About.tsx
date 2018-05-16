@@ -44,13 +44,15 @@ const faqGroups = [
       'How do I purchase a plot?',
       'How does selling a plot work?',
       'How do I change the price of my plot?',
-      'Are there fees?'
+      'Are there fees?',
+      'Why are certain images not shown due to inappropriate content?'
     ],
     answers: [
       FAQAnswers.gameplayAnswer1(),
       FAQAnswers.gameplayAnswer2(),
       FAQAnswers.gameplayAnswer3(),
       FAQAnswers.gameplayAnswer4(),
+      FAQAnswers.gameplayAnswer5(),
     ]
   },
   { 

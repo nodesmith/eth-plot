@@ -18,6 +18,9 @@ const styles: StyleRulesCallback = theme => ({
   card: {},
   avatar: {
     backgroundColor: theme.palette.grey['300']
+  },
+  errorMessage: {
+    paddingTop: theme.spacing.unit * 2
   }
 });
 
@@ -52,12 +55,13 @@ class PlotPopover extends React.Component<PlotPopoverProps> {
       purchaseDateMessage = moment(purchaseDate).fromNow();
     }
 
+    const avatarSrc = (this.props.plot.data.nsfw) ? '' : this.props.plot.data.blobUrl;
+
     return (<div>
     <Card className={classes.card}>
       <CardHeader
         avatar={
-          <Avatar className={classes.avatar}
-           src={this.props.plot.data.blobUrl} />
+          <Avatar className={classes.avatar} src={avatarSrc} />
         }
         action={
           <IconButton>
@@ -77,6 +81,11 @@ class PlotPopover extends React.Component<PlotPopoverProps> {
         <Typography variant="body1">
           <strong>Purchase Price: </strong><span>{formatEthValueToString(this.props.purchaseEventInfo.purchasePrice)}</span>
         </Typography>
+        { (this.props.plot.data.nsfw) ? 
+          <Typography variant="body1" color="error" className={this.props.classes.errorMessage}>
+            <span>This image has been flagged as inappropriate. Please see the About section for details.</span>
+          </Typography>
+        : null }
       </CardContent>
       <CardActions>
         <Button size="small" color="primary" onClick={this.viewTransaction.bind(this)}>View Transaction</Button>
