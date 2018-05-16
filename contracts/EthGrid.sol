@@ -31,8 +31,10 @@ contract EthGrid is Ownable {
         address owner;
 
         // The holes purchased from this ownership
-        uint256[] holes;
+        // uint256[] holes;
     }
+
+
 
     /// @dev Represents the data which a specific zone ownership has
     struct ZoneData {
@@ -47,6 +49,8 @@ contract EthGrid is Ownable {
     // Maps zone ID to auction price. If price is 0, no auction is 
     // available for that zone. Price is Wei per pixel.
     mapping (uint256 => uint256) public tokenIdToAuction;
+
+    mapping(uint256 => uint256[]) public holes;
     
     //----------------------Constants---------------------//
     uint16 constant private GRID_WIDTH = 250;
@@ -65,7 +69,7 @@ contract EthGrid is Ownable {
 
     constructor() public payable {
         // Initialize the contract with a single block which the admin owns
-        ownership.push(ZoneOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner, new uint256[](0)));
+        ownership.push(ZoneOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner));
         data.push(ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/"));
         setAuctionPrice(0, INITIAL_AUCTION_PRICE);
     }
@@ -88,15 +92,14 @@ contract EthGrid is Ownable {
             x: purchase[0],
             y: purchase[1],
             w: purchase[2],
-            h: purchase[3],
-            holes: new uint256[](0)
+            h: purchase[3]
         });
         ownership.push(newZone);
 
         // Now that purchase is completed, update zones that have new holes due to this purchase
         uint256 i = 0;
         for (i = 0; i < areaIndices.length; i++) {
-            ownership[areaIndices[i]].holes.push(ownership.length - 1);
+            holes[areaIndices[i]].push(ownership.length - 1);
         }
 
         // Take in the input data for the actual grid!
@@ -174,15 +177,15 @@ contract EthGrid is Ownable {
                 require(Geometry.doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
                 Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
 
-                // Verify that this overlap between these two is within the overlapped area of the rect to purhcase and this ownership zone
+                // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership zone
                 require(rects[areaIndicesIndex].x >= overlap.x);
                 require(rects[areaIndicesIndex].y >= overlap.y);
                 require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
                 require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
 
                 // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
-                for (uint256 holeIndex = 0; holeIndex < ownership[ownershipIndex].holes.length; holeIndex++) {
-                    ZoneOwnership memory holeOwnership = ownership[ownership[ownershipIndex].holes[holeIndex]];
+                for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
+                    ZoneOwnership memory holeOwnership = ownership[holes[ownershipIndex][holeIndex]];
                     Geometry.Rect memory holeRect = Geometry.Rect(
                         holeOwnership.x,
                         holeOwnership.y,
@@ -218,10 +221,11 @@ contract EthGrid is Ownable {
         require(purchase.length == 4);
         Geometry.Rect memory rectToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         
+        // TODO - Safe Math
         require(rectToPurchase.x < GRID_WIDTH && rectToPurchase.x >= 0);
         require(rectToPurchase.y < GRID_HEIGHT && rectToPurchase.y >= 0);
-        require(rectToPurchase.w > 0 && rectToPurchase.w < GRID_WIDTH - rectToPurchase.x);
-        require(rectToPurchase.h > 0 && rectToPurchase.h < GRID_HEIGHT - rectToPurchase.y);
+        require(rectToPurchase.w > 0 && rectToPurchase.w + rectToPurchase.x <= GRID_WIDTH);
+        require(rectToPurchase.h > 0 && rectToPurchase.h + rectToPurchase.y <= GRID_HEIGHT);
         require(rectToPurchase.w * rectToPurchase.h < MAXIMUM_PURCHASE_AREA);
 
         require(purchasedAreas.length >= 4);
