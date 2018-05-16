@@ -1,5 +1,4 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import { MovementActions } from '../constants/Enums';

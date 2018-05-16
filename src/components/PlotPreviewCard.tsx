@@ -1,9 +1,8 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
-import { PlotInfo, Rect } from '../models';
+import { Rect } from '../models';
 
 export interface PlotPreviewCardProps extends WithStyles {
   blobUrl: string;

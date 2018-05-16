@@ -3,16 +3,13 @@ import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Slide from 'material-ui/transitions/Slide';
 import Button from 'material-ui/Button';
 import Drawer from 'material-ui/Drawer';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import * as Actions from '../actions';
 import { ContractInfo, ImageFileInfo, InputValidation, PlotInfo, Point, Rect } from '../models';
 
 import HeatMapLegend from './HeatMapLegend';
-import PurchaseFlowCard, { PurchaseFlowCardProps } from './PurchaseFlowCard';
+import PurchaseFlowCard from './PurchaseFlowCard';
 
 const padding = 24;
 const styles: StyleRulesCallback = theme => ({

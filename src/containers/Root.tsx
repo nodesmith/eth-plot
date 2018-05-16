@@ -5,7 +5,6 @@ import { HashRouter } from 'react-router-dom';
 import { Store } from 'redux';
 
 import App from './App';
-import DevTools from './DevTools';
 
 /**
  * Component is exported for conditional usage in Root.js

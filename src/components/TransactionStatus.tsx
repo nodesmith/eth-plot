@@ -3,10 +3,8 @@ import AttachMoney from 'material-ui-icons/AttachMoney';
 import SwapHoriz from 'material-ui-icons/SwapHoriz';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Avatar from 'material-ui/Avatar';
-import Divider from 'material-ui/Divider';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import * as Enums from '../constants/Enums';

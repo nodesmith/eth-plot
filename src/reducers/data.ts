@@ -1,5 +1,4 @@
 import { BigNumber } from 'bignumber.js';
-import * as red from 'redux';
 import * as Web3 from 'web3';
 
 import { Action } from '../actionCreators/EthGridAction';

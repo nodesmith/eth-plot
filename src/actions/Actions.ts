@@ -1,4 +1,3 @@
-import * as DataActions from '../actionCreators/DataActions';
 import * as Enums from '../constants/Enums';
 import { ContractInfo, ImageFileInfo, PlotInfo, Point, Rect, RectDelta } from '../models';
 

@@ -1,13 +1,8 @@
-import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import * as PropTypes from 'prop-types';
-import * as React from 'react';
-
 import ExpandMore from 'material-ui-icons/ExpandMore';
-import ExpansionPanel, {
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-} from 'material-ui/ExpansionPanel';
+import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
+import ExpansionPanel, { ExpansionPanelDetails, ExpansionPanelSummary } from 'material-ui/ExpansionPanel';
 import Typography from 'material-ui/Typography';
+import * as React from 'react';
 
 export interface FAQProps extends WithStyles {
   question: string;
