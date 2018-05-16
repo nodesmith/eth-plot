@@ -24,3 +24,7 @@ Running Unit tests:
 To Build:
 
 - `npm run build` - This will clean the project, compile the contracts, compile the Typescript, lint, run tests, then bundle everything into the dist folder
+
+To run the admin page:
+
+- `npm run start:admin`
