@@ -27,7 +27,7 @@ contract EthGrid is Ownable {
     ZoneOwnership[] public ownership;
     ZoneData[] public data;
 
-    // Maps from the zone idea of a zone to a boolean that represents whether or not
+    // Maps zone ID to a boolean that represents whether or not
     // the zone image contains NSFW content. Defaults to false.
     mapping (uint256 => bool) public imageNsfwTags;
 

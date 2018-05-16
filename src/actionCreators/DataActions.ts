@@ -105,7 +105,7 @@ export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispat
     data: {
       url: plotInfo[6],
       ipfsHash,
-      nsfw: false,
+      nsfw: isNsfw,
       blobUrl: typeof URL !== 'undefined' ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash,
     },
     zoneIndex: plotIndex,

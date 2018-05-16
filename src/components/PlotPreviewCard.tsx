@@ -27,11 +27,7 @@ const styles: StyleRulesCallback = theme => ({
     display: 'inline-block',
     transition: 'transform 150ms ease-in-out',
   },
-  svgMap: {
-    width: '100%',
-    height: '100%',
-  },
-  svgStyle: {
+  saleOverlayStyle: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -157,7 +153,7 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
               <image style={imgStyle} xlinkHref={this.props.blobUrl} preserveAspectRatio="none" />
             </svg>
           }
-          <svg className={this.props.classes.svgStyle} xmlns="http://www.w3.org/2000/svg">
+          <svg className={this.props.classes.saleOverlayStyle} xmlns="http://www.w3.org/2000/svg">
             { (this.state.showGrid && hasSoldPixels) ? gridElements : null }
             <title>{caption}</title>
           </svg>
