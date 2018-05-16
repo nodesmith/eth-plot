@@ -6,24 +6,41 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 /// @title EthGrid
-/// @author spacedust
+/// @author Space Dust LLC (https://spacedust.io)
+/// @notice This contract represents ownership of virtual "plots" of a grid. Owners of a plot are able to brand their plots with
+/// image data and a website. They are also able to put their plots up for sale and receive proceeds based on what portion of their
+/// plot has been sold. A visual representation of the contract can be found by going to https://ethplot.com
+/// @dev Due to storage limitations, the way the ownership data is stored for a contract is rather unique. We store an array of plot
+/// ownerships which are a rectangle, an owner address, and an array pointing to elements later in the ownership array which overlap
+/// with this rectangle (called holes). The remaining section of a plot, would be its original area minus the holes (rectangles on top).
+/// This data model allows us to cheaply validate new purchases without building huge arrays, allocating lots of memory, or doing other
+/// things which are very expensive due to gas cost concerns.
 contract EthGrid is Ownable {
+
+    /// @dev Represents a single plot (rectangle) which is owned by someone. Additionally, it contains an array
+    /// of holes which point to other ZoneOwnership structs which overlap this one (and purchased a chunk of this one)
     struct ZoneOwnership {
-        address owner;
+
+        // Coordinates of the plot rectangle
         uint16 x;
         uint16 y;
         uint16 w;
         uint16 h;
+
+        // The owner of the zone
+        address owner;
+
+        // The holes purchased from this ownership
         uint256[] holes;
     }
 
+    /// @dev Represents the data which a specific zone ownership has
     struct ZoneData {
         string ipfsHash;
         string url;
     }
 
     //----------------------State---------------------//
-    uint public feeInThousandsOfPercent;
     ZoneOwnership[] public ownership;
     ZoneData[] public data;
     
@@ -34,8 +51,8 @@ contract EthGrid is Ownable {
     //----------------------Constants---------------------//
     uint16 constant private GRID_WIDTH = 250;
     uint16 constant private GRID_HEIGHT = 250;
-    uint56 constant private INITIAL_AUCTION_PRICE = 1000000;
-    uint56 constant private INITIAL_FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Initial fee is 1%
+    uint56 constant private INITIAL_AUCTION_PRICE = 20000 * 1000000000; // 20000 gwei (approx. $0.01)
+    uint56 constant private FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Initial fee is 1%
 
     // This is the maximum area of a single purchase block. This needs to be limited for the
     // algorithm which figures out payment to function
@@ -47,12 +64,9 @@ contract EthGrid is Ownable {
     event PlotSectionSold(uint256 zoneId, uint256 totalPrice, address indexed buyer, address indexed seller);
 
     constructor() public payable {
-
-        feeInThousandsOfPercent = INITIAL_FEE_IN_THOUSANDS_OF_PERCENT;
-        
-        // Initialize the contract with a single block with the admin owns
-        ownership.push(ZoneOwnership(owner, 0, 0, GRID_WIDTH, GRID_HEIGHT, new uint256[](0)));
-        data.push(ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "http://www.ethplot.com/"));
+        // Initialize the contract with a single block which the admin owns
+        ownership.push(ZoneOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner, new uint256[](0)));
+        data.push(ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/"));
         setAuctionPrice(0, INITIAL_AUCTION_PRICE);
     }
 
@@ -251,7 +265,7 @@ contract EthGrid is Ownable {
         uint256 purchasePrice = SafeMath.sub(msg.value, remainingBalance);
 
         // The remainingBalance after distributing funds to sellers should greater than or equal to the fee we charge
-        uint256 requiredFee = SafeMath.div(SafeMath.mul(purchasePrice, feeInThousandsOfPercent), (1000 * 100));
+        uint256 requiredFee = SafeMath.div(SafeMath.mul(purchasePrice, FEE_IN_THOUSANDS_OF_PERCENT), (1000 * 100));
         require(remainingBalance >= requiredFee);
         
         return purchasePrice;
