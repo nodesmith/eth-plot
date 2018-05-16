@@ -1,8 +1,6 @@
-import { BigNumber } from 'bignumber.js';
 import * as d3Palette from 'd3-scale-chromatic';
 import { Paper, Typography } from 'material-ui';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import { formatEthValueToString } from '../data/ValueFormatters';

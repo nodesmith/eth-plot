@@ -1,12 +1,6 @@
-import { Decimal } from 'decimal.js';
-import Visibility from 'material-ui-icons/Visibility';
-import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import Input, { InputAdornment, InputLabel } from 'material-ui/Input';
-import Typography from 'material-ui/Typography';
-import * as PropTypes from 'prop-types';
+import { FormHelperText } from 'material-ui/Form';
 import * as React from 'react';
 
 import { InputValidationState } from '../../constants/Enums';
@@ -45,22 +39,9 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes> 
   }
 
   onFileSelected(event) {
-    let newFileToUse;
-
     const files: File[] = event.target.files;
     if (files.length === 1) {
       const chosenFile = files[0];
-      const fileSize = chosenFile.size;
-      const fileName = chosenFile.name;
-      const fileType = chosenFile.type;
-      const lastModified = chosenFile.lastModified;
-
-      newFileToUse = {
-        fileSize: chosenFile.size,
-        fileName: chosenFile.name,
-        fileType: chosenFile.type,
-        lastModified: chosenFile.lastModified
-      };
 
       // Read this file and get some info about it
       this.getImageFileInfoAsync(chosenFile).then(imageFileInfo => {
@@ -92,17 +73,7 @@ class ChooseImageInputBox extends React.Component<ChooseImageInputBoxPropTypes> 
   }
 
   render() {
-    const imageLabel = 'Choose an image';
-    const { classes, imageFileInfo, allowedFileTypes, validation } = this.props;
-    const currentFileName = imageFileInfo ? imageFileInfo.fileName : '';
-
-    const browseInputFn = () => (
-      <div>
-        <Button id="browse-for-image" onClick={this.browseForImage.bind(this)}>Browse...</Button>
-        {currentFileName}
-      </div>
-    );
-
+    const { classes, allowedFileTypes, validation } = this.props;
 
     const validationMessage = (validation.state === InputValidationState.SUCCESS || validation.state === InputValidationState.UNKNOWN) ?
       '' : validation.message;

@@ -1,12 +1,6 @@
 import { Typography } from 'material-ui';
-import ExpandMore from 'material-ui-icons/ExpandMore';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import ExpansionPanel, {
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-} from 'material-ui/ExpansionPanel';
 import Grid from 'material-ui/Grid';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import * as FAQAnswers from './FAQAnswers';

@@ -1,17 +1,11 @@
 import { BigNumber } from 'bignumber.js';
 import { Decimal } from 'decimal.js';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
-import Avatar from 'material-ui/Avatar';
-import Button from 'material-ui/Button';
 import Chip from 'material-ui/Chip';
-import { FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
-import IconButton from 'material-ui/IconButton';
-import Input, { InputAdornment, InputLabel } from 'material-ui/Input';
+import { FormControlLabel } from 'material-ui/Form';
 import Menu, { MenuItem } from 'material-ui/Menu';
-import Select from 'material-ui/Select';
 import Switch from 'material-ui/Switch';
 import TextField from 'material-ui/TextField';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import { formatEthValue } from '../../data/ValueFormatters';

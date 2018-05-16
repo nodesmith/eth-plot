@@ -2,11 +2,10 @@ import { BigNumber } from 'bignumber.js';
 import Close from 'material-ui-icons/Close';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
-import Card, { CardActions, CardContent, CardHeader, CardMedia } from 'material-ui/Card';
+import Card, { CardActions, CardContent, CardHeader } from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
-import Stepper, { Step, StepButton, StepContent, StepLabel } from 'material-ui/Stepper';
+import Stepper, { Step, StepButton, StepContent } from 'material-ui/Stepper';
 import Typography from 'material-ui/Typography';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import * as Actions from '../actions';
@@ -155,7 +154,6 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
     switch (index) {
       case 0:
         {
-          const buttonEnabled = this.props.imageValidation.state === InputValidationState.SUCCESS;
           stepHeader = 'Pick an image';
           stepContent = (
           <div>
@@ -299,7 +297,7 @@ class PurchaseFlowCard extends React.Component<PurchaseFlowCardProps> {
   }
 
   render() {
-    const { classes, purchasePriceInWei } = this.props;
+    const { classes } = this.props;
     
 
     let subheading = (this.props.purchasePriceInWei) 

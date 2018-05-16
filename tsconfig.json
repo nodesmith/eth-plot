@@ -9,7 +9,8 @@
       "allowJs": false,             // allow a partial TypeScript and JavaScript codebase
       "moduleResolution": "node",
       "lib": ["es5", "es6", "dom", "es2017.object"],
-      "allowSyntheticDefaultImports": true
+      "allowSyntheticDefaultImports": true,
+      "noUnusedLocals": true
   },
   "include": [
       "./types/**/*.d.ts",

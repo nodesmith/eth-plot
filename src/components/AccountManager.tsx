@@ -1,16 +1,12 @@
-import ExpandMore from 'material-ui-icons/ExpandMore';
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles/';
 import Divider from 'material-ui/Divider';
 import { FormControlLabel } from 'material-ui/Form';
 import Grid from 'material-ui/Grid';
-import List, { ListItem } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 import Switch from 'material-ui/Switch';
 import Typography from 'material-ui/Typography';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
-import * as Enums from '../constants/Enums';
 import { HoleInfo as HoleInfoData, PlotInfo as PlotInfoData, PurchaseEventInfo } from '../models';
 
 import PlotInfo from './PlotInfo';

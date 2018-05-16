@@ -1,15 +1,11 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import List, { ListItem, ListItemText } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
-import * as Enums from '../constants/Enums';
 import { UserTransaction } from '../models';
 
-import PlotInfo from './PlotInfo';
 import TransactionStatus from './TransactionStatus';
 
 const styles: StyleRulesCallback = theme => ({

@@ -3,7 +3,7 @@ import { Dispatch } from 'react-redux';
 import * as Web3 from 'web3';
 
 import { DecodedLogEntry } from '../../gen-src/typechain-runtime';
-import { EthGrid, EthGridEventTypes } from '../../gen-src/EthGrid';
+import { EthGrid } from '../../gen-src/EthGrid';
 import * as DataActions from '../actionCreators/DataActions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';

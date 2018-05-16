@@ -1,11 +1,10 @@
 import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import { Typography } from 'material-ui';
 
-import { PlotInfo, Rect } from '../models';
+import { Rect } from '../models';
 
 const MAX_IMAGE_WIDTH = 250;
 const MAX_IMAGE_HEIGHT = 400;

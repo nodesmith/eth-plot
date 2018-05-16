@@ -9,15 +9,12 @@ import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 import { loadFromIpfsOrCache } from '../data/ImageRepository';
-import * as PlotMath from '../data/PlotMath';
 import { ContractInfo, PlotInfo, Rect } from '../models';
 
 import * as AccountActions from './AccountActions';
 import { Action } from './EthGridAction';
 import { togglePurchaseFlow } from './PurchaseActions';
 import { getWeb3 } from './Web3Actions';
-const hexy = require('hexy');
-const promisePool = require('es6-promise-pool');
 
 export function setWeb3Config(web3Config: ContractInfo) {
   return {
@@ -121,8 +118,6 @@ export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispat
 // thunk for updating price of plot
 export function updateAuction(contractInfo: ContractInfo, zoneIndex: number, newPrice: string, activeAccount: string) {
   return async (dispatch) => {
-    const web3 = getWeb3(contractInfo);
-  
     const contract = await initializeContract(contractInfo);
 
     const price = new BigNumber(newPrice);
@@ -176,8 +171,6 @@ export function purchasePlot(
     
     const purchaseData = purchaseInfo.purchaseData!;
 
-    const web3 = getWeb3(contractInfo);
-
     dispatch(changePurchaseStep(Enums.PurchaseStage.WAITING_FOR_UNLOCK));
 
     const contract = await initializeContract(contractInfo);
@@ -185,7 +178,6 @@ export function purchasePlot(
     const purchase = buildArrayFromRectangles([rectToPurchase]);
     const purchasedAreas = buildArrayFromRectangles(purchaseData.chunksToPurchase);
     const purchasedAreaIndices = purchaseData.chunksToPurchaseAreaIndices.map(num => new BigNumber(num));
-    const initialPurchasePrice = new BigNumber(purchasePriceInWei);
     const initialBuyoutPerPixelInWeiBN = new BigNumber(initialBuyoutPerPixelInWei || 0);
 
     const tx = contract.purchaseAreaWithDataTx(

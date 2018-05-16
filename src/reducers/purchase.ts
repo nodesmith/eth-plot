@@ -7,7 +7,6 @@ import { computePurchaseInfo } from '../data/ComputePurchaseInfo';
 import { createEmptyRect, ImageFileInfo, InputValidation, Point, Rect, RectDelta, RectTransform } from '../models';
 
 function determineInitialRect(imageFileInfo: ImageFileInfo, scale: number, centerPoint: Point) {
-  const ratio = imageFileInfo.w / imageFileInfo.h;
   const targetDimension = Math.round(Math.min(30, 100 / scale));
   let w = targetDimension;
   let h = targetDimension;
@@ -139,8 +138,6 @@ function validateImageFile(imageFileInfo?: ImageFileInfo): InputValidation {
     };
   }
 
-  const aspectRatio = imageFileInfo.w / imageFileInfo.h;
-
   return {
     state: Enums.InputValidationState.SUCCESS,
     message: 'The image looks great!'
@@ -190,10 +187,6 @@ export function purchaseReducer(state: PurchaseState = initialState, action: Act
     case ActionTypes.PURCHASE_IMAGE_SELECTED:
       {
         const imageValidation = validateImageFile(action.imageFileInfo);
-        if (imageValidation.state === Enums.InputValidationState.SUCCESS) {
-          const nextStep = 1;
-          const completedSteps = Object.assign({}, state.completedSteps, { [1]: true });
-        }
 
         const initialRect = determineInitialRect(action.imageFileInfo, action.scale, action.centerPoint);
         const purchaseInfo = computePurchaseInfo(initialRect, action.plots);

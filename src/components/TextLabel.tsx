@@ -1,7 +1,5 @@
-import * as PropTypes from 'prop-types';
-import * as React from 'react';
-
 import Typography from 'material-ui/Typography';
+import * as React from 'react';
 
 export interface TextLabelProps {
   caption: string;

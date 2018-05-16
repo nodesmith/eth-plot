@@ -1,7 +1,7 @@
 import { Action } from '../actionCreators/EthGridAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
-import { Point, Rect } from '../models';
+import { Point } from '../models';
 
 const MAX_SCALE = 80;
 const MIN_SCALE = .2;
