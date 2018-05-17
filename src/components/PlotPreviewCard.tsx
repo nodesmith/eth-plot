@@ -95,7 +95,6 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
 
     const widthLargerThanHeight = (w > h);
     const widthToHeightAspectRatio = (w / h);
-    const bothDimensionsMaxed = (w >= MAX_IMAGE_WIDTH && h >= MAX_IMAGE_HEIGHT);
 
     if (widthLargerThanHeight || (MAX_IMAGE_HEIGHT * widthToHeightAspectRatio) > MAX_IMAGE_WIDTH) {
       widthHeight[0] = MAX_IMAGE_WIDTH;
