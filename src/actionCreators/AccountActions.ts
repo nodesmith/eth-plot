@@ -123,7 +123,7 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
 async function loadAndWatchAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
-  const auctionEvent = contract.AuctionUpdatedEvent({ owner: currentAddress });
+  const auctionEvent = contract.PlotPriceUpdatedEvent({ owner: currentAddress });
   
   const auctionEvents = await auctionEvent.get({ fromBlock: 0, toBlock: 'latest' });
   let latestBlock = 0;
@@ -196,14 +196,14 @@ async function loadAndWatchSaleEvents(contract: EthGrid, currentAddress: string,
   const saleEvents = await saleEvent.get({ fromBlock: 0, toBlock: 'latest' });
   let latestBlock = 0;
   saleEvents.forEach(tx => {
-    genericTransactionHandler(tx, (<BigNumber>tx.args.zoneId).toNumber(), Enums.TxType.SALE, dispatch, web3);
+    genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.SALE, dispatch, web3);
     latestBlock = Math.max(latestBlock, tx.blockNumber!);
   });
 
   // We really should return this in some way since we need to stop listening to it
   return saleEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
     if (!err) {
-      genericTransactionHandler(tx, (<BigNumber>tx.args.zoneId).toNumber(), Enums.TxType.SALE, dispatch, web3);
+      genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.SALE, dispatch, web3);
     }
   });
 }

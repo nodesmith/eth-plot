@@ -128,7 +128,7 @@ export function updateAuction(contractInfo: ContractInfo, zoneIndex: number, new
     const contract = await initializeContract(contractInfo);
 
     const price = new BigNumber(newPrice);
-    const tx = contract.updateAuctionTx(zoneIndex, price);
+    const tx = contract.updatePlotPriceTx(zoneIndex, price);
     const gasEstimate = await tx.estimateGas({});
 
     const txObject = {

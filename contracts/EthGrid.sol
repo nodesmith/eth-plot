@@ -18,9 +18,9 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 contract EthGrid is Ownable {
 
     /// @dev Represents a single plot (rectangle) which is owned by someone. Additionally, it contains an array
-    /// of holes which point to other ZoneOwnership structs which overlap this one (and purchased a chunk of this one)
+    /// of holes which point to other PlotOwnership structs which overlap this one (and purchased a chunk of this one)
     /// 4 24 bit numbers for + 1 address = 256 bits for storage efficiency
-    struct ZoneOwnership {
+    struct PlotOwnership {
 
         // Coordinates of the plot rectangle
         uint24 x;
@@ -28,54 +28,61 @@ contract EthGrid is Ownable {
         uint24 w;
         uint24 h;
 
-        // The owner of the zone
+        // The owner of the plot
         address owner;
     }
 
-    /// @dev Represents the data which a specific zone ownership has
-    struct ZoneData {
+    /// @dev Represents the data which a specific plot ownership has
+    struct PlotData {
         string ipfsHash;
         string url;
     }
 
     //----------------------State---------------------//
-    ZoneOwnership[] private ownership;
 
-    mapping(uint256 => ZoneData) private data;
+    // The actual coordinates and owners of plots. This array will contain all of the owned plots, with the more recent (and valid)
+    // ownership plots at the top. The other state variables point to indexes in this array
+    PlotOwnership[] private ownership;
 
-    // Maps zone ID to a boolean that represents whether or not
-    // the image of the zone might be illegal and need to be blocked
+    // Maps from the index in the ownership array to the data for this particular plot (its image and website)
+    mapping(uint256 => PlotData) private data;
+
+    // Maps plot ID to a boolean that represents whether or not
+    // the image of the plot might be illegal and need to be blocked
     // in the UI of Eth Plot. Defaults to false.
-    mapping (uint256 => bool) private zoneBlockedTags;
+    mapping (uint256 => bool) private plotBlockedTags;
 
-    // Maps zone ID to auction price. If price is 0, no auction is 
-    // available for that zone. Price is Wei per pixel.
-    mapping(uint256 => uint256) private tokenIdToAuction;
+    // Maps plot ID to the plot's current price price. If price is 0, the plot is not for sale 
+    // available for that plot. Price is Wei per pixel.
+    mapping(uint256 => uint256) private plotIdToPrice;
 
+    // Maps plot ID to other plots IDs which which have purchased sections of this plot (a hole).
+    // Once a plot has been completely re-purchased, these holes will completely tile over the plot.
     mapping(uint256 => uint256[]) private holes;
     
     //----------------------Constants---------------------//
     uint24 constant private GRID_WIDTH = 250;
     uint24 constant private GRID_HEIGHT = 250;
-    uint256 constant private INITIAL_AUCTION_PRICE = 20000 * 1000000000; // 20000 gwei (approx. $0.01)
-    uint256 constant private FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Initial fee is 1%
+    uint256 constant private INITIAL_PLOT_PRICE = 20000 * 1000000000; // 20000 gwei (approx. $0.01)
+    uint256 constant private FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Fee is 1%
 
     // This is the maximum area of a single purchase block. This needs to be limited for the
     // algorithm which figures out payment to function
     uint256 constant private MAXIMUM_PURCHASE_AREA = 1000;
       
     //----------------------Events---------------------//
-    event AuctionUpdated(uint256 tokenId, uint256 newPriceInWeiPerPixel, address indexed owner);
-    event PlotPurchased(uint256 newZoneId, uint256 totalPrice, address indexed buyer);
-    event PlotSectionSold(uint256 zoneId, uint256 totalPrice, address indexed buyer, address indexed seller);
+
+    /// @dev Inicates that a user has updated the price of their plot
+    event PlotPriceUpdated(uint256 tokenId, uint256 newPriceInWeiPerPixel, address indexed owner);
+    event PlotPurchased(uint256 newPlotId, uint256 totalPrice, address indexed buyer);
+    event PlotSectionSold(uint256 plotId, uint256 totalPrice, address indexed buyer, address indexed seller);
 
     constructor() public payable {
         // Initialize the contract with a single block which the admin owns
-        ownership.push(ZoneOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner));
-        data[0] = ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/");
-        tokenIdToAuction[0] = INITIAL_AUCTION_PRICE;
+        ownership.push(PlotOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner));
+        data[0] = PlotData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/");
+        plotIdToPrice[0] = INITIAL_PLOT_PRICE;
     }
-
 
     //----------------------External Functions---------------------//
     function purchaseAreaWithData(
@@ -88,47 +95,25 @@ contract EthGrid is Ownable {
         
         uint256 initialPurchasePrice = validatePurchases(purchase, purchasedAreas, areaIndices);
 
-        uint256 newZoneIndex = addPlotAndData(purchase, ipfsHash, url, initialBuyoutPriceInWeiPerPixel);
+        uint256 newPlotIndex = addPlotAndData(purchase, ipfsHash, url, initialBuyoutPriceInWeiPerPixel);
 
-        // Now that purchase is completed, update zones that have new holes due to this purchase
+        // Now that purchase is completed, update plots that have new holes due to this purchase
         uint256 i = 0;
         for (i = 0; i < areaIndices.length; i++) {
-            holes[areaIndices[i]].push(newZoneIndex);
+            holes[areaIndices[i]].push(newPlotIndex);
         }
 
-        emit PlotPurchased(newZoneIndex, initialPurchasePrice, msg.sender);
+        emit PlotPurchased(newPlotIndex, initialPurchasePrice, msg.sender);
     }
 
-    function addPlotAndData(uint24[] purchase, string ipfsHash, string url, uint256 initialBuyoutPriceInWeiPerPixel) private returns (uint256) {
-        uint256 newZoneIndex = ownership.length;
+    // Can also be used to cancel an existing plot sale by sending 0 (or less) as new price.
+    function updatePlotPrice(uint256 plotIndex, uint256 newPriceInWeiPerPixel) public {
+        require(plotIndex >= 0);
+        require(plotIndex < ownership.length);
+        require(msg.sender == ownership[plotIndex].owner);
 
-        // Add the new ownership to the array
-        // ZoneOwnership memory newZone = ZoneOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender);
-        ownership.push(ZoneOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender));
-
-        // Take in the input data for the actual grid!
-        data[newZoneIndex] = ZoneData(ipfsHash, url);
-
-        // Set an initial purchase price for the new plot if it's greater than 0
-        if (initialBuyoutPriceInWeiPerPixel > 0) {
-            updateAuction(newZoneIndex, initialBuyoutPriceInWeiPerPixel);
-        }
-
-        return newZoneIndex;
-    }
-
-    // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
-    function updateAuction(uint256 zoneIndex, uint256 newPriceInWeiPerPixel) public {
-        setAuctionPrice(zoneIndex, newPriceInWeiPerPixel);
-        emit AuctionUpdated(zoneIndex, newPriceInWeiPerPixel, msg.sender);
-    }
-
-    function setAuctionPrice(uint256 zoneIndex, uint256 newPriceInWeiPerPixel) private {
-        require(zoneIndex >= 0);
-        require(zoneIndex < ownership.length);
-        require(msg.sender == ownership[zoneIndex].owner);
-
-        tokenIdToAuction[zoneIndex] = newPriceInWeiPerPixel;
+        plotIdToPrice[plotIndex] = newPriceInWeiPerPixel;
+        emit PlotPriceUpdated(plotIndex, newPriceInWeiPerPixel, msg.sender);
     }
     
     function withdraw(address transferTo) onlyOwner external {
@@ -139,28 +124,27 @@ contract EthGrid is Ownable {
         owner.transfer(currentBalance);
     }
 
-    function toggleZoneBlockedTag(uint256 zoneIndex, bool zoneBlocked) onlyOwner external {
-        require(zoneIndex >= 0);
-        require(zoneIndex < ownership.length);
-        zoneBlockedTags[zoneIndex] = zoneBlocked;
+    function togglePlotBlockedTag(uint256 plotIndex, bool plotBlocked) onlyOwner external {
+        require(plotIndex >= 0);
+        require(plotIndex < ownership.length);
+        plotBlockedTags[plotIndex] = plotBlocked;
     }
 
     // ----------------------Public View Functions---------------------//
-    function getPlotInfo(uint256 zoneIndex) public view returns (uint24, uint24, uint24, uint24, address, uint256) {
-
-        require(zoneIndex < ownership.length);
+    function getPlotInfo(uint256 plotIndex) public view returns (uint24, uint24, uint24, uint24, address, uint256) {
+        require(plotIndex < ownership.length);
         return (
-            ownership[zoneIndex].x,
-            ownership[zoneIndex].y,
-            ownership[zoneIndex].w,
-            ownership[zoneIndex].h,
-            ownership[zoneIndex].owner,
-            tokenIdToAuction[zoneIndex]);
+            ownership[plotIndex].x,
+            ownership[plotIndex].y,
+            ownership[plotIndex].w,
+            ownership[plotIndex].h,
+            ownership[plotIndex].owner,
+            plotIdToPrice[plotIndex]);
     }
 
-    function getPlotData(uint256 zoneIndex) public view returns (string, string, bool) {
-        require(zoneIndex < ownership.length);
-        return (data[zoneIndex].url, data[zoneIndex].ipfsHash, zoneBlockedTags[zoneIndex]);
+    function getPlotData(uint256 plotIndex) public view returns (string, string, bool) {
+        require(plotIndex < ownership.length);
+        return (data[plotIndex].url, data[plotIndex].ipfsHash, plotBlockedTags[plotIndex]);
     }
     
     function ownershipLength() public view returns (uint256) {
@@ -180,17 +164,17 @@ contract EthGrid is Ownable {
             Geometry.Rect memory currentOwnershipRect = Geometry.Rect(
                 ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
-            // This is a zone the caller has declared they were going to buy
+            // This is a plot the caller has declared they were going to buy
             // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
             require(Geometry.doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
             Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
 
-            // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership zone
+            // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership plot
             require(Geometry.rectContainedInside(rects[areaIndicesIndex], overlap));
 
-            // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
+            // Next, verify that none of the holes of this plot ownership overlap with what we are trying to purchase
             for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
-                ZoneOwnership memory holePlot = ownership[holes[ownershipIndex][holeIndex]];
+                PlotOwnership memory holePlot = ownership[holes[ownershipIndex][holeIndex]];
 
                 require(
                     !Geometry.doRectanglesOverlap(rects[areaIndicesIndex],
@@ -199,7 +183,7 @@ contract EthGrid is Ownable {
 
 
             // Finally, add the price of this rect to the totalPrice computation
-            uint256 sectionPrice = getPriceOfAuctionedZone(rects[areaIndicesIndex], ownershipIndex);
+            uint256 sectionPrice = getPriceOfPlot(rects[areaIndicesIndex], ownershipIndex);
             remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
             owedToSeller = SafeMath.add(owedToSeller, sectionPrice);
 
@@ -270,13 +254,31 @@ contract EthGrid is Ownable {
         return purchasePrice;
     }
 
-    // Given a rect to purchase, and the ID of the zone that is part of the purchase,
-    // This returns the total price of the purchase that is attributed by that zone.  
-    function getPriceOfAuctionedZone(Geometry.Rect memory rectToPurchase, uint256 auctionedZoneId) private view returns (uint256) {
-        // Check that this auction zone exists in the auction mapping with a price.
-        uint256 auctionPricePerPixel = tokenIdToAuction[auctionedZoneId];
-        require(auctionPricePerPixel > 0);
+    function addPlotAndData(uint24[] purchase, string ipfsHash, string url, uint256 initialBuyoutPriceInWeiPerPixel) private returns (uint256) {
+        uint256 newPlotIndex = ownership.length;
 
-        return SafeMath.mul(SafeMath.mul(rectToPurchase.w, rectToPurchase.h), auctionPricePerPixel);
+        // Add the new ownership to the array
+        // PlotOwnership memory newPlot = PlotOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender);
+        ownership.push(PlotOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender));
+
+        // Take in the input data for the actual grid!
+        data[newPlotIndex] = PlotData(ipfsHash, url);
+
+        // Set an initial purchase price for the new plot if it's greater than 0
+        if (initialBuyoutPriceInWeiPerPixel > 0) {
+            updatePlotPrice(newPlotIndex, initialBuyoutPriceInWeiPerPixel);
+        }
+
+        return newPlotIndex;
+    }
+
+    // Given a rect to purchase, and the ID of the plot that is part of the purchase,
+    // This returns the total price of the purchase that is attributed by that plot.  
+    function getPriceOfPlot(Geometry.Rect memory rectToPurchase, uint256 plotId) private view returns (uint256) {
+        // Check that this plot exists in the plot price mapping with a price.
+        uint256 plotPricePerPixel = plotIdToPrice[plotId];
+        require(plotPricePerPixel > 0);
+
+        return SafeMath.mul(SafeMath.mul(rectToPurchase.w, rectToPurchase.h), plotPricePerPixel);
     }
 }

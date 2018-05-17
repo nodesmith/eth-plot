@@ -129,7 +129,7 @@ contract('EthGrid', (accounts: string[]) => {
     assert.equal(buyerAccount, purchaseEvents[0].args.buyer);
     assert.equal(sellerAccount, purchaseEvents[0].args.seller);
     assert.equal(purchaseData.plotPrice, purchaseEvents[0].args.totalPrice.toString());
-    assert.equal(0, purchaseEvents[0].args.zoneId);
+    assert.equal(0, purchaseEvents[0].args.plotId);
   });
 
   it('Purchase a bunch of plots', async() => {
