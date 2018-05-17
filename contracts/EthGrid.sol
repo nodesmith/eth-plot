@@ -286,7 +286,7 @@ contract EthGrid is Ownable {
 
         // If we have a matching area, the subPlots are all contained within what we're purchasing, and none of them overlap,
         // we know we have a complete tiling of the plotToPurchase. Next, validate we can purchase all of these and distribute funds
-        uint256 remainingBalance = checkHolesAndDistributePurchaseFunds(plotToPurchase, subPlots, areaIndices);
+        uint256 remainingBalance = checkHolesAndDistributePurchaseFunds(subPlots, areaIndices);
         uint256 purchasePrice = SafeMath.sub(msg.value, remainingBalance);
 
         // The remainingBalance after distributing funds to sellers should greater than or equal to the fee we charge
@@ -300,13 +300,11 @@ contract EthGrid is Ownable {
     /// @dev Since we know that the subPlots are contained within plotToPurchase, and that they don't overlap, we just need go through each one
     /// and make sure that it is for sale and owned by the appropriate person as specified in areaIndices. We then can calculate how much to
     /// pay out for the sub-plot as well.
-    /// @param plotToPurchase The rect representing the plot we want to purchase
     /// @param subPlots Array of sub-plots which tiles the plotToPurchase completely
     /// @param areaIndices Array of indices into the ownership array which correspond to who owns the subPlot at the same index of subPlots.
     /// The array must be the same length as subPlots and go in descending order
     /// @return The balance still remaining from the original msg.value after paying out all of the owners of the subPlots
-    function checkHolesAndDistributePurchaseFunds(
-        Geometry.Rect memory plotToPurchase, Geometry.Rect[] memory subPlots, uint256[] memory areaIndices) private returns (uint256) {
+    function checkHolesAndDistributePurchaseFunds(Geometry.Rect[] memory subPlots, uint256[] memory areaIndices) private returns (uint256) {
 
         // Initialize the remaining balance to the value which was passed in here
         uint256 remainingBalance = msg.value;
@@ -322,22 +320,17 @@ contract EthGrid is Ownable {
             Geometry.Rect memory currentOwnershipRect = Geometry.Rect(
                 ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
-            // This is a plot the caller has declared they were going to buy. We need to verify that the subPlot is fully contained inside this plot.
-            require(Geometry.doRectanglesOverlap(plotToPurchase, currentOwnershipRect));
-            Geometry.Rect memory overlap = Geometry.computeRectOverlap(plotToPurchase, currentOwnershipRect);
-
-            // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership plot
-            require(Geometry.rectContainedInside(subPlots[areaIndicesIndex], overlap));
+            // This is a plot the caller has declared they were going to buy. We need to verify that the subPlot is fully contained inside 
+            // the current ownership plot we are dealing with (we already know the subPlot is inside the plot to purchase)
+            require(Geometry.rectContainedInside(subPlots[areaIndicesIndex], currentOwnershipRect));
 
             // Next, verify that none of the holes of this plot ownership overlap with what we are trying to purchase
             for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
                 PlotOwnership memory holePlot = ownership[holes[ownershipIndex][holeIndex]];
+                Geometry.Rect memory holeRect = Geometry.Rect(holePlot.x, holePlot.y, holePlot.w, holePlot.h);
 
-                require(
-                    !Geometry.doRectanglesOverlap(subPlots[areaIndicesIndex],
-                    Geometry.Rect(holePlot.x, holePlot.y, holePlot.w, holePlot.h)));
+                require(!Geometry.doRectanglesOverlap(subPlots[areaIndicesIndex], holeRect));
             }
-
 
             // Finally, add the price of this rect to the totalPrice computation
             uint256 sectionPrice = getPriceOfPlot(subPlots[areaIndicesIndex], ownershipIndex);
@@ -346,6 +339,7 @@ contract EthGrid is Ownable {
 
             // If this is the last one to look at, or if the next ownership index is different, payout this owner
             if (areaIndicesIndex == areaIndices.length - 1 || ownershipIndex != areaIndices[areaIndicesIndex + 1]) {
+
                 // Update the balances and emit an event to indicate the chunks of this plot which were sold
                 address(ownership[ownershipIndex].owner).transfer(owedToSeller);
                 emit PlotSectionSold(ownershipIndex, owedToSeller, msg.sender, ownership[ownershipIndex].owner);
@@ -356,21 +350,30 @@ contract EthGrid is Ownable {
         return remainingBalance;
     }
 
-    // Given a rect to purchase, and the ID of the plot that is part of the purchase,
-    // This returns the total price of the purchase that is attributed by that plot.  
-    function getPriceOfPlot(Geometry.Rect memory plotToPurchase, uint256 plotId) private view returns (uint256) {
-        // Check that this plot exists in the plot price mapping with a price.
-        uint256 plotPricePerPixel = plotIdToPrice[plotId];
+    /// @notice Given a rect to purchase and the plot index, return the total price to be paid. Requires that the plot is for sale
+    /// @param subPlotToPurchase The subplot of plotIndex which we want to compute the price of
+    /// @param plotIndex The index in the ownership array for this plot
+    /// @return The price that must be paid for this subPlot
+    function getPriceOfPlot(Geometry.Rect memory subPlotToPurchase, uint256 plotIndex) private view returns (uint256) {
+
+        // Verify that this plot exists in the plot price mapping with a price.
+        uint256 plotPricePerPixel = plotIdToPrice[plotIndex];
         require(plotPricePerPixel > 0);
 
-        return SafeMath.mul(SafeMath.mul(plotToPurchase.w, plotToPurchase.h), plotPricePerPixel);
+        return SafeMath.mul(SafeMath.mul(subPlotToPurchase.w, subPlotToPurchase.h), plotPricePerPixel);
     }
 
+    /// @notice Stores the plot information and data for a newly purchased plot.
+    /// @dev All parameters are assumed to be validated before calling
+    /// @param purchase The coordinates of the plot to purchase
+    /// @param ipfsHash The hash of the image data for this plot stored in ipfs
+    /// @param url The website / url which should be associated with this plot
+    /// @param initialBuyoutPriceInWeiPerPixel The price per pixel a future buyer would have to pay to purchase an area of this plot.
+    /// @return The index in the plotOwnership array where this plot was placed
     function addPlotAndData(uint24[] purchase, string ipfsHash, string url, uint256 initialBuyoutPriceInWeiPerPixel) private returns (uint256) {
         uint256 newPlotIndex = ownership.length;
 
         // Add the new ownership to the array
-        // PlotOwnership memory newPlot = PlotOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender);
         ownership.push(PlotOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender));
 
         // Take in the input data for the actual grid!
