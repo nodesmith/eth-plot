@@ -13,7 +13,7 @@ export interface PlotPreviewCardProps extends WithStyles {
   blobUrl: string;
   rect: Rect;
   holes: Array<Rect>;
-  isNsfwImage: boolean;
+  isBlockedImage: boolean;
 }
 
 interface PlotPreviewCardState {
@@ -110,7 +110,7 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
 
   render() {
     let gridElements = new Array<JSX.Element>();
-    if (this.state.showGrid && !this.props.isNsfwImage) {
+    if (this.state.showGrid && !this.props.isBlockedImage) {
       gridElements = this.getGridSvgElements();
     }
     
@@ -127,7 +127,7 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
       height: imageDimensions[1],
     };
 
-    const nsfwOverlayStyle: React.CSSProperties = {
+    const blockedOverlayStatus: React.CSSProperties = {
       width: imageDimensions[0],
       height: imageDimensions[1],
       backgroundColor: '#efefef',
@@ -136,19 +136,17 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
       overflow: 'hidden' 
     };
 
-    //            <img ref={element => this.imageRef = element} src={this.props.blobUrl} style={imgStyle} />
-
     return (
       <Grid container justify="center">
         <div onMouseEnter={this.showGrid.bind(this)} onMouseLeave={this.hideGrid.bind(this)} className={this.props.classes.imgContainer}>
-          { (this.props.isNsfwImage) ?
-            <div style={nsfwOverlayStyle}>
+          { (this.props.isBlockedImage) ?
+            <div style={blockedOverlayStatus}>
               <Typography variant="body1" color="error">
                 This image has been flagged as inappropriate. Please see the About section for details.
               </Typography>
             </div>
             :     
-            <svg style={imgStyle}>
+            <svg style={imgStyle} xmlns="http://www.w3.org/2000/svg">
               <image style={imgStyle} xlinkHref={this.props.blobUrl} preserveAspectRatio="none" />
             </svg>
           }

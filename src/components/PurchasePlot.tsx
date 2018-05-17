@@ -143,7 +143,7 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
           className="purchasePlot"
           onDragStart={this.onDragStart.bind(this, MovementActions.DRAG)}
         >
-          <svg style={imageBackgroundStyle}>
+          <svg style={imageBackgroundStyle} xmlns="http://www.w3.org/2000/svg">
             <image style={imageBackgroundStyle} xlinkHref={this.props.src} preserveAspectRatio="none" />
           </svg>
         </div>

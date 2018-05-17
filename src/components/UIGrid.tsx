@@ -50,7 +50,7 @@ const styles: StyleRulesCallback = theme => ({
       opacity: .6
     }
   },
-  svgNSFWOverlay: {
+  svgBlockedOverlay: {
     cursor: 'pointer',
     opacity: 1,
     fill: '#EFEFEF',
@@ -280,7 +280,7 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
         return undefined;
       }
 
-      const overlayClass = (plot.data.nsfw) ? this.props.classes.svgNSFWOverlay : this.props.classes.svgOverlay;
+      const overlayClass = (plot.data.zoneBlocked) ? this.props.classes.svgBlockedOverlay : this.props.classes.svgOverlay;
       return (<rect {...props}
         className={overlayClass}
         onClick={(event) => this.plotClicked(plot.zoneIndex, event.target as HTMLElement)}/>);

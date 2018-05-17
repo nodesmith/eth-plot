@@ -4,7 +4,7 @@ export interface PlotInfo {
   rect: Rect;
   data: {
     url: string;
-    nsfw: boolean;
+    zoneBlocked: boolean;
     ipfsHash: string;
     blobUrl: string;
   };

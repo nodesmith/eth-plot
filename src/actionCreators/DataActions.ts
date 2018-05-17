@@ -84,9 +84,14 @@ export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Actio
 
 export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispatch: Dispatch<{}>) {
   const plotInfo = await contract.getPlot(plotIndex);
-  const isNsfw = await contract.getPlotNsfwStatus(plotIndex);
+  const zoneBlocked = await contract.getPlotBlockedStatus(plotIndex);
 
   const ipfsHash = plotInfo[7];
+  let blobUrl = '';
+  
+  if (!zoneBlocked) { // only load the image if its not a blocked image
+    blobUrl = (typeof URL !== 'undefined') ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash;
+  }
 
   const plot: PlotInfo = {
     rect: {
@@ -102,8 +107,8 @@ export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispat
     data: {
       url: plotInfo[6],
       ipfsHash,
-      nsfw: isNsfw,
-      blobUrl: typeof URL !== 'undefined' ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash,
+      zoneBlocked,
+      blobUrl
     },
     zoneIndex: plotIndex,
     txHash: ''

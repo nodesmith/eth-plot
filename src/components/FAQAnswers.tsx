@@ -129,10 +129,11 @@ export const gameplayAnswer4 = () => (
 
 export const gameplayAnswer5 = () => (
   <Typography variant="body2">
-    If inappropriate images are uploaded to Eth Plot, we reserve the right to not show those images in our UI.
-    Because Eth Plot uses Ethereum and IPFS, any image you upload is forever stored on the blockchain regardless of
-    its content, we just may decide not to show that image on our UI.  We will not censor anything other than
-    porn or gruesome imagery. Anyone is free to fork our project and host an NSFW version of Eth Plot that does not censor any content.  
+    If illegal images are uploaded to Eth Plot, we will add a flag to the smart contract for that specific plot.  That flag
+    tells us to not render that image in our UI.  This does not remove the image from the Eth Plot contract, it merely restricts
+    that content from being shown in our UI and would allow us to comply with any takedown requests.  Anyone is free
+    to fork our project and host a version of Eth Plot that does not censor any content.  We will not censor any content other
+    than what is deemed illegal in the United States.
   </Typography>
 );
 

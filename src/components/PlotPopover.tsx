@@ -54,7 +54,7 @@ class PlotPopover extends React.Component<PlotPopoverProps> {
       purchaseDateMessage = moment(purchaseDate).fromNow();
     }
 
-    const avatarSrc = (this.props.plot.data.nsfw) ? '' : this.props.plot.data.blobUrl;
+    const avatarSrc = (this.props.plot.data.zoneBlocked) ? '' : this.props.plot.data.blobUrl;
 
     return (<div>
     <Card className={classes.card}>
@@ -80,7 +80,7 @@ class PlotPopover extends React.Component<PlotPopoverProps> {
         <Typography variant="body1">
           <strong>Purchase Price: </strong><span>{formatEthValueToString(this.props.purchaseEventInfo.purchasePrice)}</span>
         </Typography>
-        { (this.props.plot.data.nsfw) ? 
+        { (this.props.plot.data.zoneBlocked) ? 
           <Typography variant="body1" color="error" className={this.props.classes.errorMessage}>
             <span>This image has been flagged as inappropriate. Please see the About section for details.</span>
           </Typography>
