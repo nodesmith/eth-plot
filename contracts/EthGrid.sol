@@ -101,7 +101,24 @@ contract EthGrid is Ownable {
         plotIdToPrice[0] = INITIAL_PLOT_PRICE;
     }
 
-    //----------------------External Functions---------------------//
+    //---------------------- External  and Public Functions ---------------------//
+
+    /// @notice Purchases a new plot with at the location (`purchase[0]`,`purchase[1]`) and dimensions `purchase[2]`x`purchase[2]`.
+    /// The new plot will have the data stored at ipfs hash `ipfsHash` and a website of `url`
+    /// @dev This function is the way you purchase new plots from the chain. The data is specified in a somewhat unique format to
+    /// make the execution of the contract as efficient as possible. Essentially, the caller needs to send in an array of sub-plots which
+    /// form a complete tiling of the purchased area. These sub-plots represent sections of the already existing plots this purchase is
+    /// happing on top of. The contract will validate all of this data before allowing the purchase to proceed
+    /// @param purchase An array of exactly 4 values which represent the [x,y,width,height] of the plot to purchase
+    /// @param purchasedAreas An array of at least 4 values. Each set of 4 values represents a sub-plot which must be purchased for this
+    /// plot to be created. If the new plot to purchase overlaps in a non-rectangle pattern, multiple rectangular sub-plots from that
+    /// plot can be specified. The sub-plots must be from existing plots in descending order of that plot's index
+    /// @param areaIndices An area of indices into the ownership array which represent which plot the rectangles in purchasedAreas are
+    /// coming from. Must be equality 1/4 the length of purchasedAreas
+    /// @param ipfsHash The hash of the image data for this plot stored in ipfs
+    /// @param url The website / url which should be associated with this plot
+    /// @param initialBuyoutPriceInWeiPerPixel The price per pixel a future buyer would have to pay to purchase an area of this plot.
+    /// Set a price of 0 to mark that this plot is not for sale
     function purchaseAreaWithData(
         uint24[] purchase,
         uint24[] purchasedAreas,
@@ -110,20 +127,24 @@ contract EthGrid is Ownable {
         string url,
         uint256 initialBuyoutPriceInWeiPerPixel) external payable {
         
-        uint256 initialPurchasePrice = validatePurchases(purchase, purchasedAreas, areaIndices);
+        // Validate that all of the data makes sense and is valid, then payout the plot sellers
+        uint256 initialPurchasePrice = validatePurchaseAndDistributeFunds(purchase, purchasedAreas, areaIndices);
 
+        // After we've validated that this purchase is valid, actually put the new plot and info in storage locations
         uint256 newPlotIndex = addPlotAndData(purchase, ipfsHash, url, initialBuyoutPriceInWeiPerPixel);
 
         // Now that purchase is completed, update plots that have new holes due to this purchase
-        uint256 i = 0;
-        for (i = 0; i < areaIndices.length; i++) {
+        for (uint256 i = 0; i < areaIndices.length; i++) {
             holes[areaIndices[i]].push(newPlotIndex);
         }
 
+        // Finally, emit an event to indicate that this purchase happened
         emit PlotPurchased(newPlotIndex, initialPurchasePrice, msg.sender);
     }
 
-    // Can also be used to cancel an existing plot sale by sending 0 (or less) as new price.
+    /// @notice Updates the price per pixel of a plot which the message sender owns. A price of 0 means the plot is not for sale
+    /// @param plotIndex The index in the ownership array which we are updating. msg.sender must be the owner of this plot
+    /// @param newPriceInWeiPerPixel The new price of the plot
     function updatePlotPrice(uint256 plotIndex, uint256 newPriceInWeiPerPixel) public {
         require(plotIndex >= 0);
         require(plotIndex < ownership.length);
@@ -132,7 +153,24 @@ contract EthGrid is Ownable {
         plotIdToPrice[plotIndex] = newPriceInWeiPerPixel;
         emit PlotPriceUpdated(plotIndex, newPriceInWeiPerPixel, msg.sender);
     }
+
+    /// @notice Updates the data for a specific plot. This is only allowed by the plot's owner
+    /// @param plotIndex The index in the ownership array which we are updating. msg.sender must be the owner of this plot
+    /// @param ipfsHash The hash of the image data for this plot stored in ipfs
+    /// @param url The website / url which should be associated with this plot
+    function updatePlotData(uint256 plotIndex, string ipfsHash, string url) external {
+        require(plotIndex >= 0);
+        require(plotIndex < ownership.length);
+        require(msg.sender == ownership[plotIndex].owner);
+
+        data[plotIndex] = PlotData(ipfsHash, url);
+    }
+
+    // ----------------------Public Admin Functions---------------------//
     
+    /// @notice Withdraws the fees which have been collected back to the contract owner, who is the only person that can call this
+    /// @param transferTo Who the transfer should go to. This must be the admin, but we pass it as a parameter to prevent a frontrunning
+    /// issue if we change ownership of the contract.
     function withdraw(address transferTo) onlyOwner external {
         // Prevent https://consensys.github.io/smart-contract-best-practices/known_attacks/#transaction-ordering-dependence-tod-front-running
         require(transferTo == owner);
@@ -141,6 +179,10 @@ contract EthGrid is Ownable {
         owner.transfer(currentBalance);
     }
 
+    /// @notice Sets whether or not the image data in a plot should be blocked from the EthPlot UI. This is used to take down
+    /// illegal content if needed. The image data is not actually deleted, just no longer visible in the UI
+    /// @param plotIndex The index in the ownership array where the illegal data is located
+    /// @param plotBlocked Whether or not this data should be blocked
     function togglePlotBlockedTag(uint256 plotIndex, bool plotBlocked) onlyOwner external {
         require(plotIndex >= 0);
         require(plotIndex < ownership.length);
@@ -148,7 +190,12 @@ contract EthGrid is Ownable {
     }
 
     // ----------------------Public View Functions---------------------//
-    function getPlotInfo(uint256 plotIndex) public view returns (uint24, uint24, uint24, uint24, address, uint256) {
+
+    /// @notice Gets the information for a specific plot based on its index.
+    /// @dev Due to stack too deep issues, to get all the info about a plot, you must also call getPlotData in conjunction with this
+    /// @param plotIndex The index in the ownership array to get the plot info for
+    /// @return The coordinates of this plot, the owner address, and the current buyout price of it (0 if not for sale)
+    function getPlotInfo(uint256 plotIndex) public view returns (uint24 x, uint24 y, uint24 w , uint24 h, address owner, uint256 price) {
         require(plotIndex < ownership.length);
         return (
             ownership[plotIndex].x,
@@ -159,11 +206,17 @@ contract EthGrid is Ownable {
             plotIdToPrice[plotIndex]);
     }
 
-    function getPlotData(uint256 plotIndex) public view returns (string, string, bool) {
+    /// @notice Gets the data stored with a specific plot. This includes the website, ipfs hash, and the blocked status of the image
+    /// @dev Due to stack too deep issues, to get all the info about a plot, you must also call getPlotInfo in conjunction with this
+    /// @param plotIndex The index in the ownership array to get the plot data for
+    /// @return The ipfsHash of the plot's image, the website associated with the plot, and whether or not its image is blocked
+    function getPlotData(uint256 plotIndex) public view returns (string ipfsHash, string url, bool plotBlocked) {
         require(plotIndex < ownership.length);
         return (data[plotIndex].url, data[plotIndex].ipfsHash, plotBlockedTags[plotIndex]);
     }
     
+    /// @notice Gets the length of the ownership array which represents the number of owned plots which exist
+    /// @return The number of plots which are owned on the grid
     function ownershipLength() public view returns (uint256) {
         return ownership.length;
     }
@@ -216,7 +269,7 @@ contract EthGrid is Ownable {
         return remainingBalance;
     }
 
-    function validatePurchases(uint24[] purchase, uint24[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
+    function validatePurchaseAndDistributeFunds(uint24[] purchase, uint24[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
         require(purchase.length == 4);
         Geometry.Rect memory rectToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         
