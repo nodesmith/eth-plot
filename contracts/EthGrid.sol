@@ -28,6 +28,8 @@ contract EthGrid is Ownable {
         uint24 w;
         uint24 h;
 
+        // Geometry.Rect rect;
+
         // The owner of the zone
         address owner;
     }
@@ -39,7 +41,7 @@ contract EthGrid is Ownable {
     }
 
     //----------------------State---------------------//
-    ZoneOwnership[] public ownership;
+    ZoneOwnership[] private ownership;
 
     mapping(uint256 => ZoneData) public data;
     
@@ -84,14 +86,20 @@ contract EthGrid is Ownable {
         
         uint256 initialPurchasePrice = validatePurchases(purchase, purchasedAreas, areaIndices);
 
-        // plotOwners.push(msg.sender);
-        holes[ownership.length] = new uint256[](0);
+        uint256 newZoneIndex = addPlotAndData(purchase, ipfsHash, url, initialBuyoutPriceInWeiPerPixel);
 
         // Now that purchase is completed, update zones that have new holes due to this purchase
         uint256 i = 0;
         for (i = 0; i < areaIndices.length; i++) {
-            holes[areaIndices[i]].push(ownership.length);
+            holes[areaIndices[i]].push(newZoneIndex);
         }
+
+        emit PlotPurchased(newZoneIndex, initialPurchasePrice, msg.sender);
+    }
+
+    function addPlotAndData(uint24[] purchase, string ipfsHash, string url, uint256 initialBuyoutPriceInWeiPerPixel) private returns (uint256) {
+        // plotOwners.push(msg.sender);
+        holes[ownership.length] = new uint256[](0);
 
         // Take in the input data for the actual grid!
         data[ownership.length] = ZoneData(ipfsHash, url);
@@ -99,19 +107,12 @@ contract EthGrid is Ownable {
         // Set an initial purchase price for the new plot as specified and emit a purchased event
         tokenIdToAuction[ownership.length] = initialBuyoutPriceInWeiPerPixel;
 
-        // setAuctionPrice(ownership.length - 1, initialBuyoutPriceInWeiPerPixel);
-        emit PlotPurchased(ownership.length, initialPurchasePrice, msg.sender);
-
         // Add the new ownership to the array
-        ZoneOwnership memory newZone = ZoneOwnership({
-            x: purchase[0],
-            y: purchase[1],
-            w: purchase[2],
-            h: purchase[3],
-            owner: msg.sender
-        });
+        ZoneOwnership memory newZone = ZoneOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender);
 
         ownership.push(newZone);
+
+        return ownership.length - 1;
     }
 
     // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
@@ -170,6 +171,7 @@ contract EthGrid is Ownable {
         for (uint256 areaIndicesIndex = 0; areaIndicesIndex < areaIndices.length; areaIndicesIndex++) {
             uint256 ownershipIndex = areaIndices[areaIndicesIndex];
 
+            // Geometry.Rect memory currentOwnershipRect = ownership[ownershipIndex].rect;
             Geometry.Rect memory currentOwnershipRect = Geometry.Rect(
                 ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
@@ -179,21 +181,21 @@ contract EthGrid is Ownable {
             Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
 
             // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership zone
-            require(rects[areaIndicesIndex].x >= overlap.x);
-            require(rects[areaIndicesIndex].y >= overlap.y);
-            require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
-            require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
+            require(Geometry.rectContainedInside(rects[areaIndicesIndex], overlap));
 
             // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
             for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
-                ZoneOwnership memory holeOwnership = ownership[holes[ownershipIndex][holeIndex]];
-                Geometry.Rect memory holeRect = Geometry.Rect(
-                    holeOwnership.x,
-                    holeOwnership.y,
-                    holeOwnership.w,
-                    holeOwnership.h);
+                ZoneOwnership memory holePlot = ownership[holes[ownershipIndex][holeIndex]];
+                
+                // Geometry.Rect memory holeRect = Geometry.Rect(
+                //     holeOwnership.x,
+                //     holeOwnership.y,
+                //     holeOwnership.w,
+                //     holeOwnership.h);
 
-                require(!Geometry.doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
+                require(
+                    !Geometry.doRectanglesOverlap(rects[areaIndicesIndex],
+                    Geometry.Rect(holePlot.x, holePlot.y, holePlot.w, holePlot.h)));
             }
 
 
@@ -246,11 +248,6 @@ contract EthGrid is Ownable {
 
             // Verify that this rectangle is within the bounds of the area we are trying to purchase
             require(Geometry.rectContainedInside(rect, rectToPurchase));
-
-            // require(rect.x >= rectToPurchase.x);
-            // require(rect.y >= rectToPurchase.y);
-            // require(rect.x + rect.w <= rectToPurchase.x + rectToPurchase.w);
-            // require(rect.y + rect.h <= rectToPurchase.y + rectToPurchase.h);
         }
 
         require(totalArea == rectToPurchase.w * rectToPurchase.h);

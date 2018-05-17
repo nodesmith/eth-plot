@@ -132,6 +132,7 @@ contract('EthGrid', (accounts: string[]) => {
 
     let totalGas = new BigNumber(0);
     const shortened = generated100.slice(10, 40);
+    // const shortened = generated100.slice(10, 80);
     for (let index = 0; index < shortened.length; index++) {
       const rectInfo = shortened[index];
       console.log(`Purchasing: ${JSON.stringify(rectInfo.rect)}`);

@@ -83,12 +83,10 @@ export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Actio
 }
 
 export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispatch: Dispatch<{}>) {
-  const rect = await contract.ownership(plotIndex);
-  // const owner = await contract.plotOwners(plotIndex);
-  const buyoutPrice = await contract.tokenIdToAuction(plotIndex);
+  const rect = await contract.getPlotInfo(plotIndex);
   const zoneData = await contract.data(plotIndex);
 
-  const ipfsHash = zoneData[1];
+  const ipfsHash = zoneData[0];
 
   const plot: PlotInfo = {
     rect: {
@@ -100,9 +98,9 @@ export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispat
       y2: 0
     },
     owner: rect[4].toString(),
-    buyoutPricePerPixelInWei: buyoutPrice.toString(),
+    buyoutPricePerPixelInWei: rect[5].toString(),
     data: {
-      url: zoneData[0],
+      url: zoneData[1],
       ipfsHash,
       blobUrl: typeof URL !== 'undefined' ? URL.createObjectURL(await loadFromIpfsOrCache(ipfsHash)) : ipfsHash
     },
@@ -183,8 +181,8 @@ export function purchasePlot(
 
     const tx = contract.purchaseAreaWithDataTx(
       purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialBuyoutPerPixelInWeiBN);
-    // const gasEstimateAct = await tx.estimateGas({ value: purchasePriceInWei });
-    const gasEstimate = new BigNumber(433915);
+    const gasEstimate = await tx.estimateGas({ value: purchasePriceInWei });
+     // const gasEstimate = new BigNumber(433915);
     console.log(`Gas estimate was ${gasEstimate}`);
     const txObject = {
       from: activeAccount,
