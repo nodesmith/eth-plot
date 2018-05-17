@@ -3,7 +3,7 @@ import { Dispatch } from 'react-redux';
 import * as Web3 from 'web3';
 
 import { DecodedLogEntry } from '../../gen-src/typechain-runtime';
-import { EthGrid } from '../../gen-src/EthGrid';
+import { EthGrid, EthGridEventTypes } from '../../gen-src/EthGrid';
 import * as DataActions from '../actionCreators/DataActions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
@@ -128,14 +128,14 @@ async function loadAndWatchAuctionEvents(contract: EthGrid, currentAddress: stri
   const auctionEvents = await auctionEvent.get({ fromBlock: 0, toBlock: 'latest' });
   let latestBlock = 0;
   auctionEvents.forEach(tx => {
-    genericTransactionHandler(tx, (<BigNumber>tx.args.tokenId).toNumber(), Enums.TxType.AUCTION, dispatch, web3);
+    genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.AUCTION, dispatch, web3);
     latestBlock = Math.max(latestBlock, tx.blockNumber!);
   });
   
   // We really should return this in some way since we need to stop listening to it
   return auctionEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
     if (!err) {
-      genericTransactionHandler(tx, (<BigNumber>tx.args.tokenId).toNumber(), Enums.TxType.AUCTION, dispatch, web3);
+      genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.AUCTION, dispatch, web3);
     }
   });
 }
@@ -171,10 +171,11 @@ export async function loadAndWatchPurchaseEvents(
 }
 
 async function handleNewPurchaseEvent(
-  tx: any, contract: EthGrid, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
+  tx: DecodedLogEntry<EthGridEventTypes.PlotPurchasedEventArgs>,
+  contract: EthGrid, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
 
-  await DataActions.addPlotToGrid(contract, new BigNumber(tx.args.newZoneId).toNumber(), dispatch);
-  const newZoneId = (<BigNumber>tx.args.newZoneId).toNumber();
+  await DataActions.addPlotToGrid(contract, new BigNumber(tx.args.newPlotId).toNumber(), dispatch);
+  const newZoneId = (<BigNumber>tx.args.newPlotId).toNumber();
   
   const newPurchaseEventInfo: PurchaseEventInfo = { 
     purchaseIndex: newZoneId,
