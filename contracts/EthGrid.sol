@@ -28,8 +28,6 @@ contract EthGrid is Ownable {
         uint24 w;
         uint24 h;
 
-        // Geometry.Rect rect;
-
         // The owner of the zone
         address owner;
     }
@@ -69,7 +67,6 @@ contract EthGrid is Ownable {
     constructor() public payable {
         // Initialize the contract with a single block which the admin owns
         ownership.push(ZoneOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner));
-        holes[0] = new uint256[](0);
         data[0] = ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/");
         tokenIdToAuction[0] = INITIAL_AUCTION_PRICE;
     }
@@ -98,21 +95,21 @@ contract EthGrid is Ownable {
     }
 
     function addPlotAndData(uint24[] purchase, string ipfsHash, string url, uint256 initialBuyoutPriceInWeiPerPixel) private returns (uint256) {
-        // plotOwners.push(msg.sender);
-        holes[ownership.length] = new uint256[](0);
-
-        // Take in the input data for the actual grid!
-        data[ownership.length] = ZoneData(ipfsHash, url);
-
-        // Set an initial purchase price for the new plot as specified and emit a purchased event
-        tokenIdToAuction[ownership.length] = initialBuyoutPriceInWeiPerPixel;
+        uint256 newZoneIndex = ownership.length;
 
         // Add the new ownership to the array
-        ZoneOwnership memory newZone = ZoneOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender);
+        // ZoneOwnership memory newZone = ZoneOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender);
+        ownership.push(ZoneOwnership(purchase[0], purchase[1], purchase[2], purchase[3], msg.sender));
 
-        ownership.push(newZone);
+        // Take in the input data for the actual grid!
+        data[newZoneIndex] = ZoneData(ipfsHash, url);
 
-        return ownership.length - 1;
+        // Set an initial purchase price for the new plot if it's greater than 0
+        if (initialBuyoutPriceInWeiPerPixel > 0) {
+            updateAuction(newZoneIndex, initialBuyoutPriceInWeiPerPixel);
+        }
+
+        return newZoneIndex;
     }
 
     // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
@@ -153,9 +150,7 @@ contract EthGrid is Ownable {
     function getPlotData(uint256 zoneIndex) public view returns (string, string) {
 
         require(zoneIndex < ownership.length);
-        return (
-            data[zoneIndex].url,
-            data[zoneIndex].ipfsHash);
+        return (data[zoneIndex].url, data[zoneIndex].ipfsHash);
     }
 
     function ownershipLength() public view returns (uint256) {
@@ -186,12 +181,6 @@ contract EthGrid is Ownable {
             // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
             for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
                 ZoneOwnership memory holePlot = ownership[holes[ownershipIndex][holeIndex]];
-                
-                // Geometry.Rect memory holeRect = Geometry.Rect(
-                //     holeOwnership.x,
-                //     holeOwnership.y,
-                //     holeOwnership.w,
-                //     holeOwnership.h);
 
                 require(
                     !Geometry.doRectanglesOverlap(rects[areaIndicesIndex],
