@@ -18,7 +18,9 @@ type UnregisterFn = () => Promise<void>;
 let unregisterFn: UnregisterFn;
 
 export async function unregisterEventListners() {
-  await unregisterFn();
+  if (unregisterFn) {
+    await unregisterFn();
+  }
 }
 
 export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {

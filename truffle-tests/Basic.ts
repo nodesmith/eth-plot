@@ -25,10 +25,14 @@ const STANDARD_GAS = '2000000';
 const initializeStoreAndLoadPlots = async (contractAddress: string, web3Provider: string, currentAddress: string): Promise<Store<RootState>> => {
   const store = configureStore();
   store.dispatch(DataActions.setWeb3Config({ contractAddress, web3Provider }));
-  
-  const loadDataThunk = AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, currentAddress);
-  await loadDataThunk(store.dispatch);
 
+  return await reloadPlots(store, currentAddress);
+};
+
+const reloadPlots = async (store: Store<RootState>, account: string): Promise<Store<RootState>> => {
+  await AccountActions.unregisterEventListners();
+  store.dispatch(DataActions.clearPlots());
+  await AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, account || '0x0')(store.dispatch);
   return store;
 };
 
@@ -49,7 +53,7 @@ contract('EthGrid', (accounts: string[]) => {
   });
 
   afterEach(async () => {
-    await AccountActions.unregisterEventListners();
+    await reloadPlots(store, accounts[0]);
   });
 
   it('Contract initialized as expected', async () => {
@@ -88,7 +92,7 @@ contract('EthGrid', (accounts: string[]) => {
     const transactionHash = await purchaseAction(store.dispatch);
 
     // Reload the data and make sure that we have the right number of plots and right owners
-    await AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, buyerAccount)(store.dispatch);
+    await reloadPlots(store, buyerAccount);
 
     const loadedPlots = store.getState().data.plots;
     assert.equal(loadedPlots.length, 2);
@@ -129,22 +133,19 @@ contract('EthGrid', (accounts: string[]) => {
   });
 
   it('Purchase a bunch of plots', async() => {
-
     let totalGas = new BigNumber(0);
+    const numPlotsBefore = store.getState().data.plots.length;
+
+    // Shorten the number of iterations we're doing to 30
     const shortened = generated100.slice(10, 40);
-    // const shortened = generated100.slice(10, 80);
     for (let index = 0; index < shortened.length; index++) {
       const rectInfo = shortened[index];
       console.log(`Purchasing: ${JSON.stringify(rectInfo.rect)}`);
       const state = store.getState();
       const rectToPurchase: Rect = rectInfo.rect;
       const purchaseInfo = computePurchaseInfo(rectToPurchase, state.data.plots);
-      if (!purchaseInfo.isValid) {
-        debugger;
-      }
+      assert.isTrue(purchaseInfo.isValid);
 
-      console.log(purchaseInfo.purchaseData!.chunksToPurchase);
-      
       const purchaseData = purchaseInfo.purchaseData!;
       const purchaseUrl = '';
       const buyoutPrice = new BigNumber(purchaseData.purchasePrice).times(2);
@@ -165,14 +166,21 @@ contract('EthGrid', (accounts: string[]) => {
 
       // Make the purchase
       const transactionHash = await purchaseAction(store.dispatch);
-      const blockInfo = <Web3.BlockWithoutTransactionData>(await promisify(web3.eth.getBlock, ['latest']));
-      const gasUsed = blockInfo.gasUsed;
+      const transactionInfo: Web3.TransactionReceipt = await promisify(web3.eth.getTransactionReceipt, [transactionHash]);
+      const gasUsed = transactionInfo.gasUsed;
       totalGas = totalGas.plus(gasUsed);
       console.log(`Gas used after ${index} - ${totalGas.toString()}`);
 
       // Reload the data and make sure that we have the right number of plots and right owners
-      await AccountActions.unregisterEventListners();
-      await AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, buyerAccount)(store.dispatch);
+      await reloadPlots(store, accounts[0]);
     }
+
+    // Make sure we bought enough plots
+    const numPlotsAfter = store.getState().data.plots.length;
+    assert.equal(numPlotsAfter, numPlotsBefore + shortened.length);
+
+    // Make sure we're not averaging greater than 300,000 gas per transaction
+    const acceptableCostPerTransaction = 300000;
+    assert.isTrue(totalGas.dividedBy(shortened.length).lessThan(acceptableCostPerTransaction));
   });
 });
