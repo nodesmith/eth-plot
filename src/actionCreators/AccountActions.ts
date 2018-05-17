@@ -96,7 +96,7 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
     dispatch(loadTransactions());
     dispatch(DataActions.clearPlots());
 
-    const newWeb3 = getWeb3(contractInfo);
+    const newWeb3 = getWeb3(contractInfo.web3Provider);
     const contract = await DataActions.initializeContract(contractInfo);
 
     const numberOfPlots = await contract.ownershipLength;
