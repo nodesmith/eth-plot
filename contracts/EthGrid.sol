@@ -22,10 +22,10 @@ contract EthGrid is Ownable {
     struct ZoneOwnership {
 
         // Coordinates of the plot rectangle
-        uint16 x;
-        uint16 y;
-        uint16 w;
-        uint16 h;
+        uint24 x;
+        uint24 y;
+        uint24 w;
+        uint24 h;
 
         // The owner of the zone
         address owner;
@@ -44,23 +44,25 @@ contract EthGrid is Ownable {
 
     //----------------------State---------------------//
     ZoneOwnership[] public ownership;
-    ZoneData[] public data;
+
+    mapping(uint256 => ZoneData) public data;
     
     // Maps zone ID to auction price. If price is 0, no auction is 
     // available for that zone. Price is Wei per pixel.
-    mapping (uint256 => uint256) public tokenIdToAuction;
+    mapping(uint256 => uint256) public tokenIdToAuction;
 
     mapping(uint256 => uint256[]) public holes;
+    // address[] public plotOwners;
     
     //----------------------Constants---------------------//
-    uint16 constant private GRID_WIDTH = 250;
-    uint16 constant private GRID_HEIGHT = 250;
-    uint56 constant private INITIAL_AUCTION_PRICE = 20000 * 1000000000; // 20000 gwei (approx. $0.01)
-    uint56 constant private FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Initial fee is 1%
+    uint24 constant private GRID_WIDTH = 250;
+    uint24 constant private GRID_HEIGHT = 250;
+    uint256 constant private INITIAL_AUCTION_PRICE = 20000 * 1000000000; // 20000 gwei (approx. $0.01)
+    uint256 constant private FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Initial fee is 1%
 
     // This is the maximum area of a single purchase block. This needs to be limited for the
     // algorithm which figures out payment to function
-    uint16 constant private MAXIMUM_PURCHASE_AREA = 1000;
+    uint256 constant private MAXIMUM_PURCHASE_AREA = 1000;
       
     //----------------------Events---------------------//
     event AuctionUpdated(uint256 tokenId, uint256 newPriceInWeiPerPixel, address indexed owner);
@@ -70,15 +72,18 @@ contract EthGrid is Ownable {
     constructor() public payable {
         // Initialize the contract with a single block which the admin owns
         ownership.push(ZoneOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner));
-        data.push(ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/"));
-        setAuctionPrice(0, INITIAL_AUCTION_PRICE);
+        // plotOwners.push(owner);
+        holes[0] = new uint256[](0);
+        data[0] = ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/");
+        tokenIdToAuction[0] = INITIAL_AUCTION_PRICE;
+        // setAuctionPrice(0, INITIAL_AUCTION_PRICE);
     }
 
 
     //----------------------External Functions---------------------//
     function purchaseAreaWithData(
-        uint16[] purchase,
-        uint16[] purchasedAreas,
+        uint24[] purchase,
+        uint256[] purchasedAreas,
         uint256[] areaIndices,
         string ipfsHash,
         string url,
@@ -86,28 +91,34 @@ contract EthGrid is Ownable {
         
         uint256 initialPurchasePrice = validatePurchases(purchase, purchasedAreas, areaIndices);
 
-        // Add the new ownership to the array
-        ZoneOwnership memory newZone = ZoneOwnership({
-            owner: msg.sender,
-            x: purchase[0],
-            y: purchase[1],
-            w: purchase[2],
-            h: purchase[3]
-        });
-        ownership.push(newZone);
+        // plotOwners.push(msg.sender);
+        holes[ownership.length] = new uint256[](0);
 
         // Now that purchase is completed, update zones that have new holes due to this purchase
         uint256 i = 0;
         for (i = 0; i < areaIndices.length; i++) {
-            holes[areaIndices[i]].push(ownership.length - 1);
+            holes[areaIndices[i]].push(ownership.length);
         }
 
         // Take in the input data for the actual grid!
-        data.push(ZoneData(ipfsHash, url));
+        data[ownership.length] = ZoneData(ipfsHash, url);
 
         // Set an initial purchase price for the new plot as specified and emit a purchased event
-        setAuctionPrice(ownership.length - 1, initialBuyoutPriceInWeiPerPixel);
-        emit PlotPurchased(ownership.length - 1, initialPurchasePrice, msg.sender);
+        tokenIdToAuction[ownership.length] = initialBuyoutPriceInWeiPerPixel;
+
+        // setAuctionPrice(ownership.length - 1, initialBuyoutPriceInWeiPerPixel);
+        emit PlotPurchased(ownership.length, initialPurchasePrice, msg.sender);
+
+        // Add the new ownership to the array
+        ZoneOwnership memory newZone = ZoneOwnership({
+            x: purchase[0],
+            y: purchase[1],
+            w: purchase[2],
+            h: purchase[3],
+            owner: msg.sender
+        });
+        ownership.push(newZone);
+
     }
 
     // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
@@ -133,22 +144,22 @@ contract EthGrid is Ownable {
     }
 
     //----------------------Public View Functions---------------------//
-    function getPlot(uint256 zoneIndex) public view returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
-        require(zoneIndex < ownership.length);
+    // function getPlot(uint256 zoneIndex) public view returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
+    //     require(zoneIndex < ownership.length);
 
-        uint256 price = tokenIdToAuction[zoneIndex];
-        ZoneData memory zoneData = data[zoneIndex];
+    //     // uint256 price = tokenIdToAuction[zoneIndex];
+    //     // ZoneData memory zoneData = data[zoneIndex];
 
-        return (
-            ownership[zoneIndex].x,
-            ownership[zoneIndex].y,
-            ownership[zoneIndex].w,
-            ownership[zoneIndex].h,
-            ownership[zoneIndex].owner,
-            price,
-            zoneData.url,
-            zoneData.ipfsHash);
-    }
+    //     return (
+    //         ownership[zoneIndex].x,
+    //         ownership[zoneIndex].y,
+    //         ownership[zoneIndex].w,
+    //         ownership[zoneIndex].h,
+    //         plotOwners[zoneIndex],
+    //         tokenIdToAuction[zoneIndex],
+    //         data[zoneIndex].url,
+    //         data[zoneIndex].ipfsHash);
+    // }
 
     function ownershipLength() public view returns (uint256) {
         return ownership.length;
@@ -158,66 +169,113 @@ contract EthGrid is Ownable {
     function distributePurchaseFunds(
         Geometry.Rect memory rectToPurchase, Geometry.Rect[] memory rects, uint256[] memory areaIndices) private returns (uint256) {
         uint256 remainingBalance = msg.value;
-        uint256 areaIndicesIndex = 0;
 
-        // Walk the ownership array backwards. Do funny checks for incrementing and decrementing indices becaues uints will wrap
-        for (uint256 ownershipIndex = ownership.length - 1;
-             areaIndicesIndex < areaIndices.length && ownershipIndex < ownership.length;
-             ownershipIndex--) {
+        uint256 owedToSeller = 0;
+        for (uint256 areaIndicesIndex = 0; areaIndicesIndex < areaIndices.length; areaIndicesIndex++) {
+            uint256 ownershipIndex = areaIndices[areaIndicesIndex];
 
             Geometry.Rect memory currentOwnershipRect = Geometry.Rect(
                 ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
-            uint256 owedToSeller = 0;
+            // This is a zone the caller has declared they were going to buy
+            // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
+            require(Geometry.doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
+            Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
 
-            // Keep looping through while we are declaring that we want this area
-            while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
-                // This is a zone the caller has declared they were going to buy
-                // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
-                require(Geometry.doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
-                Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
+            // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership zone
+            require(rects[areaIndicesIndex].x >= overlap.x);
+            require(rects[areaIndicesIndex].y >= overlap.y);
+            require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
+            require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
 
-                // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership zone
-                require(rects[areaIndicesIndex].x >= overlap.x);
-                require(rects[areaIndicesIndex].y >= overlap.y);
-                require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
-                require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
+            // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
+            for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
+                ZoneOwnership memory holeOwnership = ownership[holes[ownershipIndex][holeIndex]];
+                Geometry.Rect memory holeRect = Geometry.Rect(
+                    holeOwnership.x,
+                    holeOwnership.y,
+                    holeOwnership.w,
+                    holeOwnership.h);
 
-                // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
-                for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
-                    ZoneOwnership memory holeOwnership = ownership[holes[ownershipIndex][holeIndex]];
-                    Geometry.Rect memory holeRect = Geometry.Rect(
-                        holeOwnership.x,
-                        holeOwnership.y,
-                        holeOwnership.w,
-                        holeOwnership.h);
-
-                    require(!Geometry.doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
-                }
-
-
-                // Finally, add the price of this rect to the totalPrice computation
-                uint256 sectionPrice = getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
-                remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
-                owedToSeller = SafeMath.add(owedToSeller, sectionPrice);
-
-                areaIndicesIndex++;
+                require(!Geometry.doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
             }
 
-            if (owedToSeller > 0) {
+
+            // Finally, add the price of this rect to the totalPrice computation
+            uint256 sectionPrice = getPriceOfAuctionedZone(rects[areaIndicesIndex], ownershipIndex);
+            remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
+            owedToSeller = SafeMath.add(owedToSeller, sectionPrice);
+
+            // If this is the last one to look at, or if the next ownership index is different, payout this owner
+            if (areaIndicesIndex == areaIndices.length - 1 || ownershipIndex != areaIndices[areaIndicesIndex + 1]) {
                 // Update the balances and emit an event to indicate the chunks of this plot which were sold
                 address(ownership[ownershipIndex].owner).transfer(owedToSeller);
                 emit PlotSectionSold(ownershipIndex, owedToSeller, msg.sender, ownership[ownershipIndex].owner);
+                owedToSeller = 0;
             }
         }
+        
+        
+        // uint256 areaIndicesIndex = 0;
 
-        // This means we checked every area index
-        require(areaIndicesIndex == areaIndices.length);
+        // // Walk the ownership array backwards. Do funny checks for incrementing and decrementing indices becaues uints will wrap
+        // for (uint256 ownershipIndex = ownership.length - 1;
+        //      areaIndicesIndex < areaIndices.length && ownershipIndex < ownership.length;
+        //      ownershipIndex--) {
+
+        //     uint256 owedToSeller = 0;
+
+        //     // Keep looping through while we are declaring that we want this area
+        //     while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
+        //         Geometry.Rect memory currentOwnershipRect = Geometry.Rect(
+        //             ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
+
+        //         // This is a zone the caller has declared they were going to buy
+        //         // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
+        //         require(Geometry.doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
+        //         Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
+
+        //         // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership zone
+        //         require(rects[areaIndicesIndex].x >= overlap.x);
+        //         require(rects[areaIndicesIndex].y >= overlap.y);
+        //         require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
+        //         require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
+
+        //         // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
+        //         for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
+        //             ZoneOwnership memory holeOwnership = ownership[holes[ownershipIndex][holeIndex]];
+        //             Geometry.Rect memory holeRect = Geometry.Rect(
+        //                 holeOwnership.x,
+        //                 holeOwnership.y,
+        //                 holeOwnership.w,
+        //                 holeOwnership.h);
+
+        //             require(!Geometry.doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
+        //         }
+
+
+        //         // Finally, add the price of this rect to the totalPrice computation
+        //         uint256 sectionPrice = getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
+        //         remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
+        //         owedToSeller = SafeMath.add(owedToSeller, sectionPrice);
+
+        //         areaIndicesIndex++;
+        //     }
+
+        //     if (owedToSeller > 0) {
+        //         // Update the balances and emit an event to indicate the chunks of this plot which were sold
+        //         address(ownership[ownershipIndex].owner).transfer(owedToSeller);
+        //         emit PlotSectionSold(ownershipIndex, owedToSeller, msg.sender, ownership[ownershipIndex].owner);
+        //     }
+        // }
+
+        // // This means we checked every area index
+        // require(areaIndicesIndex == areaIndices.length);
 
         return remainingBalance;
     }
 
-    function validatePurchases(uint16[] purchase, uint16[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
+    function validatePurchases(uint24[] purchase, uint256[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
         require(purchase.length == 4);
         Geometry.Rect memory rectToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         

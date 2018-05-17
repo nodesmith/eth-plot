@@ -141,11 +141,13 @@ contract('EthGrid', (accounts: string[]) => {
       if (!purchaseInfo.isValid) {
         debugger;
       }
+
+      console.log(purchaseInfo.purchaseData!.chunksToPurchase);
       
       const purchaseData = purchaseInfo.purchaseData!;
-      const purchaseUrl = 'https://a.bc';
+      const purchaseUrl = '';
       const buyoutPrice = new BigNumber(purchaseData.purchasePrice).times(2);
-      const ipfsHash = 'hash';
+      const ipfsHash = '';
 
       const buyerAccount = accounts[rectInfo.purchaser];
 
