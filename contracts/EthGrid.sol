@@ -26,7 +26,12 @@ contract EthGrid is Ownable {
     uint public feeInThousandsOfPercent;
     ZoneOwnership[] public ownership;
     ZoneData[] public data;
-    
+
+    // Maps zone ID to a boolean that represents whether or not
+    // the image of the zone might be illegal and need to be blocked
+    // in the UI of Eth Plot. Defaults to false.
+    mapping (uint256 => bool) public zoneBlockedTags;
+
     // Maps zone ID to auction price. If price is 0, no auction is 
     // available for that zone. Price is Wei per pixel.
     mapping (uint256 => uint256) public tokenIdToAuction;
@@ -115,6 +120,12 @@ contract EthGrid is Ownable {
         owner.transfer(currentBalance);
     }
 
+    function toggleZoneBlockedTag(uint256 zoneIndex, bool zoneBlocked) onlyOwner external {
+        require(zoneIndex >= 0);
+        require(zoneIndex < ownership.length);
+        zoneBlockedTags[zoneIndex] = zoneBlocked;
+    }
+
     //----------------------Public View Functions---------------------//
     function getPlot(uint256 zoneIndex) public view returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
         require(zoneIndex < ownership.length);
@@ -131,6 +142,14 @@ contract EthGrid is Ownable {
             price,
             zoneData.url,
             zoneData.ipfsHash);
+    }
+
+    // This is split into its own method because if combined with getPlot,
+    // a Stack Too Deep exception is thrown
+    function getPlotBlockedStatus(uint256 zoneIndex) public view returns (bool) {
+        require(zoneIndex < ownership.length);
+        bool zoneBlocked = zoneBlockedTags[zoneIndex] || false;
+        return (zoneBlocked);
     }
 
     function ownershipLength() public view returns (uint256) {

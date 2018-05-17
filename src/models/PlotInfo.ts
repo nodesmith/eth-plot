@@ -4,6 +4,7 @@ export interface PlotInfo {
   rect: Rect;
   data: {
     url: string;
+    zoneBlocked: boolean;
     ipfsHash: string;
     blobUrl: string;
   };

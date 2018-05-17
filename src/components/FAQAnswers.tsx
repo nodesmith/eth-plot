@@ -121,9 +121,19 @@ export const gameplayAnswer3 = () => (
 
 export const gameplayAnswer4 = () => (
   <Typography variant="body2">
-    There is a small fee when purchasing a plot through the Eth Plot UI (just 1%).  The UI is provided as a conenvience
+    There is a small fee when purchasing a plot through the Eth Plot UI (just 1%).  The UI is provided as a convenience
     to users, but any user is more than welcome to interact directly with the Eth Plot smart contract and 
     avoid the fees entirely.  
+  </Typography>
+);
+
+export const gameplayAnswer5 = () => (
+  <Typography variant="body2">
+    If illegal images are uploaded to Eth Plot, we will add a flag to the smart contract for that specific plot.  That flag
+    tells us to not render that image in our UI.  This does not remove the image from the Eth Plot contract, it merely restricts
+    that content from being shown in our UI and would allow us to comply with any takedown requests.  Anyone is free
+    to fork our project and host a version of Eth Plot that does not censor any content.  We will not censor any content other
+    than what is deemed illegal in the United States.
   </Typography>
 );
 
