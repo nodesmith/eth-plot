@@ -114,7 +114,7 @@ contract EthGrid is Ownable {
     /// plot to be created. If the new plot to purchase overlaps in a non-rectangle pattern, multiple rectangular sub-plots from that
     /// plot can be specified. The sub-plots must be from existing plots in descending order of that plot's index
     /// @param areaIndices An area of indices into the ownership array which represent which plot the rectangles in purchasedAreas are
-    /// coming from. Must be equality 1/4 the length of purchasedAreas
+    /// coming from. Must be equal to 1/4 the length of purchasedAreas
     /// @param ipfsHash The hash of the image data for this plot stored in ipfs
     /// @param url The website / url which should be associated with this plot
     /// @param initialBuyoutPriceInWeiPerPixel The price per pixel a future buyer would have to pay to purchase an area of this plot.
@@ -166,7 +166,7 @@ contract EthGrid is Ownable {
         data[plotIndex] = PlotData(ipfsHash, url);
     }
 
-    // ----------------------Public Admin Functions---------------------//
+    // ---------------------- Public Admin Functions ---------------------//
     
     /// @notice Withdraws the fees which have been collected back to the contract owner, who is the only person that can call this
     /// @param transferTo Who the transfer should go to. This must be the admin, but we pass it as a parameter to prevent a frontrunning
@@ -189,7 +189,7 @@ contract EthGrid is Ownable {
         plotBlockedTags[plotIndex] = plotBlocked;
     }
 
-    // ----------------------Public View Functions---------------------//
+    // ---------------------- Public View Functions ---------------------//
 
     /// @notice Gets the information for a specific plot based on its index.
     /// @dev Due to stack too deep issues, to get all the info about a plot, you must also call getPlotData in conjunction with this
@@ -221,39 +221,126 @@ contract EthGrid is Ownable {
         return ownership.length;
     }
     
-    //----------------------Private Functions---------------------//
-    function distributePurchaseFunds(
-        Geometry.Rect memory rectToPurchase, Geometry.Rect[] memory rects, uint256[] memory areaIndices) private returns (uint256) {
+    //---------------------- Private Functions ---------------------//
+
+    /// @notice This function does a lot of the heavy lifing for validating that all of the data passed in to the purchase function is ok.
+    /// @dev It works by first validating all of the inputs and converting purchase and purchasedAreas into rectangles for easier manipulation.
+    /// Next, it validates that all of the rectangles in purchasedArea are within the area to purchase, and that they form a complete tiling of
+    /// the purchase we are making with zero overlap. Next, to prevent stack too deep errors, it delegates the work of validating that these sub-plots
+    /// are actually for sale, are valid, and pays out the previous owners of the area. Finally, the fees for the transaction are calculated
+    /// and we make sure that the message was sent with enough funds to cover all the costs
+    /// @param purchase An array of exactly 4 values which represent the [x,y,width,height] of the plot to purchase
+    /// @param purchasedAreas An array of at least 4 values. Each set of 4 values represents a sub-plot which must be purchased for this
+    /// plot to be created.
+    /// @param areaIndices An area of indices into the ownership array which represent which plot the rectangles in purchasedAreas are from
+    /// @return The amount spent to purchase all of the subplots specified in purchasedAreas
+    function validatePurchaseAndDistributeFunds(uint24[] purchase, uint24[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
+        // Validate that we were given a valid area to purchase
+        require(purchase.length == 4);
+        Geometry.Rect memory plotToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
+        
+        require(plotToPurchase.x < GRID_WIDTH && plotToPurchase.x >= 0);
+        require(plotToPurchase.y < GRID_HEIGHT && plotToPurchase.y >= 0);
+
+        // No need for SafeMath here because we know plotToPurchase.x & plotToPurchase.y are less than 250 (~2^8)
+        require(plotToPurchase.w > 0 && plotToPurchase.w + plotToPurchase.x <= GRID_WIDTH);
+        require(plotToPurchase.h > 0 && plotToPurchase.h + plotToPurchase.y <= GRID_HEIGHT);
+        require(plotToPurchase.w * plotToPurchase.h < MAXIMUM_PURCHASE_AREA);
+
+        // Validate the purchasedAreas and the purchasedArea's indices
+        require(purchasedAreas.length >= 4);
+        require(areaIndices.length > 0);
+        require(purchasedAreas.length % 4 == 0);
+        require(purchasedAreas.length / 4 == areaIndices.length);
+
+        // Build up an array of subPlots which represent all of the sub-plots we are purchasing
+        Geometry.Rect[] memory subPlots = new Geometry.Rect[](areaIndices.length);
+
+        uint256 totalArea = 0;
+        uint256 i = 0;
+        uint256 j = 0;
+        for (i = 0; i < areaIndices.length; i++) {
+            // Define the rectangle and add it to our collection of them
+            Geometry.Rect memory rect = Geometry.Rect(
+                purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
+            subPlots[i] = rect;
+
+            require(rect.w > 0);
+            require(rect.h > 0);
+
+            // Compute the area of this rect and add it to the total area
+            totalArea = SafeMath.add(totalArea, SafeMath.mul(rect.w,rect.h));
+
+            // Verify that this rectangle is within the bounds of the area we are trying to purchase
+            require(Geometry.rectContainedInside(rect, plotToPurchase));
+        }
+
+        require(totalArea == plotToPurchase.w * plotToPurchase.h);
+
+        // Next, make sure all of these do not overlap
+        for (i = 0; i < subPlots.length; i++) {
+            for (j = i + 1; j < subPlots.length; j++) {
+                require(!Geometry.doRectanglesOverlap(subPlots[i], subPlots[j]));
+            }
+        }
+
+        // If we have a matching area, the subPlots are all contained within what we're purchasing, and none of them overlap,
+        // we know we have a complete tiling of the plotToPurchase. Next, validate we can purchase all of these and distribute funds
+        uint256 remainingBalance = checkHolesAndDistributePurchaseFunds(plotToPurchase, subPlots, areaIndices);
+        uint256 purchasePrice = SafeMath.sub(msg.value, remainingBalance);
+
+        // The remainingBalance after distributing funds to sellers should greater than or equal to the fee we charge
+        uint256 requiredFee = SafeMath.div(SafeMath.mul(purchasePrice, FEE_IN_THOUSANDS_OF_PERCENT), (1000 * 100));
+        require(remainingBalance >= requiredFee);
+        
+        return purchasePrice;
+    }
+
+    /// @notice Checks that the sub-plots which we are purchasing are all valid and then distributes funds to the owners of those sub-plots
+    /// @dev Since we know that the subPlots are contained within plotToPurchase, and that they don't overlap, we just need go through each one
+    /// and make sure that it is for sale and owned by the appropriate person as specified in areaIndices. We then can calculate how much to
+    /// pay out for the sub-plot as well.
+    /// @param plotToPurchase The rect representing the plot we want to purchase
+    /// @param subPlots Array of sub-plots which tiles the plotToPurchase completely
+    /// @param areaIndices Array of indices into the ownership array which correspond to who owns the subPlot at the same index of subPlots.
+    /// The array must be the same length as subPlots and go in descending order
+    /// @return The balance still remaining from the original msg.value after paying out all of the owners of the subPlots
+    function checkHolesAndDistributePurchaseFunds(
+        Geometry.Rect memory plotToPurchase, Geometry.Rect[] memory subPlots, uint256[] memory areaIndices) private returns (uint256) {
+
+        // Initialize the remaining balance to the value which was passed in here
         uint256 remainingBalance = msg.value;
 
+        // In order to minimize calls to transfer(), aggregate how much is owed to a single plot owner for all of their subPlots (this is 
+        // useful in the case that the buyer is overlaping with a single plot in a non-rectangular manner)
         uint256 owedToSeller = 0;
-        for (uint256 areaIndicesIndex = 0; areaIndicesIndex < areaIndices.length; areaIndicesIndex++) {
-            uint256 ownershipIndex = areaIndices[areaIndicesIndex];
 
-            // Geometry.Rect memory currentOwnershipRect = ownership[ownershipIndex].rect;
+        for (uint256 areaIndicesIndex = 0; areaIndicesIndex < areaIndices.length; areaIndicesIndex++) {
+
+            // Get information about the plot at this index
+            uint256 ownershipIndex = areaIndices[areaIndicesIndex];
             Geometry.Rect memory currentOwnershipRect = Geometry.Rect(
                 ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
 
-            // This is a plot the caller has declared they were going to buy
-            // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
-            require(Geometry.doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
-            Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
+            // This is a plot the caller has declared they were going to buy. We need to verify that the subPlot is fully contained inside this plot.
+            require(Geometry.doRectanglesOverlap(plotToPurchase, currentOwnershipRect));
+            Geometry.Rect memory overlap = Geometry.computeRectOverlap(plotToPurchase, currentOwnershipRect);
 
             // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership plot
-            require(Geometry.rectContainedInside(rects[areaIndicesIndex], overlap));
+            require(Geometry.rectContainedInside(subPlots[areaIndicesIndex], overlap));
 
             // Next, verify that none of the holes of this plot ownership overlap with what we are trying to purchase
             for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
                 PlotOwnership memory holePlot = ownership[holes[ownershipIndex][holeIndex]];
 
                 require(
-                    !Geometry.doRectanglesOverlap(rects[areaIndicesIndex],
+                    !Geometry.doRectanglesOverlap(subPlots[areaIndicesIndex],
                     Geometry.Rect(holePlot.x, holePlot.y, holePlot.w, holePlot.h)));
             }
 
 
             // Finally, add the price of this rect to the totalPrice computation
-            uint256 sectionPrice = getPriceOfPlot(rects[areaIndicesIndex], ownershipIndex);
+            uint256 sectionPrice = getPriceOfPlot(subPlots[areaIndicesIndex], ownershipIndex);
             remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
             owedToSeller = SafeMath.add(owedToSeller, sectionPrice);
 
@@ -269,59 +356,14 @@ contract EthGrid is Ownable {
         return remainingBalance;
     }
 
-    function validatePurchaseAndDistributeFunds(uint24[] purchase, uint24[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
-        require(purchase.length == 4);
-        Geometry.Rect memory rectToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
-        
-        // TODO - Safe Math
-        require(rectToPurchase.x < GRID_WIDTH && rectToPurchase.x >= 0);
-        require(rectToPurchase.y < GRID_HEIGHT && rectToPurchase.y >= 0);
-        require(rectToPurchase.w > 0 && rectToPurchase.w + rectToPurchase.x <= GRID_WIDTH);
-        require(rectToPurchase.h > 0 && rectToPurchase.h + rectToPurchase.y <= GRID_HEIGHT);
-        require(rectToPurchase.w * rectToPurchase.h < MAXIMUM_PURCHASE_AREA);
+    // Given a rect to purchase, and the ID of the plot that is part of the purchase,
+    // This returns the total price of the purchase that is attributed by that plot.  
+    function getPriceOfPlot(Geometry.Rect memory plotToPurchase, uint256 plotId) private view returns (uint256) {
+        // Check that this plot exists in the plot price mapping with a price.
+        uint256 plotPricePerPixel = plotIdToPrice[plotId];
+        require(plotPricePerPixel > 0);
 
-        require(purchasedAreas.length >= 4);
-        require(areaIndices.length > 0);
-        require(purchasedAreas.length % 4 == 0);
-        require(purchasedAreas.length / 4 == areaIndices.length);
-
-        Geometry.Rect[] memory rects = new Geometry.Rect[](areaIndices.length);
-
-        uint256 totalArea = 0;
-        uint256 i = 0;
-        uint256 j = 0;
-        for (i = 0; i < areaIndices.length; i++) {
-            // Define the rectangle and add it to our collection of them
-            Geometry.Rect memory rect = Geometry.Rect(
-                purchasedAreas[(i * 4)], purchasedAreas[(i * 4) + 1], purchasedAreas[(i * 4) + 2], purchasedAreas[(i * 4) + 3]);
-            rects[i] = rect;
-
-            // Compute the area of this rect and add it to the total area
-            totalArea = SafeMath.add(totalArea, SafeMath.mul(rect.w,rect.h));
-
-            // Verify that this rectangle is within the bounds of the area we are trying to purchase
-            require(Geometry.rectContainedInside(rect, rectToPurchase));
-        }
-
-        require(totalArea == rectToPurchase.w * rectToPurchase.h);
-
-        // Next, make sure all of these do not overlap
-        for (i = 0; i < rects.length; i++) {
-            for (j = i + 1; j < rects.length; j++) {
-                require(!Geometry.doRectanglesOverlap(rects[i], rects[j]));
-            }
-        }
-
-        // If we have a matching area, the sub rects are all contained within what we're purchasing, and none of them overlap,
-        // we know we have a complete tiling of the rectToPurchase. Next, compute what the price should be for all this
-        uint256 remainingBalance = distributePurchaseFunds(rectToPurchase, rects, areaIndices);
-        uint256 purchasePrice = SafeMath.sub(msg.value, remainingBalance);
-
-        // The remainingBalance after distributing funds to sellers should greater than or equal to the fee we charge
-        uint256 requiredFee = SafeMath.div(SafeMath.mul(purchasePrice, FEE_IN_THOUSANDS_OF_PERCENT), (1000 * 100));
-        require(remainingBalance >= requiredFee);
-        
-        return purchasePrice;
+        return SafeMath.mul(SafeMath.mul(plotToPurchase.w, plotToPurchase.h), plotPricePerPixel);
     }
 
     function addPlotAndData(uint24[] purchase, string ipfsHash, string url, uint256 initialBuyoutPriceInWeiPerPixel) private returns (uint256) {
@@ -340,15 +382,5 @@ contract EthGrid is Ownable {
         }
 
         return newPlotIndex;
-    }
-
-    // Given a rect to purchase, and the ID of the plot that is part of the purchase,
-    // This returns the total price of the purchase that is attributed by that plot.  
-    function getPriceOfPlot(Geometry.Rect memory rectToPurchase, uint256 plotId) private view returns (uint256) {
-        // Check that this plot exists in the plot price mapping with a price.
-        uint256 plotPricePerPixel = plotIdToPrice[plotId];
-        require(plotPricePerPixel > 0);
-
-        return SafeMath.mul(SafeMath.mul(rectToPurchase.w, rectToPurchase.h), plotPricePerPixel);
     }
 }
