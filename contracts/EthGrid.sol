@@ -72,11 +72,28 @@ contract EthGrid is Ownable {
       
     //----------------------Events---------------------//
 
-    /// @dev Inicates that a user has updated the price of their plot
-    event PlotPriceUpdated(uint256 tokenId, uint256 newPriceInWeiPerPixel, address indexed owner);
+    /// @notice Inicates that a user has updated the price of their plot
+    /// @param plotId The index in the ownership array which was updated
+    /// @param newPriceInWeiPerPixel The new price of the plotId
+    /// @param owner The current owner of the plot
+    event PlotPriceUpdated(uint256 plotId, uint256 newPriceInWeiPerPixel, address indexed owner);
+
+    /// @notice Indicates that a new plot has been purchased and added to the ownership array
+    /// @param newPlotId The id (index in the ownership array) of the new plot
+    /// @param totalPrice The total price paid in wei to all the plots which used to own this area
+    /// @param buyer The account which made the purchase 
     event PlotPurchased(uint256 newPlotId, uint256 totalPrice, address indexed buyer);
+
+    /// @notice Indicates that a section of a plot was purchased. Multiple PlotSectionSold events could be emitted from
+    /// a single purchase transaction
+    /// @param plotId The id (index in the ownership array) of the plot which had a section of it purchased
+    /// @param totalPrice The total price which was paid for this section
+    /// @param buyer The buyer of the section of the plot
+    /// @param seller The owner of the plot which was purchased. This is who will receive totalPrice in their account
     event PlotSectionSold(uint256 plotId, uint256 totalPrice, address indexed buyer, address indexed seller);
 
+    /// @notice Creates a new instance of the EthGrid contract. It assigns an initial ownership plot consisting of the entire grid
+    /// to the creator of the contract who will also receive any transaction fees.
     constructor() public payable {
         // Initialize the contract with a single block which the admin owns
         ownership.push(PlotOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner));
