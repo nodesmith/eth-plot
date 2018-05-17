@@ -2,12 +2,18 @@ import { withStyles, StyleRulesCallback, WithStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import * as React from 'react';
 
+import { Typography } from 'material-ui';
+
 import { Rect } from '../models';
+
+const MAX_IMAGE_WIDTH = 250;
+const MAX_IMAGE_HEIGHT = 400;
 
 export interface PlotPreviewCardProps extends WithStyles {
   blobUrl: string;
   rect: Rect;
   holes: Array<Rect>;
+  isBlockedImage: boolean;
 }
 
 interface PlotPreviewCardState {
@@ -20,17 +26,13 @@ const styles: StyleRulesCallback = theme => ({
     display: 'inline-block',
     transition: 'transform 150ms ease-in-out',
   },
-  imgStyle: {
-    width: '100%',
-    maxWidth: 300,
-  },
-  svgStyle: {
+  saleOverlayStyle: {
     position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    maxWidth: 300,
+    maxWidth: MAX_IMAGE_WIDTH,
   },
   soldPixelColor: {
     fill: 'rgba(0,0,0,0.3)'
@@ -38,8 +40,6 @@ const styles: StyleRulesCallback = theme => ({
 });
 
 class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewCardState> {
-  imageRef;
-
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -56,8 +56,9 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
   }
 
   getGridSvgElements(): Array<JSX.Element> {    
-    const pixelWidth = this.imageRef.clientWidth / this.props.rect.w;  
-    const pixelHeight = this.imageRef.clientHeight / this.props.rect.h;  
+    const imageDimensions = this.computeImageDimensions();
+    const pixelWidth = imageDimensions[0] / this.props.rect.w;  
+    const pixelHeight = imageDimensions[1] / this.props.rect.h;  
 
     const gridElements = new Array<JSX.Element>();
        
@@ -78,9 +79,37 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
     return gridElements;
   }
 
+  /**
+   * Returns an array of length 2, where the first entry represents the width the
+   * image should be based on the underlying rect dimensions, and the 2nd entry
+   * represents the height.
+   * 
+   * The width and height come from the original width and height of the underlying 
+   * rect that this preview represents. The goal is to make the image as large as possible
+   * while preserving the original aspect ratio of the image. 
+   */
+  computeImageDimensions(): number[] {
+    const widthHeight: number[] = [];
+    const w = this.props.rect.w;
+    const h = this.props.rect.h;
+
+    const widthLargerThanHeight = (w > h);
+    const widthToHeightAspectRatio = (w / h);
+
+    if (widthLargerThanHeight || (MAX_IMAGE_HEIGHT * widthToHeightAspectRatio) > MAX_IMAGE_WIDTH) {
+      widthHeight[0] = MAX_IMAGE_WIDTH;
+      widthHeight[1] = MAX_IMAGE_WIDTH / widthToHeightAspectRatio;
+    } else {
+      widthHeight[1] = MAX_IMAGE_HEIGHT;
+      widthHeight[0] = MAX_IMAGE_HEIGHT * widthToHeightAspectRatio;
+    }
+
+    return widthHeight;
+  }
+
   render() {
     let gridElements = new Array<JSX.Element>();
-    if (this.state.showGrid) {
+    if (this.state.showGrid && !this.props.isBlockedImage) {
       gridElements = this.getGridSvgElements();
     }
     
@@ -90,18 +119,42 @@ class PlotPreviewCard extends React.Component<PlotPreviewCardProps, PlotPreviewC
       caption = 'No portion of this plot has been sold.';
     }
 
+    const imageDimensions = this.computeImageDimensions();
+
+    const imgStyle: React.CSSProperties = {
+      width: imageDimensions[0],
+      height: imageDimensions[1],
+    };
+
+    const blockedOverlayStatus: React.CSSProperties = {
+      width: imageDimensions[0],
+      height: imageDimensions[1],
+      backgroundColor: '#efefef',
+      border: '1px solid black',
+      padding: 10,
+      overflow: 'hidden' 
+    };
+
     return (
       <Grid container justify="center">
         <div onMouseEnter={this.showGrid.bind(this)} onMouseLeave={this.hideGrid.bind(this)} className={this.props.classes.imgContainer}>
-          <img ref={element => this.imageRef = element} 
-               src={this.props.blobUrl}
-               className={this.props.classes.imgStyle} />
-          <svg className={this.props.classes.svgStyle} xmlns="http://www.w3.org/2000/svg">
+          { (this.props.isBlockedImage) ?
+            <div style={blockedOverlayStatus}>
+              <Typography variant="body1" color="error">
+                This image has been flagged as inappropriate. Please see the About section for details.
+              </Typography>
+            </div>
+            :     
+            <svg style={imgStyle} xmlns="http://www.w3.org/2000/svg">
+              <image style={imgStyle} xlinkHref={this.props.blobUrl} preserveAspectRatio="none" />
+            </svg>
+          }
+          <svg className={this.props.classes.saleOverlayStyle} xmlns="http://www.w3.org/2000/svg">
             { (this.state.showGrid && hasSoldPixels) ? gridElements : null }
             <title>{caption}</title>
           </svg>
         </div>
-      </Grid>
+      </Grid >
     );
   }
 }

@@ -50,6 +50,11 @@ const styles: StyleRulesCallback = theme => ({
       opacity: .6
     }
   },
+  svgBlockedOverlay: {
+    cursor: 'pointer',
+    opacity: 1,
+    fill: '#EFEFEF',
+  },
   mainGrid: {
     border: theme.palette.grey['600'],
     borderWidth: 2,
@@ -275,8 +280,9 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
         return undefined;
       }
 
+      const overlayClass = (plot.data.zoneBlocked) ? this.props.classes.svgBlockedOverlay : this.props.classes.svgOverlay;
       return (<rect {...props}
-        className={this.props.classes.svgOverlay}
+        className={overlayClass}
         onClick={(event) => this.plotClicked(plot.zoneIndex, event.target as HTMLElement)}/>);
     });
 

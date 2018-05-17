@@ -41,13 +41,18 @@ contract EthGrid is Ownable {
     //----------------------State---------------------//
     ZoneOwnership[] private ownership;
 
-    mapping(uint256 => ZoneData) public data;
-    
+    mapping(uint256 => ZoneData) private data;
+
+    // Maps zone ID to a boolean that represents whether or not
+    // the image of the zone might be illegal and need to be blocked
+    // in the UI of Eth Plot. Defaults to false.
+    mapping (uint256 => bool) private zoneBlockedTags;
+
     // Maps zone ID to auction price. If price is 0, no auction is 
     // available for that zone. Price is Wei per pixel.
-    mapping(uint256 => uint256) public tokenIdToAuction;
+    mapping(uint256 => uint256) private tokenIdToAuction;
 
-    mapping(uint256 => uint256[]) public holes;
+    mapping(uint256 => uint256[]) private holes;
     
     //----------------------Constants---------------------//
     uint24 constant private GRID_WIDTH = 250;
@@ -134,6 +139,12 @@ contract EthGrid is Ownable {
         owner.transfer(currentBalance);
     }
 
+    function toggleZoneBlockedTag(uint256 zoneIndex, bool zoneBlocked) onlyOwner external {
+        require(zoneIndex >= 0);
+        require(zoneIndex < ownership.length);
+        zoneBlockedTags[zoneIndex] = zoneBlocked;
+    }
+
     // ----------------------Public View Functions---------------------//
     function getPlotInfo(uint256 zoneIndex) public view returns (uint24, uint24, uint24, uint24, address, uint256) {
 
@@ -147,12 +158,11 @@ contract EthGrid is Ownable {
             tokenIdToAuction[zoneIndex]);
     }
 
-    function getPlotData(uint256 zoneIndex) public view returns (string, string) {
-
+    function getPlotData(uint256 zoneIndex) public view returns (string, string, bool) {
         require(zoneIndex < ownership.length);
-        return (data[zoneIndex].url, data[zoneIndex].ipfsHash);
+        return (data[zoneIndex].url, data[zoneIndex].ipfsHash, zoneBlockedTags[zoneIndex]);
     }
-
+    
     function ownershipLength() public view returns (uint256) {
         return ownership.length;
     }

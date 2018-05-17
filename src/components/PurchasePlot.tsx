@@ -11,6 +11,8 @@ const styles: StyleRulesCallback = theme => ({
   }
 });
 
+const IMAGE_BORDER_WIDTH = 2;
+
 export interface PurchasePlotProps extends WithStyles {
   rect: Rect;
   scale: number;
@@ -41,10 +43,7 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
       height: rect.h * scale,
       position: 'absolute',
       cursor: 'move',
-      backgroundImage: `url(${this.props.src})`,
-      backgroundRepeat: 'no-repeat',
-      backgroundSize: '100% 100%',
-      borderWidth: 2,
+      borderWidth: IMAGE_BORDER_WIDTH,
       borderColor: 'white',
       borderStyle: 'dashed'
     };
@@ -107,8 +106,12 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
       cursor: 'nesw-resize'
     });
 
+    const imageBackgroundStyle: React.CSSProperties = {
+      height: (rect.h * scale) - 2 * IMAGE_BORDER_WIDTH,
+      width: (rect.w * scale) - 2 * IMAGE_BORDER_WIDTH
+    };
+
     const controlItems: Array<{movement: MovementActions; style: React.CSSProperties; className: string; }> = [
-      { movement: MovementActions.DRAG, style: plotStyle, className: 'purchasePlot' },
       { movement: MovementActions.TOP, style: topStyle, className: 'handle' },
       { movement: MovementActions.LEFT, style: leftStyle, className: 'handle' },
       { movement: MovementActions.BOTTOM, style: bottomStyle, className: 'handle' },
@@ -126,15 +129,29 @@ class PurchasePlot extends React.Component<PurchasePlotProps> {
         style={item.style} 
         className={item.className}
         onDragStart={this.onDragStart.bind(this, item.movement)}
-      ></div>);
+      >
+      
+      </div>);
     });
 
     return (
       <div className={this.props.classes.wrapper} draggable={false} style={wrapperStyle}>
-        {controls}
-      </div>
+        <div
+          draggable={true}
+          key={MovementActions.DRAG}
+          style={plotStyle} 
+          className="purchasePlot"
+          onDragStart={this.onDragStart.bind(this, MovementActions.DRAG)}
+        >
+          <svg style={imageBackgroundStyle} xmlns="http://www.w3.org/2000/svg">
+            <image style={imageBackgroundStyle} xlinkHref={this.props.src} preserveAspectRatio="none" />
+          </svg>
+        </div>
+    {controls}
+      </div >
     );
   }
 }
 
 export default withStyles(styles)(PurchasePlot);
+  
