@@ -86,7 +86,7 @@ export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispat
   const plotInfo = await contract.getPlotInfo(plotIndex);
   const plotData = await contract.getPlotData(plotIndex);
 
-  const ipfsHash = plotData[0];
+  const ipfsHash = plotData[1];
   const zoneBlocked = plotData[2];
 
   let blobUrl = '';
@@ -107,7 +107,7 @@ export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispat
     owner: plotInfo[4].toString(),
     buyoutPricePerPixelInWei: plotInfo[5].toString(),
     data: {
-      url: plotData[1],
+      url: plotData[0],
       ipfsHash,
       zoneBlocked,
       blobUrl
