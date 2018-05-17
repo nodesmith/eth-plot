@@ -183,7 +183,7 @@ export function purchasePlot(
 
     const tx = contract.purchaseAreaWithDataTx(
       purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialBuyoutPerPixelInWeiBN);
-    // const gasEstimate = await tx.estimateGas({ value: purchasePriceInWei });
+    // const gasEstimateAct = await tx.estimateGas({ value: purchasePriceInWei });
     const gasEstimate = new BigNumber(433915);
     console.log(`Gas estimate was ${gasEstimate}`);
     const txObject = {

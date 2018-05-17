@@ -19,6 +19,7 @@ contract EthGrid is Ownable {
 
     /// @dev Represents a single plot (rectangle) which is owned by someone. Additionally, it contains an array
     /// of holes which point to other ZoneOwnership structs which overlap this one (and purchased a chunk of this one)
+    /// 4 24 bit numbers for + 1 address = 256 bits for storage efficiency
     struct ZoneOwnership {
 
         // Coordinates of the plot rectangle
@@ -29,12 +30,7 @@ contract EthGrid is Ownable {
 
         // The owner of the zone
         address owner;
-
-        // The holes purchased from this ownership
-        // uint256[] holes;
     }
-
-
 
     /// @dev Represents the data which a specific zone ownership has
     struct ZoneData {
@@ -52,7 +48,6 @@ contract EthGrid is Ownable {
     mapping(uint256 => uint256) public tokenIdToAuction;
 
     mapping(uint256 => uint256[]) public holes;
-    // address[] public plotOwners;
     
     //----------------------Constants---------------------//
     uint24 constant private GRID_WIDTH = 250;
@@ -72,18 +67,16 @@ contract EthGrid is Ownable {
     constructor() public payable {
         // Initialize the contract with a single block which the admin owns
         ownership.push(ZoneOwnership(0, 0, GRID_WIDTH, GRID_HEIGHT, owner));
-        // plotOwners.push(owner);
         holes[0] = new uint256[](0);
         data[0] = ZoneData("Qmb51AikiN8p6JsEcCZgrV4d7C6d6uZnCmfmaT15VooUyv/img.svg", "https://www.ethplot.com/");
         tokenIdToAuction[0] = INITIAL_AUCTION_PRICE;
-        // setAuctionPrice(0, INITIAL_AUCTION_PRICE);
     }
 
 
     //----------------------External Functions---------------------//
     function purchaseAreaWithData(
         uint24[] purchase,
-        uint256[] purchasedAreas,
+        uint24[] purchasedAreas,
         uint256[] areaIndices,
         string ipfsHash,
         string url,
@@ -117,8 +110,8 @@ contract EthGrid is Ownable {
             h: purchase[3],
             owner: msg.sender
         });
-        ownership.push(newZone);
 
+        ownership.push(newZone);
     }
 
     // Can also be used to cancel an existing auction by sending 0 (or less) as new price.
@@ -143,23 +136,26 @@ contract EthGrid is Ownable {
         owner.transfer(currentBalance);
     }
 
-    //----------------------Public View Functions---------------------//
-    // function getPlot(uint256 zoneIndex) public view returns (uint16, uint16, uint16, uint16, address, uint256, string, string) {
-    //     require(zoneIndex < ownership.length);
+    // ----------------------Public View Functions---------------------//
+    function getPlotInfo(uint256 zoneIndex) public view returns (uint24, uint24, uint24, uint24, address, uint256) {
 
-    //     // uint256 price = tokenIdToAuction[zoneIndex];
-    //     // ZoneData memory zoneData = data[zoneIndex];
+        require(zoneIndex < ownership.length);
+        return (
+            ownership[zoneIndex].x,
+            ownership[zoneIndex].y,
+            ownership[zoneIndex].w,
+            ownership[zoneIndex].h,
+            ownership[zoneIndex].owner,
+            tokenIdToAuction[zoneIndex]);
+    }
 
-    //     return (
-    //         ownership[zoneIndex].x,
-    //         ownership[zoneIndex].y,
-    //         ownership[zoneIndex].w,
-    //         ownership[zoneIndex].h,
-    //         plotOwners[zoneIndex],
-    //         tokenIdToAuction[zoneIndex],
-    //         data[zoneIndex].url,
-    //         data[zoneIndex].ipfsHash);
-    // }
+    function getPlotData(uint256 zoneIndex) public view returns (string, string) {
+
+        require(zoneIndex < ownership.length);
+        return (
+            data[zoneIndex].url,
+            data[zoneIndex].ipfsHash);
+    }
 
     function ownershipLength() public view returns (uint256) {
         return ownership.length;
@@ -215,67 +211,10 @@ contract EthGrid is Ownable {
             }
         }
         
-        
-        // uint256 areaIndicesIndex = 0;
-
-        // // Walk the ownership array backwards. Do funny checks for incrementing and decrementing indices becaues uints will wrap
-        // for (uint256 ownershipIndex = ownership.length - 1;
-        //      areaIndicesIndex < areaIndices.length && ownershipIndex < ownership.length;
-        //      ownershipIndex--) {
-
-        //     uint256 owedToSeller = 0;
-
-        //     // Keep looping through while we are declaring that we want this area
-        //     while (areaIndicesIndex < areaIndices.length && ownershipIndex == areaIndices[areaIndicesIndex]) {
-        //         Geometry.Rect memory currentOwnershipRect = Geometry.Rect(
-        //             ownership[ownershipIndex].x, ownership[ownershipIndex].y, ownership[ownershipIndex].w, ownership[ownershipIndex].h);
-
-        //         // This is a zone the caller has declared they were going to buy
-        //         // We need to verify that the rectangle which was declared as what we're gonna buy is completely contained within the overlap
-        //         require(Geometry.doRectanglesOverlap(rectToPurchase, currentOwnershipRect));
-        //         Geometry.Rect memory overlap = Geometry.computeRectOverlap(rectToPurchase, currentOwnershipRect);
-
-        //         // Verify that this overlap between these two is within the overlapped area of the rect to purchase and this ownership zone
-        //         require(rects[areaIndicesIndex].x >= overlap.x);
-        //         require(rects[areaIndicesIndex].y >= overlap.y);
-        //         require(rects[areaIndicesIndex].x + rects[areaIndicesIndex].w <= overlap.x + overlap.w);
-        //         require(rects[areaIndicesIndex].y + rects[areaIndicesIndex].h <= overlap.y + overlap.h);
-
-        //         // Next, verify that none of the holes of this zone ownership overlap with what we are trying to purchase
-        //         for (uint256 holeIndex = 0; holeIndex < holes[ownershipIndex].length; holeIndex++) {
-        //             ZoneOwnership memory holeOwnership = ownership[holes[ownershipIndex][holeIndex]];
-        //             Geometry.Rect memory holeRect = Geometry.Rect(
-        //                 holeOwnership.x,
-        //                 holeOwnership.y,
-        //                 holeOwnership.w,
-        //                 holeOwnership.h);
-
-        //             require(!Geometry.doRectanglesOverlap(rects[areaIndicesIndex], holeRect));
-        //         }
-
-
-        //         // Finally, add the price of this rect to the totalPrice computation
-        //         uint256 sectionPrice = getPriceOfAuctionedZone(rects[areaIndicesIndex], areaIndices[areaIndicesIndex]);
-        //         remainingBalance = SafeMath.sub(remainingBalance, sectionPrice);
-        //         owedToSeller = SafeMath.add(owedToSeller, sectionPrice);
-
-        //         areaIndicesIndex++;
-        //     }
-
-        //     if (owedToSeller > 0) {
-        //         // Update the balances and emit an event to indicate the chunks of this plot which were sold
-        //         address(ownership[ownershipIndex].owner).transfer(owedToSeller);
-        //         emit PlotSectionSold(ownershipIndex, owedToSeller, msg.sender, ownership[ownershipIndex].owner);
-        //     }
-        // }
-
-        // // This means we checked every area index
-        // require(areaIndicesIndex == areaIndices.length);
-
         return remainingBalance;
     }
 
-    function validatePurchases(uint24[] purchase, uint256[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
+    function validatePurchases(uint24[] purchase, uint24[] purchasedAreas, uint256[] areaIndices) private returns (uint256) {
         require(purchase.length == 4);
         Geometry.Rect memory rectToPurchase = Geometry.Rect(purchase[0], purchase[1], purchase[2], purchase[3]);
         
@@ -306,10 +245,12 @@ contract EthGrid is Ownable {
             totalArea = SafeMath.add(totalArea, SafeMath.mul(rect.w,rect.h));
 
             // Verify that this rectangle is within the bounds of the area we are trying to purchase
-            require(rect.x >= rectToPurchase.x);
-            require(rect.y >= rectToPurchase.y);
-            require(rect.x + rect.w <= rectToPurchase.x + rectToPurchase.w);
-            require(rect.y + rect.h <= rectToPurchase.y + rectToPurchase.h);
+            require(Geometry.rectContainedInside(rect, rectToPurchase));
+
+            // require(rect.x >= rectToPurchase.x);
+            // require(rect.y >= rectToPurchase.y);
+            // require(rect.x + rect.w <= rectToPurchase.x + rectToPurchase.w);
+            // require(rect.y + rect.h <= rectToPurchase.y + rectToPurchase.h);
         }
 
         require(totalArea == rectToPurchase.w * rectToPurchase.h);
