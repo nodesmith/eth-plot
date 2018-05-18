@@ -13,6 +13,8 @@ import { Rect } from '../src/models';
 import { RootState } from '../src/reducers';
 import { configureStore }  from '../src/store/configureStore.prod';
 
+import { generated100 } from './PlotsToPurchase';
+
 // In order to benefit from type-safety, we re-assign the global web3 instance injected by Truffle
 // with type `any` to a variable of type `Web3`.
 const web3: Web3 = (global as any).web3;
@@ -20,17 +22,17 @@ const web3: Web3 = (global as any).web3;
 const ethGridContract = artifacts.require<EthGrid>('./EthGrid.sol');
 const STANDARD_GAS = '2000000';
 
-function timeout(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 const initializeStoreAndLoadPlots = async (contractAddress: string, web3Provider: string, currentAddress: string): Promise<Store<RootState>> => {
   const store = configureStore();
   store.dispatch(DataActions.setWeb3Config({ contractAddress, web3Provider }));
-  
-  const loadDataThunk = AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, currentAddress);
-  await loadDataThunk(store.dispatch);
 
+  return await reloadPlots(store, currentAddress);
+};
+
+const reloadPlots = async (store: Store<RootState>, account: string): Promise<Store<RootState>> => {
+  await AccountActions.unregisterEventListners();
+  store.dispatch(DataActions.clearPlots());
+  await AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, account || '0x0')(store.dispatch);
   return store;
 };
 
@@ -42,7 +44,7 @@ const getBalance = async (account: string): Promise<BigNumber> => {
 contract('EthGrid', (accounts: string[]) => {
   let ethGrid: EthGrid;
   let store: Store<RootState>;
-  before(async () => {
+  beforeEach(async () => {
     const deployed = await ethGridContract.deployed();
     ethGrid = await EthGrid.createAndValidate(web3, deployed.address);
 
@@ -51,6 +53,10 @@ contract('EthGrid', (accounts: string[]) => {
   });
 
   afterEach(async () => {
+    await reloadPlots(store, accounts[0]);
+  });
+
+  after(async () => {
     await AccountActions.unregisterEventListners();
   });
 
@@ -90,8 +96,7 @@ contract('EthGrid', (accounts: string[]) => {
     const transactionHash = await purchaseAction(store.dispatch);
 
     // Reload the data and make sure that we have the right number of plots and right owners
-    await AccountActions.loadAndWatchEvents(store.getState().data.contractInfo, buyerAccount)(store.dispatch);
-    await timeout(1000); // wait for dispatch events to repopulate store
+    await reloadPlots(store, buyerAccount);
 
     const loadedPlots = store.getState().data.plots;
     assert.equal(loadedPlots.length, 2);
@@ -128,6 +133,58 @@ contract('EthGrid', (accounts: string[]) => {
     assert.equal(buyerAccount, purchaseEvents[0].args.buyer);
     assert.equal(sellerAccount, purchaseEvents[0].args.seller);
     assert.equal(purchaseData.plotPrice, purchaseEvents[0].args.totalPrice.toString());
-    assert.equal(0, purchaseEvents[0].args.zoneId);
+    assert.equal(0, purchaseEvents[0].args.plotId);
+  });
+
+  it('Purchase a bunch of plots', async() => {
+    let totalGas = new BigNumber(0);
+    const numPlotsBefore = store.getState().data.plots.length;
+
+    // Shorten the number of iterations we're doing to 30
+    const shortened = generated100.slice(10, 40);
+    for (let index = 0; index < shortened.length; index++) {
+      const rectInfo = shortened[index];
+      console.log(`Purchasing: ${JSON.stringify(rectInfo.rect)}`);
+      const state = store.getState();
+      const rectToPurchase: Rect = rectInfo.rect;
+      const purchaseInfo = computePurchaseInfo(rectToPurchase, state.data.plots);
+      assert.isTrue(purchaseInfo.isValid);
+
+      const purchaseData = purchaseInfo.purchaseData!;
+      const purchaseUrl = '';
+      const buyoutPrice = new BigNumber(purchaseData.purchasePrice).times(2);
+      const ipfsHash = '';
+
+      const buyerAccount = accounts[rectInfo.purchaser];
+
+      const purchaseAction = DataActions.purchasePlot(
+        state.data.contractInfo,
+        state.data.plots,
+        rectToPurchase,
+        purchaseData.purchasePrice,
+        purchaseUrl,
+        ipfsHash,
+        buyoutPrice.toString(),
+        changePurchaseStep,
+        buyerAccount);
+
+      // Make the purchase
+      const transactionHash = await purchaseAction(store.dispatch);
+      const transactionInfo: Web3.TransactionReceipt = await promisify(web3.eth.getTransactionReceipt, [transactionHash]);
+      const gasUsed = transactionInfo.gasUsed;
+      totalGas = totalGas.plus(gasUsed);
+      console.log(`Gas used after ${index} - ${totalGas.toString()}`);
+
+      // Reload the data and make sure that we have the right number of plots and right owners
+      await reloadPlots(store, accounts[0]);
+    }
+
+    // Make sure we bought enough plots
+    const numPlotsAfter = store.getState().data.plots.length;
+    assert.equal(numPlotsAfter, numPlotsBefore + shortened.length);
+
+    // Make sure we're not averaging greater than 300,000 gas per transaction
+    const acceptableCostPerTransaction = 300000;
+    assert.isTrue(totalGas.dividedBy(shortened.length).lessThan(acceptableCostPerTransaction));
   });
 });

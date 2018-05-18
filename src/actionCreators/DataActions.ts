@@ -83,10 +83,12 @@ export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Actio
 }
 
 export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispatch: Dispatch<{}>) {
-  const plotInfo = await contract.getPlot(plotIndex);
-  const zoneBlocked = await contract.getPlotBlockedStatus(plotIndex);
+  const plotInfo = await contract.getPlotInfo(plotIndex);
+  const plotData = await contract.getPlotData(plotIndex);
 
-  const ipfsHash = plotInfo[7];
+  const ipfsHash = plotData[1];
+  const zoneBlocked = plotData[2];
+
   let blobUrl = '';
   
   if (!zoneBlocked) { // only load the image if its not a blocked image
@@ -102,10 +104,10 @@ export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispat
       x2: 0,
       y2: 0,
     },
-    owner: plotInfo[4],
+    owner: plotInfo[4].toString(),
     buyoutPricePerPixelInWei: plotInfo[5].toString(),
     data: {
-      url: plotInfo[6],
+      url: plotData[0],
       ipfsHash,
       zoneBlocked,
       blobUrl
@@ -126,7 +128,7 @@ export function updateAuction(contractInfo: ContractInfo, zoneIndex: number, new
     const contract = await initializeContract(contractInfo);
 
     const price = new BigNumber(newPrice);
-    const tx = contract.updateAuctionTx(zoneIndex, price);
+    const tx = contract.updatePlotPriceTx(zoneIndex, price);
     const gasEstimate = await tx.estimateGas({});
 
     const txObject = {
@@ -188,6 +190,7 @@ export function purchasePlot(
     const tx = contract.purchaseAreaWithDataTx(
       purchase, purchasedAreas, purchasedAreaIndices, ipfsHash, url || '', initialBuyoutPerPixelInWeiBN);
     const gasEstimate = await tx.estimateGas({ value: purchasePriceInWei });
+    console.log(`Gas estimate was ${gasEstimate}`);
     const txObject = {
       from: activeAccount,
       gas: gasEstimate.times(2),
