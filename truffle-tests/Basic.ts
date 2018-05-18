@@ -56,6 +56,10 @@ contract('EthGrid', (accounts: string[]) => {
     await reloadPlots(store, accounts[0]);
   });
 
+  after(async () => {
+    await AccountActions.unregisterEventListners();
+  });
+
   it('Contract initialized as expected', async () => {
     const loadedPlots = store.getState().data.plots;
     assert.equal(loadedPlots.length, 1);
