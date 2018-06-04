@@ -1,8 +1,9 @@
 
 export enum METAMASK_STATE {
-  UNINSTALLED = 0,
-  OPEN = 1,
-  LOCKED = 2
+  UNKNOWN = 0,
+  UNINSTALLED = 1,
+  OPEN = 2,
+  LOCKED = 3
 }
 
 export enum MovementActions {
@@ -51,4 +52,13 @@ export enum InputValidationState {
   ERROR,
   WARNING,
   SUCCESS
+}
+
+export enum NetworkName {
+  Unknown = 'Unknown',
+  Main = 'Main',
+  Ropsten = 'Ropsten',
+  Rinkeby = 'Rinkeby',
+  Kovan = 'Kovan',
+  Local = 'Local'
 }

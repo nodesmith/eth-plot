@@ -84,6 +84,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
   dragRectStart?: Point;
   isDraggingRect: boolean;
   purchaseDialog: {
+    resetPurchaseFlow: Actions.resetPurchaseFlow;
     closePlotPurchase: Actions.closePlotPurchase;
     purchaseStage: number;
     isShowing: boolean;

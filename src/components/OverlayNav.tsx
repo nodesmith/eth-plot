@@ -9,6 +9,8 @@ import Paper from 'material-ui/Paper';
 import Tooltip from 'material-ui/Tooltip';
 import * as React from 'react';
 
+import * as Enums from '../constants/Enums';
+
 import FloatingLogo from './FloatingLogo';
 
 const padding = 24;
@@ -59,6 +61,7 @@ export interface OverlayNavProps extends WithStyles {
   doNavigation: (route: string) => void;
   currentPath: string;
   snackbarMessage: string;
+  networkName: Enums.NetworkName;
 }
 
 class OverlayNav extends React.Component<OverlayNavProps, {snackbarOpen: boolean}> {
@@ -123,7 +126,7 @@ class OverlayNav extends React.Component<OverlayNavProps, {snackbarOpen: boolean
 
     return (
       <div className={classes.root}>
-        <FloatingLogo size={logoSize} classes={{ root: classes.homeButton }} onClick={this.navigate.bind(this, '/')} />
+        <FloatingLogo networkName={this.props.networkName} size={logoSize} classes={{ root: classes.homeButton }} onClick={this.navigate.bind(this, '/')} />
         <div className={classes.navWrappers}>
           <Paper className={classes.otherNav}>
             {this.createNavButton('/', 'Home', (<Home />))}

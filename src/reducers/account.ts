@@ -4,18 +4,18 @@ import * as Enums from '../constants/Enums';
 import { UserTransaction } from '../models';
 
 export interface AccountState {
-  metamaskStateKnown: boolean;
   metamaskState: Enums.METAMASK_STATE;
   activeAccount: string;
+  networkName: Enums.NetworkName;
   userTransactions: { [hash: string]: UserTransaction };
   notificationCount: number;
   isLoadingData: boolean;
 }
 
 const initialState: AccountState = {
-  metamaskStateKnown: false,
-  metamaskState: Enums.METAMASK_STATE.UNINSTALLED,
+  metamaskState: Enums.METAMASK_STATE.UNKNOWN,
   activeAccount: '',
+  networkName: Enums.NetworkName.Unknown,
   userTransactions: {},
   notificationCount: 0,
   isLoadingData: false
@@ -24,14 +24,10 @@ const initialState: AccountState = {
 export function accountReducer(state: AccountState = initialState, action: Action): AccountState {
   switch (action.type) {
     case ActionTypes.UPDATE_METAMASK_STATE:
-      if (action.newState !== state.metamaskState) {
-        return Object.assign({}, state, { 
-          metamaskState: action.newState,
-          metamaskStateKnown: true
-        });
-      }
-      
-      return state;
+      return Object.assign({}, state, { 
+        metamaskState: action.newState,
+        networkName: action.networkName
+      });
     case ActionTypes.UPDATE_ACTIVE_ACCOUNT:
       return Object.assign({}, state, { activeAccount: action.newActiveAccount });
     case ActionTypes.ADD_TRANSACTION:

@@ -21,6 +21,7 @@ const styles: StyleRulesCallback = theme => ({
 export interface TransactionManagerProps extends WithStyles {
   userTransactions: Array<UserTransaction>;
   metamaskState: number;
+  activeAccount: string;
 }
 
 class TransactionManager extends React.Component<TransactionManagerProps> {
@@ -36,8 +37,9 @@ class TransactionManager extends React.Component<TransactionManagerProps> {
     });
 
     return [
-      (<Grid key="title" item xs={9}>
-        <Typography className={this.props.classes.title} align="center" variant="headline" >My Transactions</Typography>
+      (<Grid key="title" item xs={9} className={this.props.classes.title} >
+        <Typography align="center" variant="headline" gutterBottom>My Transactions</Typography>
+        <Typography align="center" variant="caption"><b>Account: </b>{this.props.activeAccount}</Typography>
       </Grid>),
       pendingTransactions
     ];

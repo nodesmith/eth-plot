@@ -6,6 +6,7 @@ import { UserTransaction } from '../models';
 export interface TransactionManagerContainerProps {
   metamaskState: number;
   userTransactions: { [hash: string]: UserTransaction };
+  activeAccount: string;
 }
 
 class TransactionManagerContainer extends React.Component<TransactionManagerContainerProps> {
@@ -25,6 +26,7 @@ class TransactionManagerContainer extends React.Component<TransactionManagerCont
       <TransactionManager 
         metamaskState={this.props.metamaskState}
         userTransactions={sortedTransactions}
+        activeAccount={this.props.activeAccount}
         classes={{}}
       />
     );

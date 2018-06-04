@@ -135,7 +135,8 @@ class AccountManager extends React.Component<AccountManagerProps, AccountManager
     return (
       <Grid container className={this.props.classes.root} justify="center" spacing={24} >
         <Grid key="title" item xs={9}>
-          <Typography align="center" variant="headline">My Plots</Typography>
+          <Typography align="center" variant="headline" gutterBottom>My Plots</Typography>
+          <Typography align="center" variant="caption"><b>Account: </b>{this.props.activeAccount}</Typography>
         </Grid>
         {plotInfoComponents}
         {(filteredPlots.length === 0) ? 

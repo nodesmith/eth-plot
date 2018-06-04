@@ -1,13 +1,13 @@
-## eth-grid
+## eth plot
 
 [![Build Status](https://travis-ci.com/space-dust-blockchain/eth-grid.svg?token=w3NzMnRtreD5ymzPaywx&branch=master)](https://travis-ci.com/space-dust-blockchain/eth-grid)
 
 To run:
 
-- npm install
-- *Optional* - Set the `CONTRACT_ADDRESS` and/or `WEB3_PROVIDER` environment variables to configure web3 (default to Ganache Addresses)
+- `npm install`
 - `npm start`
-- open localhost:3000
+- Set up Metamask to run against your preferred network in the browser (if using ganache or truffle develop, configure custom RPC)
+- open [http://localhost:3000](http://localhost:3000) in your Browser
 
 To run contract via local testnet (Ganache):
 

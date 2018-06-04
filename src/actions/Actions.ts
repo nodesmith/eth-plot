@@ -2,7 +2,7 @@ import * as Enums from '../constants/Enums';
 import { ContractInfo, ImageFileInfo, PlotInfo, Point, Rect, RectDelta } from '../models';
 
 // Account Actions
-export type updateMetamaskState = (newState: Enums.METAMASK_STATE) => void;
+export type updateMetamaskState = (newState: Enums.METAMASK_STATE, networkName: Enums.NetworkName) => void;
 export type updateActiveAccount = (newActiveAccount: string) => void;
 export type addTransaction =
   (uniqueEventHash: string, txHash: string, txType: Enums.TxType, txStatus: Enums.TxStatus, blockNumber: number, isNew: boolean) => void;

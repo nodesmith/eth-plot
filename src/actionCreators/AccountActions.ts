@@ -23,10 +23,11 @@ export async function unregisterEventListners() {
   }
 }
 
-export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
+export function updateMetamaskState(newState: Enums.METAMASK_STATE, networkName: Enums.NetworkName): Action {
   return {
     type: ActionTypes.UPDATE_METAMASK_STATE,
-    newState
+    newState,
+    networkName
   };
 }
 
@@ -98,7 +99,7 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
     dispatch(loadTransactions());
     dispatch(DataActions.clearPlots());
 
-    const newWeb3 = getWeb3(contractInfo.web3Provider);
+    const newWeb3 = (await getWeb3(contractInfo))!.web3;
     const contract = await DataActions.initializeContract(contractInfo);
 
     const numberOfPlots = await contract.ownershipLength;

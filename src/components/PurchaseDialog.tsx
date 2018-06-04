@@ -24,12 +24,16 @@ export interface PurchaseDialogProps extends WithStyles {
   isShowing: boolean;
   purchaseStage: number;
   closePlotPurchase: () => void;
+  resetPurchaseFlow: () => void;
 }
 
 
 class PurchaseDialog extends React.Component<PurchaseDialogProps> {
   handleClose() {
     this.props.closePlotPurchase();
+    if (this.props.purchaseStage === PurchaseStage.DONE) {
+      this.props.resetPurchaseFlow();
+    }
   }
 
   getMessage(purchaseStage) {
@@ -72,7 +76,7 @@ class PurchaseDialog extends React.Component<PurchaseDialogProps> {
       <Dialog disableBackdropClick={true} fullWidth maxWidth="xs" aria-labelledby="dialog-title" open={true}>
         <DialogTitle id="dialog-title">Purchasing Plot</DialogTitle>
         <DialogContent>
-          {(purchaseStage !== PurchaseStage.ERROR) ?
+          {(!purchaseCompleteOrErrored) ?
             (<LinearProgress variant="buffer" value={progress} valueBuffer={bufferProgress} />)
           : null}
           <br />
