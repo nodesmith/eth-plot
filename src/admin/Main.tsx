@@ -6,7 +6,6 @@ import * as Web3 from 'web3';
 
 import { promisify } from '../../gen-src/typechain-runtime';
 import { EthGrid } from '../../gen-src/EthGrid';
-import { getWeb3 } from '../actionCreators/Web3Actions';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -85,8 +84,7 @@ class Main extends React.Component<{}, MainState> {
   }
   
   async componentDidMount() {
-    const web3Location = '';
-    const web3 = getWeb3(web3Location);
+    const web3 = window.web3;
     const accounts: string[] = await promisify(web3.eth.getAccounts, []);
     const account = accounts[0];
     const contractAddress = queryString.parse(window.location.search).contractAddress;

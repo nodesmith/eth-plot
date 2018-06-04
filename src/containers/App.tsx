@@ -66,8 +66,8 @@ class App extends React.Component<AppProps> {
     }
   }
 
-  checkMetamaskStatus(contractInfo: ContractInfo) {
-    const web3 = getWeb3(contractInfo.web3Provider);
+  async checkMetamaskStatus(contractInfo: ContractInfo) {
+    const web3 = (await getWeb3(contractInfo)).web3;
 
     if (!web3 || !web3.isConnected()) {
       this.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);

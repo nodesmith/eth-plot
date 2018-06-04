@@ -15,7 +15,7 @@
     "lint:solidity": "./node_modules/.bin/solium -d ./contracts",
     "gen": "node_modules/.bin/truffle compile && ./node_modules/.bin/typechain --force --outDir ./gen-src ./build/contracts/*.json",
     "test": "node_modules/.bin/truffle test",
-    "start:ganache": "node_modules/.bin/ganache-cli -i samm-test -d",
+    "start:ganache": "node_modules/.bin/ganache-cli -i local_test -d",
     "deploy:truffle": "node_modules/.bin/truffle migrate --network ganache --reset"
   },
   "devDependencies": {
