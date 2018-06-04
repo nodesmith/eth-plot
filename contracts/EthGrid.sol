@@ -52,8 +52,7 @@ contract EthGrid is Ownable {
     // in the UI of Eth Plot. Defaults to false.
     mapping (uint256 => bool) private plotBlockedTags;
 
-    // Maps plot ID to the plot's current price price. If price is 0, the plot is not for sale 
-    // available for that plot. Price is Wei per pixel.
+    // Maps plot ID to the plot's current price price. If price is 0, the plot is not for sale. Price is Wei per pixel.
     mapping(uint256 => uint256) private plotIdToPrice;
 
     // Maps plot ID to other plots IDs which which have purchased sections of this plot (a hole).
@@ -64,7 +63,6 @@ contract EthGrid is Ownable {
     uint24 constant private GRID_WIDTH = 250;
     uint24 constant private GRID_HEIGHT = 250;
     uint256 constant private INITIAL_PLOT_PRICE = 20000 * 1000000000; // 20000 gwei (approx. $0.01)
-    uint256 constant private FEE_IN_THOUSANDS_OF_PERCENT = 1000; // Fee is 1%
 
     // This is the maximum area of a single purchase block. This needs to be limited for the
     // algorithm which figures out payment to function
@@ -108,7 +106,7 @@ contract EthGrid is Ownable {
     /// @dev This function is the way you purchase new plots from the chain. The data is specified in a somewhat unique format to
     /// make the execution of the contract as efficient as possible. Essentially, the caller needs to send in an array of sub-plots which
     /// form a complete tiling of the purchased area. These sub-plots represent sections of the already existing plots this purchase is
-    /// happing on top of. The contract will validate all of this data before allowing the purchase to proceed
+    /// happening on top of. The contract will validate all of this data before allowing the purchase to proceed.
     /// @param purchase An array of exactly 4 values which represent the [x,y,width,height] of the plot to purchase
     /// @param purchasedAreas An array of at least 4 values. Each set of 4 values represents a sub-plot which must be purchased for this
     /// plot to be created. If the new plot to purchase overlaps in a non-rectangle pattern, multiple rectangular sub-plots from that
@@ -145,7 +143,7 @@ contract EthGrid is Ownable {
     /// @notice Updates the price per pixel of a plot which the message sender owns. A price of 0 means the plot is not for sale
     /// @param plotIndex The index in the ownership array which we are updating. msg.sender must be the owner of this plot
     /// @param newPriceInWeiPerPixel The new price of the plot
-    function updatePlotPrice(uint256 plotIndex, uint256 newPriceInWeiPerPixel) public {
+    function updatePlotPrice(uint256 plotIndex, uint256 newPriceInWeiPerPixel) external {
         require(plotIndex >= 0);
         require(plotIndex < ownership.length);
         require(msg.sender == ownership[plotIndex].owner);
@@ -227,8 +225,7 @@ contract EthGrid is Ownable {
     /// @dev It works by first validating all of the inputs and converting purchase and purchasedAreas into rectangles for easier manipulation.
     /// Next, it validates that all of the rectangles in purchasedArea are within the area to purchase, and that they form a complete tiling of
     /// the purchase we are making with zero overlap. Next, to prevent stack too deep errors, it delegates the work of validating that these sub-plots
-    /// are actually for sale, are valid, and pays out the previous owners of the area. Finally, the fees for the transaction are calculated
-    /// and we make sure that the message was sent with enough funds to cover all the costs
+    /// are actually for sale, are valid, and pays out the previous owners of the area.
     /// @param purchase An array of exactly 4 values which represent the [x,y,width,height] of the plot to purchase
     /// @param purchasedAreas An array of at least 4 values. Each set of 4 values represents a sub-plot which must be purchased for this
     /// plot to be created.
@@ -288,11 +285,6 @@ contract EthGrid is Ownable {
         // we know we have a complete tiling of the plotToPurchase. Next, validate we can purchase all of these and distribute funds
         uint256 remainingBalance = checkHolesAndDistributePurchaseFunds(subPlots, areaIndices);
         uint256 purchasePrice = SafeMath.sub(msg.value, remainingBalance);
-
-        // The remainingBalance after distributing funds to sellers should greater than or equal to the fee we charge
-        uint256 requiredFee = SafeMath.div(SafeMath.mul(purchasePrice, FEE_IN_THOUSANDS_OF_PERCENT), (1000 * 100));
-        require(remainingBalance >= requiredFee);
-        
         return purchasePrice;
     }
 
@@ -381,7 +373,7 @@ contract EthGrid is Ownable {
 
         // Set an initial purchase price for the new plot if it's greater than 0
         if (initialBuyoutPriceInWeiPerPixel > 0) {
-            updatePlotPrice(newPlotIndex, initialBuyoutPriceInWeiPerPixel);
+            plotIdToPrice[newPlotIndex] = initialBuyoutPriceInWeiPerPixel;
         }
 
         return newPlotIndex;
