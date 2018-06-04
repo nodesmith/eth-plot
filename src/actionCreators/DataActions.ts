@@ -46,7 +46,7 @@ export function clearPlots() {
 
 export const initializeContract = async (contractInfo: ContractInfo): Promise<EthGrid> => {
   const web3AndAddress = await getWeb3(contractInfo);
-  return EthGrid.createAndValidate(web3AndAddress.web3, web3AndAddress.contractAddress);
+  return EthGrid.createAndValidate(web3AndAddress!.web3, web3AndAddress!.contractAddress);
 };
 
 export const determineTxStatus = async (tx: DecodedLogEntry<{}>, web3: Web3): Promise<Enums.TxStatus> => {
@@ -66,7 +66,7 @@ export function loadBlockInfo(contractInfo: ContractInfo, blockNumber: number) {
   return async (dispatch) => {
     const web3AndAddress = await getWeb3(contractInfo);
     return new Promise((resolve, reject) => {
-      web3AndAddress.web3.eth.getBlock(blockNumber, (err, blockObj) => {
+      web3AndAddress!.web3.eth.getBlock(blockNumber, (err, blockObj) => {
         if (err) { reject(err); }
         dispatch(addBlockInfo(blockObj));
         resolve();

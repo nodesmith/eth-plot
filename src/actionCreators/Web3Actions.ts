@@ -7,12 +7,14 @@ declare global {
   interface Window { web3: Web3; }
 }
 
-export const getWeb3 = async (contractInfo: ContractInfo): Promise<{web3: Web3, contractAddress: string}> => {
+export const getWeb3 = async (contractInfo: ContractInfo): Promise<{web3: Web3, contractAddress: string} | undefined> => {
   let result: Web3;
   if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
     result = window.web3;
+  } else if (contractInfo.web3Provider) {
+    result = new Web3(new Web3.providers.HttpProvider(contractInfo.web3Provider));
   } else {
-    result = new Web3(new Web3.providers.HttpProvider(contractInfo.web3Provider || 'http://localhost:8545'));
+    return undefined;
   }
 
   // Need to get the network id from web3 to figure out which contract address we're using

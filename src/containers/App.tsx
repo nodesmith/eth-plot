@@ -61,20 +61,20 @@ class App extends React.Component<AppProps> {
 
   updateMetamaskState(newState: Enums.METAMASK_STATE): void {
     // Only emit this action if the state isn't known already or it's changed
-    if (!this.props.account.metamaskStateKnown || this.props.account.metamaskState !== newState) {
+    if (this.props.account.metamaskState !== newState) {
       this.props.actions.updateMetamaskState(newState);
     }
   }
 
   async checkMetamaskStatus(contractInfo: ContractInfo) {
-    const web3 = (await getWeb3(contractInfo)).web3;
+    const web3AndContract = await getWeb3(contractInfo);
 
-    if (!web3 || !web3.isConnected()) {
+    if (!web3AndContract || !web3AndContract.web3.isConnected()) {
       this.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
       return;
     }
 
-    web3.eth.getAccounts((err, accounts) => {
+    web3AndContract.web3.eth.getAccounts((err, accounts) => {
       if (accounts && accounts.length > 0) {
         this.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
 
@@ -102,7 +102,7 @@ class App extends React.Component<AppProps> {
   // know the current user's metamask state.
   shouldShowSpinner() {
     return (this.props.account.isLoadingData ||
-            !this.props.account.metamaskStateKnown);
+            this.props.account.metamaskState === Enums.METAMASK_STATE.UNKNOWN);
   }
 
   componentWillUnmount() {
