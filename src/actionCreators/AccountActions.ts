@@ -23,10 +23,11 @@ export async function unregisterEventListners() {
   }
 }
 
-export function updateMetamaskState(newState: Enums.METAMASK_STATE): Action {
+export function updateMetamaskState(newState: Enums.METAMASK_STATE, networkName: Enums.NetworkName): Action {
   return {
     type: ActionTypes.UPDATE_METAMASK_STATE,
-    newState
+    newState,
+    networkName
   };
 }
 

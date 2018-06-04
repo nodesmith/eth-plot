@@ -1,13 +1,32 @@
 import * as Web3 from 'web3';
 
 import { promisify } from '../../gen-src/typechain-runtime';
+import { NetworkName } from '../constants/Enums';
 import { ContractInfo } from '../models';
 
 declare global {
   interface Window { web3: Web3; }
 }
 
-export const getWeb3 = async (contractInfo: ContractInfo): Promise<{web3: Web3, contractAddress: string} | undefined> => {
+const determineNetworkName = (networkId: string): NetworkName => {
+  switch (networkId) {
+    case '1':
+      return NetworkName.Main;
+    case '3':
+      return NetworkName.Ropsten;
+    case '4':
+      return NetworkName.Rinkeby;
+    case '42':
+      return NetworkName.Kovan;
+    case 'local_test':
+    case '4447':
+      return NetworkName.Local;
+    default:
+      return NetworkName.Unknown;
+  }
+};
+
+export const getWeb3 = async (contractInfo: ContractInfo): Promise<{web3: Web3, contractAddress: string, networkName: NetworkName} | undefined> => {
   let result: Web3;
   if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
     result = window.web3;
@@ -19,6 +38,7 @@ export const getWeb3 = async (contractInfo: ContractInfo): Promise<{web3: Web3, 
 
   // Need to get the network id from web3 to figure out which contract address we're using
   const networkId = await promisify(result.version.getNetwork, []);
+  let networkName = NetworkName.Unknown;
 
   let contractAddress: string = '';
   if (contractInfo.contractAddress) {
@@ -27,6 +47,7 @@ export const getWeb3 = async (contractInfo: ContractInfo): Promise<{web3: Web3, 
   } else if (contractInfo.contractAddresses && networkId in contractInfo.contractAddresses) {
     // Find this network id in the collection of address in the config
     contractAddress = contractInfo.contractAddresses[networkId];
+    networkName = determineNetworkName(networkId);
   }
   
   if (!contractAddress) {
@@ -35,7 +56,8 @@ export const getWeb3 = async (contractInfo: ContractInfo): Promise<{web3: Web3, 
 
   return {
     web3: result,
-    contractAddress
+    contractAddress,
+    networkName
   };
 };
 

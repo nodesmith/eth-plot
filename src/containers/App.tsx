@@ -59,10 +59,10 @@ class App extends React.Component<AppProps> {
       1000);
   }
 
-  updateMetamaskState(newState: Enums.METAMASK_STATE): void {
+  updateMetamaskState(newState: Enums.METAMASK_STATE, networkName: Enums.NetworkName): void {
     // Only emit this action if the state isn't known already or it's changed
     if (this.props.account.metamaskState !== newState) {
-      this.props.actions.updateMetamaskState(newState);
+      this.props.actions.updateMetamaskState(newState, networkName);
     }
   }
 
@@ -70,13 +70,13 @@ class App extends React.Component<AppProps> {
     const web3AndContract = await getWeb3(contractInfo);
 
     if (!web3AndContract || !web3AndContract.web3.isConnected()) {
-      this.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED);
+      this.updateMetamaskState(Enums.METAMASK_STATE.UNINSTALLED, Enums.NetworkName.Unknown);
       return;
     }
 
     web3AndContract.web3.eth.getAccounts((err, accounts) => {
       if (accounts && accounts.length > 0) {
-        this.updateMetamaskState(Enums.METAMASK_STATE.OPEN);
+        this.updateMetamaskState(Enums.METAMASK_STATE.OPEN, web3AndContract.networkName);
 
         if (accounts[0] !== this.props.account.activeAccount) {
           // The only time we ever want to load data from the chain history
@@ -87,7 +87,7 @@ class App extends React.Component<AppProps> {
           this.appDataBootstrap(accounts[0]);
         }
       } else {
-        this.updateMetamaskState(Enums.METAMASK_STATE.LOCKED);
+        this.updateMetamaskState(Enums.METAMASK_STATE.LOCKED, web3AndContract.networkName);
       }
     });
   }
@@ -212,7 +212,8 @@ class App extends React.Component<AppProps> {
       clearNotifications: this.clearNotifications.bind(this),
       doNavigation: to => this.doNavigation(to),
       currentPath: this.props.history.location.pathname,
-      snackbarMessage: this.props.purchase.snackbarMessage
+      snackbarMessage: this.props.purchase.snackbarMessage,
+      networkName: this.props.account.networkName
     };
 
     const mainBodyContent = this.getMainBodyContent();

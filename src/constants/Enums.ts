@@ -53,3 +53,12 @@ export enum InputValidationState {
   WARNING,
   SUCCESS
 }
+
+export enum NetworkName {
+  Unknown = 'Unknown',
+  Main = 'Main',
+  Ropsten = 'Ropsten',
+  Rinkeby = 'Rinkeby',
+  Kovan = 'Kovan',
+  Local = 'Local'
+}
