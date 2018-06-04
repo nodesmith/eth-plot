@@ -208,7 +208,6 @@ export function purchasePlot(
         uniqueEventHash, transactionReceipt, Enums.TxType.PURCHASE, txStatus, Number.MAX_SAFE_INTEGER, true));
       dispatch(togglePurchaseFlow());
       dispatch(changePurchaseStep(Enums.PurchaseStage.USER_CONFIRM));
-      dispatch(resetPurchaseFlow());
       return transactionReceipt;
     } catch (e) {
       dispatch(togglePurchaseFlow());

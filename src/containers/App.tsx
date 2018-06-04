@@ -179,6 +179,7 @@ class App extends React.Component<AppProps> {
       activeAccount: this.props.account.activeAccount,
       purchaseDialog: {
         closePlotPurchase: actions.closePlotPurchase,
+        resetPurchaseFlow: actions.resetPurchaseFlow,
         purchaseStage: this.props.purchaseDialog.purchaseStage,
         isShowing: this.props.purchaseDialog.isShowing
       },
