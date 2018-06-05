@@ -7,7 +7,7 @@ import { EthPlot, EthPlotEventTypes } from '../../gen-src/EthPlot';
 import * as DataActions from '../actionCreators/DataActions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
-import { ContractInfo, PurchaseEventInfo } from '../models';
+import { ContractInfo, PlotInfo, PurchaseEventInfo } from '../models';
 
 import { Action } from './EthPlotAction';
 import { getWeb3 } from './Web3Actions';
@@ -107,7 +107,7 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
    
     const unregisterPromises = await Promise.all([
       loadAndWatchAuctionEvents(contract, currentAddress, dispatch, newWeb3),
-      loadAndWatchPurchaseEvents(contract, contractInfo, currentAddress, dispatch, newWeb3),
+      loadAndWatchPurchaseEvents(contract, contractInfo, currentAddress, numberOfPlots.toNumber(), dispatch, newWeb3),
       loadAndWatchSaleEvents(contract, currentAddress, dispatch, newWeb3)
     ]);
 
@@ -145,6 +145,7 @@ export async function loadAndWatchPurchaseEvents(
   contract: EthPlot,
   contractInfo: ContractInfo,
   currentAddress: string,
+  numberOfPlots: number,
   dispatch: Dispatch<{}>,
   web3: Web3)
   : Promise<UnregisterFn> {
@@ -156,9 +157,36 @@ export async function loadAndWatchPurchaseEvents(
 
   const purchaseEvents = await purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' });
   let latestBlock = 0;
-  const purchaseEventPromises = purchaseEvents.map(tx => {
+
+  // We get back all of the plot purchase events here and we want to load all of the plot data in parallel.
+  // Unfortunately, this is a bit of a problem since we then need to add the plots to the redux store in order.
+  // To solve this, create a data structure which queues up plots to add if they're going to be out of order
+  let nextItemToAddToPlotsArray = 1;
+  const addedPlotsQueue: {[index: number]: PlotInfo} = {};
+  const purchaseEventPromises = purchaseEvents.map((tx, index) => {
     latestBlock = Math.max(latestBlock, tx.blockNumber!);
-    return handleNewPurchaseEvent(tx, contract, contractInfo, currentAddress, dispatch, web3);
+
+    const plotIndex = new BigNumber(tx.args.newPlotId).toNumber();
+    const loadPlotPromise = DataActions.loadPlotData(contract, plotIndex).then(plot => {
+      
+      // Add this item to the queue at its index
+      addedPlotsQueue[plotIndex] = plot;
+
+      // Process the queue here
+      for (let i = nextItemToAddToPlotsArray; i < numberOfPlots; i++) {
+        if (typeof addedPlotsQueue[i] !== 'undefined') {
+          // If there's an item in the queue at this index, add it to the plot array
+          dispatch(DataActions.addPlot(addedPlotsQueue[i], i));
+        } else {
+          // We can't add anything new yet since we don't want to add out of order. Keep track of how far we got
+          nextItemToAddToPlotsArray = i;
+          break;
+        }
+      }
+    });
+
+    const handlePurchaseEventPromise = handleNewPurchaseEvent(tx, contract, contractInfo, currentAddress, dispatch, web3);
+    return Promise.all([loadPlotPromise, handlePurchaseEventPromise]);
   });
 
   await Promise.all(purchaseEventPromises);
@@ -175,7 +203,6 @@ async function handleNewPurchaseEvent(
   tx: DecodedLogEntry<EthPlotEventTypes.PlotPurchasedEventArgs>,
   contract: EthPlot, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
 
-  await DataActions.addPlotToGrid(contract, new BigNumber(tx.args.newPlotId).toNumber(), dispatch);
   const newZoneId = (<BigNumber>tx.args.newPlotId).toNumber();
   
   const newPurchaseEventInfo: PurchaseEventInfo = { 

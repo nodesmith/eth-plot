@@ -23,10 +23,11 @@ export function setWeb3Config(web3Config: ContractInfo) {
   };
 }
 
-export function addPlot(newPlot) {
+export function addPlot(newPlot, plotIndex) {
   return {
     type: ActionTypes.ADD_PLOT,
-    newPlot
+    newPlot,
+    plotIndex
   };
 }
 
@@ -83,6 +84,11 @@ export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Actio
 }
 
 export async function addPlotToGrid(contract: EthPlot, plotIndex: number, dispatch: Dispatch<{}>) {
+  const plot = await loadPlotData(contract, plotIndex);
+  dispatch(addPlot(plot, plotIndex)); 
+}
+
+export async function loadPlotData(contract: EthPlot, plotIndex: number): Promise<PlotInfo> {
   const plotInfo = await contract.getPlotInfo(plotIndex);
   const plotData = await contract.getPlotData(plotIndex);
 
@@ -119,7 +125,7 @@ export async function addPlotToGrid(contract: EthPlot, plotIndex: number, dispat
   plot.rect.x2 = plot.rect.x + plot.rect.w;
   plot.rect.y2 = plot.rect.y + plot.rect.h;
 
-  dispatch(addPlot(plot)); 
+  return plot;
 }
 
 // thunk for updating price of plot
