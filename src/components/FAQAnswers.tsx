@@ -7,11 +7,11 @@ export const gettingStartedAnswer1 = () => (
   <Typography variant="body2">
       Eth Plot is a decentralized game built on <a href="https://www.ethereum.org/">Ethereum</a>. With 
       Eth Plot, you can purchase a "plot" of digital space on a square grid. When you purchase a plot, 
-      you get to place an image on that plot.  You also get to asssociate your plot with a website of your choosing.
+      you get to place an image on that plot.  You also get to associate your plot with a website of your choosing.
       
       <br/><br/>
-      Plots are bought and sold using transactions on Ethereum, so you can rest assured plot ownership 
-      is securely tracked by the blockchain.  Your plot is unique and forever yours!
+      Plots are bought and sold using transactions on Ethereum, so you can rest assured that plot ownership 
+      is transparent, irreversible, and not controlled by us.  Your plot is unique and forever yours!
       Unless you decide to sell it.  You can choose to sell your plot at any time, and at 
       whatever price you choose.  If someone buys your plot, you will receive the proceeds.
   </Typography>
@@ -56,9 +56,10 @@ export const gettingStartedAnswer4 = () => (
     process and wanted to share what we've built with the Ethereum community.
     
     <br /><br />
-    We wrote an <a href="TODO">article</a> that summarizes what we learned during the process.
-    We have also open sourced all the code we used to build this application.  Check it out at our <a href="TODO">GitHub</a>
-    repository and leave us any feedback you have.
+    We wrote an <a href="https://medium.com/@brendan_87166/what-we-learned-building-our-first-dapp-28b01f9fc244">article</a> that
+    summarizes what we learned during the process. We have also open sourced all the code we used to
+    build this application. Check it out at our <a href="https://github.com/space-dust-blockchain/eth-plot">GitHub</a> repository
+    and leave us any feedback you have.
   </Typography>
 );
 
@@ -126,8 +127,9 @@ export const gameplayAnswer3 = () => (
 
 export const gameplayAnswer4 = () => (
   <Typography variant="body2">
-    We take a 1% fee on any transaction that goes through our website.  This is 3.75x cheaper than CryptoKittes, because, 
-    after extensive research, we determined CrytoKitties is about 3.75x cooler than Eth Plot. 
+    We take a 1% fee on any transaction that goes through our website.  For reference, CryptoKitties is about
+    3.75 times as expensive.  We set this price after doing extensive research and determining that CryptoKitties is
+    about 3.75 times cooler than Eth Plot. 
 
     <br /><br /> 
     You can skip this fee by interacting with the Eth Plot smart contract directly.  
@@ -146,7 +148,7 @@ export const gameplayAnswer5 = () => (
 
 export const techDetailsAnswer1 = () => (
   <Typography variant="body2">
-    The UI for Eth Plot is build with <a href="https://reactjs.org/">React</a> and <a href="https://material-ui-next.com/">Google's Material-UI library</a>.
+    The UI for Eth Plot is build with <a href="https://reactjs.org/">React</a> and the <a href="https://material-ui-next.com/">Material-UI library</a>.
     This gives end users an easier way to interact with the underlying smart contract.
     <br /><br />
     The smart contract allows us to keep track of plot ownership, as well as the metadata associated
@@ -156,20 +158,21 @@ export const techDetailsAnswer1 = () => (
     approach to data storage, which is challenging given this use case and the EVM restrictions.
 
     <br /><br />
-    We have much more technical detail in the accompanying <a href="TODO">blog post</a> that details stuff we learned about 
-    Ethereum development while building Eth Plot.
+    We have much more technical detail in the accompanying <a href="https://medium.com/@brendan_87166/what-we-learned-building-our-first-dapp-28b01f9fc244">blog post</a> that
+    details what we learned about Ethereum development while building Eth Plot.
   </Typography>
 );
 
 export const techDetailsAnswer2 = () => (
   <Typography variant="body2">
-    Of course! You can see the main Eth Plot smart contract in a blockchain explorer like <a href="TODO">Etherscan</a>.
-    Or you can check out the contract on <a href="TODO">GitHub</a>.
+    Of course! You can check out the contract here: <a href="https://github.com/space-dust-blockchain/eth-plot/blob/master/contracts/EthGrid.sol">GitHub</a>.
   </Typography>
 );
 
 export const techDetailsAnswer3 = () => (
   <Typography variant="body2">
-    Eth Plot is deployed on the Ropsten test net as well, you can interact with it <a href="TODO">here</a>.
+    Yes! You are welcome to use any of the test net versions of Eth Plot.
+    Eth Plot is deployed on all the major test nets - Ropsten, Rinkeby and Kovan.  Simply change the network that your MetaMask extension
+    is connected to, and you will be able to interact with the version of Eth Plot on the network you selected.
   </Typography>
 );
