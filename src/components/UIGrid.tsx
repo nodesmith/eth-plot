@@ -159,6 +159,8 @@ export interface UIGridProps extends WithStyles {
   showGrid: boolean;
   lowPlotPrice: string;
   highPlotPrice: string;
+
+  getEtherscanUrl: (txHash: string) => string;
 }
 
 class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|undefined, popoverIndex: number}> {
@@ -246,6 +248,7 @@ class UIGrid extends React.Component<UIGridProps, {popoverTarget: HTMLElement|un
       return {
         plot: plotInfo,
         purchaseEventInfo: this.props.plotTransactions[plotInfo.zoneIndex],
+        getEtherscanUrl: this.props.getEtherscanUrl,
         classes:{}
       };
     }

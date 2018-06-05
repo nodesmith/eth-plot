@@ -35,6 +35,7 @@ export interface PlotInfoProps extends WithStyles {
   info: PlotInfoData;
   holes: Array<Rect>;
   updatePrice: (zoneIndex: number, newBuyoutPricePerPixel: string) => void;
+  getEtherscanUrl: (txHash: string) => string;
   purchaseInfo: PurchaseEventInfo;
   isPlotSold: boolean;
 }
@@ -129,8 +130,8 @@ class PlotInfo extends React.Component<PlotInfoProps, PlotInfoState> {
             <Grid item xs={6}>
               <TextLabel 
                 caption="Purchase Transaction"
-                value="0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a"
-                urlLink="https://etherscan.io/tx/0xa0ecf2be42aad5f15a679387b1007154b49773af3ea001b659cc2e3579e5c63a"/>
+                value={this.props.purchaseInfo.txHash}
+                urlLink={this.props.getEtherscanUrl(this.props.purchaseInfo.txHash)}/>
             </Grid>
           </Grid>
           <Grid container spacing={8}>

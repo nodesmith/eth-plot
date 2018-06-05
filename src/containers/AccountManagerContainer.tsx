@@ -14,6 +14,7 @@ export interface AccountManagerContainerProps {
   plots: Array<PlotInfo>;
   holes: HoleInfo;
   plotTransactions: {[index: number]: PurchaseEventInfo};
+  getEtherscanUrl: (txHash: string) => string;
 }
 
 class AccountManagerContainer extends React.Component<AccountManagerContainerProps> {
@@ -32,6 +33,7 @@ class AccountManagerContainer extends React.Component<AccountManagerContainerPro
         holes={this.props.holes}
         plotTransactions={this.props.plotTransactions}
         activeAccount={this.props.activeAccount}
+        getEtherscanUrl={this.props.getEtherscanUrl}
       />
     );
   }

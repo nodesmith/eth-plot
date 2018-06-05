@@ -21,6 +21,7 @@ const styles: StyleRulesCallback = theme => ({
 
 export interface TransactionStatusProps extends WithStyles {
   tx: UserTransaction;
+  getEtherscanUrl: (txHash: string) => string;
 }
 
 class TransactionStatus extends React.Component<TransactionStatusProps> {
@@ -49,7 +50,7 @@ class TransactionStatus extends React.Component<TransactionStatusProps> {
   }
 
   render() {
-    const etherscanUrl = `https://etherscan.io/tx/${this.props.tx.txHash}`;
+    const etherscanUrl = this.props.getEtherscanUrl(this.props.tx.txHash);
     const txStatusComponent = this.getTxStatusComponent();
 
     let txText: string;
@@ -84,7 +85,7 @@ class TransactionStatus extends React.Component<TransactionStatusProps> {
           <Grid container spacing={8} wrap="nowrap">
             <Grid item xs={12} zeroMinWidth>
               <Typography className={this.props.classes.headerText}>{txText}</Typography>
-              <Typography noWrap><a href={etherscanUrl}>{this.props.tx.txHash}</a></Typography>
+              <Typography noWrap><a target="_blank" href={etherscanUrl}>{this.props.tx.txHash}</a></Typography>
             </Grid>
           </Grid>
         </Grid>

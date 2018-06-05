@@ -22,6 +22,7 @@ export interface TransactionManagerProps extends WithStyles {
   userTransactions: Array<UserTransaction>;
   metamaskState: number;
   activeAccount: string;
+  getEtherscanUrl: (txHash: string) => string;
 }
 
 class TransactionManager extends React.Component<TransactionManagerProps> {
@@ -30,7 +31,7 @@ class TransactionManager extends React.Component<TransactionManagerProps> {
       return (
         <Grid key={index} item xs={9} >
           <Paper>
-            <TransactionStatus classes={{}} tx={tx} />
+            <TransactionStatus classes={{}} tx={tx} getEtherscanUrl={this.props.getEtherscanUrl} />
           </Paper>
         </Grid>
       );
@@ -52,7 +53,7 @@ class TransactionManager extends React.Component<TransactionManagerProps> {
       <Grid container className={this.props.classes.root} justify="center" spacing={0} >
         {content}
         {(this.props.userTransactions.length === 0) ? 
-          <Typography variant="subheading">There are no Eth Grid transactions associated with this account.</Typography>
+          <Typography variant="subheading">There are no Eth Plot transactions associated with this account.</Typography>
           : null
         }
       </Grid>

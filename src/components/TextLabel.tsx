@@ -13,7 +13,7 @@ class TextLabel extends React.Component<TextLabelProps> {
       <div>
         <Typography variant="caption">{this.props.caption}:</Typography>
         {this.props.urlLink ?
-          <Typography variant="body1" gutterBottom={true} noWrap><a href={this.props.urlLink}>{this.props.value}</a></Typography>
+          <Typography variant="body1" gutterBottom={true} noWrap><a target="_blank" href={this.props.urlLink}>{this.props.value}</a></Typography>
         : 
           <Typography variant="body1" gutterBottom={true} noWrap>{this.props.value}</Typography>
         }

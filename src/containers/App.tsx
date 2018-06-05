@@ -120,8 +120,28 @@ class App extends React.Component<AppProps> {
     this.props.history.push(to);
   }
 
+  getEtherscanUrl(txHash: string) {
+    let baseUrl = '';
+    switch (this.props.account.networkName) {
+      case Enums.NetworkName.Main:
+        baseUrl = 'https://etherscan.io';
+        break;
+      case Enums.NetworkName.Rinkeby:
+      case Enums.NetworkName.Ropsten:
+      case Enums.NetworkName.Kovan:
+        baseUrl = `https://${this.props.account.networkName.toLowerCase()}.etherscan.io`;
+        break;
+      default:
+        baseUrl = 'https://no.etherscan.for.local.networks';
+    }
+
+    const url = `${baseUrl}/tx/${txHash}`;
+    return url;
+  }
+
   getMainBodyContent() {
     const { actions, purchase } = this.props;
+    const getEtherscanUrl = this.getEtherscanUrl.bind(this);
     const mainContainerProps = {
       classes: {},
       actions: {
@@ -185,6 +205,7 @@ class App extends React.Component<AppProps> {
       },
       lowPlotPrice: this.props.data.lowPlotPrice,
       highPlotPrice: this.props.data.highPlotPrice,
+      getEtherscanUrl
     };
 
 
@@ -195,10 +216,10 @@ class App extends React.Component<AppProps> {
         )}/>
         <Route path="/myplots" render={(routeProps) => (
           <AccountManagerContainer 
-            {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} />
+            {...routeProps} {...this.props.data} {...this.props.account} actions={this.props.actions} getEtherscanUrl={getEtherscanUrl} />
         )}/>
         <Route path="/account" render={(routeProps) => (
-        <TransactionManagerContainer {...routeProps} {...this.props.account} />
+        <TransactionManagerContainer {...routeProps} {...this.props.account} getEtherscanUrl={getEtherscanUrl} />
         )}/>
         <Route path="/about" component={About}/>
       </Switch>
