@@ -19,5 +19,5 @@ deploy:
   local-dir: $TRAVIS_BUILD_DIR/dist
   acl: public_read
   on:
-    repo: space-dust-blockchain/eth-grid
+    repo: space-dust-blockchain/eth-plot
     branch: master
