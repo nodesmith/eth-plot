@@ -26,12 +26,13 @@ const styles: StyleRulesCallback = theme => ({
 export interface PlotPopoverProps extends WithStyles {
   plot: PlotInfo;
   purchaseEventInfo: PurchaseEventInfo;
+  getEtherscanUrl: (txHash: string) => string;
 }
 
 class PlotPopover extends React.Component<PlotPopoverProps> {
 
   viewTransaction() {
-    const viewTransactionLink = `https://etherscan.io/tx/${this.props.purchaseEventInfo.txHash}`;
+    const viewTransactionLink = this.props.getEtherscanUrl(this.props.purchaseEventInfo.txHash);
     window.open(viewTransactionLink, '_blank');
   }
 

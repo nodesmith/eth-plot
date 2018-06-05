@@ -3,7 +3,7 @@ import { Dispatch } from 'react-redux';
 import * as Web3 from 'web3';
 
 import { promisify, DecodedLogEntry } from '../../gen-src/typechain-runtime';
-import { EthGrid } from '../../gen-src/EthGrid';
+import { EthPlot } from '../../gen-src/EthPlot';
 import * as Actions from '../actions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
@@ -12,7 +12,7 @@ import { loadFromIpfsOrCache } from '../data/ImageRepository';
 import { ContractInfo, PlotInfo, Rect } from '../models';
 
 import * as AccountActions from './AccountActions';
-import { Action } from './EthGridAction';
+import { Action } from './EthPlotAction';
 import { togglePurchaseFlow } from './PurchaseActions';
 import { getWeb3 } from './Web3Actions';
 
@@ -44,9 +44,9 @@ export function clearPlots() {
   };
 }
 
-export const initializeContract = async (contractInfo: ContractInfo): Promise<EthGrid> => {
+export const initializeContract = async (contractInfo: ContractInfo): Promise<EthPlot> => {
   const web3AndAddress = await getWeb3(contractInfo);
-  return EthGrid.createAndValidate(web3AndAddress!.web3, web3AndAddress!.contractAddress);
+  return EthPlot.createAndValidate(web3AndAddress!.web3, web3AndAddress!.contractAddress);
 };
 
 export const determineTxStatus = async (tx: DecodedLogEntry<{}>, web3: Web3): Promise<Enums.TxStatus> => {
@@ -82,7 +82,7 @@ export function addBlockInfo(blockInfo: Web3.BlockWithoutTransactionData): Actio
   };
 }
 
-export async function addPlotToGrid(contract: EthGrid, plotIndex: number, dispatch: Dispatch<{}>) {
+export async function addPlotToGrid(contract: EthPlot, plotIndex: number, dispatch: Dispatch<{}>) {
   const plotInfo = await contract.getPlotInfo(plotIndex);
   const plotData = await contract.getPlotData(plotIndex);
 

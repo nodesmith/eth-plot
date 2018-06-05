@@ -1,6 +1,6 @@
 ## eth plot
 
-[![Build Status](https://travis-ci.com/space-dust-blockchain/eth-grid.svg?token=w3NzMnRtreD5ymzPaywx&branch=master)](https://travis-ci.com/space-dust-blockchain/eth-grid)
+[![Build Status](https://travis-ci.com/space-dust-blockchain/eth-plot.svg?token=w3NzMnRtreD5ymzPaywx&branch=master)](https://travis-ci.com/space-dust-blockchain/eth-plot)
 
 To run:
 

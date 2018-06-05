@@ -1,11 +1,11 @@
 pragma solidity ^0.4.23;
 
 import "./Geometry.sol";
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
-/// @title EthGrid
+/// @title EthPlot
 /// @author Space Dust LLC (https://spacedust.io)
 /// @notice This contract represents ownership of virtual "plots" of a grid. Owners of a plot are able to brand their plots with
 /// image data and a website. They are also able to put their plots up for sale and receive proceeds based on what portion of their
@@ -15,7 +15,7 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 /// with this rectangle (called holes). The remaining section of a plot, would be its original area minus the holes (rectangles on top).
 /// This data model allows us to cheaply validate new purchases without building huge arrays, allocating lots of memory, or doing other
 /// things which are very expensive due to gas cost concerns.
-contract EthGrid is Ownable {
+contract EthPlot is Ownable {
 
     /// @dev Represents a single plot (rectangle) which is owned by someone. Additionally, it contains an array
     /// of holes which point to other PlotOwnership structs which overlap this one (and purchased a chunk of this one)
@@ -90,7 +90,7 @@ contract EthGrid is Ownable {
     /// @param seller The owner of the plot which was purchased. This is who will receive totalPrice in their account
     event PlotSectionSold(uint256 plotId, uint256 totalPrice, address indexed buyer, address indexed seller);
 
-    /// @notice Creates a new instance of the EthGrid contract. It assigns an initial ownership plot consisting of the entire grid
+    /// @notice Creates a new instance of the EthPlot contract. It assigns an initial ownership plot consisting of the entire grid
     /// to the creator of the contract who will also receive any transaction fees.
     constructor() public payable {
         // Initialize the contract with a single block which the admin owns
@@ -221,7 +221,7 @@ contract EthGrid is Ownable {
     
     //---------------------- Private Functions ---------------------//
 
-    /// @notice This function does a lot of the heavy lifing for validating that all of the data passed in to the purchase function is ok.
+    /// @notice This function does a lot of the heavy lifting for validating that all of the data passed in to the purchase function is ok.
     /// @dev It works by first validating all of the inputs and converting purchase and purchasedAreas into rectangles for easier manipulation.
     /// Next, it validates that all of the rectangles in purchasedArea are within the area to purchase, and that they form a complete tiling of
     /// the purchase we are making with zero overlap. Next, to prevent stack too deep errors, it delegates the work of validating that these sub-plots

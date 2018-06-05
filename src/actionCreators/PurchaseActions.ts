@@ -7,7 +7,7 @@ import { ContractInfo, ImageFileInfo, Point, Rect } from '../models';
 import { PlotInfo } from '../models/PlotInfo';
 
 import { purchasePlot as purchasePlotFromChain } from './DataActions';
-import { Action } from './EthGridAction';
+import { Action } from './EthPlotAction';
 
 export function togglePurchaseFlow(): Action {
   return {

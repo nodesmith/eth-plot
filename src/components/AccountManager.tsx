@@ -31,6 +31,7 @@ export interface AccountManagerProps extends WithStyles {
   updatePrice: () => void;
   metamaskState: number;
   activeAccount: string;
+  getEtherscanUrl: (txHash: string) => string;
 }
 
 interface AccountManagerState {
@@ -95,7 +96,8 @@ class AccountManager extends React.Component<AccountManagerProps, AccountManager
                       holes={this.props.holes[plot.zoneIndex] || []} 
                       updatePrice={this.props.updatePrice}
                       purchaseInfo={this.props.plotTransactions[plot.zoneIndex]}
-                      isPlotSold={isPlotSold} />
+                      isPlotSold={isPlotSold}
+                      getEtherscanUrl={this.props.getEtherscanUrl} />
           </Paper>
         </Grid>
       );

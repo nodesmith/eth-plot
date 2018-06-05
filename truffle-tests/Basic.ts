@@ -4,7 +4,7 @@ import { Store } from 'redux';
 import * as Web3 from 'web3';
 
 import { promisify } from '../gen-src/typechain-runtime';
-import { EthGrid } from '../gen-src/EthGrid';
+import { EthPlot } from '../gen-src/EthPlot';
 import * as AccountActions from '../src/actionCreators/AccountActions';
 import * as DataActions from '../src/actionCreators/DataActions';
 import { changePurchaseStep } from '../src/actionCreators/PurchaseActions';
@@ -19,7 +19,7 @@ import { generated100 } from './PlotsToPurchase';
 // with type `any` to a variable of type `Web3`.
 const web3: Web3 = (global as any).web3;
 
-const ethGridContract = artifacts.require<EthGrid>('./EthGrid.sol');
+const ethPlotContract = artifacts.require<EthPlot>('./EthPlot.sol');
 const STANDARD_GAS = '2000000';
 
 const initializeStoreAndLoadPlots = async (contractAddress: string, web3Provider: string, currentAddress: string): Promise<Store<RootState>> => {
@@ -41,15 +41,15 @@ const getBalance = async (account: string): Promise<BigNumber> => {
   return new BigNumber(balance);
 };
 
-contract('EthGrid', (accounts: string[]) => {
-  let ethGrid: EthGrid;
+contract('EthPlot', (accounts: string[]) => {
+  let ethPlot: EthPlot;
   let store: Store<RootState>;
   beforeEach(async () => {
-    const deployed = await ethGridContract.deployed();
-    ethGrid = await EthGrid.createAndValidate(web3, deployed.address);
+    const deployed = await ethPlotContract.deployed();
+    ethPlot = await EthPlot.createAndValidate(web3, deployed.address);
 
     const provider = web3.currentProvider.host;
-    store = await initializeStoreAndLoadPlots(ethGrid.address, provider, accounts[0]);
+    store = await initializeStoreAndLoadPlots(ethPlot.address, provider, accounts[0]);
   });
 
   afterEach(async () => {
@@ -79,7 +79,7 @@ contract('EthGrid', (accounts: string[]) => {
     const buyerAccount = accounts[4];
     const buyerBalanceOld = await getBalance(buyerAccount);
     const sellerBalanceOld = await getBalance(sellerAccount);
-    const contractBalanceOld = await getBalance(ethGrid.address);
+    const contractBalanceOld = await getBalance(ethPlot.address);
 
     const purchaseAction = DataActions.purchasePlot(
       state.data.contractInfo,
@@ -115,20 +115,20 @@ contract('EthGrid', (accounts: string[]) => {
     const sellerBalanceDifference = sellerBalanceNew.minus(sellerBalanceOld);
     assert.equal(purchaseData.plotPrice, sellerBalanceDifference.toString());
 
-    const contractBalanceNew = await getBalance(ethGrid.address);
+    const contractBalanceNew = await getBalance(ethPlot.address);
     const contractBalanceDifference = contractBalanceNew.minus(contractBalanceOld);
     assert.equal(purchaseData.feePrice, contractBalanceDifference.toString());
 
     // Check that the owner can withdraw the funds
-    const ownerAddress = await ethGrid.owner;
+    const ownerAddress = await ethPlot.owner;
     const ownerBalanceOld = await getBalance(ownerAddress);
-    const withdrawGasCost = await ethGrid.withdrawTx(ownerAddress).estimateGas({ from: ownerAddress, gas: STANDARD_GAS });
-    await ethGrid.withdrawTx(ownerAddress).send({ from: ownerAddress, gas: STANDARD_GAS });
+    const withdrawGasCost = await ethPlot.withdrawTx(ownerAddress).estimateGas({ from: ownerAddress, gas: STANDARD_GAS });
+    await ethPlot.withdrawTx(ownerAddress).send({ from: ownerAddress, gas: STANDARD_GAS });
     const ownerBalanceNew = await getBalance(ownerAddress);
     assert.equal(new BigNumber(purchaseData.feePrice).minus(withdrawGasCost).toString(), ownerBalanceNew.minus(ownerBalanceOld).toString());
 
     // Finally, check that we got the sold event we're expecting
-    const purchaseEvents = await ethGrid.PlotSectionSoldEvent({}).get({});
+    const purchaseEvents = await ethPlot.PlotSectionSoldEvent({}).get({});
     assert.equal(1, purchaseEvents.length);
     assert.equal(buyerAccount, purchaseEvents[0].args.buyer);
     assert.equal(sellerAccount, purchaseEvents[0].args.seller);

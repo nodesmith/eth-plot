@@ -42,7 +42,7 @@ class FloatingLogo extends React.Component<FloatingLogoProps> {
     return (
       <Paper className={classes.root} style={sizeStyle}>
         <ButtonBase focusRipple className={classes.button} style={sizeStyle} onClick={this.props.onClick}>
-          <img src="./ethgridlogo.svg" style={sizeStyle}/>
+          <img src="./ethplotlogo.svg" style={sizeStyle}/>
           { networkName !== Enums.NetworkName.Main && networkName !== Enums.NetworkName.Unknown && 
             <Typography variant="button" className={classes.networkOverlay}>{networkName}</Typography>
           }

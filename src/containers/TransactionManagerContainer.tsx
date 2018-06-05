@@ -7,6 +7,7 @@ export interface TransactionManagerContainerProps {
   metamaskState: number;
   userTransactions: { [hash: string]: UserTransaction };
   activeAccount: string;
+  getEtherscanUrl: (txHash: string) => string;
 }
 
 class TransactionManagerContainer extends React.Component<TransactionManagerContainerProps> {
@@ -27,6 +28,7 @@ class TransactionManagerContainer extends React.Component<TransactionManagerCont
         metamaskState={this.props.metamaskState}
         userTransactions={sortedTransactions}
         activeAccount={this.props.activeAccount}
+        getEtherscanUrl={this.props.getEtherscanUrl}
         classes={{}}
       />
     );

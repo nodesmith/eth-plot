@@ -2,7 +2,7 @@ import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { Point, Rect } from '../models';
 
-import { Action } from './EthGridAction';
+import { Action } from './EthPlotAction';
 
 export function hoverOverPlot(plotIndex: number): Action {
   return {

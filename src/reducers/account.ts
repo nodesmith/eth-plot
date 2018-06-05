@@ -1,4 +1,4 @@
-import { Action } from '../actionCreators/EthGridAction';
+import { Action } from '../actionCreators/EthPlotAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { UserTransaction } from '../models';

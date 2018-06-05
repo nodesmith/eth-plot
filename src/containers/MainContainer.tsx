@@ -92,6 +92,7 @@ export interface MainContainerProps extends WithStyles, RouteComponentProps<any>
   activeAccount: string;
   lowPlotPrice: string | undefined;
   highPlotPrice: string | undefined;
+  getEtherscanUrl: (txHash: string) => string;
 }
 
 class MainContainer extends React.Component<MainContainerProps> {
@@ -139,6 +140,7 @@ class MainContainer extends React.Component<MainContainerProps> {
       showGrid: this.props.purchase.showGrid && this.props.purchase.activeStep === 1 && this.props.purchase.purchaseFlowOpen,
       lowPlotPrice: this.props.lowPlotPrice || '0',
       highPlotPrice: this.props.highPlotPrice || '0',
+      getEtherscanUrl: this.props.getEtherscanUrl
     };
 
     const mainControlsOverlayProps: MainControlsOverlayProps = {

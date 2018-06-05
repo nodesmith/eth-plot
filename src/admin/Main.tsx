@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as Web3 from 'web3';
 
 import { promisify } from '../../gen-src/typechain-runtime';
-import { EthGrid } from '../../gen-src/EthGrid';
+import { EthPlot } from '../../gen-src/EthPlot';
 
 const styles: StyleRulesCallback = theme => ({
   root: {
@@ -45,7 +45,7 @@ class Main extends React.Component<{}, MainState> {
   async deployNewContract() {
     this.setState({ isDeploying: true });
     const { account, web3 } = this.state;
-    const tempInstance = new EthGrid(web3, '0x0');
+    const tempInstance = new EthPlot(web3, '0x0');
     const abi = tempInstance.contractAbi as Web3.AbiDefinition[];
     const bytecode = tempInstance.rawBytecode;
     const gasEstimate = await promisify(web3!.eth.estimateGas, [{ data: bytecode }]);
@@ -76,7 +76,7 @@ class Main extends React.Component<{}, MainState> {
 
   async withdrawContractFunds() {
     const { web3, contractAddress, account } = this.state;
-    const contractInstance = await EthGrid.createAndValidate(web3, contractAddress);
+    const contractInstance = await EthPlot.createAndValidate(web3, contractAddress);
     const withdrawTx = contractInstance.withdrawTx(account);
     const gasEstimate = await withdrawTx.estimateGas({ from: account });
     const transactionResult = await withdrawTx.send({ from: account, gas: gasEstimate.times(2) });
@@ -91,7 +91,7 @@ class Main extends React.Component<{}, MainState> {
     let contractInfo: ContractInfo | undefined = undefined;
     if (contractAddress) {
       // Grab some info about the contract
-      const contractInstance = await EthGrid.createAndValidate(web3, contractAddress);
+      const contractInstance = await EthPlot.createAndValidate(web3, contractAddress);
       const adminAddress = await contractInstance.owner;
       const balance: string = (await promisify(web3.eth.getBalance, [contractAddress])).toString();
       const numberOfPlots = (await contractInstance.ownershipLength).toString();
