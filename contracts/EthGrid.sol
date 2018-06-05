@@ -1,8 +1,8 @@
 pragma solidity ^0.4.23;
 
 import "./Geometry.sol";
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 /// @title EthGrid
@@ -221,7 +221,7 @@ contract EthGrid is Ownable {
     
     //---------------------- Private Functions ---------------------//
 
-    /// @notice This function does a lot of the heavy lifing for validating that all of the data passed in to the purchase function is ok.
+    /// @notice This function does a lot of the heavy lifting for validating that all of the data passed in to the purchase function is ok.
     /// @dev It works by first validating all of the inputs and converting purchase and purchasedAreas into rectangles for easier manipulation.
     /// Next, it validates that all of the rectangles in purchasedArea are within the area to purchase, and that they form a complete tiling of
     /// the purchase we are making with zero overlap. Next, to prevent stack too deep errors, it delegates the work of validating that these sub-plots
