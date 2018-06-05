@@ -19,7 +19,7 @@ import { generated100 } from './PlotsToPurchase';
 // with type `any` to a variable of type `Web3`.
 const web3: Web3 = (global as any).web3;
 
-const EthPlotContract = artifacts.require<EthPlot>('./EthPlot.sol');
+const ethPlotContract = artifacts.require<EthPlot>('./EthPlot.sol');
 const STANDARD_GAS = '2000000';
 
 const initializeStoreAndLoadPlots = async (contractAddress: string, web3Provider: string, currentAddress: string): Promise<Store<RootState>> => {
@@ -42,14 +42,14 @@ const getBalance = async (account: string): Promise<BigNumber> => {
 };
 
 contract('EthPlot', (accounts: string[]) => {
-  let EthPlot: EthPlot;
+  let ethPlot: EthPlot;
   let store: Store<RootState>;
   beforeEach(async () => {
-    const deployed = await EthPlotContract.deployed();
-    EthPlot = await EthPlot.createAndValidate(web3, deployed.address);
+    const deployed = await ethPlotContract.deployed();
+    ethPlot = await EthPlot.createAndValidate(web3, deployed.address);
 
     const provider = web3.currentProvider.host;
-    store = await initializeStoreAndLoadPlots(EthPlot.address, provider, accounts[0]);
+    store = await initializeStoreAndLoadPlots(ethPlot.address, provider, accounts[0]);
   });
 
   afterEach(async () => {
@@ -79,7 +79,7 @@ contract('EthPlot', (accounts: string[]) => {
     const buyerAccount = accounts[4];
     const buyerBalanceOld = await getBalance(buyerAccount);
     const sellerBalanceOld = await getBalance(sellerAccount);
-    const contractBalanceOld = await getBalance(EthPlot.address);
+    const contractBalanceOld = await getBalance(ethPlot.address);
 
     const purchaseAction = DataActions.purchasePlot(
       state.data.contractInfo,
@@ -115,20 +115,20 @@ contract('EthPlot', (accounts: string[]) => {
     const sellerBalanceDifference = sellerBalanceNew.minus(sellerBalanceOld);
     assert.equal(purchaseData.plotPrice, sellerBalanceDifference.toString());
 
-    const contractBalanceNew = await getBalance(EthPlot.address);
+    const contractBalanceNew = await getBalance(ethPlot.address);
     const contractBalanceDifference = contractBalanceNew.minus(contractBalanceOld);
     assert.equal(purchaseData.feePrice, contractBalanceDifference.toString());
 
     // Check that the owner can withdraw the funds
-    const ownerAddress = await EthPlot.owner;
+    const ownerAddress = await ethPlot.owner;
     const ownerBalanceOld = await getBalance(ownerAddress);
-    const withdrawGasCost = await EthPlot.withdrawTx(ownerAddress).estimateGas({ from: ownerAddress, gas: STANDARD_GAS });
-    await EthPlot.withdrawTx(ownerAddress).send({ from: ownerAddress, gas: STANDARD_GAS });
+    const withdrawGasCost = await ethPlot.withdrawTx(ownerAddress).estimateGas({ from: ownerAddress, gas: STANDARD_GAS });
+    await ethPlot.withdrawTx(ownerAddress).send({ from: ownerAddress, gas: STANDARD_GAS });
     const ownerBalanceNew = await getBalance(ownerAddress);
     assert.equal(new BigNumber(purchaseData.feePrice).minus(withdrawGasCost).toString(), ownerBalanceNew.minus(ownerBalanceOld).toString());
 
     // Finally, check that we got the sold event we're expecting
-    const purchaseEvents = await EthPlot.PlotSectionSoldEvent({}).get({});
+    const purchaseEvents = await ethPlot.PlotSectionSoldEvent({}).get({});
     assert.equal(1, purchaseEvents.length);
     assert.equal(buyerAccount, purchaseEvents[0].args.buyer);
     assert.equal(sellerAccount, purchaseEvents[0].args.seller);
