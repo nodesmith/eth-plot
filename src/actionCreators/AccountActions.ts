@@ -3,13 +3,13 @@ import { Dispatch } from 'react-redux';
 import * as Web3 from 'web3';
 
 import { DecodedLogEntry } from '../../gen-src/typechain-runtime';
-import { EthGrid, EthGridEventTypes } from '../../gen-src/EthGrid';
+import { EthPlot, EthPlotEventTypes } from '../../gen-src/EthPlot';
 import * as DataActions from '../actionCreators/DataActions';
 import { ActionTypes } from '../constants/ActionTypes';
 import * as Enums from '../constants/Enums';
 import { ContractInfo, PurchaseEventInfo } from '../models';
 
-import { Action } from './EthGridAction';
+import { Action } from './EthPlotAction';
 import { getWeb3 } from './Web3Actions';
 
 type UnregisterFn = () => Promise<void>;
@@ -121,7 +121,7 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
   };
 }
 
-async function loadAndWatchAuctionEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
+async function loadAndWatchAuctionEvents(contract: EthPlot, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
   const auctionEvent = contract.PlotPriceUpdatedEvent({ owner: currentAddress });
@@ -142,7 +142,7 @@ async function loadAndWatchAuctionEvents(contract: EthGrid, currentAddress: stri
 }
 
 export async function loadAndWatchPurchaseEvents(
-  contract: EthGrid,
+  contract: EthPlot,
   contractInfo: ContractInfo,
   currentAddress: string,
   dispatch: Dispatch<{}>,
@@ -172,8 +172,8 @@ export async function loadAndWatchPurchaseEvents(
 }
 
 async function handleNewPurchaseEvent(
-  tx: DecodedLogEntry<EthGridEventTypes.PlotPurchasedEventArgs>,
-  contract: EthGrid, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
+  tx: DecodedLogEntry<EthPlotEventTypes.PlotPurchasedEventArgs>,
+  contract: EthPlot, contractInfo: ContractInfo, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<void> {
 
   await DataActions.addPlotToGrid(contract, new BigNumber(tx.args.newPlotId).toNumber(), dispatch);
   const newZoneId = (<BigNumber>tx.args.newPlotId).toNumber();
@@ -192,7 +192,7 @@ async function handleNewPurchaseEvent(
   }
 }
 
-async function loadAndWatchSaleEvents(contract: EthGrid, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
+async function loadAndWatchSaleEvents(contract: EthPlot, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
   const saleEvent = contract.PlotSectionSoldEvent({ seller: currentAddress });
 
   const saleEvents = await saleEvent.get({ fromBlock: 0, toBlock: 'latest' });

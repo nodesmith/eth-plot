@@ -26,7 +26,7 @@ class MetaMaskStatus extends React.Component<MetaMaskStatusProps> {
       return (
       <div className={this.props.classes.installMetamask}>
         <Typography gutterBottom variant="subheading">
-          You must have MetaMask intalled to use EthGrid.  Check it out here:
+          You must have MetaMask intalled to use EthPlot.  Check it out here:
         </Typography>
         <a href={'https://metamask.io'} target="_blank">
           <img className={this.props.classes.logo} src={'../assets/metamasklogo.png'} />

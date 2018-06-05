@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as Web3 from 'web3';
 
-import { Action } from '../actionCreators/EthGridAction';
+import { Action } from '../actionCreators/EthPlotAction';
 import { ActionTypes } from '../constants/ActionTypes';
 import { computePurchaseInfo, PurchaseInfo } from '../data/ComputePurchaseInfo';
 import * as PlotMath from '../data/PlotMath';
