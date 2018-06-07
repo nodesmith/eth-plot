@@ -194,6 +194,10 @@ export async function loadAndWatchPurchaseEvents(
   // Listens to incoming purchase transactions
   return purchaseEvent.watch({ fromBlock: latestBlock + 1 }, (err, tx) => {
     if (!err) {
+      const plotId = new BigNumber(tx.args.newPlotId).toNumber();
+      DataActions.loadPlotData(contract, plotId).then(plot => {
+        dispatch(DataActions.addPlot(plot, plotId));
+      });
       handleNewPurchaseEvent(tx, contract, contractInfo, currentAddress, dispatch, web3);
     }
   });
