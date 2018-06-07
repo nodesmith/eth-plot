@@ -2,7 +2,7 @@
 window._web3Config = {
   contractAddresses: {
     '1': '0x5c0bd5d00588a4f004ce0d92958c96264026f7be', // Main
-    '3': '', // Ropsten - TODO
+    '3': '0x8f87224ce1631e7f20503cd510538a7d2f4d7977', // Ropsten
     '4': '0x9fa15802157252b3ebeb55bed4626ed3c7662fd8', // Rinkeby
     '42': '0x28d7b033c420cee238d7030ad9f0ca7e35a9994d', // Kovan
     local_test: '0xcfeb869f69431e42cdb54a4f4f105c19c080a601',
