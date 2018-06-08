@@ -85,7 +85,7 @@ class About extends React.Component<AboutProps> {
         <Grid container justify="center">
           <Grid item xs={8} md={6} >
             <Typography align="center" variant="caption">
-              Discovered on the following DApp Stores: <a href="https://www.stateofthedapps.com/">State of the DApps</a>.
+              Discovered on the following DApp Stores: <a href="https://www.stateofthedapps.com/dapps/eth-plot">State of the DApps</a>.
             </Typography>
           </Grid>
         </Grid>
