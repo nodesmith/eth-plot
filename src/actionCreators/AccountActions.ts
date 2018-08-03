@@ -126,7 +126,7 @@ async function loadAndWatchAuctionEvents(contract: EthPlot, currentAddress: stri
   // us to perform that filter on the "server" side.  
   const auctionEvent = contract.PlotPriceUpdatedEvent({ owner: currentAddress });
   
-  const auctionEvents = await auctionEvent.get({ fromBlock: 0, toBlock: 'latest' });
+  const auctionEvents = await auctionEvent.get({ fromBlock: 5737756, toBlock: 'latest' });
   let latestBlock = 0;
   auctionEvents.forEach(tx => {
     genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.AUCTION, dispatch, web3);
@@ -155,7 +155,7 @@ export async function loadAndWatchPurchaseEvents(
   // Manually add the first plot
   await DataActions.addPlotToGrid(contract, 0, dispatch);
 
-  const purchaseEvents = await purchaseEvent.get({ fromBlock: 0, toBlock: 'latest' });
+  const purchaseEvents = await purchaseEvent.get({ fromBlock: 5737756, toBlock: 'latest' });
   let latestBlock = 0;
 
   // We get back all of the plot purchase events here and we want to load all of the plot data in parallel.
@@ -226,7 +226,7 @@ async function handleNewPurchaseEvent(
 async function loadAndWatchSaleEvents(contract: EthPlot, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
   const saleEvent = contract.PlotSectionSoldEvent({ seller: currentAddress });
 
-  const saleEvents = await saleEvent.get({ fromBlock: 0, toBlock: 'latest' });
+  const saleEvents = await saleEvent.get({ fromBlock: 5737756, toBlock: 'latest' });
   let latestBlock = 0;
   saleEvents.forEach(tx => {
     genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.SALE, dispatch, web3);
