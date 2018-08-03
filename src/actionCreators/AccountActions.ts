@@ -121,12 +121,14 @@ export function loadAndWatchEvents(contractInfo: ContractInfo, currentAddress: s
   };
 }
 
-async function loadAndWatchAuctionEvents(contract: EthPlot, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
+const loadAndWatchAuctionEvents = async (contract: EthPlot, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> => {
   // The owner filter here only fetches events where the owner is the current address, allowing
   // us to perform that filter on the "server" side.  
   const auctionEvent = contract.PlotPriceUpdatedEvent({ owner: currentAddress });
   
+  const timerStart = Date.now();
   const auctionEvents = await auctionEvent.get({ fromBlock: 5737756, toBlock: 'latest' });
+  console.error(`auction events took ${Date.now() - timerStart}  (${timerStart})`);
   let latestBlock = 0;
   auctionEvents.forEach(tx => {
     genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.AUCTION, dispatch, web3);
@@ -139,23 +141,25 @@ async function loadAndWatchAuctionEvents(contract: EthPlot, currentAddress: stri
       genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.AUCTION, dispatch, web3);
     }
   });
-}
+};
 
-export async function loadAndWatchPurchaseEvents(
+export const loadAndWatchPurchaseEvents = async (
   contract: EthPlot,
   contractInfo: ContractInfo,
   currentAddress: string,
   numberOfPlots: number,
   dispatch: Dispatch<{}>,
   web3: Web3)
-  : Promise<UnregisterFn> {
+  : Promise<UnregisterFn> => {
   
   const purchaseEvent = contract.PlotPurchasedEvent({ });
 
   // Manually add the first plot
   await DataActions.addPlotToGrid(contract, 0, dispatch);
 
+  const timerStart = Date.now();
   const purchaseEvents = await purchaseEvent.get({ fromBlock: 5737756, toBlock: 'latest' });
+  console.error(`purchase events took ${Date.now() - timerStart}  (${timerStart})`);
   let latestBlock = 0;
 
   // We get back all of the plot purchase events here and we want to load all of the plot data in parallel.
@@ -201,7 +205,7 @@ export async function loadAndWatchPurchaseEvents(
       handleNewPurchaseEvent(tx, contract, contractInfo, currentAddress, dispatch, web3);
     }
   });
-}
+};
 
 async function handleNewPurchaseEvent(
   tx: DecodedLogEntry<EthPlotEventTypes.PlotPurchasedEventArgs>,
@@ -223,10 +227,12 @@ async function handleNewPurchaseEvent(
   }
 }
 
-async function loadAndWatchSaleEvents(contract: EthPlot, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> {
+const loadAndWatchSaleEvents = async (contract: EthPlot, currentAddress: string, dispatch: Dispatch<{}>, web3: Web3): Promise<UnregisterFn> => {
   const saleEvent = contract.PlotSectionSoldEvent({ seller: currentAddress });
 
+  const timerStart = Date.now();
   const saleEvents = await saleEvent.get({ fromBlock: 5737756, toBlock: 'latest' });
+  console.error(`Sale events took ${Date.now() - timerStart} (${timerStart})`);
   let latestBlock = 0;
   saleEvents.forEach(tx => {
     genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.SALE, dispatch, web3);
@@ -239,7 +245,7 @@ async function loadAndWatchSaleEvents(contract: EthPlot, currentAddress: string,
       genericTransactionHandler(tx, (<BigNumber>tx.args.plotId).toNumber(), Enums.TxType.SALE, dispatch, web3);
     }
   });
-}
+};
 
 const genericTransactionHandler = async (
   tx: DecodedLogEntry<{}>,

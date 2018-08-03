@@ -1,13 +1,14 @@
+import { S3 } from 'aws-sdk';
 import nodeFetch from 'node-fetch';
 import * as Web3 from 'web3';
+
 import { EthPlot } from '../gen-src/EthPlot';
-import { S3 } from 'aws-sdk';
 
 
 // Simple script for uploading any images which have been submitted to ipfs to S3 as well for faster loading times
 
 if (process.argv.length !== 7) {
-  throw "Usages: uploadExistingPlotImages <ipfsUrl> <web3Provider> <contractAddress> <s3Bucket> <s3KeyPrefix>"
+  throw 'Usages: uploadExistingPlotImages <ipfsUrl> <web3Provider> <contractAddress> <s3Bucket> <s3KeyPrefix>';
 }
 
 
@@ -17,7 +18,7 @@ export const downloadFromIpfs = async (ipfsUrlBase: string, ipfsHash: string) =>
   const response = await nodeFetch(ipfsUrl);
   const responseBlob = await response.buffer();
   return responseBlob;
-}
+};
 
 const getImagesFromWeb3 = async (web3Provider: string, contractAddress: string) => {
   const web3 = new Web3(new Web3.providers.HttpProvider(web3Provider));
@@ -32,7 +33,7 @@ const getImagesFromWeb3 = async (web3Provider: string, contractAddress: string) 
   }
 
   return result;
-}
+};
 
 (async () => {
   const ipfsUrlBase = process.argv[2];
@@ -64,7 +65,7 @@ const getImagesFromWeb3 = async (web3Provider: string, contractAddress: string) 
         mimeType = 'image/svg+xml';
         break;
       default:
-        throw 'Unknown mime type'
+        throw 'Unknown mime type';
     }
     
     const result = await s3.putObject({

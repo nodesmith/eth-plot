@@ -30,7 +30,10 @@ async function getUnavailableImage(): Promise<Blob> {
   return localforage.setItem(url, responseBlob);
 }
 
-export async function loadFromIpfsOrCache(ipfsHash: string, ipfsHost: string = 'https://ipfs.infura.io/ipfs', s3UrlBase: string = 'https://s3-us-west-2.amazonaws.com/eth-plot-data/mainnet'): Promise<Blob> {
+export async function loadFromIpfsOrCache(
+  ipfsHash: string,
+  ipfsHost: string = 'https://ipfs.infura.io/ipfs',
+  s3UrlBase: string = 'https://s3-us-west-2.amazonaws.com/eth-plot-data/mainnet'): Promise<Blob> {
   initialize();
   const cachedData = await localforage.getItem<Blob>(ipfsHash);
 
@@ -49,7 +52,7 @@ export async function loadFromIpfsOrCache(ipfsHash: string, ipfsHost: string = '
 
     // Save the blob in the cache and return it from the cache
     return localforage.setItem(ipfsHash, responseBlob);
-  } catch(e) {
+  } catch (e) {
     console.log(`Unable to load the image from S3, trying ipfs directly: ${e}`);
   }
 
