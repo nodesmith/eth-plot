@@ -5,6 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Upload Plot Images",
+      "type": "node",
+      "request": "launch",
+      "args": ["${workspaceRoot}/scripts/uploadExistingPlotImages.ts", "https://ipfs.infura.io/ipfs", "https://ropsten.infura.io:443/lupI6IMUAMmSNzzX1TJT", "0x8f87224ce1631e7f20503cd510538a7d2f4d7977", "eth-plot-data", "ropsten"],
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+    },
+    {
         "type": "node",
         "request": "launch",
         "name": "truffle test (debugable)",
