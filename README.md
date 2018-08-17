@@ -5,6 +5,7 @@
 To run:
 
 - `npm install`
+- `npm run build` - This will clean the project, compile the contracts, compile the Typescript, lint, run tests, then bundle everything into the dist folder
 - `npm start`
 - Set up Metamask to run against your preferred network in the browser (if using ganache or truffle develop, configure custom RPC)
 - open [http://localhost:3000](http://localhost:3000) in your Browser
@@ -20,10 +21,6 @@ Running Unit tests:
 - Run `tsc watch` either from a command prompt or from Visual Studio Code
 - Without the debugger from the console, `truffle test --network ganache`
 - With the debugger in VS Code, `F5`
-
-To Build:
-
-- `npm run build` - This will clean the project, compile the contracts, compile the Typescript, lint, run tests, then bundle everything into the dist folder
 
 To run the admin page:
 
